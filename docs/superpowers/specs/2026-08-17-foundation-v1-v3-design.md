@@ -109,8 +109,7 @@ scalar identifier or a Pydantic model.
 - `TimeWindow(start: datetime, end: datetime)` — validator rejects `end <= start`
 - `MetricSample(timestamp: datetime, value: float)`
 - `MetricSeries(labels: dict[str, str], samples: list[MetricSample])`
-- `MetricFinding(query, metric_kind: MetricKind | None, service, series, summary, anomaly_detected: bool)`
-  — `metric_kind` is `None` for raw PromQL results, which have no semantic kind
+- `MetricFinding` — a **discriminated union**, see §3.4
 - `LogEntry(timestamp, service, level, message, version: str | None, trace_id: str | None)`
 - `LogFinding(query, matched_count, level_breakdown: dict[str, int], samples: list[LogEntry])`
 - `EvidenceRef(source: EvidenceSource, detail: str)`
@@ -123,8 +122,71 @@ of likely root causes" is a structural guarantee rather than a prompt instructio
 
 ### 3.3 Enums
 
-`AgentName`, `MetricKind`, `LogLevel`, `EvidenceSource`, `LLMProviderName` — per
-CLAUDE.md's "prefer enums over magic strings".
+`AgentName`, `MetricKind`, `TrendKind`, `LogLevel`, `EvidenceSource`, `LLMProviderName` —
+per CLAUDE.md's "prefer enums over magic strings".
+
+`MetricKind` stays **strictly an input vocabulary**: `LATENCY_P95`, `ERROR_RATE`, `MEMORY`,
+`CPU`. It is serialized into `get_service_metric`'s `args_schema` and shown to the model,
+so it must contain only values that are legal to *request*. This is why no `RAW` /
+`UNCLASSIFIED` member is added — see §3.4.
+
+`TrendKind`: `ROSE`, `DROPPED`, `FLAT`, `FROM_ZERO`.
+
+### 3.4 `MetricFinding` as a discriminated union
+
+Raw-PromQL findings have no semantic metric kind. Rather than model that as
+`metric_kind: MetricKind | None`, the type is split so the invalid state is
+unrepresentable:
+
+```python
+class MetricFindingBase(BaseModel):
+    service: str
+    query: str
+    series: list[MetricSeries]
+    summary: str                 # for the model to read
+    trend: TrendKind             # ─┐
+    baseline_value: float        #  │ for everything else to trust
+    current_value: float         #  │
+    absolute_delta: float        #  │ always defined
+    pct_change: float | None     # ─┘ None iff trend is FROM_ZERO
+    anomaly_detected: bool
+
+    @model_validator(mode="after")
+    def _pct_change_matches_trend(self) -> Self:
+        """pct_change is absent exactly when the baseline was ~zero."""
+        if (self.pct_change is None) != (self.trend is TrendKind.FROM_ZERO):
+            raise ValueError("pct_change must be None iff trend is FROM_ZERO")
+        return self
+
+
+class TypedMetricFinding(MetricFindingBase):
+    source: Literal["typed"] = "typed"
+    metric_kind: MetricKind
+
+
+class RawMetricFinding(MetricFindingBase):
+    source: Literal["raw"] = "raw"
+
+
+MetricFinding = Annotated[
+    TypedMetricFinding | RawMetricFinding, Field(discriminator="source")
+]
+```
+
+**Why a union rather than a `MetricKind.RAW` null-object member:** `MetricKind` is an
+*input* enum exposed to the LLM in a tool schema (§3.3). Adding `RAW` would make
+`get_service_metric(kind=RAW)` representable — and representable specifically *by the
+model*, which will sometimes pick it because it appears in the schema. That trades a
+downstream null-check for an invalid upstream call emitted by the least reliable component
+in the system.
+
+**Containing the ceremony:** every field a consumer normally reads lives on
+`MetricFindingBase`, so union members need narrowing *only* where `metric_kind` itself is
+read. The discriminator is a plain string `Literal`, not an enum member, which is the
+well-supported Pydantic v2 path.
+
+The `operator.add` list reducer in `InvestigationState` is unaffected — it appends union
+members without inspecting them.
 
 ## 4. Module design
 
@@ -197,13 +259,55 @@ Every tool has an explicit Pydantic `args_schema`. Tools are thin: they validate
 connector, and return a model. Connector construction happens in the composition root and
 is bound into the tool factories — tools never instantiate a client.
 
-**`summary` and `anomaly_detected` are computed deterministically, not by the LLM.** The
-tool compares the first and last quartile of the returned window and flags a finding when
-the relative change exceeds a configured threshold (or, for `ERROR_RATE`, an absolute
-one). The LLM therefore receives pre-digested numeric facts — "p95 rose 5.2x from 0.12s to
-0.63s" — instead of raw sample arrays it would have to do arithmetic on. This matters
-disproportionately for a 3b model, which is poor at arithmetic over long number lists but
-adequate at reasoning over stated deltas.
+**`summary`, the delta fields, and `anomaly_detected` are computed deterministically, not
+by the LLM.** `baseline_value` is the mean of the window's first quartile, `current_value`
+the mean of its last. The LLM receives pre-digested numeric facts — "p95 rose 5.2x, from
+0.12s to 0.63s" — instead of raw sample arrays it would have to do arithmetic over. This
+matters disproportionately for a 3b model: poor at arithmetic over long number lists,
+adequate at reasoning over a stated delta.
+
+#### Dual threshold
+
+A relative-only trigger fires on meaningless noise over a near-zero baseline (0.001s →
+0.005s is "5x" and irrelevant). So **both** a relative and a minimum-absolute bar must
+clear, configured per metric kind in `settings`:
+
+| `MetricKind` | Min relative | Min absolute delta | Zero epsilon |
+|---|---|---|---|
+| `LATENCY_P95` | 1.5x | 50 ms | 1 ms |
+| `ERROR_RATE` | 2.0x | 1 percentage point | 0.1 pp |
+| `MEMORY` | 1.3x | 50 MiB | 1 MiB |
+| `CPU` | 1.5x | 0.1 core | 0.01 core |
+
+`RawMetricFinding` has no kind and therefore no configured bars: it reports its computed
+deltas with `anomaly_detected = False` and leaves interpretation to the model. The escape
+hatch does not get to claim anomalies it has no thresholds for.
+
+#### Zero-baseline rule — load-bearing, not cosmetic
+
+When `baseline_value` is within the kind's zero epsilon of zero and `current_value` is
+above it, `trend` is `FROM_ZERO`, `pct_change` is `None`, and **the absolute bar alone
+decides `anomaly_detected`**.
+
+This is not an edge case to tidy up later. The bad-deploy scenario (§5) is an error rate
+going from `~0` to `~15%` — it *is* the zero-baseline case. Requiring both bars to clear
+would make the relative bar undefined and cause the flagship demo scenario to silently
+never flag.
+
+#### Summary templates by direction
+
+Each `TrendKind` gets its own phrasing, so no template ever computes a nonsensical ratio:
+
+| `TrendKind` | Rendered form |
+|---|---|
+| `ROSE` | "p95 latency rose 5.2x, from 0.12s to 0.63s" |
+| `DROPPED` | "request throughput fell 68%, from 1.2k to 384 req/s" |
+| `FLAT` | "resident memory held steady near 512 MiB" |
+| `FROM_ZERO` | "5xx error rate emerged from a near-zero baseline, reaching 15.3% (no ratio is meaningful)" |
+
+Units are formatted per metric kind — seconds, percentage points, MiB, cores — never bare
+floats. Unit tests cover one case per `TrendKind`, including both-values-zero (→ `FLAT`,
+`pct_change = 0.0`) and dropped-to-zero (→ `DROPPED`, `pct_change = -100.0`).
 
 ### 4.4 `agents/`
 
@@ -266,6 +370,12 @@ transports; agents and graph driven by `FakeLLMProvider`; `IncidentService` agai
 mocked connectors. Includes a malformed-JSON test proving the repair loop, and a
 supervisor test proving invalid routes fall back to fan-out.
 
+Threshold and trend logic gets its own focused table-driven test module, since it is pure
+and cheap to pin down: one case per `TrendKind`; a near-zero-baseline case asserting the
+relative bar is *not* consulted; a noise case (0.001 → 0.005 s) asserting the absolute bar
+suppresses it; the `pct_change`/`trend` invariant rejecting an inconsistent construction;
+and a `RawMetricFinding` case asserting `anomaly_detected is False`.
+
 **Integration** (`tests/integration`, seeded stack): PromQL over the historical window
 returns the seeded anomaly; ES queries return seeded documents; full graph produces an
 `IncidentReport` citing the right service.
@@ -282,7 +392,7 @@ being committed to `feature/foundation-v1-v3`.
 |---|---|---|
 | 1 | Scaffold: `pyproject.toml`, uv, `Makefile`, `.gitignore`, settings, logging, exceptions, tracked `CLAUDE.md` | lint+mypy clean; settings test |
 | 2 | LLM layer: base, Ollama, Gemini, Fake, factory | per-provider unit tests; live Gemini smoke test |
-| 3 | Connectors + tools | unit tests vs mocked HTTP |
+| 3 | Connectors + tools | unit tests vs mocked HTTP; table-driven threshold/trend tests incl. zero-baseline and noise suppression |
 | 4 | Compose + `promtool` seeding, 3 scenarios | stack boots; PromQL over historical window returns seeded anomaly |
 | 5 | Graph: state, supervisor, metrics, logs agents | full graph test on `FakeLLMProvider`; fallback + termination tests |
 | 6 | Correlation agent + `IncidentReport` | structured output + malformed-JSON repair tests |
@@ -309,3 +419,5 @@ being committed to `feature/foundation-v1-v3`.
 | External Ollama volume deleted with the other project | `OLLAMA_VOLUME` override + `make ollama-pull` fallback |
 | Secret leak: `gemini-api.txt` sits in the repo tree | `.gitignore` covers it and `.env`; key copied by shell redirection, never printed |
 | Small-model latency makes the demo feel slow | Bounded tool rounds; parallel specialist execution |
+| Zero-baseline metrics rendered as absurd ratios ("800x") in the demo | Per-`TrendKind` templates; `FROM_ZERO` never computes a ratio; enforced `pct_change`/`trend` invariant |
+| Noise on near-zero baselines flagged as anomalies | Dual relative + absolute threshold per metric kind, both required except under `FROM_ZERO` |
