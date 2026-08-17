@@ -436,6 +436,29 @@ mix of findings — one anomalous `TypedMetricFinding`, one non-anomalous, and o
 prompt. This guards the advisory-only invariant (§4.3) against a future
 filter-on-`anomaly_detected` optimization that would silently drop every raw finding.
 
+**`threshold_validated` tests, asserted directly on each concrete class.** Not inferred
+from base-class behaviour, because the failure modes are all invisible to the other tests:
+
+- `TypedMetricFinding(...).threshold_validated is True`
+- `RawMetricFinding(...).threshold_validated is False`
+- both values survive `model_dump()` and appear in `model_dump_json()`
+- a `model_dump()` → `TypeAdapter(MetricFinding).validate_python(...)` round-trip through
+  the discriminator preserves the correct value — `computed_field` serializes on output but
+  is not accepted on input, so this is a genuine failure candidate
+- passing `threshold_validated=True` to `RawMetricFinding` does **not** override it
+- `RawMetricFinding.summary` starts with the unvalidated caveat prose
+
+A subclass that forgets to set `_threshold_validated` inherits a valueless
+`ClassVar[bool]`, which raises `AttributeError` only on access and is not caught by
+`mypy --strict`. Without these tests that omission surfaces first in a demo.
+
+**Mechanism is verified, not assumed.** `computed_field` over a leading-underscore
+`ClassVar` has enough Pydantic v2 sharp edges that step 3 confirms it empirically before
+the rest of the code depends on it. If Pydantic resists, the fallback is a plain
+`@property` overridden per subclass plus an explicit serializer — the invariant (derived,
+non-settable, serialized, cannot drift from the variant) is what matters, not this
+particular mechanism.
+
 **Integration** (`tests/integration`, seeded stack): PromQL over the historical window
 returns the seeded anomaly; ES queries return seeded documents; full graph produces an
 `IncidentReport` citing the right service.
