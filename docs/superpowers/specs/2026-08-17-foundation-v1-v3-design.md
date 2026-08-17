@@ -149,7 +149,15 @@ class MetricFindingBase(BaseModel):
     current_value: float         #  │
     absolute_delta: float        #  │ always defined
     pct_change: float | None     # ─┘ None iff trend is FROM_ZERO
-    anomaly_detected: bool
+    anomaly_detected: bool       # advisory only — never a filter, see §4.3
+
+    _threshold_validated: ClassVar[bool]
+
+    @computed_field
+    @property
+    def threshold_validated(self) -> bool:
+        """Whether this finding was checked against configured thresholds."""
+        return self._threshold_validated
 
     @model_validator(mode="after")
     def _pct_change_matches_trend(self) -> Self:
@@ -162,10 +170,12 @@ class MetricFindingBase(BaseModel):
 class TypedMetricFinding(MetricFindingBase):
     source: Literal["typed"] = "typed"
     metric_kind: MetricKind
+    _threshold_validated: ClassVar[bool] = True
 
 
 class RawMetricFinding(MetricFindingBase):
     source: Literal["raw"] = "raw"
+    _threshold_validated: ClassVar[bool] = False
 
 
 MetricFinding = Annotated[
@@ -283,16 +293,58 @@ clear, configured per metric kind in `settings`:
 deltas with `anomaly_detected = False` and leaves interpretation to the model. The escape
 hatch does not get to claim anomalies it has no thresholds for.
 
+#### `anomaly_detected` is advisory — never a filter
+
+**Invariant: no stage of the pipeline may exclude a finding because `anomaly_detected` is
+`False`.** The flag may be used only to *order* findings (anomalous first) and to *label*
+them in the correlation prompt. Every finding a specialist produced reaches the correlation
+agent.
+
+This is load-bearing because `RawMetricFinding` hard-codes the flag to `False`. Any
+filter-on-anomaly step — however reasonable it looks as an optimization — would silently
+drop 100% of raw-query findings, i.e. exactly the escape hatch an engineer reaches for when
+the curated tools missed something. A "no findings were dropped" regression test guards
+this (§6).
+
+Absence of an anomaly is itself evidence: "memory was flat across the window" is a real
+input to root-cause reasoning, not noise to be suppressed.
+
+#### Trust asymmetry is tagged in the data
+
+Threshold-validated and unvalidated findings must be distinguishable by both the model and
+a human reading the final report:
+
+- `threshold_validated: bool` on `MetricFindingBase` — a non-settable `computed_field` over
+  a per-subclass `ClassVar` (`True` on `TypedMetricFinding`, `False` on
+  `RawMetricFinding`), so it is serialized into JSON, readable without narrowing the union,
+  and cannot drift out of sync with the variant.
+- `RawMetricFinding.summary` is additionally prefixed with an explicit prose caveat:
+  *"unclassified metric — not threshold-validated, review the numbers directly"*.
+
+Both, not either: the prose reaches the LLM and the rendered report, the boolean reaches
+the eval harness and any UI, without anything having to string-match a caveat sentence.
+
 #### Zero-baseline rule — load-bearing, not cosmetic
 
 When `baseline_value` is within the kind's zero epsilon of zero and `current_value` is
 above it, `trend` is `FROM_ZERO`, `pct_change` is `None`, and **the absolute bar alone
 decides `anomaly_detected`**.
 
+Only the **relative** bar is skipped. The absolute bar still gates, so `FROM_ZERO` is not
+an unconditional fire. Worked `ERROR_RATE` cases (epsilon 0.1 pp, min absolute 1 pp):
+
+| Baseline → current | Classification | `anomaly_detected` | Why |
+|---|---|---|---|
+| `0 → 0.15` (0 → 15 pp) | `FROM_ZERO` | **true** | current above epsilon; 15 pp ≥ 1 pp absolute bar |
+| `0.0001 → 0.0003` (0.01 → 0.03 pp) | `FLAT` | false | current *below* epsilon, so never reaches `FROM_ZERO` |
+| `0 → 0.002` (0 → 0.2 pp) | `FROM_ZERO` | false | above epsilon, but 0.2 pp < 1 pp absolute bar |
+
+The epsilon gate and the absolute bar are independent protections; the third row is the one
+that shows the absolute bar is genuinely still consulted under `FROM_ZERO`.
+
 This is not an edge case to tidy up later. The bad-deploy scenario (§5) is an error rate
-going from `~0` to `~15%` — it *is* the zero-baseline case. Requiring both bars to clear
-would make the relative bar undefined and cause the flagship demo scenario to silently
-never flag.
+going from `~0` to `~15%` — it *is* the zero-baseline case. Requiring the relative bar to
+clear would make it undefined and cause the flagship demo scenario to silently never flag.
 
 #### Summary templates by direction
 
@@ -374,7 +426,15 @@ Threshold and trend logic gets its own focused table-driven test module, since i
 and cheap to pin down: one case per `TrendKind`; a near-zero-baseline case asserting the
 relative bar is *not* consulted; a noise case (0.001 → 0.005 s) asserting the absolute bar
 suppresses it; the `pct_change`/`trend` invariant rejecting an inconsistent construction;
-and a `RawMetricFinding` case asserting `anomaly_detected is False`.
+and a `RawMetricFinding` case asserting `anomaly_detected is False`. The `FROM_ZERO` cases
+include one that clears the absolute bar and one that does not, pinning down that the
+absolute bar is still consulted when the relative bar is skipped.
+
+**No-findings-dropped regression test.** A graph-level test on `FakeLLMProvider` feeds a
+mix of findings — one anomalous `TypedMetricFinding`, one non-anomalous, and one
+`RawMetricFinding` — and asserts all three appear in the correlation agent's rendered
+prompt. This guards the advisory-only invariant (§4.3) against a future
+filter-on-`anomaly_detected` optimization that would silently drop every raw finding.
 
 **Integration** (`tests/integration`, seeded stack): PromQL over the historical window
 returns the seeded anomaly; ES queries return seeded documents; full graph produces an
