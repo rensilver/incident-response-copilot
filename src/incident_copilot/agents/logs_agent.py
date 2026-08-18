@@ -1,6 +1,7 @@
 """Logs specialist node."""
 
 from collections.abc import Awaitable, Callable, Sequence
+from typing import Any
 
 from langchain_core.tools import BaseTool
 
@@ -17,7 +18,7 @@ logger = get_logger(__name__)
 
 def build_logs_agent(
     provider: LLMProvider, tools: Sequence[BaseTool], settings: Settings
-) -> Callable[[InvestigationState], Awaitable[dict[str, object]]]:
+) -> Callable[[InvestigationState], Awaitable[dict[str, Any]]]:
     """Build the logs specialist node.
 
     Args:
@@ -29,7 +30,7 @@ def build_logs_agent(
         An async graph node contributing ``log_findings``.
     """
 
-    async def logs_agent(state: InvestigationState) -> dict[str, object]:
+    async def logs_agent(state: InvestigationState) -> dict[str, Any]:
         """Gather log findings for the investigation."""
         target = state["target_service"] or "unknown"
         messages = [
