@@ -2334,6 +2334,14 @@ git commit -m "feat: add investigation and health endpoints over injected collab
 
 ---
 
+> **Amendment (during execution):** `create_app` builds the connectors once and
+> injects them, which is right — Ollama and Elasticsearch both benefit from connection
+> reuse. But neither connector exposes a `close()`, so the long-lived
+> `httpx.AsyncClient` and `AsyncElasticsearch` are never released. Task 10 must add
+> `aclose()` to both connectors and a FastAPI `lifespan` that calls them on shutdown,
+> otherwise the app leaks sockets on every reload and Elasticsearch logs
+> "Unclosed client session" on exit.
+
 ### Task 10: Composition root
 
 **Files:**
