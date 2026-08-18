@@ -88,7 +88,12 @@ class ServiceProfile:
 
 @dataclass(frozen=True)
 class Scenario:
-    """One seeded incident: services, their behaviour, and the answer."""
+    """One seeded incident: services, their behaviour, and the answer.
+
+    Service names must be unique across scenarios. All three are seeded into the same
+    Prometheus, so a name reused between scenarios produces two writes to the identical
+    series at identical timestamps, silently blending the two curves.
+    """
 
     name: ScenarioName
     title: str
@@ -139,7 +144,7 @@ SCENARIOS: tuple[Scenario, ...] = (
                     ),
                 ),
             ),
-            ServiceProfile(service="cart-service"),
+            ServiceProfile(service="inventory-service"),
         ),
     ),
     Scenario(
@@ -221,7 +226,7 @@ SCENARIOS: tuple[Scenario, ...] = (
                     ),
                 ),
             ),
-            ServiceProfile(service="payment-service"),
+            ServiceProfile(service="shipping-service"),
         ),
     ),
 )

@@ -31,6 +31,15 @@ def test_bad_deploy_flips_version_label() -> None:
     assert cart.version_after == "v1.5.0"
 
 
+def test_scenarios_do_not_share_service_names() -> None:
+    """All three seed into one Prometheus; a shared name blends two curves into one series."""
+    seen: set[str] = set()
+    for scenario in SCENARIOS:
+        names = {p.service for p in scenario.services}
+        assert not (names & seen), f"{scenario.name} reuses {names & seen}"
+        seen |= names
+
+
 def test_get_scenario_rejects_unknown_name() -> None:
     with pytest.raises(KeyError, match="unknown scenario"):
         get_scenario("not-a-scenario")  # type: ignore[arg-type]  # deliberate
