@@ -37,3 +37,7 @@ class StructuredOutputError(LLMProviderError):
         """
         super().__init__(message)
         self.raw_output = raw_output
+
+
+class InvestigationError(IncidentCopilotError):
+    """The investigation graph did not produce a usable report."""
