@@ -42,5 +42,16 @@ docker-logs:
 ollama-pull:
 	docker compose exec ollama ollama pull llama3.2
 
+seed:
+	$(VENV)/bin/python scripts/seed_demo_data.py
+	docker compose restart prometheus
+	@echo "seeded; prometheus restarted"
+
+demo-reset:
+	docker compose down
+	rm -rf docker/prometheus/data
+	$(MAKE) docker-up
+	$(MAKE) seed
+
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache
