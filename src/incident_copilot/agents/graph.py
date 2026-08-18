@@ -6,7 +6,7 @@ edge returns a list of node names, which LangGraph fans out to; the correlation 
 once the routed branches finish, even if only one was routed.
 """
 
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from typing import Any
 
 from langchain_core.tools import BaseTool
@@ -22,7 +22,7 @@ from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import LLMProvider
 from incident_copilot.models.enums import AgentName
 
-GraphNode = Callable[[InvestigationState], Awaitable[dict[str, Any]]]
+GraphNode = Callable[[InvestigationState], Awaitable[Mapping[str, Any]]]
 
 
 def _add_node(builder: StateGraph[Any, Any, Any, Any], name: str, node: GraphNode) -> None:

@@ -1,12 +1,11 @@
 """Logs specialist node."""
 
 from collections.abc import Awaitable, Callable, Sequence
-from typing import Any
 
 from langchain_core.tools import BaseTool
 
 from incident_copilot.agents.prompts import LOGS_SYSTEM
-from incident_copilot.agents.state import InvestigationState
+from incident_copilot.agents.state import InvestigationState, LogsUpdate
 from incident_copilot.agents.tool_loop import run_tool_rounds
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
@@ -18,7 +17,7 @@ logger = get_logger(__name__)
 
 def build_logs_agent(
     provider: LLMProvider, tools: Sequence[BaseTool], settings: Settings
-) -> Callable[[InvestigationState], Awaitable[dict[str, Any]]]:
+) -> Callable[[InvestigationState], Awaitable[LogsUpdate]]:
     """Build the logs specialist node.
 
     Args:
@@ -30,7 +29,7 @@ def build_logs_agent(
         An async graph node contributing ``log_findings``.
     """
 
-    async def logs_agent(state: InvestigationState) -> dict[str, Any]:
+    async def logs_agent(state: InvestigationState) -> LogsUpdate:
         """Gather log findings for the investigation."""
         target = state["target_service"] or "unknown"
         messages = [

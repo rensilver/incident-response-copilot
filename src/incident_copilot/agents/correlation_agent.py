@@ -1,10 +1,9 @@
 """Correlation node: turns gathered findings into a structured incident report."""
 
 from collections.abc import Awaitable, Callable
-from typing import Any
 
 from incident_copilot.agents.prompts import CORRELATION_SYSTEM, render_evidence
-from incident_copilot.agents.state import InvestigationState
+from incident_copilot.agents.state import CorrelationUpdate, InvestigationState
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.utils.exceptions import LLMProviderError
@@ -15,7 +14,7 @@ logger = get_logger(__name__)
 
 def build_correlation_agent(
     provider: LLMProvider,
-) -> Callable[[InvestigationState], Awaitable[dict[str, Any]]]:
+) -> Callable[[InvestigationState], Awaitable[CorrelationUpdate]]:
     """Build the correlation node bound to a provider.
 
     Args:
@@ -25,7 +24,7 @@ def build_correlation_agent(
         An async graph node contributing ``report``.
     """
 
-    async def correlation_agent(state: InvestigationState) -> dict[str, Any]:
+    async def correlation_agent(state: InvestigationState) -> CorrelationUpdate:
         """Correlate all findings into an :class:`IncidentReport`."""
         evidence = render_evidence(state["metrics_findings"], state["log_findings"])
         messages = [

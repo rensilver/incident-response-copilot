@@ -59,3 +59,32 @@ def initial_state(
         report=None,
         errors=[],
     )
+
+
+class SupervisorUpdate(TypedDict):
+    """What the supervisor writes back into the state."""
+
+    route: list[AgentName]
+    iterations: int
+    errors: list[str]
+
+
+class MetricsUpdate(TypedDict):
+    """What the metrics specialist writes back into the state."""
+
+    metrics_findings: list[MetricFinding]
+    errors: list[str]
+
+
+class LogsUpdate(TypedDict):
+    """What the logs specialist writes back into the state."""
+
+    log_findings: list[LogFinding]
+    errors: list[str]
+
+
+class CorrelationUpdate(TypedDict):
+    """What the correlation node writes back into the state."""
+
+    report: IncidentReport | None
+    errors: list[str]

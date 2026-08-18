@@ -105,7 +105,7 @@ async def test_concurrent_claims_never_serve_an_unbound_round() -> None:
         provider.bind_tools(LOG_TOOLS).ainvoke([HumanMessage(content="go")]),
     )
 
-    metric_names = {c["name"] for c in metrics.tool_calls}
-    log_names = {c["name"] for c in logs.tool_calls}
-    assert metric_names <= {"get_service_metric"}, metric_names
-    assert log_names <= {"search_logs"}, log_names
+    # Equality, not a subset: a subset check also passes when a claimer is starved,
+    # which is the other way this can fail.
+    assert [c["name"] for c in metrics.tool_calls] == ["get_service_metric"]
+    assert [c["name"] for c in logs.tool_calls] == ["search_logs"]
