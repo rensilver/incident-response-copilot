@@ -45,6 +45,9 @@ Verified before writing this plan. Do not re-derive them.
 | Single-branch route | `correlate` still runs when only one specialist is routed | No deadlock waiting on an unrouted branch |
 | Async nodes | supported | All nodes are `async def` |
 | Scripted tool calls | `AIMessage(content="", tool_calls=[{name,args,id,type:"tool_call"}])` survives a `RunnableLambda`; `StructuredTool.ainvoke(args)` returns the real finding; a message with no tool calls yields `[]` | This is how specialists are unit-tested |
+| **Sync `RunnableLambda`** | Runs in a **worker thread** (`asyncio_0`), not on the event loop | Shared mutable state touched from a sync lambda needs a real lock, not just "no `await` inside" |
+| **Branch concurrency** | Two 0.2 s branches completed in 0.211 s | Specialists genuinely overlap; anything they share is under concurrent access |
+| **Unguarded scan-then-pop** | Probed 3×: 2 runs served a claimer a round naming a tool it never bound; 1 run passed by luck | Read-then-mutate over a shared list must be locked (Task 2) |
 
 ### Required change to Plan 1 code
 
@@ -272,11 +275,33 @@ which agent lost its round would vary between runs. So the runnable scans for th
 round whose calls are *all* bound to it and pops that one. This mirrors reality: a model
 only calls tools it was given. Verified order-independent by probe.
 
+**Why the claim must also be locked.** Matching fixes *which* round a caller may claim;
+it does nothing about *when*. Two facts make the unguarded version racy: sync
+`RunnableLambda` bodies run in a **worker thread**, and LangGraph runs the specialist
+branches **concurrently** — both probed. So the scan and the `pop` are a read-then-mutate
+over a list under genuine parallel access, with a window in between.
+
+Probed 3×, unguarded: two runs served a claimer a round naming a tool it had never bound
+(claimer B matched index 0, claimer A popped index 0 first, B then popped what had slid
+into that slot). One run passed by chance. The failure is silent — no exception, correct
+round *count*, wrong round *recipient* — so a test asserting only "each specialist got
+some findings" would go green while the script was being mis-served. With a
+`threading.Lock` around scan-and-pop, 3/3 runs were correct.
+
+`threading.Lock` (not `asyncio.Lock`) because the body is synchronous and runs off-loop;
+an async lock cannot be awaited there.
+
+**Intra-agent ordering** is preserved by construction: the scan always starts at index 0
+and claims the first match, so a specialist needing two rounds gets round 1 before
+round 2 even when other agents' rounds are interleaved between them. Step 1 tests this
+directly rather than assuming it.
+
 - [ ] **Step 1: Write the failing test**
 
 `tests/unit/llm/test_fake_tool_calls.py`:
 
 ```python
+import asyncio
 from typing import Any
 
 from langchain_core.messages import HumanMessage
@@ -354,6 +379,41 @@ async def test_bind_tools_without_a_script_never_requests_tools() -> None:
     provider = FakeLLMProvider(["nothing to do"])
     message = await provider.bind_tools(METRIC_TOOLS).ainvoke([HumanMessage(content="go")])
     assert message.tool_calls == []
+
+
+async def test_one_agents_rounds_are_served_in_order_despite_interleaving() -> None:
+    """A specialist needing two rounds must get round 1 first, even with another
+    agent's round sitting between them in the script."""
+    first = {"name": "get_service_metric", "args": {"n": 1}, "id": "1", "type": "tool_call"}
+    second = {"name": "get_service_metric", "args": {"n": 2}, "id": "2", "type": "tool_call"}
+    provider = FakeLLMProvider(
+        ["done"], tool_rounds=[[first], [_call("search_logs")], [second]]
+    )
+    runnable = provider.bind_tools(METRIC_TOOLS)
+
+    a = await runnable.ainvoke([HumanMessage(content="go")])
+    b = await runnable.ainvoke([HumanMessage(content="go")])
+
+    assert a.tool_calls[0]["args"] == {"n": 1}
+    assert b.tool_calls[0]["args"] == {"n": 2}
+
+
+async def test_concurrent_claims_never_serve_an_unbound_round() -> None:
+    """Regression: specialists run concurrently and the lambda body runs in a worker
+    thread, so an unguarded scan-then-pop can hand a caller another agent's round."""
+    provider = FakeLLMProvider(
+        ["done"], tool_rounds=[[_call("get_service_metric")], [_call("search_logs")]]
+    )
+
+    metrics, logs = await asyncio.gather(
+        provider.bind_tools(METRIC_TOOLS).ainvoke([HumanMessage(content="go")]),
+        provider.bind_tools(LOG_TOOLS).ainvoke([HumanMessage(content="go")]),
+    )
+
+    metric_names = {c["name"] for c in metrics.tool_calls}
+    log_names = {c["name"] for c in logs.tool_calls}
+    assert metric_names <= {"get_service_metric"}, metric_names
+    assert log_names <= {"search_logs"}, log_names
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -391,28 +451,43 @@ Replace the `__init__` and `bind_tools` of `FakeLLMProvider` with:
         self._responses = list(responses)
         self._index = 0
         self._tool_rounds = [list(round_) for round_ in (tool_rounds or [])]
+        self._script_lock = threading.Lock()
         self.calls: list[list[ChatMessage]] = []
+
+    def _claim_round(self, available: set[str]) -> list[dict[str, Any]] | None:
+        """Atomically take the first scripted round this toolset can satisfy.
+
+        The lock is not optional. LangGraph runs the specialists concurrently and
+        LangChain executes a sync ``RunnableLambda`` body in a worker thread, so an
+        unguarded scan-then-``pop`` can hand a caller a round that slid into the matched
+        index after it matched — silently serving one specialist another's round.
+        """
+        with self._script_lock:
+            for index, round_ in enumerate(self._tool_rounds):
+                if all(str(call.get("name", "")) in available for call in round_):
+                    return self._tool_rounds.pop(index)
+        return None
 
     def bind_tools(self, tools: Sequence[BaseTool]) -> Runnable[LanguageModelInput, BaseMessage]:
         """Return a runnable serving the scripted rounds this toolset can satisfy.
 
         One provider is shared by every specialist in the graph, so a round is served
-        only to a caller that actually bound the tools it names. Matching scans the whole
-        script rather than just its head, which keeps behaviour independent of the order
-        the parallel specialists happen to run in.
+        only to a caller that actually bound the tools it names. Matching scans from the
+        start of the script, which keeps a single agent's rounds in order while staying
+        independent of the order the parallel specialists happen to run in.
         """
         available = {tool.name for tool in tools}
 
         def _respond(_: LanguageModelInput) -> BaseMessage:
-            for index, round_ in enumerate(self._tool_rounds):
-                if all(str(call.get("name", "")) in available for call in round_):
-                    return AIMessage(content="", tool_calls=self._tool_rounds.pop(index))
+            claimed = self._claim_round(available)
+            if claimed is not None:
+                return AIMessage(content="", tool_calls=claimed)
             return AIMessage(content=self._responses[min(self._index, len(self._responses) - 1)])
 
         return RunnableLambda(_respond)
 ```
 
-Add `from typing import Any` to the imports.
+Add `import threading` and `from typing import Any` to the imports.
 
 - [ ] **Step 4: Run the tests to verify they pass, then commit**
 
@@ -420,7 +495,7 @@ Add `from typing import Any` to the imports.
 .venv/bin/pytest tests/unit/llm -v && .venv/bin/mypy --strict src
 ```
 
-Expected: 13 passed (8 existing + 5 new), mypy clean.
+Expected: 15 passed (8 existing + 7 new), mypy clean.
 
 ```bash
 git add src/incident_copilot/llm/fake_provider.py tests/unit/llm/test_fake_tool_calls.py
@@ -530,6 +605,23 @@ def test_render_evidence_marks_an_empty_section_explicitly() -> None:
     text = render_evidence([], [])
     assert "no metric findings" in text.lower()
     assert "no log findings" in text.lower()
+
+
+def test_evidence_order_is_independent_of_the_order_findings_arrive_in() -> None:
+    """Reducer merge order is not stable between runs. If it leaked into the prompt,
+    identical evidence would produce different prompts - and LLMs weight earlier items
+    more heavily, so the reasoning could drift for no real reason."""
+    a = _typed(True, "alpha")
+    b = _typed(False, "beta")
+    c = _raw()
+
+    assert render_evidence([a, b, c], []) == render_evidence([c, b, a], [])
+    assert render_evidence([b, c, a], []) == render_evidence([a, b, c], [])
+
+
+def test_threshold_validated_findings_are_rendered_first() -> None:
+    text = render_evidence([_raw(), _typed(True, "validated marker")], [])
+    assert text.index("validated marker") < text.index(_raw().summary)
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -605,26 +697,51 @@ def render_log_finding(finding: LogFinding) -> str:
     return "\n".join(lines)
 
 
+def _metric_sort_key(finding: MetricFindingBase) -> tuple[bool, str, str, str]:
+    """Total ordering key: threshold-validated findings first, then alphabetical.
+
+    ``summary`` is the final tiebreaker so the key is *total*. Two findings for the same
+    service and query would otherwise compare equal, and a stable sort would fall back to
+    input order — reintroducing exactly the run-to-run variation this ordering exists to
+    remove.
+    """
+    return (not finding.threshold_validated, finding.service, finding.query, finding.summary)
+
+
 def render_evidence(
     metrics_findings: Sequence[MetricFindingBase],
     log_findings: Sequence[LogFinding],
 ) -> str:
     """Render all findings into the evidence block of the correlation prompt.
 
+    Findings arrive in whatever order the graph's ``operator.add`` reducers merged the
+    parallel branches, which is not stable between runs. Rendering them in that order
+    would make the prompt differ run to run for identical evidence, and LLMs weight
+    earlier list items more heavily — so the same scenario could yield different
+    reasoning purely from list position. They are therefore sorted into a deterministic
+    order here.
+
+    Validated findings lead. That is a deliberate, documented choice rather than an
+    accidental one: it is consistent with the trust tags the prompt already states.
+    Nothing is reordered *away* — every finding is rendered (see module docstring).
+
     Args:
         metrics_findings: Every metric finding gathered, anomalous or not.
         log_findings: Every log finding gathered.
 
     Returns:
-        A prompt fragment listing all of them.
+        A prompt fragment listing all of them, in a stable order.
     """
     metric_lines = (
-        "\n".join(render_metric_finding(f) for f in metrics_findings)
+        "\n".join(render_metric_finding(f) for f in sorted(metrics_findings, key=_metric_sort_key))
         if metrics_findings
         else "(no metric findings were gathered)"
     )
     log_lines = (
-        "\n".join(render_log_finding(f) for f in log_findings)
+        "\n".join(
+            render_log_finding(f)
+            for f in sorted(log_findings, key=lambda f: (f.query, f.matched_count))
+        )
         if log_findings
         else "(no log findings were gathered)"
     )
@@ -637,11 +754,11 @@ def render_evidence(
 .venv/bin/pytest tests/unit/agents -v && .venv/bin/mypy --strict src
 ```
 
-Expected: 9 passed, mypy clean.
+Expected: 11 passed, mypy clean.
 
 ```bash
 git add src/incident_copilot/agents/prompts.py tests/unit/agents/test_prompts.py
-git commit -m "feat: add prompts and evidence rendering that never drops a finding"
+git commit -m "feat: add prompts and evidence rendering that is complete and stably ordered"
 ```
 
 ---
