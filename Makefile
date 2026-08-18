@@ -28,6 +28,7 @@ test-integration:
 
 docker-up:
 	mkdir -p docker/prometheus/data
+	mkdir -p docker/grafana/provisioning/datasources docker/grafana/provisioning/dashboards
 	docker compose up -d
 	@echo "waiting for elasticsearch..."
 	@until curl -sf http://localhost:9200/_cluster/health >/dev/null 2>&1; do sleep 2; done
