@@ -41,6 +41,14 @@ class ElasticsearchConnector(LogSource):
             index=settings.elasticsearch_log_index,
         )
 
+    async def aclose(self) -> None:
+        """Release the underlying Elasticsearch client.
+
+        The client is long-lived — built once at startup so connections are reused —
+        so the application must close it on shutdown.
+        """
+        await self._client.close()
+
     @staticmethod
     def _build_query(criteria: LogSearchCriteria) -> dict[str, Any]:
         """Build the Elasticsearch bool query for the given criteria."""

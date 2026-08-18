@@ -12,7 +12,7 @@ from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, ValidationError
 
-from incident_copilot.utils.exceptions import StructuredOutputError
+from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
 
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
 
@@ -65,11 +65,21 @@ class LLMProvider(ABC):
 
         Raises:
             StructuredOutputError: If no attempt produced valid output.
+            LLMProviderError: If the backend could not be reached at all.
         """
         conversation = list(messages)
         raw = ""
         for _ in range(max_attempts):
-            raw = await self._generate_json(conversation)
+            # This is the adapter boundary: concrete providers fail with whatever their
+            # client library raises (httpx, google-genai, grpc). Callers handle
+            # LLMProviderError, so anything else has to be translated here or it escapes
+            # the graph entirely and becomes a 500.
+            try:
+                raw = await self._generate_json(conversation)
+            except LLMProviderError:
+                raise
+            except Exception as exc:  # noqa: BLE001 - deliberate third-party translation
+                raise LLMProviderError(f"LLM call failed: {exc}") from exc
             try:
                 return schema.model_validate_json(_extract_json(raw))
             except (ValidationError, ValueError) as exc:

@@ -60,7 +60,17 @@ async def run_tool_rounds(
     outcome = ToolLoopResult()
 
     for round_index in range(max_rounds):
-        reply = await runnable.ainvoke(conversation)
+        # The tool-bound runnable comes from a third-party client, so an unreachable
+        # model arrives as whatever that library raises. Recording it keeps one dead
+        # backend from aborting the investigation, matching how tool failures are
+        # handled below.
+        try:
+            reply = await runnable.ainvoke(conversation)
+        except Exception as exc:  # noqa: BLE001 - deliberate third-party translation
+            logger.warning("tool_round_llm_failed", round=round_index + 1, error=str(exc))
+            outcome.errors.append(f"model call failed: {exc}")
+            break
+
         calls = list(getattr(reply, "tool_calls", []) or [])
         if not calls:
             break

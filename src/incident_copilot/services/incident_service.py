@@ -28,9 +28,13 @@ class InvestigationRequest(BaseModel):
 
 
 class _Graph(Protocol):
-    """The part of a compiled LangGraph this service depends on."""
+    """The part of a compiled LangGraph this service depends on.
 
-    async def ainvoke(self, state: Any) -> Mapping[str, Any]: ...
+    The state argument is positional-only: the real ``CompiledStateGraph`` calls it
+    ``input``, and the parameter name is not part of what this service relies on.
+    """
+
+    async def ainvoke(self, state: Any, /) -> Mapping[str, Any]: ...
 
 
 class IncidentService:

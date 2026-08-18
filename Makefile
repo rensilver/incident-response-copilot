@@ -1,5 +1,5 @@
 .PHONY: install lint format test test-integration docker-up docker-down docker-logs \
-        ollama-pull seed demo-reset eval clean
+        ollama-pull seed demo-reset eval serve clean
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -25,6 +25,9 @@ test:
 
 test-integration:
 	$(VENV)/bin/pytest tests/integration -m integration
+
+serve:
+	$(VENV)/bin/uvicorn incident_copilot.main:app --reload --port 8000
 
 docker-up:
 	mkdir -p docker/prometheus/data

@@ -63,3 +63,14 @@ async def test_list_services_reads_label_values() -> None:
         )
     )
     assert await _connector().list_services() == ["cart-service", "payment-service"]
+
+
+async def test_aclose_releases_the_underlying_client() -> None:
+    """The app builds one connector at startup and must hand its socket back on
+    shutdown; without this the client leaks on every reload."""
+    client = httpx.AsyncClient()
+    connector = PrometheusConnector(client=client, base_url=BASE)
+
+    await connector.aclose()
+
+    assert client.is_closed

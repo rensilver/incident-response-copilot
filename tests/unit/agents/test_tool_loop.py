@@ -1,5 +1,6 @@
 from typing import Any
 
+import httpx
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableLambda
 from langchain_core.tools import BaseTool, StructuredTool
@@ -85,3 +86,21 @@ async def test_unknown_tool_name_is_recorded() -> None:
     outcome = await run_tool_rounds(RogueProvider(["done"]), _tools(seen), MESSAGES, max_rounds=1)
     assert any("no_such_tool" in e for e in outcome.errors)
     assert seen == []
+
+
+async def test_an_unreachable_model_is_recorded_not_raised() -> None:
+    """The specialist runs inside the graph; letting a transport error escape here
+    aborts the whole investigation instead of degrading it."""
+
+    class DownProvider(FakeLLMProvider):
+        def bind_tools(self, tools: Any) -> Any:
+            def _boom(_: Any) -> Any:
+                raise httpx.ConnectError("All connection attempts failed")
+
+            return RunnableLambda(_boom)
+
+    seen: list[str] = []
+    outcome = await run_tool_rounds(DownProvider(["done"]), _tools(seen), MESSAGES, max_rounds=2)
+
+    assert outcome.results == []
+    assert any("All connection attempts failed" in e for e in outcome.errors)
