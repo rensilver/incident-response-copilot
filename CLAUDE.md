@@ -5,14 +5,27 @@ this repository.
 
 ## Current State — read this first
 
-**The repository is empty.** As of the initial commit the only tracked file is
-`README.md`. None of the packages, modules, `pyproject.toml`, `Makefile`,
-`docker-compose.yml`, or tests described below exist yet.
+**Built and merged (Plans 1 and 2):**
 
-Everything after this section is a **target design**, not a description of code on disk.
-Treat it as the spec to build toward: file paths are where things *should* go, not where
-they are. Before referencing or importing any module named here, check that it exists.
-Work proceeds along the Roadmap at the end of this file — currently pre-V1.
+- `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
+  logs, report), `analysis/` (deterministic thresholds and trend rendering)
+- `llm/` — `LLMProvider` ABC with Ollama, Gemini and Fake implementations behind a
+  factory, plus the central structured-output repair loop
+- `connectors/` — `MetricsSource`/`LogSource` interfaces, Prometheus and Elasticsearch
+  adapters; `tools/` — curated metric and log tools with validated arg schemas
+- `demo/` + `scripts/seed_demo_data.py` — three seeded incident scenarios
+- `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
+
+**Not built yet:** `agents/` (LangGraph state, supervisor, specialists, correlation),
+`services/`, `api/`, `main.py`, `evaluation/`, `streamlit_app/`. Nothing imports
+LangGraph yet. Before referencing or importing any module in that list, check that it
+exists — the sections below still describe the *target* design for those parts.
+
+Work proceeds along the Roadmap at the end of this file — V1-V3 foundations are in,
+the graph and API are next.
+
+**Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
+and is gitignored. Recreate it with `make demo-reset`, never by hand.
 
 ## Project Overview
 
@@ -46,7 +59,7 @@ architecture clarity and test/eval coverage matter as much as the demo itself.
 | Evaluation            | custom scenario harness (RAGAS/DeepEval-style scoring)   |
 | Tracing/observability  | LangSmith (optional but recommended for the demo)         |
 | Lint/format/types      | ruff, black, mypy --strict                               |
-| Packaging             | `pyproject.toml` (uv or poetry)                          |
+| Packaging             | `pyproject.toml` + `uv`                                  |
 | Containerization       | Docker + docker-compose                                |
 
 **LLM provider decision:** don't hardcode either option. Build one `LLMProvider`
@@ -240,13 +253,17 @@ directly.
 
 | Target | Wraps |
 |--------|-------|
-| `make install` | `uv sync` (create venv + install deps, including dev extras) |
+| `make install` | `uv venv .venv --allow-existing && uv pip install -e ".[dev]"` |
 | `make lint` | `ruff check src tests && mypy --strict src` |
 | `make format` | `black src tests && ruff check --fix src tests` |
 | `make test` | `pytest tests/unit` |
 | `make test-integration` | `pytest tests/integration` (needs the docker stack up + seeded) |
-| `make docker-up` | `docker compose up -d` (Prometheus/Grafana/Elasticsearch/app) |
-| `make seed` | `python scripts/seed_demo_data.py` |
+| `make docker-up` | `docker compose up -d` (Prometheus/Grafana/Elasticsearch/Ollama), waits for ES |
+| `make docker-down` | `docker compose down` |
+| `make docker-logs` | `docker compose logs -f --tail=100` |
+| `make ollama-pull` | `docker compose exec ollama ollama pull llama3.2` |
+| `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
+| `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
 | `make eval` | `python -m incident_copilot.evaluation.eval_runner` |
 | `make streamlit` | `streamlit run streamlit_app/app.py` |
 
@@ -264,9 +281,7 @@ mypy --strict src/incident_copilot/agents/graph.py              # type-check one
 unit tests mock both connectors and the `LLMProvider`. Anything that needs a live
 Prometheus/Elasticsearch belongs in `tests/integration`.
 
-**Open decision (resolve before V1):** the Tech Stack table says "uv or poetry". The
-commands above assume `uv`. Pick one and delete the other from the table — don't leave
-both, and don't mix lockfiles.
+**Resolved:** packaging is `uv`, not poetry. Do not introduce a poetry lockfile.
 
 ## Roadmap
 
