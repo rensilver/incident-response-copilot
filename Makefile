@@ -9,7 +9,7 @@ export HOST_GID := $(shell id -g)
 
 install:
 	python3 -m pip install --quiet --upgrade uv
-	uv venv $(VENV)
+	uv venv $(VENV) --allow-existing
 	uv pip install --python $(PY) -e ".[dev]"
 
 lint:
