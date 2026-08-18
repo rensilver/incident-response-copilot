@@ -15,3 +15,6 @@ gemini-api.txt
 
 # local stack state
 docker/prometheus/data/
+
+# seeding scratch (must live under the repo for snap docker bind mounts)
+seed-*/
