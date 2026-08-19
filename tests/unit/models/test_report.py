@@ -43,6 +43,29 @@ def test_causes_without_evidence_are_dropped() -> None:
     assert [c.title for c in report.likely_causes] == ["grounded"]
 
 
+def test_causes_with_blank_title_or_rationale_are_dropped() -> None:
+    """A schema-valid but content-empty cause is as useless as an unevidenced one."""
+    blank_title = LikelyCause(
+        title="",
+        rationale="because the numbers say so",
+        confidence=0.8,
+        supporting_evidence=[EvidenceRef(source=EvidenceSource.METRICS, detail="p95 rose")],
+    )
+    blank_rationale = LikelyCause(
+        title="bad deploy",
+        rationale="   ",
+        confidence=0.6,
+        supporting_evidence=[EvidenceRef(source=EvidenceSource.METRICS, detail="p95 rose")],
+    )
+    report = IncidentReport(
+        summary="s",
+        likely_causes=[_cause("grounded", 0.4), blank_title, blank_rationale],
+        next_steps=[],
+        confidence=0.4,
+    )
+    assert [c.title for c in report.likely_causes] == ["grounded"]
+
+
 def test_confidence_is_bounded() -> None:
     with pytest.raises(ValidationError):
         _cause("x", 1.4)
