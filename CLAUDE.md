@@ -5,7 +5,7 @@ this repository.
 
 ## Current State — read this first
 
-**Built and merged (Plans 1 and 2):**
+**Built and merged (Plans 1-3):**
 
 - `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
   logs, report), `analysis/` (deterministic thresholds and trend rendering)
@@ -14,15 +14,19 @@ this repository.
 - `connectors/` — `MetricsSource`/`LogSource` interfaces, Prometheus and Elasticsearch
   adapters; `tools/` — curated metric and log tools with validated arg schemas
 - `demo/` + `scripts/seed_demo_data.py` — three seeded incident scenarios
+- `agents/` — `InvestigationState`, the supervisor router, metrics/logs specialists
+  sharing a bounded tool-calling loop, and the correlation agent producing a structured
+  `IncidentReport`; `agents/graph.py` assembles and compiles the `StateGraph`
+- `services/incident_service.py` — owns correlation IDs, invokes the compiled graph
+- `api/` — `POST /api/v1/investigations` and `GET /health`; `main.py` is the
+  composition root wiring connectors, provider, graph and router together
 - `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
 
-**Not built yet:** `agents/` (LangGraph state, supervisor, specialists, correlation),
-`services/`, `api/`, `main.py`, `evaluation/`, `streamlit_app/`. Nothing imports
-LangGraph yet. Before referencing or importing any module in that list, check that it
-exists — the sections below still describe the *target* design for those parts.
+**Not built yet:** `evaluation/`, `streamlit_app/`. Before referencing or importing
+either, check that it exists — the sections below still describe the *target* design.
 
-Work proceeds along the Roadmap at the end of this file — V1-V3 foundations are in,
-the graph and API are next.
+Work proceeds along the Roadmap at the end of this file — V1-V3 are in, the evaluation
+harness and Streamlit UI are next.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -247,10 +251,6 @@ for anyone reviewing the repo.
 
 ## Commands
 
-The `Makefile` does not exist yet — these are the targets to create, and the underlying
-commands each one should wrap. Until the Makefile lands, run the right-hand column
-directly.
-
 | Target | Wraps |
 |--------|-------|
 | `make install` | `uv venv .venv --allow-existing && uv pip install -e ".[dev]"` |
@@ -264,6 +264,7 @@ directly.
 | `make ollama-pull` | `docker compose exec ollama ollama pull llama3.2` |
 | `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
 | `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
+| `make serve` | `uvicorn incident_copilot.main:app --reload --port 8000` |
 | `make eval` | `python -m incident_copilot.evaluation.eval_runner` |
 | `make streamlit` | `streamlit run streamlit_app/app.py` |
 
@@ -285,12 +286,12 @@ Prometheus/Elasticsearch belongs in `tests/integration`.
 
 ## Roadmap
 
-- **V1** — Connectors + a single agent doing basic tool-calling over Prometheus and
-  Elasticsearch.
-- **V2** — Full LangGraph multi-agent orchestration (supervisor + metrics + logs
+- **V1 (done)** — Connectors + a single agent doing basic tool-calling over Prometheus
+  and Elasticsearch.
+- **V2 (done)** — Full LangGraph multi-agent orchestration (supervisor + metrics + logs
   agents).
-- **V3** — Correlation/RCA agent, structured `IncidentReport` output, FastAPI endpoint,
-  demo data seeding.
+- **V3 (done)** — Correlation/RCA agent, structured `IncidentReport` output, FastAPI
+  endpoint, demo data seeding.
 - **V4** — Evaluation harness, LangSmith tracing, polished README with measured
   results, Docker deploy.
 - **V5 (optional)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the

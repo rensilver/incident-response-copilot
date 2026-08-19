@@ -36,13 +36,19 @@ class IncidentReport(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
 
     @model_validator(mode="after")
-    def _drop_unevidenced_and_rank(self) -> Self:
-        """Discard causes citing no evidence, then rank by descending confidence.
+    def _drop_hollow_and_rank(self) -> Self:
+        """Discard causes citing no evidence or carrying no real content, then rank.
 
-        Ranking is structural rather than a prompt instruction, so a model that emits
-        causes in arbitrary order still produces a correctly ranked report.
+        A cause with a blank title or rationale is schema-valid but as useless as one
+        citing no evidence - the model filled the shape without saying anything. Ranking
+        is structural rather than a prompt instruction, so a model that emits causes in
+        arbitrary order still produces a correctly ranked report.
         """
-        grounded = [c for c in self.likely_causes if c.supporting_evidence]
+        grounded = [
+            c
+            for c in self.likely_causes
+            if c.supporting_evidence and c.title.strip() and c.rationale.strip()
+        ]
         ranked = tuple(sorted(grounded, key=lambda c: c.confidence, reverse=True))
         object.__setattr__(self, "likely_causes", ranked)
         return self

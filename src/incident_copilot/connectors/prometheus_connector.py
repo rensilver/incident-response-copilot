@@ -37,6 +37,14 @@ class PrometheusConnector(MetricsSource):
         """Build a connector from application settings."""
         return cls(client=httpx.AsyncClient(timeout=30.0), base_url=settings.prometheus_url)
 
+    async def aclose(self) -> None:
+        """Release the underlying HTTP client.
+
+        The client is long-lived — built once at startup so connections are reused —
+        so the application must close it on shutdown.
+        """
+        await self._client.aclose()
+
     async def _get(self, path: str, params: dict[str, str]) -> Any:
         """Issue a GET and return the ``data`` payload.
 

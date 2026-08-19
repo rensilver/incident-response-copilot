@@ -80,3 +80,25 @@ async def test_backend_failure_is_wrapped() -> None:
         await connector.search(
             LogSearchCriteria(service="cart-service", window=TimeWindow.from_minutes_back(30))
         )
+
+
+class ClosableES(StubES):
+    """Stub that records whether the client was closed."""
+
+    def __init__(self) -> None:
+        super().__init__({"hits": {"hits": [], "total": {"value": 0}}})
+        self.closed = False
+
+    async def close(self) -> None:
+        self.closed = True
+
+
+async def test_aclose_releases_the_underlying_client() -> None:
+    """The app builds one connector at startup and must hand its session back on
+    shutdown; without this Elasticsearch logs an unclosed session on exit."""
+    client = ClosableES()
+    connector = ElasticsearchConnector(client=client, index="logs")  # type: ignore[arg-type]
+
+    await connector.aclose()
+
+    assert client.closed

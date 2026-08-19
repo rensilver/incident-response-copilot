@@ -5,8 +5,10 @@ reads metrics (Prometheus) and logs (Elasticsearch), correlates them across a ti
 window, and proposes a ranked list of likely root causes with supporting evidence —
 instead of an engineer manually pivoting between three dashboards during an outage.
 
-**Status:** the core library and the seeded demo stack are built. The multi-agent
-LangGraph orchestration, the correlation agent, and the FastAPI surface are next.
+**Status:** the core library, the seeded demo stack, the LangGraph multi-agent
+orchestration (supervisor + metrics/logs specialists + correlation agent), and the
+FastAPI investigation endpoint are built and verified end to end against the live stack.
+The evaluation harness and Streamlit UI are next.
 
 ## Quickstart
 
@@ -50,6 +52,63 @@ signal. Each scenario uses its own services, so the three never blend into one a
 
 Metrics are loaded as TSDB blocks via `promtool tsdb create-blocks-from openmetrics`,
 not scraped — Prometheus rejects scraped samples with timestamps in the past.
+
+## Running an investigation
+
+```bash
+make serve   # uvicorn --reload on :8000
+```
+
+```bash
+curl -X POST localhost:8000/api/v1/investigations \
+  -H "Content-Type: application/json" \
+  -d '{"query": "checkout-service memory keeps climbing", "service": "checkout-service", "minutes_back": 180}'
+```
+
+Sample response, against the seeded memory-leak scenario:
+
+```json
+{
+  "summary": "Checkout service memory keeps climbing",
+  "likely_causes": [
+    {
+      "title": "Insufficient memory allocation",
+      "rationale": "Memory usage is increasing without a clear reason.",
+      "confidence": 0.9,
+      "supporting_evidence": [{"source": "logs", "detail": "memory"}]
+    }
+  ],
+  "next_steps": ["Check memory allocation and resource usage"],
+  "confidence": 0.8
+}
+```
+
+`GET /health` reports liveness plus whether each downstream dependency answered:
+
+```json
+{"status": "ok", "dependencies": {"prometheus": true, "elasticsearch": true, "llm": true}}
+```
+
+### Observed reliability with `llama3.2:3b`
+
+The graph — supervisor routing, parallel metrics/logs specialists, bounded tool-calling,
+correlation into a structured report — runs end to end for all three seeded scenarios.
+Two things are honestly worth naming about the local 3b model specifically:
+
+- It occasionally calls a tool with an invalid argument (an out-of-range `minutes_back`,
+  a made-up log level). `run_tool_rounds` treats this like any other tool failure: it is
+  recorded and the round continues rather than crashing the graph.
+- Producing the final `IncidentReport` JSON is the weakest link. The model sometimes
+  echoes the JSON Schema itself (its `$defs` block) instead of a plain instance on the
+  first attempt or two, and sometimes fills a cause's shape without real content (a
+  blank title or rationale). The repair loop gives correlation up to 5 attempts, and a
+  content-empty cause is dropped the same way an unevidenced one already is — so a run
+  either produces a real, evidenced report or an honestly empty one, never a decorative
+  one. The bad-deploy (`cart-service`) scenario is the one most likely to need a retry.
+
+None of this is specific to this codebase — it is the price of a demo running entirely
+against a free, local 3b model instead of a hosted frontier one. `LLM_PROVIDER=gemini` is
+there specifically as the higher-quality alternative.
 
 ## Development
 
