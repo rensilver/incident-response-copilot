@@ -1,5 +1,12 @@
+import pytest
+
 from incident_copilot.demo.scenarios import ScenarioName
-from incident_copilot.evaluation.eval_runner import RunResult, run_scenario, score_run
+from incident_copilot.evaluation.eval_runner import (
+    RunResult,
+    _print_results,
+    run_scenario,
+    score_run,
+)
 from incident_copilot.evaluation.scenarios import EvalScenario
 from incident_copilot.models.enums import EvidenceSource
 from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
@@ -103,3 +110,19 @@ async def test_run_scenario_reports_no_causes_when_the_report_is_empty() -> None
 
     assert result.correct is False
     assert result.detail == "(no causes)"
+
+
+def test_print_results_reports_per_run_per_scenario_and_overall(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    results = [
+        RunResult(ScenarioName.BAD_DEPLOY, correct=True, detail="cart-service bad deploy"),
+        RunResult(ScenarioName.BAD_DEPLOY, correct=False, detail="(no causes)"),
+    ]
+    _print_results(results)
+    out = capsys.readouterr().out
+
+    assert "[PASS] bad_deploy: cart-service bad deploy" in out
+    assert "[FAIL] bad_deploy: (no causes)" in out
+    assert "bad_deploy: 1/2" in out
+    assert "Overall: 1/2" in out
