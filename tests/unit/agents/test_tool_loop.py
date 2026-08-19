@@ -32,7 +32,10 @@ def _leveled_tools(calls: list[str]) -> list[BaseTool]:
 
     return [
         StructuredTool.from_function(
-            coroutine=leveled, name="leveled", description="needs a valid level", args_schema=LeveledArgs
+            coroutine=leveled,
+            name="leveled",
+            description="needs a valid level",
+            args_schema=LeveledArgs,
         )
     ]
 
