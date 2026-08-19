@@ -23,6 +23,10 @@ class MetricsSource(ABC):
     async def list_services(self) -> list[str]:
         """Return every known service name."""
 
+    async def aclose(self) -> None:
+        """Release held resources. No-op by default; override if the source holds a connection."""
+        return
+
 
 class LogSource(ABC):
     """A source of application logs."""
@@ -34,3 +38,7 @@ class LogSource(ABC):
     @abstractmethod
     async def level_histogram(self, service: str, window: TimeWindow) -> dict[str, int]:
         """Return a count of log documents per level."""
+
+    async def aclose(self) -> None:
+        """Release held resources. No-op by default; override if the source holds a connection."""
+        return

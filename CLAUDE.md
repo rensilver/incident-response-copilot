@@ -5,7 +5,7 @@ this repository.
 
 ## Current State — read this first
 
-**Built and merged (Plans 1-3):**
+**Built and merged (Plans 1-4):**
 
 - `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
   logs, report), `analysis/` (deterministic thresholds and trend rendering)
@@ -26,11 +26,11 @@ this repository.
   (`make eval`), scoring the 3 seeded scenarios against their expected root cause
 - `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
 
-**Not built yet:** `streamlit_app/`. Before referencing or importing
-either, check that it exists — the sections below still describe the *target* design.
+**Not built yet:** `streamlit_app/`. Before referencing or importing it, check that it
+exists — the sections below still describe the *target* design.
 
 Work proceeds along the Roadmap at the end of this file — V1-V3 are in, the evaluation
-harness and Streamlit UI are next.
+harness has landed, and the Streamlit UI is next.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -271,7 +271,7 @@ for anyone reviewing the repo.
 | `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
 | `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
 | `make serve` | `uvicorn incident_copilot.main:app --reload --port 8000` |
-| `make eval` | `python -m incident_copilot.evaluation.eval_runner` |
+| `make eval` | `python -m incident_copilot.evaluation.eval_runner` (needs the docker stack up + freshly seeded — the seeded window is only ~3h) |
 | `make streamlit` | `streamlit run streamlit_app/app.py` |
 
 Narrower invocations, useful while iterating:

@@ -1,7 +1,9 @@
 """Scores the seeded scenarios against their expected root cause on the live stack.
 
 Not part of `make test` - the whole point is measuring real model behaviour, which
-needs a real Prometheus, Elasticsearch and LLM. Run manually via `make eval`.
+needs a real Prometheus, Elasticsearch and LLM. Run manually via `make eval`. stdout is
+the deliberate output channel for the run transcript - this is report output, not
+application logging.
 """
 
 import asyncio
@@ -74,7 +76,12 @@ async def run_scenario(service: _Investigator, scenario: EvalScenario) -> RunRes
         The scored outcome.
     """
     request = InvestigationRequest(
-        query=scenario.query, service=scenario.target_service, minutes_back=180
+        query=scenario.query,
+        service=scenario.target_service,
+        # NOTE: not currently threaded through to what window the specialist agents
+        # query — see the agent layer; this only sets state["time_window"], which
+        # nothing reads yet.
+        minutes_back=180,
     )
     try:
         report = await service.investigate(request)
@@ -108,12 +115,16 @@ async def main() -> None:
     collaborators = build_collaborators(settings)
     service = IncidentService(collaborators.graph)
 
-    results: list[RunResult] = []
-    for scenario in SCENARIOS:
-        for _ in range(REPEATS):
-            results.append(await run_scenario(service, scenario))
+    try:
+        results: list[RunResult] = []
+        for scenario in SCENARIOS:
+            for _ in range(REPEATS):
+                results.append(await run_scenario(service, scenario))
 
-    _print_results(results)
+        _print_results(results)
+    finally:
+        await collaborators.metrics_source.aclose()
+        await collaborators.log_source.aclose()
 
 
 if __name__ == "__main__":
