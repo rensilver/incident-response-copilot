@@ -1,3 +1,4 @@
+from enum import StrEnum
 from typing import Any
 
 import httpx
@@ -14,6 +15,26 @@ from incident_copilot.utils.exceptions import MetricsSourceError
 
 class EchoArgs(BaseModel):
     value: str
+
+
+class Level(StrEnum):
+    OK = "OK"
+
+
+class LeveledArgs(BaseModel):
+    level: Level
+
+
+def _leveled_tools(calls: list[str]) -> list[BaseTool]:
+    async def leveled(level: Level) -> str:
+        calls.append(level)
+        return f"got:{level}"
+
+    return [
+        StructuredTool.from_function(
+            coroutine=leveled, name="leveled", description="needs a valid level", args_schema=LeveledArgs
+        )
+    ]
 
 
 def _tools(calls: list[str], fail: bool = False) -> list[BaseTool]:
@@ -86,6 +107,18 @@ async def test_unknown_tool_name_is_recorded() -> None:
     outcome = await run_tool_rounds(RogueProvider(["done"]), _tools(seen), MESSAGES, max_rounds=1)
     assert any("no_such_tool" in e for e in outcome.errors)
     assert seen == []
+
+
+async def test_invalid_tool_call_args_are_recorded_not_raised() -> None:
+    """A hallucinated enum value fails schema validation before the tool body runs;
+    that must degrade the round like any other tool failure, not crash the node."""
+    seen: list[str] = []
+    call = {"name": "leveled", "args": {"level": "bogus"}, "id": "c-1", "type": "tool_call"}
+    provider = FakeLLMProvider(["done"], tool_rounds=[[call]])
+    outcome = await run_tool_rounds(provider, _leveled_tools(seen), MESSAGES, max_rounds=1)
+    assert outcome.results == []
+    assert seen == []
+    assert any("leveled" in e for e in outcome.errors)
 
 
 async def test_an_unreachable_model_is_recorded_not_raised() -> None:

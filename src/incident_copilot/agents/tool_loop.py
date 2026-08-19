@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import BaseTool
+from pydantic import ValidationError
 
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.utils.exceptions import IncidentCopilotError
@@ -40,8 +41,9 @@ async def run_tool_rounds(
 ) -> ToolLoopResult:
     """Let the model call tools for at most ``max_rounds`` rounds.
 
-    A tool that raises :class:`IncidentCopilotError` is recorded and the loop continues:
-    one unreachable backend should degrade the report, not abort the investigation.
+    A tool that raises :class:`IncidentCopilotError`, or whose call args fail schema
+    validation, is recorded and the loop continues: one unreachable backend or one
+    hallucinated argument should degrade the report, not abort the investigation.
 
     Args:
         provider: Supplies the tool-bound runnable.
@@ -84,7 +86,9 @@ async def run_tool_rounds(
                 continue
             try:
                 result = await tool.ainvoke(call.get("args", {}))
-            except IncidentCopilotError as exc:
+            except (IncidentCopilotError, ValidationError) as exc:
+                # ValidationError covers a hallucinated argument (e.g. an invalid enum
+                # value) that LangChain rejects before the tool body ever runs.
                 outcome.errors.append(f"{name} failed: {exc}")
                 conversation.append(
                     ToolMessage(content=str(exc), tool_call_id=str(call.get("id", "")))
