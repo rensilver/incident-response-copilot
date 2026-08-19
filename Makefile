@@ -57,5 +57,8 @@ demo-reset:
 	$(MAKE) docker-up
 	$(MAKE) seed
 
+eval:
+	$(VENV)/bin/python -m incident_copilot.evaluation.eval_runner
+
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache

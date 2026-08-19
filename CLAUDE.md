@@ -5,7 +5,7 @@ this repository.
 
 ## Current State — read this first
 
-**Built and merged (Plans 1-3):**
+**Built and merged (Plans 1-4):**
 
 - `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
   logs, report), `analysis/` (deterministic thresholds and trend rendering)
@@ -20,13 +20,17 @@ this repository.
 - `services/incident_service.py` — owns correlation IDs, invokes the compiled graph
 - `api/` — `POST /api/v1/investigations` and `GET /health`; `main.py` is the
   composition root wiring connectors, provider, graph and router together
+- `composition.py` — shared connector/provider/graph construction, used by both
+  `main.py` and `evaluation/eval_runner.py`
+- `evaluation/` — `scenarios.py` (typed ground-truth data) and `eval_runner.py`
+  (`make eval`), scoring the 3 seeded scenarios against their expected root cause
 - `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
 
-**Not built yet:** `evaluation/`, `streamlit_app/`. Before referencing or importing
-either, check that it exists — the sections below still describe the *target* design.
+**Not built yet:** `streamlit_app/`. Before referencing or importing it, check that it
+exists — the sections below still describe the *target* design.
 
 Work proceeds along the Roadmap at the end of this file — V1-V3 are in, the evaluation
-harness and Streamlit UI are next.
+harness has landed, and the Streamlit UI is next.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -124,6 +128,7 @@ incident-response-copilot/
 │   └── incident_copilot/
 │       ├── __init__.py
 │       ├── main.py                    # FastAPI app entrypoint / composition root
+│       ├── composition.py             # connector/provider/graph construction, shared by main.py and eval_runner.py
 │       ├── api/
 │       │   ├── routes.py
 │       │   └── schemas.py             # request/response Pydantic models
@@ -152,7 +157,8 @@ incident-response-copilot/
 │       ├── services/
 │       │   └── incident_service.py    # use-case orchestration, called by API
 │       ├── evaluation/
-│       │   ├── scenarios/             # YAML/JSON: input -> expected root cause
+│       │   ├── scenarios.py           # typed ground-truth data, not YAML/JSON - see
+│       │   │                          # docs/superpowers/specs/2026-08-19-evaluation-harness-design.md §8
 │       │   └── eval_runner.py
 │       └── utils/
 │           ├── logging.py
@@ -265,7 +271,7 @@ for anyone reviewing the repo.
 | `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
 | `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
 | `make serve` | `uvicorn incident_copilot.main:app --reload --port 8000` |
-| `make eval` | `python -m incident_copilot.evaluation.eval_runner` |
+| `make eval` | `python -m incident_copilot.evaluation.eval_runner` (needs the docker stack up + freshly seeded — the seeded window is only ~3h) |
 | `make streamlit` | `streamlit run streamlit_app/app.py` |
 
 Narrower invocations, useful while iterating:
