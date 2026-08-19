@@ -1,7 +1,8 @@
 """Application composition root.
 
-The only module that constructs concrete connectors, providers and the graph. Everything
-else receives its collaborators through an interface.
+Builds the FastAPI application around the collaborators from composition.py, and owns
+what is HTTP-specific: routes, health-check probes, and the lifespan that closes the
+connectors on shutdown.
 """
 
 from collections.abc import AsyncIterator
@@ -10,15 +11,10 @@ from contextlib import asynccontextmanager
 import httpx
 from fastapi import FastAPI
 
-from incident_copilot.agents.graph import build_graph
 from incident_copilot.api.routes import HealthCheck, build_router
+from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import Settings, get_settings
-from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
-from incident_copilot.connectors.prometheus_connector import PrometheusConnector
-from incident_copilot.llm.factory import build_llm_provider
 from incident_copilot.services.incident_service import IncidentService
-from incident_copilot.tools.elasticsearch_tools import build_log_tools
-from incident_copilot.tools.prometheus_tools import build_metrics_tools
 from incident_copilot.utils.logging import configure_logging, get_logger
 
 logger = get_logger(__name__)
@@ -60,17 +56,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     configure_logging(settings.log_level)
 
-    metrics_source = PrometheusConnector.from_settings(settings)
-    log_source = ElasticsearchConnector.from_settings(settings)
-    provider = build_llm_provider(settings)
-
-    graph = build_graph(
-        provider,
-        build_metrics_tools(metrics_source),
-        build_log_tools(log_source),
-        settings,
-    )
-    service = IncidentService(graph)
+    collaborators = build_collaborators(settings)
+    service = IncidentService(collaborators.graph)
 
     health_checks: dict[str, HealthCheck] = {
         "prometheus": _reachable(f"{settings.prometheus_url}/-/ready"),
@@ -88,8 +75,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="incident-response-copilot", version="0.1.0", lifespan=lifespan)
     # Held on app.state so the lifespan closes the same instances the graph is using.
-    app.state.prometheus_connector = metrics_source
-    app.state.elasticsearch_connector = log_source
+    app.state.prometheus_connector = collaborators.metrics_source
+    app.state.elasticsearch_connector = collaborators.log_source
     app.include_router(build_router(service, health_checks))
     logger.info("app_created", provider=settings.llm_provider.value)
     return app
