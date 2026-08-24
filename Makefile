@@ -1,5 +1,5 @@
 .PHONY: install lint format test test-integration docker-up docker-down docker-logs \
-        docker-app-up ollama-pull seed demo-reset eval serve clean
+        docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -63,6 +63,9 @@ demo-reset:
 
 eval:
 	$(VENV)/bin/python -m incident_copilot.evaluation.eval_runner
+
+streamlit:
+	$(VENV)/bin/streamlit run streamlit_app/app.py
 
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache
