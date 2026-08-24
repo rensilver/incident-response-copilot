@@ -53,5 +53,24 @@ services:
     volumes:
       - ollama-data:/root/.ollama
 
+  app:
+    build: .
+    container_name: ic-app
+    profiles: ["app"]
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - GRAFANA_URL=http://grafana:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+      ollama:
+        condition: service_started
+
 volumes:
   ollama-data:
