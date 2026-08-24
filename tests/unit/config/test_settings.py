@@ -25,3 +25,9 @@ def test_gemini_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     with pytest.raises(ValueError, match="GOOGLE_API_KEY"):
         Settings(_env_file=None)
+
+
+def test_langsmith_tracing_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="LANGSMITH_API_KEY"):
+        Settings(_env_file=None, langsmith_tracing=True)
