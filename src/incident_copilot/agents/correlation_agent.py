@@ -36,10 +36,10 @@ def build_correlation_agent(
         ]
 
         try:
-            # llama3.2:3b sometimes echoes the JSON Schema (with its $defs block) instead
-            # of a plain instance on the first attempt or two; observed runs converge by
-            # attempt 3 but occasionally need one more, so this gets extra headroom over
-            # the default.
+            # Small local models sometimes echo the JSON Schema (with its $defs block)
+            # instead of a plain instance on the first attempt or two; observed runs
+            # converge by attempt 3 but occasionally need one more, so this gets extra
+            # headroom over the default.
             report = await provider.complete_structured(messages, IncidentReport, max_attempts=5)
         except LLMProviderError as exc:
             logger.warning("correlation_failed", error=str(exc))

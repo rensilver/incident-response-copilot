@@ -127,9 +127,8 @@ Elasticsearch belongs in `tests/integration`.
 Copy `.env.example` to `.env` and adjust. The LLM provider is swappable at runtime via
 `LLM_PROVIDER=ollama|gemini` — nothing above `llm/base.py` knows which one is active.
 
-The `ollama` service mounts an **external** Docker volume (default
-`ai-knowledge-assistant_ollama-data`) so `llama3.2` is not re-downloaded. Override it
-with `OLLAMA_VOLUME`, or run `make ollama-pull` to populate a fresh volume.
+The `ollama` service mounts a project-owned Docker volume (`incident-copilot_ollama-data`)
+so `qwen3:4b` is not re-downloaded between runs. Run `make ollama-pull` to populate it.
 
 ## Architecture
 

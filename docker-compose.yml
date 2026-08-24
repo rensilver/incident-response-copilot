@@ -55,5 +55,3 @@ services:
 
 volumes:
   ollama-data:
-    external: true
-    name: "${OLLAMA_VOLUME:-ai-knowledge-assistant_ollama-data}"

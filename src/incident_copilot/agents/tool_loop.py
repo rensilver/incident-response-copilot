@@ -1,7 +1,7 @@
 """Bounded tool-calling loop shared by the specialist agents.
 
-The cap matters: `llama3.2:3b` will happily keep requesting tools forever. Two rounds is
-enough to fetch a metric and follow up on it, and guarantees the node terminates.
+The cap matters: a small local model will happily keep requesting tools forever. Two
+rounds is enough to fetch a metric and follow up on it, and guarantees the node terminates.
 """
 
 from collections.abc import Sequence

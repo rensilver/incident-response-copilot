@@ -8,7 +8,7 @@ def test_defaults_select_ollama(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     settings = Settings(_env_file=None)
     assert settings.llm_provider is LLMProviderName.OLLAMA
-    assert settings.ollama_model == "llama3.2"
+    assert settings.ollama_model == "qwen3:4b"
     assert settings.max_tool_rounds == 2
 
 
