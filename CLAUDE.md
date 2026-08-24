@@ -24,7 +24,8 @@ this repository.
   `main.py` and `evaluation/eval_runner.py`
 - `evaluation/` — `scenarios.py` (typed ground-truth data) and `eval_runner.py`
   (`make eval`), scoring the 3 seeded scenarios against their expected root cause
-- `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
+- `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama, and an `app`
+  service (behind the `app` compose profile) built from the root `Dockerfile`
 
 **Not built yet:** `streamlit_app/`. Before referencing or importing it, check that it
 exists — the sections below still describe the *target* design.
@@ -267,7 +268,8 @@ for anyone reviewing the repo.
 | `make docker-up` | `docker compose up -d` (Prometheus/Grafana/Elasticsearch/Ollama), waits for ES |
 | `make docker-down` | `docker compose down` |
 | `make docker-logs` | `docker compose logs -f --tail=100` |
-| `make ollama-pull` | `docker compose exec ollama ollama pull llama3.2` |
+| `make docker-app-up` | `docker compose --profile app up -d --build` — builds and runs the FastAPI app itself in its own container, alongside the rest of the stack |
+| `make ollama-pull` | `docker compose exec ollama ollama pull qwen3:4b` |
 | `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
 | `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
 | `make serve` | `uvicorn incident_copilot.main:app --reload --port 8000` |
