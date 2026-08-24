@@ -44,7 +44,7 @@ docker-logs:
 	docker compose logs -f --tail=100
 
 ollama-pull:
-	docker compose exec ollama ollama pull llama3.2
+	docker compose exec ollama ollama pull qwen3:4b
 
 seed:
 	$(VENV)/bin/python scripts/seed_demo_data.py
