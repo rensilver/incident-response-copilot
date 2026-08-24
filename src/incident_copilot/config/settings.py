@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     log_level: str = "INFO"
     langsmith_tracing: bool = False
+    langsmith_api_key: str | None = None
+    langsmith_project: str = "incident-copilot"
 
     max_tool_rounds: int = Field(default=2, ge=1, le=5)
     max_supervisor_iterations: int = Field(default=3, ge=1, le=10)
@@ -36,6 +38,13 @@ class Settings(BaseSettings):
         """Fail fast when Gemini is selected without an API key."""
         if self.llm_provider is LLMProviderName.GEMINI and not self.google_api_key:
             raise ValueError("GOOGLE_API_KEY is required when LLM_PROVIDER=gemini")
+        return self
+
+    @model_validator(mode="after")
+    def _require_key_for_langsmith(self) -> Self:
+        """Fail fast when tracing is enabled without an API key."""
+        if self.langsmith_tracing and not self.langsmith_api_key:
+            raise ValueError("LANGSMITH_API_KEY is required when LANGSMITH_TRACING=true")
         return self
 
 
