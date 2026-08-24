@@ -21,7 +21,8 @@ this repository.
 - `api/` — `POST /api/v1/investigations` and `GET /health`; `main.py` is the
   composition root wiring connectors, provider, graph and router together
 - `composition.py` — shared connector/provider/graph construction, used by both
-  `main.py` and `evaluation/eval_runner.py`
+  `main.py` and `evaluation/eval_runner.py`; also configures LangSmith tracing
+  (`utils/tracing.py`) via `LANGSMITH_TRACING` before either builds anything
 - `evaluation/` — `scenarios.py` (typed ground-truth data) and `eval_runner.py`
   (`make eval`), scoring the 3 seeded scenarios against their expected root cause
 - `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama, and an `app`
