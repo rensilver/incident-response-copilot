@@ -27,12 +27,12 @@ this repository.
   (`make eval`), scoring the 3 seeded scenarios against their expected root cause
 - `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama, and an `app`
   service (behind the `app` compose profile) built from the root `Dockerfile`
+- `streamlit_app/` — `app.py` (page/orchestration), `api_client.py` (thin httpx client,
+  no import of `incident_copilot`), `styles.py` (injected CSS + the confidence-meter
+  HTML builder); a dark console-styled thin client over the FastAPI API only
 
-**Not built yet:** `streamlit_app/`. Before referencing or importing it, check that it
-exists — the sections below still describe the *target* design.
-
-Work proceeds along the Roadmap at the end of this file — V1-V3 are in, the evaluation
-harness has landed, and the Streamlit UI is next.
+Work proceeds along the Roadmap at the end of this file — V1-V3 and V5 are in, and V4
+is done except for the README's measured-results pass.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -301,10 +301,10 @@ Prometheus/Elasticsearch belongs in `tests/integration`.
   agents).
 - **V3 (done)** — Correlation/RCA agent, structured `IncidentReport` output, FastAPI
   endpoint, demo data seeding.
-- **V4** — Evaluation harness, LangSmith tracing, polished README with measured
-  results, Docker deploy.
-- **V5 (optional)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the
-  repo can trigger an investigation without hitting the API directly.
+- **V4 (evaluation harness, LangSmith tracing and Docker deploy done)** — the README's
+  polished, measured-results pass is the one piece left.
+- **V5 (done)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the repo
+  can trigger an investigation without hitting the API directly.
 
 ## What Claude Code should NOT do
 
