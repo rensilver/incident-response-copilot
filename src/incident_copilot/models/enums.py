@@ -57,5 +57,5 @@ class LLMProviderName(StrEnum):
     """Selectable LLM provider implementations."""
 
     OLLAMA = "ollama"
-    GEMINI = "gemini"
+    GROQ = "groq"
     FAKE = "fake"

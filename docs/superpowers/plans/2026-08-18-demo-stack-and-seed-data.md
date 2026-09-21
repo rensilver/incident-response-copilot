@@ -26,7 +26,7 @@ Elasticsearch 8, Grafana, Ollama, Python 3.13, httpx, elasticsearch-py, pytest.
 - `mypy --strict` must pass on `src/`. `ruff` and `black` clean. Google-style docstrings.
 - No raw `dict` across module boundaries — scenario/rendering APIs use Pydantic models or
   frozen dataclasses.
-- Never commit `.env` or `gemini-api.txt`. `.gitignore` already covers both.
+- Never commit `.env` or `groq-api.txt`. `.gitignore` already covers both.
 - Seeded metric names MUST match `src/incident_copilot/connectors/promql.py` exactly:
   `http_request_duration_seconds_bucket{service,le}`, `http_requests_total{service,status}`,
   `process_resident_memory_bytes{service}`, `process_cpu_seconds_total{service}`.

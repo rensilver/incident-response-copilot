@@ -10,3 +10,7 @@ docker/prometheus/data/
 seed-*/
 tests/
 docs/
+
+.claude/
+*-api.txt
+*.key

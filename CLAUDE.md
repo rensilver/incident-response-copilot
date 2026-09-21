@@ -9,7 +9,7 @@ this repository.
 
 - `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
   logs, report), `analysis/` (deterministic thresholds and trend rendering)
-- `llm/` — `LLMProvider` ABC with Ollama, Gemini and Fake implementations behind a
+- `llm/` — `LLMProvider` ABC with Ollama, Groq and Fake implementations behind a
   factory, plus the central structured-output repair loop
 - `connectors/` — `MetricsSource`/`LogSource` interfaces, Prometheus and Elasticsearch
   adapters; `tools/` — curated metric and log tools with validated arg schemas
@@ -60,7 +60,7 @@ architecture clarity and test/eval coverage matter as much as the demo itself.
 | Agent framework      | LangChain + LangGraph                                 |
 | API layer            | FastAPI + Pydantic v2                                 |
 | Demo UI (optional)   | Streamlit — thin client over the FastAPI API only        |
-| LLM providers        | Ollama (`llama3.2:3b`, local) **or** Gemini API (free tier) — swappable |
+| LLM providers        | Groq (`openai/gpt-oss-20b`, default) with automatic Ollama (`qwen3:4b`) fallback |
 | Metrics source        | Prometheus + Grafana (Docker)                          |
 | Log source            | Elasticsearch (Docker, single-node, no Splunk)          |
 | Config                | pydantic-settings + `.env`                            |
@@ -73,8 +73,11 @@ architecture clarity and test/eval coverage matter as much as the demo itself.
 | Containerization       | Docker + docker-compose                                |
 
 **LLM provider decision:** don't hardcode either option. Build one `LLMProvider`
-interface with an Ollama implementation and a Gemini implementation, selected at
-runtime via `LLM_PROVIDER` env var. This is more work up front but it's also a better
+interface with an Ollama implementation and a Groq implementation, selected at
+runtime via `LLM_PROVIDER` env var. Groq is the default; `FallbackProvider` retries
+failed operations with Ollama when `LLM_FALLBACK_PROVIDER=ollama`. Ollama requests
+are serialized, time-limited, and checked for available RAM before inference. See
+`docs/hardware-assessment.md` for the laptop assessment. This is more work up front but it's also a better
 portfolio signal (provider-agnostic design) than picking one and hardcoding it.
 
 ## Architecture
@@ -139,7 +142,7 @@ incident-response-copilot/
 │       ├── llm/
 │       │   ├── base.py                # LLMProvider(ABC)
 │       │   ├── ollama_provider.py
-│       │   ├── gemini_provider.py
+│       │   ├── groq_provider.py
 │       │   └── factory.py             # LLMProviderFactory
 │       ├── connectors/                # adapters over external systems
 │       │   ├── base.py                # MetricsSource / LogSource interfaces
@@ -196,7 +199,7 @@ incident-response-copilot/
 
 ## Design Patterns Used
 
-- **Strategy** — `LLMProvider` (Ollama vs. Gemini), selected at runtime.
+- **Strategy** — `LLMProvider` (Ollama vs. Groq), selected at runtime.
 - **Adapter** — each `connectors/*` class adapts a third-party client (prometheus-api-client,
   elasticsearch-py) to this project's own narrow interface.
 - **Factory** — `LLMProviderFactory` and an `AgentFactory`/graph builder assemble
@@ -221,11 +224,12 @@ incident-response-copilot/
 ## Environment Variables (`.env.example`)
 
 ```
-LLM_PROVIDER=ollama            # ollama | gemini
+LLM_PROVIDER=groq              # groq | ollama
+LLM_FALLBACK_PROVIDER=ollama    # ollama | none
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2:3b
-GOOGLE_API_KEY=
-GEMINI_MODEL=gemini-3.6-flash
+OLLAMA_MODEL=qwen3:4b
+GROQ_API_KEY=
+GROQ_MODEL=openai/gpt-oss-20b
 
 PROMETHEUS_URL=http://localhost:9090
 GRAFANA_URL=http://localhost:3000

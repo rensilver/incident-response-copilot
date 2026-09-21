@@ -48,6 +48,10 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: ic-ollama
+    environment:
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_KEEP_ALIVE=1m
     ports:
       - "11434:11434"
     volumes:
@@ -57,6 +61,7 @@ services:
     build: .
     container_name: ic-app
     profiles: ["app"]
+    env_file: .env
     environment:
       - PROMETHEUS_URL=http://prometheus:9090
       - ELASTICSEARCH_URL=http://elasticsearch:9200

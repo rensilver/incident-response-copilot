@@ -10,7 +10,7 @@ build/
 
 # secrets — never commit
 .env
-gemini-api.txt
+*-api.txt
 *.key
 
 # local stack state
