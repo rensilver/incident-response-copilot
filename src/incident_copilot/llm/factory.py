@@ -25,10 +25,15 @@ def build_llm_provider(settings: Settings) -> LLMProvider:
             from incident_copilot.llm.ollama_provider import OllamaProvider
 
             return OllamaProvider.from_settings(settings)
-        case LLMProviderName.GEMINI:
-            from incident_copilot.llm.gemini_provider import GeminiProvider
+        case LLMProviderName.GROQ:
+            from incident_copilot.llm.fallback_provider import FallbackProvider
+            from incident_copilot.llm.groq_provider import GroqProvider
+            from incident_copilot.llm.ollama_provider import OllamaProvider
 
-            return GeminiProvider.from_settings(settings)
+            primary = GroqProvider.from_settings(settings)
+            if settings.llm_fallback_provider == "ollama":
+                return FallbackProvider(primary, OllamaProvider.from_settings(settings))
+            return primary
         case LLMProviderName.FAKE:
             raise ConfigurationError(
                 "the fake provider is test-only and cannot be selected by configuration"

@@ -17,6 +17,7 @@ from incident_copilot.connectors.prometheus_connector import PrometheusConnector
 from incident_copilot.llm.factory import build_llm_provider
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
+from incident_copilot.utils.tracing import configure_tracing
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ def build_collaborators(settings: Settings) -> Collaborators:
     Returns:
         The graph and the connectors it was built from.
     """
+    configure_tracing(settings)
     metrics_source = PrometheusConnector.from_settings(settings)
     log_source = ElasticsearchConnector.from_settings(settings)
     provider = build_llm_provider(settings)

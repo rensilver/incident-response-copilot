@@ -5,6 +5,7 @@ model cannot reliably author PromQL. The raw escape hatch remains for the cases 
 curated kinds do not cover.
 """
 
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool, StructuredTool
 
 from incident_copilot.analysis.summarise import render_summary
@@ -23,8 +24,9 @@ from incident_copilot.models.findings import (
     RawMetricFinding,
     TypedMetricFinding,
 )
-from incident_copilot.models.metrics import MetricSeries, TimeWindow
+from incident_copilot.models.metrics import MetricSeries
 from incident_copilot.tools.schemas import MetricQueryArgs, RawQueryArgs
+from incident_copilot.tools.window import resolve_window
 
 _RAW_CONFIG = ThresholdConfig(min_relative=1.0, min_absolute=0.0, zero_epsilon=1e-9, unit="")
 
@@ -47,23 +49,26 @@ def build_metrics_tools(source: MetricsSource) -> list[BaseTool]:
     """
 
     async def get_service_metric(
-        service: str, kind: MetricKind, minutes_back: int = 60
+        service: str, kind: MetricKind, config: RunnableConfig, minutes_back: int = 60
     ) -> TypedMetricFinding:
         """Fetch one curated metric for a service and classify how it changed."""
-        window = TimeWindow.from_minutes_back(minutes_back)
+        window = resolve_window(config, minutes_back)
         query = build_promql(kind, service)
         series = await source.query_range(query, window)
-        config = THRESHOLDS[kind]
+        threshold = THRESHOLDS[kind]
         label = METRIC_LABELS[kind]
 
         values = _flatten(series)
         if not values:
-            summary = f"{label}: no data returned for {service} in the last {minutes_back}m"
+            summary = (
+                f"{label}: no data returned for {service} "
+                f"between {window.start.isoformat()} and {window.end.isoformat()}"
+            )
             analysis = _EMPTY
         else:
             baseline, current = quartile_means(values)
-            analysis = analyse(baseline, current, config)
-            summary = render_summary(label, analysis, config)
+            analysis = analyse(baseline, current, threshold)
+            summary = render_summary(label, analysis, threshold)
 
         return TypedMetricFinding(
             service=service,
@@ -79,9 +84,11 @@ def build_metrics_tools(source: MetricsSource) -> list[BaseTool]:
             anomaly_detected=analysis.anomaly_detected,
         )
 
-    async def raw_promql_query(query: str, minutes_back: int = 60) -> RawMetricFinding:
+    async def raw_promql_query(
+        query: str, config: RunnableConfig, minutes_back: int = 60
+    ) -> RawMetricFinding:
         """Run an arbitrary PromQL expression when no curated metric fits."""
-        window = TimeWindow.from_minutes_back(minutes_back)
+        window = resolve_window(config, minutes_back)
         series = await source.query_range(query, window)
 
         values = _flatten(series)

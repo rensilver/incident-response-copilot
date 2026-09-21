@@ -71,7 +71,7 @@ class LLMProvider(ABC):
         raw = ""
         for _ in range(max_attempts):
             # This is the adapter boundary: concrete providers fail with whatever their
-            # client library raises (httpx, google-genai, grpc). Callers handle
+            # client library raises (httpx, groq, ollama). Callers handle
             # LLMProviderError, so anything else has to be translated here or it escapes
             # the graph entirely and becomes a 500.
             try:

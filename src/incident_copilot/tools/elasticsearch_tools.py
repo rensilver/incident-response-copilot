@@ -1,12 +1,13 @@
 """LangChain tools over the log connector."""
 
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool, StructuredTool
 
 from incident_copilot.connectors.base import LogSource
 from incident_copilot.models.enums import LogLevel
 from incident_copilot.models.logs import LogFinding, LogSearchCriteria
-from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.tools.schemas import LogHistogramArgs, LogSearchArgs
+from incident_copilot.tools.window import resolve_window
 
 
 def build_log_tools(source: LogSource) -> list[BaseTool]:
@@ -21,6 +22,7 @@ def build_log_tools(source: LogSource) -> list[BaseTool]:
 
     async def search_logs(
         service: str,
+        config: RunnableConfig,
         minutes_back: int = 60,
         level: LogLevel | None = None,
         keyword: str | None = None,
@@ -29,15 +31,17 @@ def build_log_tools(source: LogSource) -> list[BaseTool]:
         return await source.search(
             LogSearchCriteria(
                 service=service,
-                window=TimeWindow.from_minutes_back(minutes_back),
+                window=resolve_window(config, minutes_back),
                 level=level,
                 keyword=keyword,
             )
         )
 
-    async def log_level_histogram(service: str, minutes_back: int = 60) -> dict[str, int]:
+    async def log_level_histogram(
+        service: str, config: RunnableConfig, minutes_back: int = 60
+    ) -> dict[str, int]:
         """Count a service's log documents per severity level."""
-        return await source.level_histogram(service, TimeWindow.from_minutes_back(minutes_back))
+        return await source.level_histogram(service, resolve_window(config, minutes_back))
 
     return [
         StructuredTool.from_function(

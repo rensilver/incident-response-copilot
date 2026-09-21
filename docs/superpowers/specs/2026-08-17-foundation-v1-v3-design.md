@@ -16,7 +16,7 @@ end-to-end incident investigation.
 
 - Project scaffold, packaging, Makefile, quality gates
 - Settings, structured logging, exception hierarchy
-- `LLMProvider` abstraction with Ollama, Gemini, and Fake implementations
+- `LLMProvider` abstraction with Ollama, Groq, and Fake implementations
 - Prometheus and Elasticsearch connectors
 - LangChain tool wrappers over those connectors
 - LangGraph supervisor + metrics + logs + correlation graph
@@ -38,7 +38,7 @@ the V4 eval harness has something to score against, but no scoring is built here
 |---|---|---|
 | Scope of this cycle | Foundation + V1–V3 | The "demo actually works" milestone; V4/V5 are additive |
 | Active LLM | Ollama `llama3.2` in Docker | Runs offline, no key, no cost; anyone cloning can run it |
-| Gemini | Implemented + live smoke-tested | Proves provider-agnostic design rather than asserting it |
+| Groq | Implemented + live smoke-tested | Proves provider-agnostic design rather than asserting it |
 | Historical metrics | `promtool tsdb create-blocks-from openmetrics` | Only approach giving genuine backdated series that normal PromQL range queries hit |
 | Supervisor routing | LLM decision, validated, with deterministic fan-out fallback | Real agentic routing that cannot hang or dead-end on a 3b model |
 | Agent tool calling | `bind_tools` with a bounded 2-round cap | Real tool-calling without ReAct spiral risk on a small model |
@@ -220,7 +220,7 @@ class LLMProvider(ABC):
 reimplements JSON repair. On final failure it raises `StructuredOutputError`.
 
 - `OllamaProvider` — `langchain_ollama.ChatOllama`, `format="json"` for structured calls
-- `GeminiProvider` — `langchain_google_genai.ChatGoogleGenerativeAI`
+- `GroqProvider` — `langchain_groq.ChatGroq`
 - `FakeLLMProvider` — test-only; scripted queue of responses, records calls
 - `factory.LLMProviderFactory.create(settings) -> LLMProvider` — the only place a
   provider name maps to a class
@@ -474,7 +474,7 @@ being committed to `feature/foundation-v1-v3`.
 | # | Step | Verification |
 |---|---|---|
 | 1 | Scaffold: `pyproject.toml`, uv, `Makefile`, `.gitignore`, settings, logging, exceptions, tracked `CLAUDE.md` | lint+mypy clean; settings test |
-| 2 | LLM layer: base, Ollama, Gemini, Fake, factory | per-provider unit tests; live Gemini smoke test |
+| 2 | LLM layer: base, Ollama, Groq, Fake, factory | per-provider unit tests; live Groq smoke test |
 | 3 | Connectors + tools | unit tests vs mocked HTTP; table-driven threshold/trend tests incl. zero-baseline and noise suppression |
 | 4 | Compose + `promtool` seeding, 3 scenarios | stack boots; PromQL over historical window returns seeded anomaly |
 | 5 | Graph: state, supervisor, metrics, logs agents | full graph test on `FakeLLMProvider`; fallback + termination tests |
@@ -497,10 +497,10 @@ being committed to `feature/foundation-v1-v3`.
 
 | Risk | Mitigation |
 |---|---|
-| `llama3.2:3b` produces weak or malformed RCA output | Central repair/retry in `complete_structured`; curated tools; Gemini available for comparison |
+| `llama3.2:3b` produces weak or malformed RCA output | Central repair/retry in `complete_structured`; curated tools; Groq available for comparison |
 | `promtool` backfill block layout rejected by Prometheus | Verified in isolation at step 4 before any agent depends on it; block boundary alignment checked |
 | External Ollama volume deleted with the other project | `OLLAMA_VOLUME` override + `make ollama-pull` fallback |
-| Secret leak: `gemini-api.txt` sits in the repo tree | `.gitignore` covers it and `.env`; key copied by shell redirection, never printed |
+| Secret leak: `groq-api.txt` sits in the repo tree | `.gitignore` covers it and `.env`; key copied by shell redirection, never printed |
 | Small-model latency makes the demo feel slow | Bounded tool rounds; parallel specialist execution |
 | Zero-baseline metrics rendered as absurd ratios ("800x") in the demo | Per-`TrendKind` templates; `FROM_ZERO` never computes a ratio; enforced `pct_change`/`trend` invariant |
 | Noise on near-zero baselines flagged as anomalies | Dual relative + absolute threshold per metric kind, both required except under `FROM_ZERO` |

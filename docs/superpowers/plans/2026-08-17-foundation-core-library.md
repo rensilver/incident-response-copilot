@@ -1,5 +1,9 @@
 # Foundation & Core Library Implementation Plan
 
+> Historical implementation plan, updated to use Groq terminology. Current provider
+> behavior, fallback, and memory limits are defined in `src/incident_copilot/llm/`
+> and `.env.example`; the snippets below are not a replacement for that implementation.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the importable, fully unit-tested core library for
@@ -8,12 +12,12 @@ providers, connectors, and tools — with no Docker and no live model required.
 
 **Architecture:** Layered and dependency-inverted. Pure domain models and threshold logic
 at the bottom; narrow `MetricsSource` / `LogSource` connector interfaces adapting httpx and
-elasticsearch-py; an `LLMProvider` ABC with Ollama, Gemini, and Fake implementations behind
+elasticsearch-py; an `LLMProvider` ABC with Ollama, Groq, and Fake implementations behind
 a factory. Nothing in this plan imports LangGraph — the graph lands in Plan 3. Every
 module is unit-testable with mocked transports and `FakeLLMProvider`.
 
 **Tech Stack:** Python 3.13 (floor 3.12), uv, Pydantic v2, pydantic-settings, structlog,
-httpx, elasticsearch-py, langchain-core, langchain-ollama, langchain-google-genai, pytest,
+httpx, elasticsearch-py, langchain-core, langchain-ollama, langchain-groq, pytest,
 pytest-asyncio, pytest-mock, respx, ruff, black, mypy --strict.
 
 **Spec:** `docs/superpowers/specs/2026-08-17-foundation-v1-v3-design.md`
@@ -30,8 +34,8 @@ pytest-asyncio, pytest-mock, respx, ruff, black, mypy --strict.
 - No hardcoded secrets or URLs — everything through `config/settings.py` and `.env`.
 - Prefer enums over magic strings.
 - `make test` MUST pass with no Docker running and no LLM reachable.
-- `.gitignore` MUST cover `.env` and `gemini-api.txt` before any commit that could stage
-  them. The Gemini key is copied by shell redirection and never printed to stdout.
+- `.gitignore` MUST cover `.env` and `groq-api.txt` before any commit that could stage
+  them. The Groq key is copied by shell redirection and never printed to stdout.
 - `anomaly_detected` is advisory only. No code may exclude a finding because it is `False`.
 - Package name: `incident_copilot`, layout `src/incident_copilot/`.
 
@@ -66,7 +70,7 @@ build/
 
 # secrets — never commit
 .env
-gemini-api.txt
+groq-api.txt
 *.key
 
 # local stack state
@@ -89,7 +93,7 @@ dependencies = [
     "elasticsearch>=8.13,<9",
     "langchain-core>=0.2",
     "langchain-ollama>=0.1",
-    "langchain-google-genai>=1.0",
+    "langchain-groq>=1.1,<2",
 ]
 
 [project.optional-dependencies]
@@ -207,11 +211,11 @@ def test_package_exposes_version() -> None:
 
 - [ ] **Step 5: Bring `CLAUDE.md` into the branch**
 
-It exists untracked in the main checkout. Copy it in; do NOT copy `gemini-api.txt`.
+It exists untracked in the main checkout. Copy it in; do NOT copy `groq-api.txt`.
 
 ```bash
 cp ../../../CLAUDE.md ./CLAUDE.md
-test ! -e ./gemini-api.txt || (echo "REFUSING: key file present" && exit 1)
+test ! -e ./groq-api.txt || (echo "REFUSING: key file present" && exit 1)
 ```
 
 - [ ] **Step 6: Install and verify all gates pass**
@@ -225,7 +229,7 @@ Expected: ruff clean, mypy `Success: no issues found`, pytest `1 passed`.
 - [ ] **Step 7: Confirm the key file is not stageable**
 
 ```bash
-git status --porcelain | grep -q 'gemini-api.txt' && echo "FAIL: key visible to git" || echo "OK: key ignored/absent"
+git status --porcelain | grep -q 'groq-api.txt' && echo "FAIL: key visible to git" || echo "OK: key ignored/absent"
 git check-ignore -v .env || echo "note: .env absent, rule still present"
 ```
 
@@ -429,7 +433,7 @@ git commit -m "feat: add exception hierarchy and structlog JSON logging"
 **Interfaces:**
 - Consumes: `ConfigurationError` (Task 2)
 - Produces: `Settings` with fields `llm_provider: LLMProviderName`, `ollama_base_url`,
-  `ollama_model`, `google_api_key: str | None`, `gemini_model`, `prometheus_url`,
+  `ollama_model`, `groq_api_key: str | None`, `groq_model`, `prometheus_url`,
   `grafana_url`, `elasticsearch_url`, `elasticsearch_log_index`, `app_env`, `log_level`,
   `langsmith_tracing`, `max_tool_rounds: int`, `max_supervisor_iterations: int`;
   `get_settings() -> Settings`
@@ -470,17 +474,17 @@ def test_defaults_select_ollama(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_env_overrides_provider(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LLM_PROVIDER", "gemini")
-    monkeypatch.setenv("GOOGLE_API_KEY", "test-key")
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
     settings = Settings(_env_file=None)
-    assert settings.llm_provider is LLMProviderName.GEMINI
-    assert settings.google_api_key == "test-key"
+    assert settings.llm_provider is LLMProviderName.GROQ
+    assert settings.groq_api_key == "test-key"
 
 
-def test_gemini_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LLM_PROVIDER", "gemini")
-    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
-    with pytest.raises(ValueError, match="GOOGLE_API_KEY"):
+def test_groq_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="GROQ_API_KEY"):
         Settings(_env_file=None)
 ```
 
@@ -512,11 +516,11 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    llm_provider: LLMProviderName = LLMProviderName.OLLAMA
+    llm_provider: LLMProviderName = LLMProviderName.GROQ
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
-    google_api_key: str | None = None
-    gemini_model: str = "gemini-2.0-flash"
+    groq_api_key: str | None = None
+    groq_model: str = "openai/gpt-oss-20b"
 
     prometheus_url: str = "http://localhost:9090"
     grafana_url: str = "http://localhost:3000"
@@ -531,10 +535,10 @@ class Settings(BaseSettings):
     max_supervisor_iterations: int = Field(default=3, ge=1, le=10)
 
     @model_validator(mode="after")
-    def _require_key_for_gemini(self) -> Self:
-        """Fail fast when Gemini is selected without an API key."""
-        if self.llm_provider is LLMProviderName.GEMINI and not self.google_api_key:
-            raise ValueError("GOOGLE_API_KEY is required when LLM_PROVIDER=gemini")
+    def _require_key_for_groq(self) -> Self:
+        """Fail fast when Groq is selected without an API key."""
+        if self.llm_provider is LLMProviderName.GROQ and not self.groq_api_key:
+            raise ValueError("GROQ_API_KEY is required when LLM_PROVIDER=groq")
         return self
 
 
@@ -546,11 +550,12 @@ def get_settings() -> Settings:
 - [ ] **Step 4: Write `.env.example`**
 
 ```
-LLM_PROVIDER=ollama            # ollama | gemini
+LLM_PROVIDER=groq              # groq | ollama
+LLM_FALLBACK_PROVIDER=ollama    # ollama | none
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
-GOOGLE_API_KEY=
-GEMINI_MODEL=gemini-2.0-flash
+GROQ_API_KEY=
+GROQ_MODEL=openai/gpt-oss-20b
 
 PROMETHEUS_URL=http://localhost:9090
 GRAFANA_URL=http://localhost:3000
@@ -575,19 +580,19 @@ Expected: 3 passed, mypy clean.
 
 - [ ] **Step 6: Create the real `.env` without printing the key**
 
-The key lives at `gemini-api.txt` in the main checkout. Copy by redirection only — never
+The key lives at `groq-api.txt` in the main checkout. Copy by redirection only — never
 `cat` it to stdout.
 
 ```bash
 cp .env.example .env
-KEY_FILE=../../../gemini-api.txt
+KEY_FILE=../../../groq-api.txt
 if [ -f "$KEY_FILE" ]; then
   python3 - "$KEY_FILE" <<'PY'
 import pathlib, re, sys
 key = pathlib.Path(sys.argv[1]).read_text().strip()
 env = pathlib.Path(".env")
-env.write_text(re.sub(r"^GOOGLE_API_KEY=.*$", f"GOOGLE_API_KEY={key}", env.read_text(), flags=re.M))
-print("GOOGLE_API_KEY written to .env (value not shown)")
+env.write_text(re.sub(r"^GROQ_API_KEY=.*$", f"GROQ_API_KEY={key}", env.read_text(), flags=re.M))
+print("GROQ_API_KEY written to .env (value not shown)")
 PY
 fi
 git check-ignore -v .env
@@ -600,7 +605,7 @@ Expected: confirmation line, and `.gitignore:… .env` proving it is ignored.
 ```bash
 git status --porcelain
 git add src/incident_copilot/config tests/unit/config .env.example
-git commit -m "feat: add env-driven settings with fail-fast gemini key check"
+git commit -m "feat: add env-driven settings with fail-fast groq key check"
 ```
 
 ---
@@ -751,7 +756,7 @@ class LLMProviderName(StrEnum):
     """Selectable LLM provider implementations."""
 
     OLLAMA = "ollama"
-    GEMINI = "gemini"
+    GROQ = "groq"
     FAKE = "fake"
 ```
 
@@ -1958,17 +1963,17 @@ def build_llm_provider(settings: Settings) -> LLMProvider:
             from incident_copilot.llm.ollama_provider import OllamaProvider
 
             return OllamaProvider.from_settings(settings)
-        case LLMProviderName.GEMINI:
-            from incident_copilot.llm.gemini_provider import GeminiProvider
+        case LLMProviderName.GROQ:
+            from incident_copilot.llm.groq_provider import GroqProvider
 
-            return GeminiProvider.from_settings(settings)
+            return GroqProvider.from_settings(settings)
         case LLMProviderName.FAKE:
             raise ConfigurationError(
                 "the fake provider is test-only and cannot be selected by configuration"
             )
 ```
 
-Imports are function-local so selecting Ollama does not import the Gemini SDK.
+Imports are function-local so selecting Ollama does not import the Groq SDK.
 
 - [ ] **Step 6: Run tests**
 
@@ -1989,16 +1994,16 @@ git commit -m "feat: add LLMProvider interface with central structured-output re
 
 ---
 
-### Task 9: Ollama and Gemini providers
+### Task 9: Ollama and Groq providers
 
 **Files:**
-- Create: `src/incident_copilot/llm/ollama_provider.py`, `src/incident_copilot/llm/gemini_provider.py`
+- Create: `src/incident_copilot/llm/ollama_provider.py`, `src/incident_copilot/llm/groq_provider.py`
 - Test: `tests/unit/llm/test_concrete_providers.py`
 
 **Interfaces:**
 - Consumes: `LLMProvider`, `ChatMessage` (Task 8); `Settings` (Task 3)
 - Produces: `OllamaProvider(chat, json_chat)` + `OllamaProvider.from_settings(settings)`;
-  `GeminiProvider(chat)` + `GeminiProvider.from_settings(settings)`
+  `GroqProvider(chat)` + `GroqProvider.from_settings(settings)`
 
 Both take their chat model by injection and expose a `from_settings` classmethod, so unit
 tests need no monkeypatching of SDK internals.
@@ -2124,17 +2129,17 @@ class OllamaProvider(LLMProvider):
         return self._chat.bind_tools(list(tools))
 ```
 
-- [ ] **Step 4: Implement `gemini_provider.py`**
+- [ ] **Step 4: Implement `groq_provider.py`**
 
 ```python
-"""Gemini-backed LLM provider."""
+"""Groq-backed LLM provider."""
 
 from collections.abc import Sequence
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
@@ -2142,8 +2147,8 @@ from incident_copilot.llm.ollama_provider import to_langchain_messages
 from incident_copilot.utils.exceptions import ConfigurationError
 
 
-class GeminiProvider(LLMProvider):
-    """Talks to the Gemini API.
+class GroqProvider(LLMProvider):
+    """Talks to the Groq API.
 
     Args:
         chat: Chat model used for all calls.
@@ -2153,18 +2158,18 @@ class GeminiProvider(LLMProvider):
         self._chat = chat
 
     @classmethod
-    def from_settings(cls, settings: Settings) -> "GeminiProvider":
+    def from_settings(cls, settings: Settings) -> "GroqProvider":
         """Build a provider from application settings.
 
         Raises:
             ConfigurationError: If no API key is configured.
         """
-        if not settings.google_api_key:
-            raise ConfigurationError("GOOGLE_API_KEY is required for the gemini provider")
+        if not settings.groq_api_key:
+            raise ConfigurationError("GROQ_API_KEY is required for the groq provider")
         return cls(
-            chat=ChatGoogleGenerativeAI(
-                model=settings.gemini_model,
-                google_api_key=settings.google_api_key,
+            chat=ChatGroq(
+                model=settings.groq_model,
+                groq_api_key=settings.groq_api_key,
                 temperature=0.0,
             )
         )
@@ -2177,8 +2182,8 @@ class GeminiProvider(LLMProvider):
     async def _generate_json(self, messages: Sequence[ChatMessage]) -> str:
         """Return raw JSON text.
 
-        Gemini has no ``format=json`` switch equivalent, so the base-class repair loop
-        does the enforcement.
+        Groq supports ``response_format={"type": "json_object"}``; the current
+        provider enables it, and the base-class repair loop validates the schema.
         """
         response = await self._chat.ainvoke(to_langchain_messages(messages))
         return str(response.content)
@@ -2196,7 +2201,7 @@ class GeminiProvider(LLMProvider):
 
 Expected: 8 passed, mypy clean, ruff clean.
 
-- [ ] **Step 6: Live Gemini smoke test (manual, not part of `make test`)**
+- [ ] **Step 6: Live Groq smoke test (manual, not part of `make test`)**
 
 Requires the key written to `.env` in Task 3. Skips silently if absent.
 
@@ -2213,26 +2218,26 @@ class Verdict(BaseModel):
     service: str
     confident: bool
 
-if not os.environ.get("GOOGLE_API_KEY") and "GOOGLE_API_KEY=" in open(".env").read().split("GOOGLE_API_KEY=")[1][:1]:
+if not os.environ.get("GROQ_API_KEY") and "GROQ_API_KEY=" in open(".env").read().split("GROQ_API_KEY=")[1][:1]:
     print("SKIP: no key configured"); raise SystemExit
-s = Settings(llm_provider=LLMProviderName.GEMINI)
+s = Settings(llm_provider=LLMProviderName.GROQ)
 p = build_llm_provider(s)
 out = asyncio.run(p.complete_structured(
     [ChatMessage(role="user", content="cart-service returned 15% 5xx after a deploy. Which service is at fault?")],
     Verdict,
 ))
-print("LIVE GEMINI OK:", out)
+print("LIVE GROQ OK:", out)
 PY
 ```
 
-Expected: `LIVE GEMINI OK: service='cart-service' confident=True` (or a `SKIP` line).
+Expected: `LIVE GROQ OK: service='cart-service' confident=True` (or a `SKIP` line).
 Record the outcome; do not paste the key anywhere.
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add src/incident_copilot/llm tests/unit/llm
-git commit -m "feat: add Ollama and Gemini providers behind the LLMProvider interface"
+git commit -m "feat: add Ollama and Groq providers behind the LLMProvider interface"
 ```
 
 ---

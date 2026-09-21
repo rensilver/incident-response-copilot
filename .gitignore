@@ -10,7 +10,7 @@ build/
 
 # secrets — never commit
 .env
-gemini-api.txt
+*-api.txt
 *.key
 
 # local stack state
@@ -18,3 +18,5 @@ docker/prometheus/data/
 
 # seeding scratch (must live under the repo for snap docker bind mounts)
 seed-*/
+
+.claude

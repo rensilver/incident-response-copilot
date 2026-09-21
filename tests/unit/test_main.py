@@ -1,4 +1,5 @@
 import httpx
+import respx
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.main import create_app
@@ -14,9 +15,11 @@ def test_app_exposes_both_routes() -> None:
     assert "/health" in paths
 
 
+@respx.mock
 async def test_health_endpoint_answers_without_any_backend_running() -> None:
     """Every dependency is down in unit tests; health must still respond, as degraded."""
     app = create_app(Settings(_env_file=None))
+    respx.route().mock(side_effect=httpx.ConnectError("offline"))
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.get("/health")

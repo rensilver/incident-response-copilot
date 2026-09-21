@@ -9,7 +9,7 @@ this repository.
 
 - `config/`, `utils/` (exceptions, structlog), `models/` (enums, metrics, findings,
   logs, report), `analysis/` (deterministic thresholds and trend rendering)
-- `llm/` — `LLMProvider` ABC with Ollama, Gemini and Fake implementations behind a
+- `llm/` — `LLMProvider` ABC with Ollama, Groq and Fake implementations behind a
   factory, plus the central structured-output repair loop
 - `connectors/` — `MetricsSource`/`LogSource` interfaces, Prometheus and Elasticsearch
   adapters; `tools/` — curated metric and log tools with validated arg schemas
@@ -21,16 +21,18 @@ this repository.
 - `api/` — `POST /api/v1/investigations` and `GET /health`; `main.py` is the
   composition root wiring connectors, provider, graph and router together
 - `composition.py` — shared connector/provider/graph construction, used by both
-  `main.py` and `evaluation/eval_runner.py`
+  `main.py` and `evaluation/eval_runner.py`; also configures LangSmith tracing
+  (`utils/tracing.py`) via `LANGSMITH_TRACING` before either builds anything
 - `evaluation/` — `scenarios.py` (typed ground-truth data) and `eval_runner.py`
   (`make eval`), scoring the 3 seeded scenarios against their expected root cause
-- `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama
+- `docker-compose.yml` — prometheus, elasticsearch, grafana, ollama, and an `app`
+  service (behind the `app` compose profile) built from the root `Dockerfile`
+- `streamlit_app/` — `app.py` (page/orchestration), `api_client.py` (thin httpx client,
+  no import of `incident_copilot`), `styles.py` (injected CSS + the confidence-meter
+  HTML builder); a dark console-styled thin client over the FastAPI API only
 
-**Not built yet:** `streamlit_app/`. Before referencing or importing it, check that it
-exists — the sections below still describe the *target* design.
-
-Work proceeds along the Roadmap at the end of this file — V1-V3 are in, the evaluation
-harness has landed, and the Streamlit UI is next.
+Work proceeds along the Roadmap at the end of this file — V1-V3 and V5 are in, and V4
+is done except for the README's measured-results pass.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -58,7 +60,7 @@ architecture clarity and test/eval coverage matter as much as the demo itself.
 | Agent framework      | LangChain + LangGraph                                 |
 | API layer            | FastAPI + Pydantic v2                                 |
 | Demo UI (optional)   | Streamlit — thin client over the FastAPI API only        |
-| LLM providers        | Ollama (`llama3.2:3b`, local) **or** Gemini API (free tier) — swappable |
+| LLM providers        | Groq (`openai/gpt-oss-20b`, default) with automatic Ollama (`qwen3:4b`) fallback |
 | Metrics source        | Prometheus + Grafana (Docker)                          |
 | Log source            | Elasticsearch (Docker, single-node, no Splunk)          |
 | Config                | pydantic-settings + `.env`                            |
@@ -71,8 +73,11 @@ architecture clarity and test/eval coverage matter as much as the demo itself.
 | Containerization       | Docker + docker-compose                                |
 
 **LLM provider decision:** don't hardcode either option. Build one `LLMProvider`
-interface with an Ollama implementation and a Gemini implementation, selected at
-runtime via `LLM_PROVIDER` env var. This is more work up front but it's also a better
+interface with an Ollama implementation and a Groq implementation, selected at
+runtime via `LLM_PROVIDER` env var. Groq is the default; `FallbackProvider` retries
+failed operations with Ollama when `LLM_FALLBACK_PROVIDER=ollama`. Ollama requests
+are serialized, time-limited, and checked for available RAM before inference. See
+`docs/hardware-assessment.md` for the laptop assessment. This is more work up front but it's also a better
 portfolio signal (provider-agnostic design) than picking one and hardcoding it.
 
 ## Architecture
@@ -137,7 +142,7 @@ incident-response-copilot/
 │       ├── llm/
 │       │   ├── base.py                # LLMProvider(ABC)
 │       │   ├── ollama_provider.py
-│       │   ├── gemini_provider.py
+│       │   ├── groq_provider.py
 │       │   └── factory.py             # LLMProviderFactory
 │       ├── connectors/                # adapters over external systems
 │       │   ├── base.py                # MetricsSource / LogSource interfaces
@@ -194,7 +199,7 @@ incident-response-copilot/
 
 ## Design Patterns Used
 
-- **Strategy** — `LLMProvider` (Ollama vs. Gemini), selected at runtime.
+- **Strategy** — `LLMProvider` (Ollama vs. Groq), selected at runtime.
 - **Adapter** — each `connectors/*` class adapts a third-party client (prometheus-api-client,
   elasticsearch-py) to this project's own narrow interface.
 - **Factory** — `LLMProviderFactory` and an `AgentFactory`/graph builder assemble
@@ -219,11 +224,12 @@ incident-response-copilot/
 ## Environment Variables (`.env.example`)
 
 ```
-LLM_PROVIDER=ollama            # ollama | gemini
+LLM_PROVIDER=groq              # groq | ollama
+LLM_FALLBACK_PROVIDER=ollama    # ollama | none
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2:3b
-GOOGLE_API_KEY=
-GEMINI_MODEL=gemini-3.6-flash
+OLLAMA_MODEL=qwen3:4b
+GROQ_API_KEY=
+GROQ_MODEL=openai/gpt-oss-20b
 
 PROMETHEUS_URL=http://localhost:9090
 GRAFANA_URL=http://localhost:3000
@@ -267,7 +273,8 @@ for anyone reviewing the repo.
 | `make docker-up` | `docker compose up -d` (Prometheus/Grafana/Elasticsearch/Ollama), waits for ES |
 | `make docker-down` | `docker compose down` |
 | `make docker-logs` | `docker compose logs -f --tail=100` |
-| `make ollama-pull` | `docker compose exec ollama ollama pull llama3.2` |
+| `make docker-app-up` | `docker compose --profile app up -d --build` — builds and runs the FastAPI app itself in its own container, alongside the rest of the stack |
+| `make ollama-pull` | `docker compose exec ollama ollama pull qwen3:4b` |
 | `make seed` | `python scripts/seed_demo_data.py` then restarts Prometheus to load new blocks |
 | `make demo-reset` | tear down, wipe `docker/prometheus/data`, bring up, re-seed |
 | `make serve` | `uvicorn incident_copilot.main:app --reload --port 8000` |
@@ -298,10 +305,10 @@ Prometheus/Elasticsearch belongs in `tests/integration`.
   agents).
 - **V3 (done)** — Correlation/RCA agent, structured `IncidentReport` output, FastAPI
   endpoint, demo data seeding.
-- **V4** — Evaluation harness, LangSmith tracing, polished README with measured
-  results, Docker deploy.
-- **V5 (optional)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the
-  repo can trigger an investigation without hitting the API directly.
+- **V4 (evaluation harness, LangSmith tracing and Docker deploy done)** — the README's
+  polished, measured-results pass is the one piece left.
+- **V5 (done)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the repo
+  can trigger an investigation without hitting the API directly.
 
 ## What Claude Code should NOT do
 

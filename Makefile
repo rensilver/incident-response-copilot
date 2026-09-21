@@ -1,5 +1,5 @@
 .PHONY: install lint format test test-integration docker-up docker-down docker-logs \
-        ollama-pull seed demo-reset eval serve clean
+        docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -43,8 +43,12 @@ docker-down:
 docker-logs:
 	docker compose logs -f --tail=100
 
+docker-app-up:
+	docker compose --profile app up -d --build
+	@echo "app built and started: http://localhost:8000"
+
 ollama-pull:
-	docker compose exec ollama ollama pull llama3.2
+	docker compose exec ollama ollama pull qwen3:4b
 
 seed:
 	$(VENV)/bin/python scripts/seed_demo_data.py
@@ -59,6 +63,9 @@ demo-reset:
 
 eval:
 	$(VENV)/bin/python -m incident_copilot.evaluation.eval_runner
+
+streamlit:
+	$(VENV)/bin/streamlit run streamlit_app/app.py
 
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache

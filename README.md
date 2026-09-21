@@ -6,13 +6,16 @@ window, and proposes a ranked list of likely root causes with supporting evidenc
 instead of an engineer manually pivoting between three dashboards during an outage.
 
 **Status:** the core library, the seeded demo stack, the LangGraph multi-agent
-orchestration (supervisor + metrics/logs specialists + correlation agent), and the
-FastAPI investigation endpoint are built and verified end to end against the live stack.
-The evaluation harness and Streamlit UI are next.
+orchestration (supervisor + metrics/logs specialists + correlation agent), the FastAPI
+investigation endpoint, the evaluation harness, LangSmith tracing, a Docker deploy of
+the app itself, and a Streamlit demo UI are all built and verified end to end against
+the live stack. See [Measured results](#measured-results-with-qwen34b) for the
+evaluation harness's observed score.
 
 ## Quickstart
 
-Prerequisites: Docker (with the compose plugin) and Python 3.12+.
+Prerequisites: Docker (with the compose plugin), Python 3.12+, and a Groq API key.
+Copy `.env.example` to `.env` and set `GROQ_API_KEY` before starting the app.
 
 ```bash
 make install     # create .venv and install the package with dev extras
@@ -33,6 +36,9 @@ Grafana auto-provisions an **Incident Overview** dashboard showing p95 latency, 
 ratio, resident memory, and CPU for every seeded service.
 
 To wipe and rebuild the demo data from scratch: `make demo-reset`.
+
+The `ollama` service pulls no model by default — run `make ollama-pull` once to
+populate the (project-owned) `incident-copilot_ollama-data` volume with `qwen3:4b`.
 
 ## The seeded scenarios
 
@@ -89,6 +95,33 @@ Sample response, against the seeded memory-leak scenario:
 {"status": "ok", "dependencies": {"prometheus": true, "elasticsearch": true, "llm": true}}
 ```
 
+## Demo UI
+
+```bash
+uv pip install --python .venv/bin/python -e ".[ui]"   # one-time: streamlit isn't in the dev extras
+make streamlit                                         # :8501
+```
+
+`streamlit_app/` is a thin client over the FastAPI API — it never imports
+`incident_copilot` itself, so it stays a genuine HTTP consumer rather than a second way
+into the agent/connector code. It needs `make serve` (or `make docker-app-up`) running
+first; point it at a non-default API with `INCIDENT_COPILOT_API_URL`.
+
+The look is a dark "ops console": a status bar with live per-dependency health dots read
+straight from `GET /health`, IBM Plex Sans/Mono throughout, and each candidate root cause
+ranked P1/P2/P3 with a segmented signal-meter for its confidence score — severity color
+follows a cause's rank, not an arbitrary palette choice.
+
+## Docker deploy
+
+```bash
+make docker-app-up   # builds the Dockerfile and runs the app itself in its own container
+```
+
+This runs the FastAPI app as an `app` service alongside the rest of the stack, gated
+behind Compose's `app` profile so it never starts as a side effect of plain
+`make docker-up` (which is what local `make serve` development uses).
+
 ### Observed reliability with `llama3.2:3b`
 
 The graph — supervisor routing, parallel metrics/logs specialists, bounded tool-calling,
@@ -107,7 +140,7 @@ Two things are honestly worth naming about the local 3b model specifically:
   one. The bad-deploy (`cart-service`) scenario is the one most likely to need a retry.
 
 None of this is specific to this codebase — it is the price of a demo running entirely
-against a free, local 3b model instead of a hosted frontier one. `LLM_PROVIDER=gemini` is
+against a free, local 3b model instead of a hosted frontier one. `LLM_PROVIDER=groq` is
 there specifically as the higher-quality alternative.
 
 ## Development
@@ -124,18 +157,43 @@ Elasticsearch belongs in `tests/integration`.
 
 ## Configuration
 
-Copy `.env.example` to `.env` and adjust. The LLM provider is swappable at runtime via
-`LLM_PROVIDER=ollama|gemini` — nothing above `llm/base.py` knows which one is active.
+Copy `.env.example` to `.env` and adjust. The default is `LLM_PROVIDER=groq` with `GROQ_MODEL=openai/gpt-oss-20b`.
+`LLM_FALLBACK_PROVIDER=ollama` automatically retries a failed model operation with
+local `qwen3:4b`; set it to `none` for Groq only. `LLM_PROVIDER=ollama` selects local
+inference directly. A missing Groq key is a startup configuration error.
 
-The `ollama` service mounts an **external** Docker volume (default
-`ai-knowledge-assistant_ollama-data`) so `llama3.2` is not re-downloaded. Override it
-with `OLLAMA_VOLUME`, or run `make ollama-pull` to populate a fresh volume.
+Fallback covers Groq API errors (including authentication errors and rate limits),
+connection failures, timeouts, and exhausted JSON repair attempts. It preserves tool
+history and does not rerun completed tools. Each new operation tries Groq first; there
+is no permanent provider switch. If both providers fail, the investigation records
+the failure and may return an error when it cannot produce a report.
+
+Groq requests have a 30-second deadline with no SDK retries; Ollama calls have a
+60-second deadline including queueing. These are per-request limits, not an overall
+investigation deadline. Ollama uses a 4096-token context, disabled thinking, serialized
+calls, and a one-minute keep-alive. The app requires 4096 MiB of available RAM before
+a cold local load, or 1024 MiB when the configured model is already loaded. This is
+a conservative check, not an OOM guarantee. With a remote Ollama server, set
+`OLLAMA_MIN_AVAILABLE_MEMORY_MB=0` and manage memory on that server.
+
+The assessed laptop has 6.5 GiB usable RAM and about 2.9 GiB available before this
+project’s stack starts, so local fallback is currently blocked by the memory check.
+See [the hardware assessment](docs/hardware-assessment.md) for measurements and limits.
+`/health` checks provider connectivity and model availability; it does not load a model
+or guarantee enough memory or quota for an investigation.
+
+The `ollama` service mounts a project-owned Docker volume (`incident-copilot_ollama-data`)
+so `qwen3:4b` is not re-downloaded between runs. Run `make ollama-pull` to populate it.
+
+Set `LANGSMITH_TRACING=true` plus `LANGSMITH_API_KEY` to trace every graph run in
+LangSmith. `configure_tracing()` sets the `LANGCHAIN_*` environment variables LangChain
+reads automatically, so no agent code needs to know tracing is on.
 
 ## Architecture
 
 Layered and dependency-inverted. Pure domain models and deterministic threshold analysis
 at the bottom; narrow `MetricsSource` / `LogSource` connector interfaces adapting httpx
-and elasticsearch-py; an `LLMProvider` ABC with Ollama, Gemini, and Fake implementations
+and elasticsearch-py; an `LLMProvider` ABC with Ollama, Groq, and Fake implementations
 behind a factory.
 
 The LLM never does arithmetic over raw sample arrays. `analysis/thresholds.py` reduces a
