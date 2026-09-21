@@ -6,9 +6,11 @@ window, and proposes a ranked list of likely root causes with supporting evidenc
 instead of an engineer manually pivoting between three dashboards during an outage.
 
 **Status:** the core library, the seeded demo stack, the LangGraph multi-agent
-orchestration (supervisor + metrics/logs specialists + correlation agent), and the
-FastAPI investigation endpoint are built and verified end to end against the live stack.
-The evaluation harness and Streamlit UI are next.
+orchestration (supervisor + metrics/logs specialists + correlation agent), the FastAPI
+investigation endpoint, the evaluation harness, LangSmith tracing, a Docker deploy of
+the app itself, and a Streamlit demo UI are all built and verified end to end against
+the live stack. See [Measured results](#measured-results-with-qwen34b) for the
+evaluation harness's observed score.
 
 ## Quickstart
 
@@ -33,6 +35,9 @@ Grafana auto-provisions an **Incident Overview** dashboard showing p95 latency, 
 ratio, resident memory, and CPU for every seeded service.
 
 To wipe and rebuild the demo data from scratch: `make demo-reset`.
+
+The `ollama` service pulls no model by default — run `make ollama-pull` once to
+populate the (project-owned) `incident-copilot_ollama-data` volume with `qwen3:4b`.
 
 ## The seeded scenarios
 
@@ -89,6 +94,33 @@ Sample response, against the seeded memory-leak scenario:
 {"status": "ok", "dependencies": {"prometheus": true, "elasticsearch": true, "llm": true}}
 ```
 
+## Demo UI
+
+```bash
+uv pip install --python .venv/bin/python -e ".[ui]"   # one-time: streamlit isn't in the dev extras
+make streamlit                                         # :8501
+```
+
+`streamlit_app/` is a thin client over the FastAPI API — it never imports
+`incident_copilot` itself, so it stays a genuine HTTP consumer rather than a second way
+into the agent/connector code. It needs `make serve` (or `make docker-app-up`) running
+first; point it at a non-default API with `INCIDENT_COPILOT_API_URL`.
+
+The look is a dark "ops console": a status bar with live per-dependency health dots read
+straight from `GET /health`, IBM Plex Sans/Mono throughout, and each candidate root cause
+ranked P1/P2/P3 with a segmented signal-meter for its confidence score — severity color
+follows a cause's rank, not an arbitrary palette choice.
+
+## Docker deploy
+
+```bash
+make docker-app-up   # builds the Dockerfile and runs the app itself in its own container
+```
+
+This runs the FastAPI app as an `app` service alongside the rest of the stack, gated
+behind Compose's `app` profile so it never starts as a side effect of plain
+`make docker-up` (which is what local `make serve` development uses).
+
 ### Observed reliability with `llama3.2:3b`
 
 The graph — supervisor routing, parallel metrics/logs specialists, bounded tool-calling,
@@ -129,6 +161,10 @@ Copy `.env.example` to `.env` and adjust. The LLM provider is swappable at runti
 
 The `ollama` service mounts a project-owned Docker volume (`incident-copilot_ollama-data`)
 so `qwen3:4b` is not re-downloaded between runs. Run `make ollama-pull` to populate it.
+
+Set `LANGSMITH_TRACING=true` plus `LANGSMITH_API_KEY` to trace every graph run in
+LangSmith. `configure_tracing()` sets the `LANGCHAIN_*` environment variables LangChain
+reads automatically, so no agent code needs to know tracing is on.
 
 ## Architecture
 
