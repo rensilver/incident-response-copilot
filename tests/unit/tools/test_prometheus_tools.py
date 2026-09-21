@@ -1,5 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from incident_copilot.connectors.base import MetricsSource
 from incident_copilot.models.enums import MetricKind, TrendKind
 from incident_copilot.models.findings import RAW_FINDING_CAVEAT
@@ -11,11 +13,13 @@ class StubMetrics(MetricsSource):
     def __init__(self, values: list[float]) -> None:
         self.values = values
         self.last_query: str | None = None
+        self.last_window: TimeWindow | None = None
 
     async def query_range(
         self, query: str, window: TimeWindow, step: str = "30s"
     ) -> list[MetricSeries]:
         self.last_query = query
+        self.last_window = window
         base = datetime.now(UTC) - timedelta(minutes=len(self.values))
         return [
             MetricSeries(
@@ -72,3 +76,24 @@ async def test_empty_series_yields_flat_non_anomalous_finding() -> None:
     assert finding.trend is TrendKind.FLAT
     assert finding.anomaly_detected is False
     assert "no data" in finding.summary.lower()
+
+
+@pytest.mark.parametrize("name", ["get_service_metric", "raw_promql_query"])
+@pytest.mark.parametrize("minutes_back", [None, 30])
+async def test_standalone_metric_tools_keep_relative_windows(
+    name: str, minutes_back: int | None
+) -> None:
+    source = StubMetrics([])
+    args = (
+        {"service": "cart-service", "kind": MetricKind.CPU}
+        if name == "get_service_metric"
+        else {"query": "up"}
+    )
+    if minutes_back is not None:
+        args["minutes_back"] = minutes_back
+    before = datetime.now(UTC)
+    await _tool(source, name).ainvoke(args)
+    after = datetime.now(UTC)
+    assert source.last_window is not None
+    assert source.last_window.duration_seconds == (minutes_back or 60) * 60
+    assert before <= source.last_window.end <= after

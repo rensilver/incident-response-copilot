@@ -90,16 +90,17 @@ Finalize the project
 
 ### Pending before release
 
-1. **Task 2 provider migration implemented; owner review pending.** Groq is now
-   the default, with automatic Ollama fallback. See the validation record below.
+1. **Task 2 provider migration committed (`b5e9145`).** Groq is now the default,
+   with automatic Ollama fallback. See the validation record below.
 2. **Docker cloud configuration implemented; live validation pending.** The `app`
    service reads `.env` at runtime and retains internal connector URLs. Compose
    configuration validates; container build/startup and investigations remain to
    be verified during final validation.
-3. **Honor the requested investigation window.** `IncidentService` stores
-   `minutes_back` as `state["time_window"]`, but neither specialist reads it.
-   Tools instead receive model-selected windows or use their 60-minute default.
-   Carry the requested window through to data queries and verify the behavior.
+3. **Investigation window fixed; owner review and commit pending.** Both specialists
+   pass the fixed `state["time_window"]` through tool execution configuration. All
+   four temporal data tools use its exact start/end timestamps, independent of
+   model-selected durations. Offline regression checks pass; live verification
+   remains part of Docker validation. See the validation record below.
 4. **Unit baseline restored; integration provider coverage pending.** Unit tests
    are isolated from local `.env` values and live health services. All 227 pass
    outside the execution sandbox, including graph tests. Integration investigations
@@ -152,6 +153,37 @@ Finalize the project
 - Next action after owner review and commit: carry the requested investigation
   window into data queries (pending item 3), then continue the remaining validation
   actions one at a time. Complete V4 and the measured-results README afterward.
+
+### Investigation-window implementation and validation — 2026-09-21
+
+- Both specialists read the investigation's fixed start/end timestamps and include
+  them in their prompts. The tool loop supplies the interval through LangChain's
+  runtime configuration, outside model-controlled arguments.
+- Curated metrics, raw PromQL range queries, log searches, and log histograms pass
+  that exact interval to their connectors across tool rounds. Model-supplied
+  `minutes_back` values cannot replace it. Standalone tool calls retain their
+  relative-duration arguments and 60-minute default. Service-name discovery remains
+  a metadata lookup, without a time filter.
+- Empty curated-metric results now name the actual queried timestamps rather than
+  a potentially misleading model-selected duration.
+- Added 12 regression cases covering the service-to-graph-to-connector path for all
+  four temporal tools, omitted and conflicting model durations, attempted runtime
+  configuration spoofing, concurrent investigations with different historical
+  windows, and standalone tool compatibility.
+- `.venv/bin/pytest tests/unit -q`: **239 passed in 3.21 seconds**, outside the
+  execution sandbox. A targeted sandboxed run timed out after 20 seconds, consistent
+  with the previously diagnosed asyncio stall; the same targeted checks passed
+  outside it. No live providers or Docker services were required.
+- `make lint` passes (Ruff and strict mypy, 58 source files);
+  `.venv/bin/black --check src tests` passes (108 files); `git diff --check` passes.
+- Pre-action inspection confirmed no running Docker containers and port 11434 free.
+  Available RAM was approximately 2.5 GiB, still below the configured 4 GiB cold-load
+  guard before starting this project's stack. Successful local fallback remains
+  unverified. No containers were started or models loaded during this action.
+- Next action after owner review and commit: Docker build/startup and Groq integration
+  validation, including fresh data and live investigation-window checks. Measure
+  stack memory before attempting local inference. V4 completion, the remaining live
+  checks, and the measured-results README remain pending.
 
 ### Additional release improvements to consider
 

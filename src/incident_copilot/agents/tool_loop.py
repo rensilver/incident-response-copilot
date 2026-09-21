@@ -8,10 +8,13 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool
 from pydantic import ValidationError
 
 from incident_copilot.llm.base import ChatMessage, LLMProvider
+from incident_copilot.models.metrics import TimeWindow
+from incident_copilot.tools.window import INVESTIGATION_WINDOW_KEY
 from incident_copilot.utils.exceptions import IncidentCopilotError
 from incident_copilot.utils.logging import get_logger
 
@@ -38,6 +41,8 @@ async def run_tool_rounds(
     tools: Sequence[BaseTool],
     messages: Sequence[ChatMessage],
     max_rounds: int,
+    *,
+    time_window: TimeWindow | None = None,
 ) -> ToolLoopResult:
     """Let the model call tools for at most ``max_rounds`` rounds.
 
@@ -50,6 +55,7 @@ async def run_tool_rounds(
         tools: Tools the model may call.
         messages: Opening conversation.
         max_rounds: Hard cap on tool rounds.
+        time_window: Fixed investigation interval, passed outside model-controlled args.
 
     Returns:
         The gathered results and any recorded errors.
@@ -60,6 +66,9 @@ async def run_tool_rounds(
         _ROLE_TO_MESSAGE[m.role](content=m.content) for m in messages
     ]
     outcome = ToolLoopResult()
+    tool_config: RunnableConfig = {}
+    if time_window is not None:
+        tool_config["configurable"] = {INVESTIGATION_WINDOW_KEY: time_window}
 
     for round_index in range(max_rounds):
         # The tool-bound runnable comes from a third-party client, so an unreachable
@@ -85,7 +94,7 @@ async def run_tool_rounds(
                 outcome.errors.append(f"model requested unknown tool: {name!r}")
                 continue
             try:
-                result = await tool.ainvoke(call.get("args", {}))
+                result = await tool.ainvoke(call.get("args", {}), config=tool_config)
             except (IncidentCopilotError, ValidationError) as exc:
                 # ValidationError covers a hallucinated argument (e.g. an invalid enum
                 # value) that LangChain rejects before the tool body ever runs.
