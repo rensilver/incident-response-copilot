@@ -31,7 +31,7 @@ memory. [Ollama model information](https://ollama.com/library/qwen3:4b).
 
 The project also runs Elasticsearch, Prometheus, Grafana, FastAPI, and optionally
 Streamlit. Elasticsearch alone has a configured 512 MiB Java heap, in addition to
-other process memory. Combined stack usage has not been measured yet. With only
+other process memory. Combined stack usage had not been measured at the initial inspection. With only
 2.9 GiB available before starting that stack, local inference alongside it is not
 established as practical. Existing swap use also indicates memory pressure.
 
@@ -61,10 +61,32 @@ context and serializes calls within one application instance.
 Use Groq for this laptop's demo. Automatic fallback remains configured, but needs
 sufficient memory and an available Ollama server with `qwen3:4b` already downloaded.
 A larger machine or a remote Ollama server is needed to validate local inference
-without the current memory constraint. Resolve the port conflict before starting
-this project's Ollama container; changing `OLLAMA_BASE_URL` alone does not change
-Compose's published port.
+without the current memory constraint. The initial port conflict was absent during
+the 2026-09-22 validation; all five project containers started successfully.
 
-Full-stack RAM use, cold-load time, investigation latency, and whether runs fit the
-Streamlit client's 300-second timeout remain for final live validation. No local
-model benchmark or successful live fallback is claimed by this assessment.
+Cold-load time, local-model investigation latency, and the Streamlit client's
+300-second timeout remain unverified. No local model benchmark or successful live
+fallback is claimed by this assessment.
+
+## Docker/Groq measurements — 2026-09-22
+
+The cloud-backed stack built and started with no local model loaded. Before startup,
+available RAM was 2,841 MiB and swap use was 665 MiB. The first post-start snapshot
+showed about 1,436 MiB total container memory, 2,499 MiB host available RAM, and
+1,908 MiB swap use.
+
+Twenty-one samples during part of the paced integration run and subsequent idle time
+showed 1,437.79–1,449.15 MiB total container memory (about 1.4 GiB), 2,400.2–2,644.8 MiB
+available host RAM, and 2,016.2–2,035.9 MiB swap use. This includes FastAPI, Prometheus,
+Elasticsearch, Grafana, and idle Ollama; it excludes Streamlit and local inference.
+Sampled values are not continuous peak measurements, and other host applications
+affect RAM availability and swap.
+
+Three paced Groq API investigations completed in 4.686–6.448 seconds. An earlier
+unpaced run hit Groq rate limits; automatic fallback attempted Ollama, but its RAM
+guard refused to load a model with only 2,383–2,431 MiB available. The API returned
+HTTP 503. Thus this laptop demonstrated cloud operation and safe local-load refusal,
+while successful local fallback remains constrained by available memory.
+
+See the [Docker validation record](validation/2026-09-22-docker/README.md) for
+per-scenario results, measurement methodology, raw samples, and reproduction commands.

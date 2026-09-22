@@ -92,19 +92,18 @@ Finalize the project
 
 1. **Task 2 provider migration committed (`b5e9145`).** Groq is now the default,
    with automatic Ollama fallback. See the validation record below.
-2. **Docker cloud configuration implemented; live validation pending.** The `app`
-   service reads `.env` at runtime and retains internal connector URLs. Compose
-   configuration validates; container build/startup and investigations remain to
-   be verified during final validation.
-3. **Investigation window fixed; owner review and commit pending.** Both specialists
+2. **Docker/Groq integration validated; owner review and commit pending.** Build,
+   startup, fresh seeding, API health, and all three scenario responses passed.
+   The final live suite passed 12 tests with 65-second scenario pacing; the initial
+   unpaced run hit Groq quota errors. See the 2026-09-22 validation record below.
+3. **Investigation window fix committed (`bd717c5`) and live queries checked.** Both specialists
    pass the fixed `state["time_window"]` through tool execution configuration. All
    four temporal data tools use its exact start/end timestamps, independent of
-   model-selected durations. Offline regression checks pass; live verification
-   remains part of Docker validation. See the validation record below.
-4. **Unit baseline restored; integration provider coverage pending.** Unit tests
-   are isolated from local `.env` values and live health services. All 227 pass
-   outside the execution sandbox, including graph tests. Integration investigations
-   still force Ollama; cover the selected cloud provider during final validation.
+   model-selected durations. Offline regressions and live checks for all four tools
+   pass. Model-written report prose can still misstate the interval; see item 5.
+4. **Offline baseline and configured-provider integration pass.** All 239 unit tests
+   pass outside the execution sandbox. Integration investigations now use real HTTP
+   to the deployed API and its configured provider; they no longer force Ollama.
 5. **Verify the complete demo and measure results.** Seed fresh data, exercise all
    three scenarios through the API and UI, and run the evaluation harness. Record
    provider/model, scores, latency, and failures. The current score only checks
@@ -112,11 +111,15 @@ Finalize the project
    describe that limitation rather than presenting it as proof of RCA accuracy.
    Report validation requires evidence entries but does not verify that their
    contents match the retrieved observations.
+   The live slow-dependency report missed `fraud-api`, blamed traffic without traffic
+   evidence, and confused a PromQL five-minute rate interval with the 180-minute
+   investigation window. Investigate report grounding before claiming RCA quality.
 6. **Hardware capacity assessed; live Ollama benchmark constrained.** See
-   `docs/hardware-assessment.md`. The laptop has about 2.9 GiB available RAM before
-   this project's stack starts, below the 4 GiB cold-load guard. Another project's
-   Ollama occupies port 11434. Resolve capacity and port availability before measuring
-   combined stack memory, model latency, and the UI's 300-second timeout.
+   `docs/hardware-assessment.md`. All project ports were free on 2026-09-22.
+   The five-container stack used about 1.4 GiB without a local model or Streamlit.
+   Host available RAM remained below the 4 GiB cold-load guard. Live quota failures
+   triggered fallback and safe RAM refusal, resulting in HTTP 503. Successful local
+   inference, combined stack/model memory, and the UI timeout remain unverified.
 7. **Complete Task 3: rewrite README.md.** Explain purpose, stack, architecture
    diagram, package structure, configuration, build/run steps, API/UI usage, and
    verified results. Include screenshots and a demo recording. Correct the
@@ -184,6 +187,45 @@ Finalize the project
   validation, including fresh data and live investigation-window checks. Measure
   stack memory before attempting local inference. V4 completion, the remaining live
   checks, and the measured-results README remain pending.
+
+### Docker/Groq integration validation — 2026-09-22
+
+- Built and started all five services with `make docker-app-up`, seeded six metric
+  blocks and 1,231 logs with `make seed`, and verified the containerized API's health.
+  Runtime configuration is Groq `openai/gpt-oss-20b`, Ollama fallback, and tracing off;
+  internal data-source URLs resolve correctly. No production configuration change
+  was needed. Python is 3.12.14 in Docker and 3.13.13 in the host test environment.
+- Integration API tests now call the deployed HTTP endpoint, with optional
+  `INCIDENT_COPILOT_API_URL`, instead of an in-process app forced to Ollama.
+  They retain full reports and request latency in the test transcript. Optional
+  `INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS` paces requests without retrying or
+  suppressing failures; its default is zero.
+- Initial live run: **8 passed, 4 failed in 8.75 seconds**. Two API requests hit Groq
+  HTTP 429 and returned HTTP 503 when the Ollama RAM guard refused inference. Two
+  new window-test assertions needed a one-millisecond tolerance for returned
+  Prometheus timestamps; outgoing request-boundary checks remain exact.
+- Final run with 65-second scenario pacing: **12 passed in 212.33 seconds**, no skips.
+  The three API requests returned HTTP 200 in 4.686 s (bad deploy), 6.448 s (memory
+  leak), and 4.759 s (slow dependency), excluding pacing. These checks verify report
+  structure, not RCA accuracy. The slow-dependency diagnosis was incorrect, as noted
+  in pending item 5. No nine-run evaluation score is claimed.
+- Real Groq API requests used 180-minute Prometheus windows. Two deterministic
+  graph tests against real data backends verified exact 17- and 180-minute windows
+  for all four temporal tools despite scripted 60-minute model arguments.
+- **239 unit tests passed in 2.52 seconds** outside the sandbox. Ruff, strict mypy
+  (58 source files), Black (109 files), and `git diff --check` passed.
+- Twenty-one runtime samples showed 1,437.79–1,449.15 MiB total container memory and
+  2,400.2–2,644.8 MiB host available RAM, with about 2 GiB swap in use. No local model
+  was downloaded or loaded. Successful fallback remains unverified; observed live
+  behavior covers quota-triggered fallback and insufficient-memory refusal only.
+- Full results, failed and successful transcripts, sanitized logs, image IDs, package
+  versions, memory samples, and reproduction commands are in
+  [the validation record](docs/validation/2026-09-22-docker/README.md).
+- Containers remain running for owner review (`make docker-down` stops them).
+  No commit or push was performed. Stop here for owner review and commit. Subsequent
+  actions remain successful local fallback/failure coverage, report-quality review,
+  repeated evaluation, LangSmith delivery, Streamlit/media, and the README rewrite.
+  V4 and final V1–V5 release verification remain incomplete.
 
 ### Additional release improvements to consider
 

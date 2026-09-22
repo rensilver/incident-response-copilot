@@ -1,9 +1,10 @@
+import asyncio
+import json
+import os
+from time import perf_counter
+
 import httpx
 import pytest
-
-from incident_copilot.config.settings import Settings
-from incident_copilot.main import create_app
-from incident_copilot.models.enums import LLMProviderName
 
 pytestmark = pytest.mark.integration
 
@@ -15,16 +16,18 @@ SCENARIOS = [
 
 
 def _client() -> httpx.AsyncClient:
-    settings = Settings(_env_file=None, llm_provider=LLMProviderName.OLLAMA)
-    app = create_app(settings)
+    # Exercise the running API and its configured provider, including Docker wiring.
+    # Start it with `make docker-app-up` or `make serve` before running these tests.
     return httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test", timeout=300.0
+        base_url=os.getenv("INCIDENT_COPILOT_API_URL", "http://localhost:8000"), timeout=300.0
     )
 
 
-async def test_health_reports_every_dependency_up(require_ollama: None) -> None:
+async def test_health_reports_every_dependency_up() -> None:
     async with _client() as client:
-        body = (await client.get("/health")).json()
+        response = await client.get("/health")
+        assert response.status_code == 200, response.text
+        body = response.json()
     assert body["dependencies"]["prometheus"] is True
     assert body["dependencies"]["elasticsearch"] is True
     assert body["dependencies"]["llm"] is True
@@ -32,18 +35,32 @@ async def test_health_reports_every_dependency_up(require_ollama: None) -> None:
 
 
 @pytest.mark.parametrize(("service", "query"), SCENARIOS)
-async def test_investigation_produces_an_evidenced_report(
-    require_ollama: None, service: str, query: str
-) -> None:
-    """The pipeline must produce a valid report citing real evidence for each scenario."""
+async def test_investigation_produces_an_evidenced_report(service: str, query: str) -> None:
+    """Require a structured report with evidence entries; their accuracy is not scored."""
+    # Optional pacing for cloud quotas. Failures are never retried or skipped.
+    await asyncio.sleep(float(os.getenv("INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS", "0")))
+    payload = {"query": query, "service": service, "minutes_back": 180}
+    started = perf_counter()
     async with _client() as client:
         response = await client.post(
             "/api/v1/investigations",
-            json={"query": query, "service": service, "minutes_back": 180},
+            json=payload,
         )
+    elapsed = perf_counter() - started
 
-    assert response.status_code == 200, response.text
     report = response.json()
+    print(
+        json.dumps(
+            {
+                "request": payload,
+                "status_code": response.status_code,
+                "elapsed_seconds": elapsed,
+                "report": report,
+            },
+            ensure_ascii=False,
+        )
+    )
+    assert response.status_code == 200, response.text
 
     assert report["summary"]
     assert report["likely_causes"], "a report with no causes is useless"
@@ -52,7 +69,3 @@ async def test_investigation_produces_an_evidenced_report(
 
     confidences = [c["confidence"] for c in report["likely_causes"]]
     assert confidences == sorted(confidences, reverse=True), "causes must be ranked"
-
-    print(f"\n[{service}] {report['summary']}")
-    for cause in report["likely_causes"]:
-        print(f"  - {cause['confidence']:.2f} {cause['title']}")

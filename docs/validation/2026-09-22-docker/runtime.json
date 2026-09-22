@@ -1,0 +1,19 @@
+{
+  "python": "3.12.14",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "fallback": "ollama",
+  "tracing": false,
+  "packages": {
+    "langchain-core": "1.6.4",
+    "langchain-groq": "1.1.3",
+    "langchain-ollama": "1.1.0",
+    "langgraph": "1.2.12",
+    "langsmith": "0.14.0",
+    "groq": "0.37.1",
+    "pydantic": "2.13.5",
+    "fastapi": "0.141.1",
+    "httpx": "0.28.1",
+    "elasticsearch": "8.19.3"
+  }
+}

@@ -1,0 +1,246 @@
+.{"request": {"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "minutes_back": 180}, "elapsed_seconds": 5.399883566999961, "report": {"summary": "After the recent deploy, cart-service began returning 5xx errors due to a NullPointerException in PromotionEngine.applyDiscount, as evidenced by a sudden spike in 5xx error rate and multiple error logs.", "likely_causes": [{"title": "NullPointerException in PromotionEngine.applyDiscount causing 5xx errors", "rationale": "The logs contain 20 ERROR entries of a NullPointerException at PromotionEngine.applyDiscount, and the metrics show a 15.00pp spike in 5xx error rate immediately after the deploy.", "confidence": 0.95, "supporting_evidence": [{"source": "logs", "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"}, {"source": "metrics", "detail": "5xx error rate 15.00pp from near-zero baseline (threshold-validated)"}]}, {"title": "Deployment introduced bug leading to null promotion data", "rationale": "The NullPointerException likely arises from missing promotion data introduced by the new deployment, causing the PromotionEngine to dereference a null value.", "confidence": 0.7, "supporting_evidence": [{"source": "logs", "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"}, {"source": "metrics", "detail": "5xx error rate 15.00pp from near-zero baseline (threshold-validated)"}]}], "next_steps": ["Rollback to the previous stable deploy to restore service availability.", "Patch PromotionEngine.applyDiscount to defensively handle null promotion data.", "Run unit and integration tests covering promotion scenarios.", "Deploy the fix to staging and monitor metrics for 5xx error rate and error logs."], "confidence": 0.9}}
+.FF2026-09-22 08:51:05 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent']
+2026-09-22 08:51:05 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=1 round=1
+2026-09-22 08:51:05 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=2 round=2
+2026-09-22 08:51:05 [info     ] metrics_agent_complete         errors=0 findings=2
+2026-09-22 08:51:05 [debug    ] log_search_executed            hits=20 service=cart-service
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=1 round=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=2 round=2
+2026-09-22 08:51:05 [info     ] logs_agent_complete            errors=0 findings=1
+2026-09-22 08:51:05 [info     ] correlation_complete           causes=0
+F2026-09-22 08:51:05 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent']
+2026-09-22 08:51:05 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=1 round=1
+2026-09-22 08:51:05 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=2 round=2
+2026-09-22 08:51:05 [info     ] metrics_agent_complete         errors=0 findings=2
+2026-09-22 08:51:05 [debug    ] log_search_executed            hits=20 service=cart-service
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=1 round=1
+2026-09-22 08:51:05 [debug    ] tool_round_complete            results=2 round=2
+2026-09-22 08:51:05 [info     ] logs_agent_complete            errors=0 findings=1
+2026-09-22 08:51:05 [info     ] correlation_complete           causes=0
+F.2026-09-22 08:51:05 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=1
+.2026-09-22 08:51:05 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+.2026-09-22 08:51:05 [debug    ] promql_executed                query='histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service="fraud-api"}[5m])))' series_count=1
+2026-09-22 08:51:05 [debug    ] promql_executed                query='histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service="payment-service"}[5m])))' series_count=1
+.2026-09-22 08:51:05 [debug    ] log_search_executed            hits=20 service=cart-service
+.2026-09-22 08:51:05 [debug    ] log_search_executed            hits=20 service=cart-service
+.
+=================================== FAILURES ===================================
+_ test_investigation_produces_an_evidenced_report[checkout-service-checkout-service memory keeps climbing] _
+
+service = 'checkout-service', query = 'checkout-service memory keeps climbing'
+
+    @pytest.mark.parametrize(("service", "query"), SCENARIOS)
+    async def test_investigation_produces_an_evidenced_report(service: str, query: str) -> None:
+        """Require a structured report with evidence entries; their accuracy is not scored."""
+        payload = {"query": query, "service": service, "minutes_back": 180}
+        started = perf_counter()
+        async with _client() as client:
+            response = await client.post(
+                "/api/v1/investigations",
+                json=payload,
+            )
+        elapsed = perf_counter() - started
+
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"investigation produced no report: routing fallback: Groq failed; Ollama fallback unavailable: Ollama skipped: 2431 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; correlation failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2423 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine."}
+E       assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+tests/integration/test_investigation_e2e.py:48: AssertionError
+_ test_investigation_produces_an_evidenced_report[payment-service-payment-service latency has degraded] _
+
+service = 'payment-service', query = 'payment-service latency has degraded'
+
+    @pytest.mark.parametrize(("service", "query"), SCENARIOS)
+    async def test_investigation_produces_an_evidenced_report(service: str, query: str) -> None:
+        """Require a structured report with evidence entries; their accuracy is not scored."""
+        payload = {"query": query, "service": service, "minutes_back": 180}
+        started = perf_counter()
+        async with _client() as client:
+            response = await client.post(
+                "/api/v1/investigations",
+                json=payload,
+            )
+        elapsed = perf_counter() - started
+
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"investigation produced no report: routing fallback: Groq failed; Ollama fallback unavailable: Ollama skipped: 2414 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2398 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2406 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; correlation failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2383 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine."}
+E       assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+tests/integration/test_investigation_e2e.py:48: AssertionError
+_________________ test_fixed_window_reaches_live_backends[17] __________________
+
+minutes = 17
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f158ebf7e00>
+
+    @pytest.mark.parametrize("minutes", [17, 180])
+    async def test_fixed_window_reaches_live_backends(minutes: int, mocker: MockerFixture) -> None:
+        """Use scripted tool calls to cover all four tools, with real backend responses."""
+        requests: list[httpx.Request] = []
+
+        async def record(request: httpx.Request) -> None:
+            requests.append(request)
+
+        end = datetime.now(UTC) - timedelta(minutes=2)
+        window = TimeWindow(start=end - timedelta(minutes=minutes), end=end)
+        definitions = [
+            ("get_service_metric", {"service": "cart-service", "kind": "error_rate"}),
+            (
+                "raw_promql_query",
+                {"query": 'process_resident_memory_bytes{service="checkout-service"}'},
+            ),
+            ("search_logs", {"service": "cart-service"}),
+            ("log_level_histogram", {"service": "cart-service"}),
+        ]
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "window validation"}',
+                json.dumps(
+                    {"summary": "Window check", "likely_causes": [], "next_steps": [], "confidence": 0}
+                ),
+            ],
+            tool_rounds=[
+                [{"name": name, "args": {**args, "minutes_back": 60}, "id": name, "type": "tool_call"}]
+                for name, args in definitions
+            ],
+        )
+        async with (
+            httpx.AsyncClient(timeout=30, event_hooks={"request": [record]}) as metrics_client,
+            AsyncElasticsearch("http://localhost:9200") as logs_client,
+        ):
+            metrics = PrometheusConnector(metrics_client, "http://localhost:9090")
+            logs = ElasticsearchConnector(logs_client, "app-logs")
+            searches = mocker.spy(logs_client, "perform_request")
+            graph = build_graph(
+                provider,
+                build_metrics_tools(metrics),
+                build_log_tools(logs),
+                Settings(_env_file=None, llm_provider="ollama", max_tool_rounds=2),
+            )
+            result = await graph.ainvoke(
+                initial_state("live-window", "cart errors", window, "cart-service")
+            )
+
+        assert not result["errors"], result["errors"]
+        assert len(requests) == 2
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == window.start.timestamp()
+            assert float(request.url.params["end"]) == window.end.timestamp()
+        assert searches.call_count == 2
+        for call in searches.call_args_list:
+            filters = call.kwargs["body"]["query"]["bool"]["filter"]
+            interval = next(item["range"]["@timestamp"] for item in filters if "range" in item)
+            assert interval == {"gte": window.start.isoformat(), "lte": window.end.isoformat()}
+
+        assert len(result["metrics_findings"]) == 2
+        for finding in result["metrics_findings"]:
+            samples = [sample for series in finding.series for sample in series.samples]
+            assert samples, "freshly seed the stack before testing investigation windows"
+>           assert all(window.start <= sample.timestamp <= window.end for sample in samples)
+E           assert False
+E            +  where False = all(<generator object test_fixed_window_reaches_live_backends.<locals>.<genexpr> at 0x7f158eaf1e00>)
+
+tests/integration/test_investigation_window.py:88: AssertionError
+_________________ test_fixed_window_reaches_live_backends[180] _________________
+
+minutes = 180
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f158ea62210>
+
+    @pytest.mark.parametrize("minutes", [17, 180])
+    async def test_fixed_window_reaches_live_backends(minutes: int, mocker: MockerFixture) -> None:
+        """Use scripted tool calls to cover all four tools, with real backend responses."""
+        requests: list[httpx.Request] = []
+
+        async def record(request: httpx.Request) -> None:
+            requests.append(request)
+
+        end = datetime.now(UTC) - timedelta(minutes=2)
+        window = TimeWindow(start=end - timedelta(minutes=minutes), end=end)
+        definitions = [
+            ("get_service_metric", {"service": "cart-service", "kind": "error_rate"}),
+            (
+                "raw_promql_query",
+                {"query": 'process_resident_memory_bytes{service="checkout-service"}'},
+            ),
+            ("search_logs", {"service": "cart-service"}),
+            ("log_level_histogram", {"service": "cart-service"}),
+        ]
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "window validation"}',
+                json.dumps(
+                    {"summary": "Window check", "likely_causes": [], "next_steps": [], "confidence": 0}
+                ),
+            ],
+            tool_rounds=[
+                [{"name": name, "args": {**args, "minutes_back": 60}, "id": name, "type": "tool_call"}]
+                for name, args in definitions
+            ],
+        )
+        async with (
+            httpx.AsyncClient(timeout=30, event_hooks={"request": [record]}) as metrics_client,
+            AsyncElasticsearch("http://localhost:9200") as logs_client,
+        ):
+            metrics = PrometheusConnector(metrics_client, "http://localhost:9090")
+            logs = ElasticsearchConnector(logs_client, "app-logs")
+            searches = mocker.spy(logs_client, "perform_request")
+            graph = build_graph(
+                provider,
+                build_metrics_tools(metrics),
+                build_log_tools(logs),
+                Settings(_env_file=None, llm_provider="ollama", max_tool_rounds=2),
+            )
+            result = await graph.ainvoke(
+                initial_state("live-window", "cart errors", window, "cart-service")
+            )
+
+        assert not result["errors"], result["errors"]
+        assert len(requests) == 2
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == window.start.timestamp()
+            assert float(request.url.params["end"]) == window.end.timestamp()
+        assert searches.call_count == 2
+        for call in searches.call_args_list:
+            filters = call.kwargs["body"]["query"]["bool"]["filter"]
+            interval = next(item["range"]["@timestamp"] for item in filters if "range" in item)
+            assert interval == {"gte": window.start.isoformat(), "lte": window.end.isoformat()}
+
+        assert len(result["metrics_findings"]) == 2
+        for finding in result["metrics_findings"]:
+            samples = [sample for series in finding.series for sample in series.samples]
+            assert samples, "freshly seed the stack before testing investigation windows"
+>           assert all(window.start <= sample.timestamp <= window.end for sample in samples)
+E           assert False
+E            +  where False = all(<generator object test_fixed_window_reaches_live_backends.<locals>.<genexpr> at 0x7f158d81d700>)
+
+tests/integration/test_investigation_window.py:88: AssertionError
+============================== slowest durations ===============================
+5.40s call     tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[cart-service-cart-service is returning 5xx errors after a deploy]
+0.97s call     tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[payment-service-payment-service latency has degraded]
+0.67s call     tests/integration/test_investigation_e2e.py::test_health_reports_every_dependency_up
+0.26s call     tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[checkout-service-checkout-service memory keeps climbing]
+0.18s call     tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[17]
+0.15s call     tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[180]
+0.03s call     tests/integration/test_seeded_stack.py::test_slow_dependency_upstream_p95_exceeds_the_downstream
+0.02s call     tests/integration/test_seeded_stack.py::test_bad_deploy_errors_are_tagged_with_the_new_version
+0.02s setup    tests/integration/test_investigation_e2e.py::test_health_reports_every_dependency_up
+0.02s call     tests/integration/test_seeded_stack.py::test_memory_leak_shows_growth_on_the_culprit_service
+0.01s call     tests/integration/test_seeded_stack.py::test_bad_deploy_error_rate_is_detected_as_an_anomaly
+0.01s call     tests/integration/test_seeded_stack.py::test_term_filters_match_because_fields_are_keyword_typed
+0.01s call     tests/integration/test_seeded_stack.py::test_seeded_services_are_discoverable
+0.01s teardown tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[cart-service-cart-service is returning 5xx errors after a deploy]
+
+(22 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+FAILED tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[checkout-service-checkout-service memory keeps climbing]
+FAILED tests/integration/test_investigation_e2e.py::test_investigation_produces_an_evidenced_report[payment-service-payment-service latency has degraded]
+FAILED tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[17]
+FAILED tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[180]
+4 failed, 8 passed in 8.75s
