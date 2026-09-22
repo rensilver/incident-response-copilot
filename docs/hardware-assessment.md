@@ -90,3 +90,18 @@ while successful local fallback remains constrained by available memory.
 
 See the [Docker validation record](validation/2026-09-22-docker/README.md) for
 per-scenario results, measurement methodology, raw samples, and reproduction commands.
+
+## Fallback failure validation — 2026-09-22
+
+The owner confirmed continued testing on this laptop and recording successful local
+inference as blocked. During the later failure-validation run, available RAM was
+2,995 MiB before the tests, still below the default 4,096 MiB cold-load guard.
+The model was already downloaded in the project volume but remained unloaded.
+
+Disposable app containers verified HTTP 503 behavior for Groq authentication failure
+combined with insufficient memory or an unreachable Ollama endpoint, and with
+fallback disabled. The isolated memory test raised its floor above physical RAM to
+guarantee no inference; the production guard was unchanged. Simulated HTTP tests
+covered successful fallback through the real adapters, but no local inference success
+or model-memory benchmark is claimed. See the
+[failure-validation record](validation/2026-09-22-fallback/README.md).

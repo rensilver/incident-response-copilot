@@ -1,0 +1,28 @@
+{
+  "case": "fallback_disabled",
+  "timestamp": "2026-09-22T13:27:23.852222+00:00",
+  "overrides": {
+    "GROQ_API_KEY": "deliberately-invalid-validation-key",
+    "LLM_PROVIDER": "groq",
+    "GROQ_MODEL": "openai/gpt-oss-20b",
+    "LLM_FALLBACK_PROVIDER": "none",
+    "OLLAMA_MODEL": "qwen3:4b",
+    "LANGSMITH_TRACING": "false",
+    "LANGCHAIN_TRACING_V2": "false",
+    "OLLAMA_BASE_URL": "http://127.0.0.1:1"
+  },
+  "health": {
+    "status": "degraded",
+    "dependencies": {
+      "prometheus": true,
+      "elasticsearch": true,
+      "llm": false
+    }
+  },
+  "http_status": 503,
+  "elapsed_seconds": 0.37387786699946446,
+  "response": {
+    "detail": "investigation produced no report: routing fallback: Groq request failed (AuthenticationError, status=401); model call failed: Groq request failed (AuthenticationError, status=401); model call failed: Groq request failed (AuthenticationError, status=401); correlation failed: Groq request failed (AuthenticationError, status=401)"
+  },
+  "fallback_events": 0
+}

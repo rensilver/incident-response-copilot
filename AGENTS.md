@@ -92,7 +92,7 @@ Finalize the project
 
 1. **Task 2 provider migration committed (`b5e9145`).** Groq is now the default,
    with automatic Ollama fallback. See the validation record below.
-2. **Docker/Groq integration validated; owner review and commit pending.** Build,
+2. **Docker/Groq integration validated and committed (`ff12f55`).** Build,
    startup, fresh seeding, API health, and all three scenario responses passed.
    The final live suite passed 12 tests with 65-second scenario pacing; the initial
    unpaced run hit Groq quota errors. See the 2026-09-22 validation record below.
@@ -101,7 +101,7 @@ Finalize the project
    four temporal data tools use its exact start/end timestamps, independent of
    model-selected durations. Offline regressions and live checks for all four tools
    pass. Model-written report prose can still misstate the interval; see item 5.
-4. **Offline baseline and configured-provider integration pass.** All 239 unit tests
+4. **Offline baseline and configured-provider integration pass.** All 250 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
 5. **Verify the complete demo and measure results.** Seed fresh data, exercise all
@@ -120,6 +120,8 @@ Finalize the project
    Host available RAM remained below the 4 GiB cold-load guard. Live quota failures
    triggered fallback and safe RAM refusal, resulting in HTTP 503. Successful local
    inference, combined stack/model memory, and the UI timeout remain unverified.
+   The owner confirmed continued use of this laptop and recording successful local
+   inference as blocked. Additional failure validation passed; see the record below.
 7. **Complete Task 3: rewrite README.md.** Explain purpose, stack, architecture
    diagram, package structure, configuration, build/run steps, API/UI usage, and
    verified results. Include screenshots and a demo recording. Correct the
@@ -226,6 +228,41 @@ Finalize the project
   actions remain successful local fallback/failure coverage, report-quality review,
   repeated evaluation, LangSmith delivery, Streamlit/media, and the README rewrite.
   V4 and final V1–V5 release verification remain incomplete.
+
+### Fallback and failure validation — 2026-09-22
+
+- Owner confirmed use of the current laptop and recording successful local inference
+  as blocked. The existing Ollama volume contains `qwen3:4b`, but no model was loaded.
+  Available RAM was below the 4,096 MiB cold-load guard; no model was loaded or pulled.
+- Added `scripts/validate_provider_failures.py` to reproduce failure cases in disposable
+  app containers without changing the existing deployment or `.env`. A deliberately
+  invalid key produces real Groq HTTP 401 responses. Temporary containers are removed.
+- Live results: Groq failure plus RAM refusal returned HTTP 503 in 0.423 s; Groq
+  failure plus unreachable Ollama returned HTTP 503 in 0.387 s; fallback disabled
+  returned HTTP 503 in 0.374 s with no fallback events. The first two cases each had
+  four fallback events (routing, both specialists, correlation).
+- The isolated refusal test raised its RAM floor above total physical RAM (7,718 MiB)
+  to guarantee that no model could load. Production retained its default guard.
+  The previous Docker action already observed refusal at the natural 4,096 MiB floor.
+- A separate live Groq completion succeeded in 0.861 s with an unreachable fallback
+  URL, demonstrating that primary success does not require working Ollama inference.
+- Health can report `llm=true` when Ollama lists the model but lacks inference RAM;
+  this was observed in the refusal case. It is a connectivity/model-availability
+  probe, not an inference-capacity guarantee. Original app health remained good.
+- Added 11 offline tests using real provider adapters with simulated HTTP responses:
+  API/connection/timeout fallback, return to Groq after recovery, JSON-repair
+  exhaustion, both-provider failures, and preservation of executed tool history.
+  These simulate successful fallback and do not establish successful local inference.
+- **250 unit tests passed in 3.24 seconds** outside the sandbox. Ruff, strict mypy
+  (58 source files plus the validation script), Black (111 files), and diff checks pass.
+  No production implementation change was needed. Existing five containers remain
+  running, no temporary validation containers remain, and no commit or push was made.
+- [Results and reproduction commands](docs/validation/2026-09-22-fallback/README.md)
+  retain case JSON, logs, the smoke result, and the full offline-suite transcript.
+- Stop here for owner review and commit. Successful live local fallback remains
+  explicitly blocked; do not mark it verified. Report grounding (including missed
+  `fraud-api`), repeated evaluation, LangSmith, Streamlit/media, and the README remain
+  pending. V4 and the final V1–V5 release checks are still incomplete.
 
 ### Additional release improvements to consider
 

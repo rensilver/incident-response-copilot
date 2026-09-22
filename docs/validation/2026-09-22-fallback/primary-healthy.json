@@ -1,0 +1,7 @@
+{
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "fallback_url": "http://127.0.0.1:1",
+  "response": "OK",
+  "elapsed_seconds": 0.8614428010005213
+}
