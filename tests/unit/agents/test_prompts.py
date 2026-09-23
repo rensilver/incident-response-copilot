@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 from incident_copilot.agents.prompts import (
     render_evidence,
     render_log_finding,
@@ -5,7 +7,7 @@ from incident_copilot.agents.prompts import (
 )
 from incident_copilot.models.enums import LogLevel, MetricKind, TrendKind
 from incident_copilot.models.findings import RawMetricFinding, TypedMetricFinding
-from incident_copilot.models.logs import LogFinding
+from incident_copilot.models.logs import LogEntry, LogFinding
 
 
 def _typed(anomaly: bool, summary: str = "5xx error rate rose 12.0x") -> TypedMetricFinding:
@@ -96,3 +98,58 @@ def test_evidence_order_is_independent_of_the_order_findings_arrive_in() -> None
 def test_threshold_validated_findings_are_rendered_first() -> None:
     text = render_evidence([_raw(), _typed(True, "validated marker")], [])
     assert text.index("validated marker") < text.index(_raw().summary)
+
+
+def test_dependency_after_five_duplicate_errors_is_preserved() -> None:
+    base = datetime(2026, 9, 23, tzinfo=UTC)
+    samples = tuple(
+        LogEntry(
+            timestamp=base + timedelta(seconds=i),
+            service="payment-service",
+            level=LogLevel.ERROR,
+            message="authorization failed",
+        )
+        for i in range(6)
+    ) + (
+        LogEntry(
+            timestamp=base,
+            service="payment-service",
+            level=LogLevel.WARN,
+            message="upstream timeout calling fraud-api after 2000ms",
+            version="v2",
+        ),
+    )
+    finding = LogFinding(
+        query="service:payment-service",
+        matched_count=200,
+        level_breakdown={LogLevel.ERROR: 6, LogLevel.WARN: 1},
+        samples=samples,
+    )
+    text = render_log_finding(finding)
+    assert "fraud-api" in text
+    assert "version=v2" in text
+    assert text.count("authorization failed") == 1
+    assert "sampled occurrences=6" in text
+    assert "200 documents matched" in text
+    assert "7 samples retrieved" in text
+    assert base.isoformat() in text
+    assert (base + timedelta(seconds=5)).isoformat() in text
+    assert render_log_finding(finding.model_copy(update={"samples": samples[::-1]})) == text
+
+
+def test_distinct_versions_of_the_same_message_are_not_merged() -> None:
+    entries = tuple(
+        LogEntry(
+            timestamp=datetime(2026, 9, 23, tzinfo=UTC),
+            service="cart-service",
+            level=LogLevel.ERROR,
+            message="exception",
+            version=version,
+        )
+        for version in ("v1", "v2")
+    )
+    text = render_log_finding(
+        LogFinding(query="q", matched_count=2, level_breakdown={}, samples=entries)
+    )
+    assert text.count("exception") == 2
+    assert "version=v1" in text and "version=v2" in text

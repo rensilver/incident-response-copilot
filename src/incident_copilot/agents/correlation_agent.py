@@ -2,7 +2,11 @@
 
 from collections.abc import Awaitable, Callable
 
-from incident_copilot.agents.prompts import CORRELATION_SYSTEM, render_evidence
+from incident_copilot.agents.prompts import (
+    CORRELATION_SYSTEM,
+    render_evidence,
+    render_investigation_window,
+)
 from incident_copilot.agents.state import CorrelationUpdate, InvestigationState
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.models.report import IncidentReport
@@ -31,7 +35,12 @@ def build_correlation_agent(
             ChatMessage(role="system", content=CORRELATION_SYSTEM),
             ChatMessage(
                 role="user",
-                content=f"Incident question: {state['query']}\n\n{evidence}",
+                content=(
+                    f"Incident question: {state['query']}\n"
+                    f"Service of interest: {state['target_service'] or 'unspecified'}\n"
+                    f"{render_investigation_window(state['time_window'])}\n"
+                    f"Collection errors: {state['errors']}\n\n{evidence}"
+                ),
             ),
         ]
 

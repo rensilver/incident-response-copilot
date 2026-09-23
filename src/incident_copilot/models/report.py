@@ -5,6 +5,7 @@ from typing import Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from incident_copilot.models.enums import AgentName, EvidenceSource
+from incident_copilot.models.metrics import TimeWindow
 
 
 class EvidenceRef(BaseModel):
@@ -34,6 +35,11 @@ class IncidentReport(BaseModel):
     likely_causes: tuple[LikelyCause, ...]
     next_steps: tuple[str, ...]
     confidence: float = Field(ge=0.0, le=1.0)
+
+    investigation_window: TimeWindow | None = Field(
+        default=None,
+        description="Authoritative query interval, populated by the service after generation",
+    )
 
     @model_validator(mode="after")
     def _drop_hollow_and_rank(self) -> Self:

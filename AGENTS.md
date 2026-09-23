@@ -104,11 +104,12 @@ Finalize the project
 4. **Offline baseline and configured-provider integration pass.** All 250 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
-5. **Nine-run evaluation measured; report grounding and UI remain pending.** The
+5. **Nine-run evaluation measured; grounding mitigation awaits live remeasurement.** The
    retained 2026-09-22 evaluation completed all nine attempts: bad deploy 2/3, memory
    leak 3/3, slow dependency 0/3; overall 5/9 service-name matches, zero request
    errors, and 5.063 s mean service-call latency. See the evaluation record below.
-   Investigate report grounding next, then remeasure after any fixes and exercise
+   A focused grounding mitigation is implemented with offline checks below; review
+   and commit it, then remeasure and exercise
    all three scenarios through the UI. The current score only checks
    whether the expected service name appears in the top cause or its evidence;
    describe that limitation rather than presenting it as proof of RCA accuracy.
@@ -303,6 +304,42 @@ Finalize the project
   including dependency discovery, unsupported causes, and incorrect window prose.
   LangSmith delivery, Streamlit/media, the final README rewrite, and final V1–V5
   release verification remain pending. V4 is not complete.
+
+### Report-grounding mitigation — 2026-09-23
+
+- Correlation now receives the exact investigation start/end, duration, target service,
+  and collection errors. Its prompt distinguishes PromQL's `[5m]` rolling calculation
+  from the requested interval and from incident duration or data coverage.
+- `IncidentService` attaches `investigation_window` to returned reports from the
+  original request state, overriding any model-authored value. This additive API
+  field is authoritative; generated prose is still model-written and can disagree.
+  The existing Streamlit client ignores this new field; displaying it is unverified.
+- The logs prompt asks for separate keyword-free WARN and ERROR searches before
+  following discovered dependencies. Evidence rendering groups duplicate sampled
+  messages and retains every distinct retrieved message, instead of keeping only
+  the first five. The specialist's tool feedback uses the same rendering. Sample
+  counts and timestamp ranges are explicitly distinguished from total matches.
+- Correlation is instructed to preserve observed dependency names, require evidence
+  for proposed mechanisms, and put unsupported traffic/resource/deploy hypotheses
+  into follow-up measurements. It may return no likely causes when evidence is
+  insufficient. No scenario name or expected culprit is hardcoded in production.
+- The old transcript proves both specialists ran but lacks full tool payloads. The
+  exact cause of the historical missing `fraud-api` cannot be established. This
+  mitigation does not guarantee retrieval, factual citations, correct causality, or
+  correct window prose; it also does not add cross-specialist dependency-metric
+  follow-up. Full live evaluation is required before claiming improved RCA quality.
+- **257 offline unit tests passed in 3.81 seconds**; Ruff, strict mypy (58 source
+  files), Black (110 files), and diff checks passed outside the broken sandbox.
+  Seven added regression cases cover late dependency clues, message/version
+  preservation, specialist feedback, exact 17/180-minute correlation context,
+  and authoritative metadata despite absent or invented model windows.
+- [Implementation scope, limits, and reproduction commands](docs/validation/2026-09-23-grounding/README.md).
+  No live provider calls, data seeding, container changes, commit, or push occurred.
+- Stop for owner review and commit. Next action: fresh, retained live evaluation of
+  all three scenarios, reviewing dependency citations, unsupported causal claims,
+  and window prose as well as the existing service-mention score. The old **5/9**
+  score remains the latest measured baseline. V4 and final release verification
+  remain incomplete; LangSmith, Streamlit/media, and the README remain pending.
 
 ### Additional release improvements to consider
 

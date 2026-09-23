@@ -1,8 +1,9 @@
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
 import httpx
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.runnables import RunnableLambda
 from langchain_core.tools import BaseTool, StructuredTool
 from pydantic import BaseModel
@@ -10,6 +11,8 @@ from pydantic import BaseModel
 from incident_copilot.agents.tool_loop import run_tool_rounds
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.fake_provider import FakeLLMProvider
+from incident_copilot.models.enums import LogLevel
+from incident_copilot.models.logs import LogEntry, LogFinding
 from incident_copilot.utils.exceptions import MetricsSourceError
 
 
@@ -140,3 +143,47 @@ async def test_an_unreachable_model_is_recorded_not_raised() -> None:
 
     assert outcome.results == []
     assert any("All connection attempts failed" in e for e in outcome.errors)
+
+
+async def test_followup_round_sees_dependency_and_sample_scope() -> None:
+    finding = LogFinding(
+        query="service:payment-service",
+        matched_count=100,
+        level_breakdown={LogLevel.WARN: 1},
+        samples=(
+            LogEntry(
+                timestamp=datetime(2026, 9, 23, tzinfo=UTC),
+                service="payment-service",
+                level=LogLevel.WARN,
+                message="upstream timeout calling fraud-api",
+            ),
+        ),
+    )
+
+    async def search(value: str) -> LogFinding:
+        return finding
+
+    tools = [
+        StructuredTool.from_function(
+            coroutine=search, name="echo", description="retrieve logs", args_schema=EchoArgs
+        )
+    ]
+    conversations: list[Any] = []
+
+    class RecordingProvider(FakeLLMProvider):
+        def bind_tools(self, tools: Any) -> Any:
+            async def respond(messages: Any) -> AIMessage:
+                conversations.append(list(messages))
+                if len(conversations) == 1:
+                    return AIMessage(content="", tool_calls=[_call("logs")])
+                return AIMessage(content="done")
+
+            return RunnableLambda(respond)
+
+    result = await run_tool_rounds(RecordingProvider(["done"]), tools, MESSAGES, max_rounds=2)
+    assert result.results == [finding]
+    feedback = conversations[1][-1]
+    assert isinstance(feedback, ToolMessage)
+    assert "fraud-api" in feedback.content
+    assert "100 documents matched" in feedback.content
+    assert "1 samples retrieved" in feedback.content

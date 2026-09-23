@@ -12,7 +12,10 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool
 from pydantic import ValidationError
 
+from incident_copilot.agents.prompts import render_log_finding, render_metric_finding
 from incident_copilot.llm.base import ChatMessage, LLMProvider
+from incident_copilot.models.findings import MetricFindingBase
+from incident_copilot.models.logs import LogFinding
 from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.tools.window import INVESTIGATION_WINDOW_KEY
 from incident_copilot.utils.exceptions import IncidentCopilotError
@@ -105,7 +108,12 @@ async def run_tool_rounds(
                 continue
 
             outcome.results.append(result)
-            summary = getattr(result, "summary", None) or str(result)
+            if isinstance(result, LogFinding):
+                summary = render_log_finding(result)
+            elif isinstance(result, MetricFindingBase):
+                summary = render_metric_finding(result)
+            else:
+                summary = getattr(result, "summary", None) or str(result)
             conversation.append(
                 ToolMessage(content=str(summary), tool_call_id=str(call.get("id", "")))
             )

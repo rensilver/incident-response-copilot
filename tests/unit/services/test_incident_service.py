@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 
+from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.exceptions import InvestigationError
@@ -100,3 +101,24 @@ def test_request_rejects_an_out_of_range_window() -> None:
 def test_request_rejects_an_empty_query() -> None:
     with pytest.raises(ValueError):
         InvestigationRequest(query="")
+
+
+@pytest.mark.parametrize("model_window", [None, TimeWindow.from_minutes_back(5)])
+async def test_report_window_is_set_by_service_even_if_model_invents_one(
+    model_window: TimeWindow | None,
+) -> None:
+    generated = REPORT.model_copy(update={"investigation_window": model_window})
+    graph = StubGraph({"report": generated, "errors": []})
+    report = await IncidentService(graph).investigate(
+        InvestigationRequest(query="latency", minutes_back=180)
+    )
+    assert graph.seen is not None
+    assert report.investigation_window == graph.seen["time_window"]
+    assert report.investigation_window is not None
+    assert report.investigation_window.duration_seconds == 10800
+    # Do not mutate a graph's reusable report or silently rewrite its narrative.
+    assert generated.investigation_window == model_window
+    assert report.summary == generated.summary
+    assert report.model_dump(mode="json")["investigation_window"] == (
+        graph.seen["time_window"].model_dump(mode="json")
+    )
