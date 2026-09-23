@@ -1,0 +1,22 @@
+{"query": "checkout-service memory keeps climbing; investigate metrics and logs", "service": "checkout-service", "event": "investigation_started", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:31.014995Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:33.177437Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790158291.015122&end=1790169091.015122&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.022s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=rate%28process_cpu_seconds_total%7Bservice%3D%22checkout-service%22%7D%5B5m%5D%29&start=1790158291.015122&end=1790169091.015122&step=30s "HTTP/1.1 200 OK"
+{"findings": 2, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:34.136336Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.012s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:34.296763Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 1, "event": "correlation_complete", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:37.437028Z"}
+{"causes": 1, "event": "investigation_complete", "correlation_id": "2cf82645-c870-41b6-989d-43c723a307fc", "level": "info", "timestamp": "2026-09-23T13:11:37.440510Z"}
+/home/rensilver/workspaces/incident-response-copilot/scripts/validate_langsmith.py:91: DeprecationWarning: read_run() is deprecated and will be removed after Jan 31, 2027. Use client.runs.retrieve() instead. See https://docs.langchain.com/langsmith/smithdb-sdk-migration#runs-retrieve for the migration guide.
+  root = client.read_run(graph.run_id, load_child_runs=True)
+/home/rensilver/workspaces/incident-response-copilot/scripts/validate_langsmith.py:140: DeprecationWarning: get_run_url() is deprecated and will be removed after Jan 31, 2027. Use client.runs.get_url() instead. See https://docs.langchain.com/langsmith/smithdb-sdk-migration#runs-get-url for the migration guide.
+  "trace_url": client.get_run_url(run=root) if root else None,
+{"mode": "enabled", "passed": true, "root_run_id": "71c7267c-9d51-47c3-9792-9dd6a859bd46", "service_seconds": 6.425879295999948}

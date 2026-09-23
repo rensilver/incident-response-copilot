@@ -1,0 +1,146 @@
+{
+  "started_at": "2026-09-23T13:11:30.793433Z",
+  "source_commit": "ca228cce73cc63cea1959623de20edcfb8844a8a",
+  "mode": "enabled",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "fallback": "ollama",
+  "project": "incident-copilot",
+  "langsmith_key_supplied_to_settings": true,
+  "python": "3.13.13",
+  "packages": {
+    "langsmith": "0.11.0",
+    "langchain-core": "1.5.6",
+    "langgraph": "1.2.11",
+    "langchain-groq": "1.1.3"
+  },
+  "ram_total_mib": 6694.57421875,
+  "ram_available_before_mib": 2324.9140625,
+  "execution": "host IncidentService with real Groq and Docker data services; no HTTP/UI",
+  "root_run_id": "71c7267c-9d51-47c3-9792-9dd6a859bd46",
+  "sdk_tracing_enabled": true,
+  "request": {
+    "query": "checkout-service memory keeps climbing; investigate metrics and logs",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the 3\u2011hour window, checkout\u2011service experienced a 1.1\u00d7 rise in resident memory and a 1.7\u00d7 spike in CPU usage, accompanied by multiple OutOfMemoryError and GC overhead warnings, indicating a heap exhaustion likely due to a memory leak.",
+    "likely_causes": [
+      {
+        "title": "Heap exhaustion due to memory leak in checkout-service",
+        "rationale": "The service logged repeated OutOfMemoryError and GC overhead limit approaching warnings while memory and CPU metrics rose, pointing to a heap leak.",
+        "confidence": 0.9,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "java.lang.OutOfMemoryError: Java heap space (sample timestamps 2026-09-23T11:53:46+00:00 to 2026-09-23T12:14:46+00:00)"
+          },
+          {
+            "source": "logs",
+            "detail": "GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-23T10:59:46+00:00 to 2026-09-23T12:14:46+00:00)"
+          },
+          {
+            "source": "metrics",
+            "detail": "resident memory rose 1.1x, from 1208.19MiB to 1321.45MiB"
+          },
+          {
+            "source": "metrics",
+            "detail": "CPU usage rose 1.7x, from 0.46cores to 0.77cores"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Increase JVM heap size and monitor heap usage trends",
+      "Enable detailed GC logs to identify allocation patterns",
+      "Review recent code changes for potential memory leaks",
+      "Add application-level memory usage alerts"
+    ],
+    "confidence": 0.9,
+    "investigation_window": {
+      "start": "2026-09-23T10:11:31.015122Z",
+      "end": "2026-09-23T13:11:31.015122Z"
+    }
+  },
+  "investigation_error": null,
+  "service_seconds": 6.425879295999948,
+  "delivery": {
+    "complete_tree_received": true,
+    "polls": 2,
+    "span_count": 28,
+    "span_types": {
+      "chain": 17,
+      "llm": 7,
+      "tool": 4
+    },
+    "errored_spans": 0,
+    "root_input_matches_local": true,
+    "root_report_matches_local": true,
+    "trace_url": "https://smith.langchain.com/o/10c6d2c1-20ce-4544-9744-9af263840c28/projects/p/acc93d0d-c347-4a67-a233-8e5e3906a50c/r/71c7267c-9d51-47c3-9792-9dd6a859bd46?poll=true"
+  },
+  "requests_transport_calls": [
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/info",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/71c7267c-9d51-47c3-9792-9dd6a859bd46",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/query",
+      "status_code": 200
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/71c7267c-9d51-47c3-9792-9dd6a859bd46",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/query",
+      "status_code": 200
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/sessions",
+      "status_code": 200
+    }
+  ],
+  "finished_at": "2026-09-23T13:11:53.170676Z",
+  "passed": true
+}

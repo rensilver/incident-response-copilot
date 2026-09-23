@@ -1,0 +1,31 @@
+$ make lint
+.venv/bin/ruff check src tests
+All checks passed!
+.venv/bin/mypy --strict src
+Success: no issues found in 58 source files
+Exit: 0
+
+$ .venv/bin/ruff check scripts/validate_langsmith.py
+All checks passed!
+Exit: 0
+
+$ .venv/bin/mypy --strict src scripts/validate_langsmith.py
+Success: no issues found in 59 source files
+Exit: 0
+
+$ .venv/bin/black --check src tests scripts/validate_langsmith.py
+All done! ✨ 🍰 ✨
+111 files would be left unchanged.
+Exit: 0
+
+$ .venv/bin/pytest tests/unit -q
+........................................................................ [ 27%]
+........................................................................ [ 54%]
+........................................................................ [ 82%]
+...............................................                          [100%]
+263 passed in 2.97s
+Exit: 0
+
+$ git diff --check
+Exit: 0
+

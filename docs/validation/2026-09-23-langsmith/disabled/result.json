@@ -1,0 +1,82 @@
+{
+  "started_at": "2026-09-23T13:06:03.080790Z",
+  "source_commit": "ca228cce73cc63cea1959623de20edcfb8844a8a",
+  "mode": "disabled",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "fallback": "ollama",
+  "project": "incident-copilot",
+  "langsmith_key_supplied_to_settings": false,
+  "python": "3.13.13",
+  "packages": {
+    "langsmith": "0.11.0",
+    "langchain-core": "1.5.6",
+    "langgraph": "1.2.11",
+    "langchain-groq": "1.1.3"
+  },
+  "ram_total_mib": 6694.57421875,
+  "ram_available_before_mib": 2435.90234375,
+  "execution": "host IncidentService with real Groq and Docker data services; no HTTP/UI",
+  "root_run_id": "dd243751-3ac1-491c-ad47-d35b6894b3d0",
+  "sdk_tracing_enabled": false,
+  "request": {
+    "query": "checkout-service memory keeps climbing; investigate metrics and logs",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the 3\u2011hour investigation window, checkout\u2011service logged repeated Java OutOfMemoryError and GC overhead warnings while the resident memory metric remained steady per threshold\u2011validated data but raw query shows a 1\u00d7 increase. The evidence points to heap exhaustion, likely caused by a memory leak or an insufficiently sized JVM heap.",
+    "likely_causes": [
+      {
+        "title": "Heap exhaustion due to a memory leak",
+        "rationale": "The service logged four OutOfMemoryError events and sixteen GC overhead limit approaching warnings, indicating sustained high heap usage. The raw resident memory query shows a 1\u00d7 increase, supporting the notion that the heap is growing beyond its capacity.",
+        "confidence": 0.8,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space (sample timestamps 2026-09-23T11:53:46+00:00 to 2026-09-23T12:14:46+00:00)"
+          },
+          {
+            "source": "logs",
+            "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-23T10:59:46+00:00 to 2026-09-23T12:14:46+00:00)"
+          },
+          {
+            "source": "metrics",
+            "detail": "Raw resident memory rose 1.0x from 1337046606.80 to 1374168568.62 bytes"
+          }
+        ]
+      },
+      {
+        "title": "Insufficient JVM heap size configured",
+        "rationale": "GC overhead limit approaching warnings are commonly triggered when the heap is too small for the workload. The absence of a sudden spike in the threshold\u2011validated metric suggests the heap may be consistently under\u2011provisioned rather than a transient leak.",
+        "confidence": 0.6,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-23T10:59:46+00:00 to 2026-09-23T12:14:46+00:00)"
+          },
+          {
+            "source": "metrics",
+            "detail": "Raw resident memory rose 1.0x from 1337046606.80 to 1374168568.62 bytes"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Collect and analyze heap dumps from checkout\u2011service during the incident window",
+      "Review recent code changes or deployments that could introduce memory leaks",
+      "Increase the JVM heap size and monitor for recurrence of OOM errors",
+      "Enable detailed GC logging to capture heap usage trends before and after the incident"
+    ],
+    "confidence": 0.7,
+    "investigation_window": {
+      "start": "2026-09-23T10:06:03.409363Z",
+      "end": "2026-09-23T13:06:03.409363Z"
+    }
+  },
+  "investigation_error": null,
+  "service_seconds": 7.677981712000474,
+  "requests_transport_calls": [],
+  "finished_at": "2026-09-23T13:06:13.091032Z",
+  "passed": true
+}

@@ -101,7 +101,7 @@ Finalize the project
    four temporal data tools use its exact start/end timestamps, independent of
    model-selected durations. Offline regressions and live checks for all four tools
    pass. Model-written report prose can still misstate the interval; see item 5.
-4. **Offline baseline and configured-provider integration pass.** All 257 unit tests
+4. **Offline baseline and configured-provider integration pass.** All 263 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
 5. **Grounding mitigation committed (`2a66a8b`); fresh nine-run evaluation retained.**
@@ -126,7 +126,13 @@ Finalize the project
    inference, combined stack/model memory, and the UI timeout remain unverified.
    The owner confirmed continued use of this laptop and recording successful local
    inference as blocked. Additional failure validation passed; see the record below.
-7. **Complete Task 3: rewrite README.md.** Explain purpose, stack, architecture
+7. **LangSmith validation passed; awaiting owner review and commit.** Real Groq
+   tracing produced 28 completed remote spans, including all four agents, seven
+   LLM calls, and four tool calls; remote graph inputs/report match local capture.
+   Both tracing-disabled investigations succeeded without a tracing key in settings,
+   including inherited-enabled flags after a helper/cache fix. Neither disabled run
+   ID was found in LangSmith. See the 2026-09-23 LangSmith validation record below.
+8. **Complete Task 3: rewrite README.md.** Explain purpose, stack, architecture
    diagram, package structure, configuration, build/run steps, API/UI usage, and
    verified results. Include screenshots and a demo recording. Correct the
    missing measured-results anchor and stale provider/model descriptions. Keep
@@ -386,6 +392,42 @@ Finalize the project
   remaining unsupported claims before another implementation/evaluation action.
   LangSmith delivery, Streamlit/media, the measured-results README, and final V1–V5
   verification remain pending. V4 is not complete.
+
+### LangSmith validation — 2026-09-23
+
+- Completed action 4 against the shared host `IncidentService`, real Groq
+  `openai/gpt-oss-20b`, and existing seeded Docker data. The enabled investigation
+  returned in **6.426 s**; LangSmith readback confirmed **28 completed spans**
+  (17 chain, seven LLM, four tool), all four agents, no span errors, and exact local/
+  remote agreement for graph inputs and the graph report. No tracer was manually
+  injected. The authenticated trace link and remote payloads are retained.
+- Tracing-disabled investigations returned in **7.678 s** (preliminary) and
+  **5.511 s** (final), without a LangSmith key supplied to settings. The final check
+  inherited enabled legacy/modern V2 flags. Both had SDK tracing false, zero observed
+  SDK HTTP calls, and subsequent remote lookups found neither run ID. These three
+  functional checks are not an overhead benchmark or an RCA evaluation.
+- Fixed `configure_tracing`: disabled settings previously left inherited enabled
+  flags intact; cached SDK environment lookups also retained stale values. It now
+  sets consistent flags in both namespaces and invalidates available lookup caches.
+  Configuration remains process-wide at application construction, not per-request
+  switching; queued traces and explicit tracing contexts are outside this check.
+- Added `scripts/validate_langsmith.py` to retain one real attempt, graph state,
+  report, timing, SDK transport observations, and authenticated remote span readback.
+  All three attempts succeeded, each with seven Groq HTTP 200 responses and no
+  logged fallback. No local model was loaded. No data was reseeded or container
+  rebuilt; the existing deployed app remains tracing disabled on its previous image.
+- **263 unit tests passed in 2.97 s**; Ruff, strict mypy (59 files with validator),
+  Black (111 files), and whitespace checks passed. Six added regression cases cover
+  inherited flags and SDK cache behavior. Tools ran outside the broken sandbox.
+- [Results, trace evidence, limitations, and reproduction commands](docs/validation/2026-09-23-langsmith/README.md).
+  The SDK's installed readback APIs emit deprecation warnings; the script is verified
+  with LangSmith 0.11.0 and this workspace backend. Abrupt shutdown and tracing-service
+  outages were not tested. The owner supplied a key in ignored `.env`; no secret
+  values were retained in publication artifacts.
+- Stop for owner review and commit. Next numbered action: Streamlit validation,
+  error/timeout behavior, screenshots, and recording. The README rewrite and final
+  V1–V5 verification remain pending; V4 is not complete. Successful local inference
+  remains blocked. No commit or push was performed.
 
 ### Additional release improvements to consider
 

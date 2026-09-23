@@ -37,8 +37,10 @@ accuracy), including one Groq 429 / local-RAM refusal. Both returned slow-depend
 reports now cite `fraud-api`; identifier-sensitive scoring and unsupported causal
 claims remain limitations. The prior pass scored 5/9. See
 `docs/validation/2026-09-23-evaluation/README.md` for full evidence and measurements.
-Further scoring/grounding review, LangSmith delivery, Streamlit/media, and the final
-README remain pending. Successful local fallback is blocked by available RAM. Complete one action
+LangSmith delivery and tracing-disabled operation are now verified for the shared
+host service path; see `docs/validation/2026-09-23-langsmith/README.md`. Its tracing
+flag/cache fix and 263 passing unit tests await owner review and commit. Further
+scoring/grounding review, Streamlit/media, and the final README remain pending. Successful local fallback is blocked by available RAM. Complete one action
 at a time and wait for owner review and commit, as required by `AGENTS.md`.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
