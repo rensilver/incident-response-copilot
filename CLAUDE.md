@@ -32,11 +32,13 @@ this repository.
   HTML builder); a dark console-styled thin client over the FastAPI API only
 
 V1–V5 have implementations, but final release verification is incomplete. The
-nine-run Groq evaluation returned 5/9 culprit-service mentions (not RCA accuracy);
-all three slow-dependency reports missed `fraud-api`. See
-`docs/validation/2026-09-22-evaluation/README.md` for retained measurements.
-Report grounding, LangSmith delivery, Streamlit/media, and the final README remain
-pending. Successful local fallback is blocked by available RAM. Complete one action
+latest nine-run Groq evaluation returned 4/9 culprit-service mentions (not RCA
+accuracy), including one Groq 429 / local-RAM refusal. Both returned slow-dependency
+reports now cite `fraud-api`; identifier-sensitive scoring and unsupported causal
+claims remain limitations. The prior pass scored 5/9. See
+`docs/validation/2026-09-23-evaluation/README.md` for full evidence and measurements.
+Further scoring/grounding review, LangSmith delivery, Streamlit/media, and the final
+README remain pending. Successful local fallback is blocked by available RAM. Complete one action
 at a time and wait for owner review and commit, as required by `AGENTS.md`.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks

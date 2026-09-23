@@ -1,0 +1,190 @@
+{
+  "captured_at": "2026-09-23T12:32:00.214106+00:00",
+  "elasticsearch_count": {
+    "count": 1231,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    }
+  },
+  "elasticsearch_aggregations": {
+    "took": 108,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 1231,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "first": {
+        "value": 1790155186000.0,
+        "value_as_string": "2026-09-23T09:19:46.000Z"
+      },
+      "last": {
+        "value": 1790165928000.0,
+        "value_as_string": "2026-09-23T12:18:48.000Z"
+      },
+      "services": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "cart-service",
+            "doc_count": 254
+          },
+          {
+            "key": "payment-service",
+            "doc_count": 237
+          },
+          {
+            "key": "checkout-service",
+            "doc_count": 200
+          },
+          {
+            "key": "fraud-api",
+            "doc_count": 180
+          },
+          {
+            "key": "inventory-service",
+            "doc_count": 180
+          },
+          {
+            "key": "shipping-service",
+            "doc_count": 180
+          }
+        ]
+      }
+    }
+  },
+  "prometheus_current_series": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": []
+    }
+  },
+  "blocks": [
+    {
+      "ulid": "01M373E5YTZM93CFDEEDRVY2Z7",
+      "minTime": 1790155182000,
+      "maxTime": 1790157587001,
+      "stats": {
+        "numSamples": 2952,
+        "numFloatSamples": 2952,
+        "numSeries": 72,
+        "numChunks": 72
+      },
+      "compaction": {
+        "level": 2,
+        "sources": [
+          "01M373C4YRV5M8KH9M09Z23VJS",
+          "01M373C6HZ82J8EZ504CDMWF5M",
+          "01M373C7CCYGEP62AHPNNEFN5B"
+        ],
+        "parents": [
+          {
+            "ulid": "01M373C4YRV5M8KH9M09Z23VJS",
+            "minTime": 1790155182000,
+            "maxTime": 1790157582001
+          },
+          {
+            "ulid": "01M373C6HZ82J8EZ504CDMWF5M",
+            "minTime": 1790155186000,
+            "maxTime": 1790157586001
+          },
+          {
+            "ulid": "01M373C7CCYGEP62AHPNNEFN5B",
+            "minTime": 1790155187000,
+            "maxTime": 1790157587001
+          }
+        ]
+      },
+      "version": 1
+    },
+    {
+      "ulid": "01M373E608QYH97Z2WZ0QPN0RB",
+      "minTime": 1790157642000,
+      "maxTime": 1790164787001,
+      "stats": {
+        "numSamples": 8640,
+        "numFloatSamples": 8640,
+        "numSeries": 84,
+        "numChunks": 84
+      },
+      "compaction": {
+        "level": 2,
+        "sources": [
+          "01M373C4ZNSZA59VHWJ8JPKZEF",
+          "01M373C6JP2YFC0TC6ANTT31A9",
+          "01M373C7D8KKD62ZH4ZCJB4R24"
+        ],
+        "parents": [
+          {
+            "ulid": "01M373C4ZNSZA59VHWJ8JPKZEF",
+            "minTime": 1790157642000,
+            "maxTime": 1790164782001
+          },
+          {
+            "ulid": "01M373C6JP2YFC0TC6ANTT31A9",
+            "minTime": 1790157646000,
+            "maxTime": 1790164786001
+          },
+          {
+            "ulid": "01M373C7D8KKD62ZH4ZCJB4R24",
+            "minTime": 1790157647000,
+            "maxTime": 1790164787001
+          }
+        ]
+      },
+      "version": 1
+    },
+    {
+      "ulid": "01M373E60WXJJRNR64E7PBPTNV",
+      "minTime": 1790164842000,
+      "maxTime": 1790165927001,
+      "stats": {
+        "numSamples": 1368,
+        "numFloatSamples": 1368,
+        "numSeries": 72,
+        "numChunks": 72
+      },
+      "compaction": {
+        "level": 2,
+        "sources": [
+          "01M373C514F498F7M58H7SMAQW",
+          "01M373C6KM6MYH9NT13N6GSMYS",
+          "01M373C7E740BBTBVE7KPZZJNW"
+        ],
+        "parents": [
+          {
+            "ulid": "01M373C514F498F7M58H7SMAQW",
+            "minTime": 1790164842000,
+            "maxTime": 1790165922001
+          },
+          {
+            "ulid": "01M373C6KM6MYH9NT13N6GSMYS",
+            "minTime": 1790164846000,
+            "maxTime": 1790165926001
+          },
+          {
+            "ulid": "01M373C7E740BBTBVE7KPZZJNW",
+            "minTime": 1790164847000,
+            "maxTime": 1790165927001
+          }
+        ]
+      },
+      "version": 1
+    }
+  ]
+}

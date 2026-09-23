@@ -101,23 +101,23 @@ Finalize the project
    four temporal data tools use its exact start/end timestamps, independent of
    model-selected durations. Offline regressions and live checks for all four tools
    pass. Model-written report prose can still misstate the interval; see item 5.
-4. **Offline baseline and configured-provider integration pass.** All 250 unit tests
+4. **Offline baseline and configured-provider integration pass.** All 257 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
-5. **Nine-run evaluation measured; grounding mitigation awaits live remeasurement.** The
-   retained 2026-09-22 evaluation completed all nine attempts: bad deploy 2/3, memory
-   leak 3/3, slow dependency 0/3; overall 5/9 service-name matches, zero request
-   errors, and 5.063 s mean service-call latency. See the evaluation record below.
-   A focused grounding mitigation is implemented with offline checks below; review
-   and commit it, then remeasure and exercise
-   all three scenarios through the UI. The current score only checks
-   whether the expected service name appears in the top cause or its evidence;
-   describe that limitation rather than presenting it as proof of RCA accuracy.
-   Report validation requires evidence entries but does not verify that their
-   contents match the retrieved observations.
-   The live slow-dependency report missed `fraud-api`, blamed traffic without traffic
-   evidence, and confused a PromQL five-minute rate interval with the 180-minute
-   investigation window. Investigate report grounding before claiming RCA quality.
+5. **Grounding mitigation committed (`2a66a8b`); fresh nine-run evaluation retained.**
+   The 2026-09-23 pass scored bad deploy **0/3**, memory leak **2/3**, slow dependency
+   **2/3**, overall **4/9 (44.4%)**, with one investigation error and **5.532 s** mean
+   service-call latency across all attempts. The last attempt hit Groq HTTP 429;
+   fallback refused local inference below the RAM floor. No attempt was replaced.
+   Both returned slow-dependency reports cite retrieved `fraud-api` timeout evidence;
+   none of the eight returned reports confuses the window with PromQL's five minutes.
+   All actual queries and returned window metadata match the requested 180 minutes.
+   This does not establish improved overall RCA accuracy: cart reports recognize the
+   exception but omit the service name from scored fields; a Unicode hyphen causes
+   another false negative. Unsupported heap-size and code-level causal claims remain.
+   Review and commit this measurement action before changing scoring or grounding.
+   The current score is a substring service-mention check, not verified causality.
+   See the new validation record below; the original 5/9 baseline remains retained.
 6. **Hardware capacity assessed; live Ollama benchmark constrained.** See
    `docs/hardware-assessment.md`. All project ports were free on 2026-09-22.
    The five-container stack used about 1.4 GiB without a local model or Streamlit.
@@ -340,6 +340,52 @@ Finalize the project
   and window prose as well as the existing service-mention score. The old **5/9**
   score remains the latest measured baseline. V4 and final release verification
   remain incomplete; LangSmith, Streamlit/media, and the README remain pending.
+
+### Grounding live remeasurement — 2026-09-23
+
+- Evaluated committed grounding changes (`2a66a8b`) with fresh data and rebuilt Docker
+  app. Added local tool callbacks and initial/final graph-state capture to the existing
+  recorder; no production prompts, providers, scorer, or seed definitions changed.
+- All nine planned attempts were retained: bad deploy **0/3**, memory leak **2/3**,
+  slow dependency **2/3**, overall **4/9 (44.4%)** service-name matches. Eight reports
+  returned; one investigation failed. Every saved artifact matches the summary and
+  every score reproduces. The prior baseline is 5/9; no aggregate improvement claimed.
+- The final slow-dependency attempt hit Groq HTTP 429 during correlation after
+  successful collection. Ollama refused cold loading with **2,243 MiB** available
+  versus the unchanged **4,096 MiB** guard. The transcript has 62 successful Groq
+  completion requests, one 429, and one fallback event. Quota dimension/reset time
+  was not retained. Pacing 65 seconds does not guarantee quota availability.
+- Mean/median service-call latency across all attempts: **5.532 / 5.586 s**, range
+  **4.063–7.785 s**. Eight successful calls averaged **5.504 s**. Total pass time was
+  **570.147 s** including pacing. These are host service calls, not HTTP/UI latency.
+- All **29 tool calls** retained full outputs. Both specialists ran on every attempt;
+  each log specialist searched WARN and ERROR without keywords. All 11 outgoing
+  Prometheus ranges and 18 Elasticsearch filters match exact 180-minute windows.
+  All eight reports have authoritative metadata equal to the initial window. Six
+  narratives explicitly say three hours; two omit duration; none says five minutes.
+- Both returned slow-dependency reports preserve the retrieved `fraud-api` timeout
+  clue, addressing the observed omission in these two runs. No fraud-api metrics
+  were queried, so dependency leading-order and internal mechanism remain unverified.
+  Memory reports still rank insufficient heap size without configuration evidence;
+  one cart report invents which object was null. Sample-versus-total log counts and
+  causal confidence also remain imperfect. Prompt instructions do not ensure grounding.
+- All three cart reports identify the seeded exception but omit the ASCII service
+  name from scored fields. Memory attempt 1 uses a U+2011 hyphen in `checkout‑service`
+  and fails the unchanged substring score. These are concrete scoring limitations,
+  not reasons to alter or replace the recorded results after the run.
+- Forty-seven samples: five-container memory **1,356.25–1,522.63 MiB**, host available
+  RAM **2,156.07–2,410.78 MiB**, harness RSS **137.65–143.53 MiB**. No sampling errors;
+  peaks may be missed. No local model was loaded before/after. Successful local
+  inference remains blocked and unverified. Tracing was disabled; Streamlit was absent.
+- **257 unit tests passed in 3.89 s**; Ruff, strict mypy (59 files including recorder),
+  Black (111 files), and whitespace checks passed. Offline callback/serialization
+  probe passed with a fake provider after correcting its standalone fixture settings.
+- [Results, full evidence, limitations, and reproduction commands](docs/validation/2026-09-23-evaluation/README.md).
+  The five containers remain running for review; no commit or push was performed.
+- Stop for owner review and commit. Review the scorer's identifier sensitivity and
+  remaining unsupported claims before another implementation/evaluation action.
+  LangSmith delivery, Streamlit/media, the measured-results README, and final V1–V5
+  verification remain pending. V4 is not complete.
 
 ### Additional release improvements to consider
 

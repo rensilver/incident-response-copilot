@@ -1,0 +1,126 @@
+{
+  "stats": {
+    "bad_deploy": {
+      "matches": 0,
+      "attempts": 3,
+      "errors": 0,
+      "mean_s": 4.364090146333486,
+      "median_s": 4.372184486000151,
+      "min_s": 4.062642382999911,
+      "max_s": 4.657443570000396
+    },
+    "memory_leak": {
+      "matches": 2,
+      "attempts": 3,
+      "errors": 0,
+      "mean_s": 5.857161265666794,
+      "median_s": 6.182302376999814,
+      "min_s": 5.203681405000225,
+      "max_s": 6.185500015000343
+    },
+    "slow_dependency": {
+      "matches": 2,
+      "attempts": 3,
+      "errors": 1,
+      "mean_s": 6.373637897666565,
+      "median_s": 5.749500261000321,
+      "min_s": 5.585928026999682,
+      "max_s": 7.78548540499969
+    },
+    "overall": {
+      "matches": 4,
+      "attempts": 9,
+      "errors": 1,
+      "mean_s": 5.531629769888948,
+      "median_s": 5.585928026999682,
+      "min_s": 4.062642382999911,
+      "max_s": 7.78548540499969
+    }
+  },
+  "resource_samples": 47,
+  "sampling_errors": 0,
+  "resources": {
+    "host_available_mib": {
+      "min": 2156.07421875,
+      "max": 2410.77734375
+    },
+    "swap_used_mib": {
+      "min": 2590.1171875,
+      "max": 2630.6875
+    },
+    "harness_rss_mib": {
+      "min": 137.65234375,
+      "max": 143.53125
+    },
+    "container_used_mib": {
+      "min": 1356.25,
+      "max": 1522.63
+    }
+  },
+  "wall_seconds": 570.146912227,
+  "groq_http_200": 62,
+  "groq_http_429": 1,
+  "fallback_events": 1,
+  "tool_calls": 29,
+  "metric_queries": [
+    {
+      "start": 1790155396.587341,
+      "end": 1790166196.587341,
+      "query": "sum(rate(http_requests_total{service=\"cart-service\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"cart-service\"}[5m]))"
+    },
+    {
+      "start": 1790155466.299157,
+      "end": 1790166266.299157,
+      "query": "sum(rate(http_requests_total{service=\"cart-service\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"cart-service\"}[5m]))"
+    },
+    {
+      "start": 1790155466.299157,
+      "end": 1790166266.299157,
+      "query": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"cart-service\"}[5m])))"
+    },
+    {
+      "start": 1790155535.417262,
+      "end": 1790166335.417262,
+      "query": "sum(rate(http_requests_total{service=\"cart-service\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"cart-service\"}[5m]))"
+    },
+    {
+      "start": 1790155535.417262,
+      "end": 1790166335.417262,
+      "query": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"cart-service\"}[5m])))"
+    },
+    {
+      "start": 1790155604.831984,
+      "end": 1790166404.831984,
+      "query": "process_resident_memory_bytes{service=\"checkout-service\"}"
+    },
+    {
+      "start": 1790155675.074985,
+      "end": 1790166475.074985,
+      "query": "process_resident_memory_bytes{service=\"checkout-service\"}"
+    },
+    {
+      "start": 1790155746.311286,
+      "end": 1790166546.311286,
+      "query": "process_resident_memory_bytes{service=\"checkout-service\"}"
+    },
+    {
+      "start": 1790155817.552193,
+      "end": 1790166617.552193,
+      "query": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"payment-service\"}[5m])))"
+    },
+    {
+      "start": 1790155888.156294,
+      "end": 1790166688.156294,
+      "query": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"payment-service\"}[5m])))"
+    },
+    {
+      "start": 1790155960.982266,
+      "end": 1790166760.982266,
+      "query": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"payment-service\"}[5m])))"
+    }
+  ],
+  "all_artifacts_match_summary": true,
+  "all_scores_reproduced": true,
+  "all_windows_exact_180_minutes": true,
+  "successful_report_mean_s": 5.504395958500027
+}

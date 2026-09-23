@@ -11,13 +11,18 @@ import platform
 import subprocess
 import threading
 import time
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 import httpx
 import psutil
+from langchain_core.callbacks import BaseCallbackHandler
+from langgraph.graph.state import CompiledStateGraph
+from pydantic_core import to_jsonable_python
 
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import get_settings
@@ -78,12 +83,67 @@ def sample_memory(output: Path, stop: threading.Event) -> None:
             stop.wait(10)
 
 
+class ToolEvidenceRecorder(BaseCallbackHandler):
+    """Retain tool arguments and full returned findings for synthetic demo review."""
+
+    def __init__(self) -> None:
+        """Start an empty event list; callbacks may run from parallel specialists."""
+        self.events: list[dict[str, Any]] = []
+
+    def on_tool_start(
+        self,
+        serialized: dict[str, Any],
+        input_str: str,
+        *,
+        run_id: UUID,
+        inputs: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Record model-selected arguments; the graph retains the enforced window."""
+        self.events.append(
+            {
+                "event": "start",
+                "run_id": str(run_id),
+                "tool": serialized.get("name"),
+                "inputs": to_jsonable_python(inputs if inputs is not None else input_str),
+            }
+        )
+
+    def on_tool_end(self, output: Any, *, run_id: UUID, **kwargs: Any) -> None:
+        """Retain the typed tool output, including all sampled logs and metrics."""
+        self.events.append(
+            {"event": "end", "run_id": str(run_id), "output": to_jsonable_python(output)}
+        )
+
+    def on_tool_error(self, error: BaseException, *, run_id: UUID, **kwargs: Any) -> None:
+        """Keep tool failures even when the specialist recovers."""
+        self.events.append({"event": "error", "run_id": str(run_id), "error": str(error)})
+
+
+class RecordingGraph:
+    """Observe the real graph without altering its requests, tools, or report."""
+
+    def __init__(self, graph: CompiledStateGraph) -> None:  # type: ignore[type-arg]
+        """Wrap the same compiled graph used by the ordinary evaluation harness."""
+        self.graph = graph
+        self.evidence: dict[str, Any] = {}
+
+    async def ainvoke(self, state: Any, /) -> Mapping[str, Any]:
+        """Capture tool events and final findings for one sequential investigation."""
+        recorder = ToolEvidenceRecorder()
+        self.evidence = {"initial_state": to_jsonable_python(state), "tools": recorder.events}
+        final = await self.graph.ainvoke(state, config={"callbacks": [recorder]})
+        self.evidence["final_state"] = to_jsonable_python(final)
+        return final
+
+
 class RecordingService:
     """Measure the service call while preserving the harness's error handling."""
 
-    def __init__(self, service: IncidentService) -> None:
+    def __init__(self, service: IncidentService, graph: RecordingGraph) -> None:
         """Wrap the real service without changing requests or reports."""
         self.service = service
+        self.graph = graph
         self.record: dict[str, Any] = {}
 
     async def investigate(self, request: InvestigationRequest) -> IncidentReport:
@@ -102,6 +162,7 @@ class RecordingService:
         finally:
             self.record["elapsed_seconds"] = time.perf_counter() - started
             self.record["finished_at"] = timestamp()
+            self.record["evidence"] = self.graph.evidence
 
 
 async def measure(output: Path, delay: float) -> None:
@@ -168,7 +229,8 @@ async def measure(output: Path, delay: float) -> None:
     stop = threading.Event()
     sampler = threading.Thread(target=sample_memory, args=(output, stop), daemon=True)
     collaborators = build_collaborators(settings)
-    service = RecordingService(IncidentService(collaborators.graph))
+    graph = RecordingGraph(collaborators.graph)
+    service = RecordingService(IncidentService(graph), graph)
     results: list[RunResult] = []
     records = []
     started = time.perf_counter()
