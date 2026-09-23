@@ -31,8 +31,13 @@ this repository.
   no import of `incident_copilot`), `styles.py` (injected CSS + the confidence-meter
   HTML builder); a dark console-styled thin client over the FastAPI API only
 
-Work proceeds along the Roadmap at the end of this file — V1-V3 and V5 are in, and V4
-is done except for the README's measured-results pass.
+V1–V5 have implementations, but final release verification is incomplete. The
+nine-run Groq evaluation returned 5/9 culprit-service mentions (not RCA accuracy);
+all three slow-dependency reports missed `fraud-api`. See
+`docs/validation/2026-09-22-evaluation/README.md` for retained measurements.
+Report grounding, LangSmith delivery, Streamlit/media, and the final README remain
+pending. Successful local fallback is blocked by available RAM. Complete one action
+at a time and wait for owner review and commit, as required by `AGENTS.md`.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -299,16 +304,17 @@ Prometheus/Elasticsearch belongs in `tests/integration`.
 
 ## Roadmap
 
-- **V1 (done)** — Connectors + a single agent doing basic tool-calling over Prometheus
-  and Elasticsearch.
-- **V2 (done)** — Full LangGraph multi-agent orchestration (supervisor + metrics + logs
-  agents).
-- **V3 (done)** — Correlation/RCA agent, structured `IncidentReport` output, FastAPI
-  endpoint, demo data seeding.
-- **V4 (evaluation harness, LangSmith tracing and Docker deploy done)** — the README's
-  polished, measured-results pass is the one piece left.
-- **V5 (done)** — Streamlit demo UI over the FastAPI API, so anyone reviewing the repo
-  can trigger an investigation without hitting the API directly.
+- **V1 (implemented; final release verification incomplete)** — Connectors and basic
+  tool-calling over Prometheus and Elasticsearch; offline and live connector checks pass.
+- **V2 (implemented; final release verification incomplete)** — LangGraph supervisor
+  and specialists; graph tests pass, but evaluation exposes report-quality issues.
+- **V3 (implemented; final release verification incomplete)** — Correlation reports,
+  FastAPI, and seeded data; live API checks pass, but report grounding remains unresolved.
+- **V4 (incomplete)** — Docker startup and the nine-run evaluation are validated.
+  LangSmith delivery and publication of measured results in the final README remain
+  unverified/incomplete. Tracing-disabled investigations passed.
+- **V5 (implemented; live validation pending)** — Streamlit client over FastAPI;
+  scenario walkthroughs, screenshots, and the recorded demo remain pending.
 
 ## What Claude Code should NOT do
 

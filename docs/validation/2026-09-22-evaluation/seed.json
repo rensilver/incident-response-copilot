@@ -1,0 +1,85 @@
+{
+  "command": "make demo-reset && docker compose --profile app up -d",
+  "seed_started_at": "2026-09-22T13:42:08.010305Z",
+  "logs_indexed_at": "2026-09-22T13:42:13.137233Z",
+  "log_documents": 1231,
+  "scenarios": 3,
+  "hours": 3,
+  "prometheus_blocks": [
+    {
+      "ulid": "01M34NPFQ96112S29VFY4G7A2S",
+      "minTime": 1790073668000,
+      "maxTime": 1790078351001,
+      "stats": {
+        "numSamples": 5688,
+        "numFloatSamples": 5688,
+        "numSeries": 72,
+        "numChunks": 72
+      },
+      "compaction": {
+        "level": 2,
+        "sources": [
+          "01M34NMFYRT6287RX4RDX3ZXTZ",
+          "01M34NMGYP6TGAWZT7CTJ08DSX",
+          "01M34NMHG7CCV5VJQ6N6WM7DE2"
+        ],
+        "parents": [
+          {
+            "ulid": "01M34NMFYRT6287RX4RDX3ZXTZ",
+            "minTime": 1790073668000,
+            "maxTime": 1790078348001
+          },
+          {
+            "ulid": "01M34NMGYP6TGAWZT7CTJ08DSX",
+            "minTime": 1790073670000,
+            "maxTime": 1790078350001
+          },
+          {
+            "ulid": "01M34NMHG7CCV5VJQ6N6WM7DE2",
+            "minTime": 1790073671000,
+            "maxTime": 1790078351001
+          }
+        ]
+      },
+      "version": 1
+    },
+    {
+      "ulid": "01M34NPFR443JHGMKEZPC3FQV5",
+      "minTime": 1790078408000,
+      "maxTime": 1790084411001,
+      "stats": {
+        "numSamples": 7272,
+        "numFloatSamples": 7272,
+        "numSeries": 84,
+        "numChunks": 84
+      },
+      "compaction": {
+        "level": 2,
+        "sources": [
+          "01M34NMFZW48NBCVBPZS5S2387",
+          "01M34NMGZDE8ZFYY7GT4B7VGNV",
+          "01M34NMHGYJGA7HKYK4GXPHRY5"
+        ],
+        "parents": [
+          {
+            "ulid": "01M34NMFZW48NBCVBPZS5S2387",
+            "minTime": 1790078408000,
+            "maxTime": 1790084408001
+          },
+          {
+            "ulid": "01M34NMGZDE8ZFYY7GT4B7VGNV",
+            "minTime": 1790078410000,
+            "maxTime": 1790084410001
+          },
+          {
+            "ulid": "01M34NMHGYJGA7HKYK4GXPHRY5",
+            "minTime": 1790078411000,
+            "maxTime": 1790084411001
+          }
+        ]
+      },
+      "version": 1
+    }
+  ],
+  "note": "Counts and timestamps from seed command output; block metadata read from generated files. Reset replaces synthetic metrics and logs; preserves Ollama volume. App profile container remained running during data-service reset."
+}

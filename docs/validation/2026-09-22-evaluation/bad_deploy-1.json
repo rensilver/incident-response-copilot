@@ -1,0 +1,66 @@
+{
+  "started_at": "2026-09-22T13:43:11.644612+00:00",
+  "request": {
+    "query": "cart-service is returning 5xx errors after a deploy",
+    "service": "cart-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "cart-service 5xx errors after deploy due to a NullPointerException in PromotionEngine.applyDiscount",
+    "likely_causes": [
+      {
+        "title": "NullPointerException in PromotionEngine.applyDiscount causing 5xx responses",
+        "rationale": "The logs contain repeated NullPointerException stack traces at PromotionEngine.applyDiscount, and the metrics show a sudden 15.00pp spike in 5xx error rate, indicating that this exception is directly causing the failures.",
+        "confidence": 0.95,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+          },
+          {
+            "source": "metrics",
+            "detail": "5xx error rate 15.00pp"
+          }
+        ]
+      },
+      {
+        "title": "Deployment introduced code change that triggers NPE due to missing promotion data",
+        "rationale": "The absence of any deploy-related logs combined with the NPE suggests that a recent code change may have removed or altered the handling of promotion data, leading to null values.",
+        "confidence": 0.75,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+          }
+        ]
+      },
+      {
+        "title": "Missing environment variable leading to null promotion context",
+        "rationale": "A missing environment variable could cause the promotion context to be null, which would trigger the observed NPE.",
+        "confidence": 0.4,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Rollback to the last known good deployment",
+      "Investigate PromotionEngine.applyDiscount for null handling and add defensive checks",
+      "Add unit tests to cover promotion data scenarios",
+      "Verify that all required environment variables are set and documented",
+      "Monitor 5xx error rate and logs after changes to confirm resolution"
+    ],
+    "confidence": 0.85
+  },
+  "error": null,
+  "elapsed_seconds": 4.54290330799995,
+  "finished_at": "2026-09-22T13:43:16.187551+00:00",
+  "scenario": "bad_deploy",
+  "repeat": 1,
+  "expected_culprit": "cart-service",
+  "correct": false,
+  "detail": "NullPointerException in PromotionEngine.applyDiscount causing 5xx responses"
+}

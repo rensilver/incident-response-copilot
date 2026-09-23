@@ -1,0 +1,588 @@
+{
+  "finished_at": "2026-09-22T13:52:37.557468+00:00",
+  "wall_seconds_including_pacing": 565.9131543969997,
+  "planned_attempts": 9,
+  "completed_attempts": 9,
+  "mention_matches": 5,
+  "investigation_errors": 0,
+  "runs": [
+    {
+      "started_at": "2026-09-22T13:43:11.644612+00:00",
+      "request": {
+        "query": "cart-service is returning 5xx errors after a deploy",
+        "service": "cart-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "cart-service 5xx errors after deploy due to a NullPointerException in PromotionEngine.applyDiscount",
+        "likely_causes": [
+          {
+            "title": "NullPointerException in PromotionEngine.applyDiscount causing 5xx responses",
+            "rationale": "The logs contain repeated NullPointerException stack traces at PromotionEngine.applyDiscount, and the metrics show a sudden 15.00pp spike in 5xx error rate, indicating that this exception is directly causing the failures.",
+            "confidence": 0.95,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+              },
+              {
+                "source": "metrics",
+                "detail": "5xx error rate 15.00pp"
+              }
+            ]
+          },
+          {
+            "title": "Deployment introduced code change that triggers NPE due to missing promotion data",
+            "rationale": "The absence of any deploy-related logs combined with the NPE suggests that a recent code change may have removed or altered the handling of promotion data, leading to null values.",
+            "confidence": 0.75,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+              }
+            ]
+          },
+          {
+            "title": "Missing environment variable leading to null promotion context",
+            "rationale": "A missing environment variable could cause the promotion context to be null, which would trigger the observed NPE.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Rollback to the last known good deployment",
+          "Investigate PromotionEngine.applyDiscount for null handling and add defensive checks",
+          "Add unit tests to cover promotion data scenarios",
+          "Verify that all required environment variables are set and documented",
+          "Monitor 5xx error rate and logs after changes to confirm resolution"
+        ],
+        "confidence": 0.85
+      },
+      "error": null,
+      "elapsed_seconds": 4.54290330799995,
+      "finished_at": "2026-09-22T13:43:16.187551+00:00",
+      "scenario": "bad_deploy",
+      "repeat": 1,
+      "expected_culprit": "cart-service",
+      "correct": false,
+      "detail": "NullPointerException in PromotionEngine.applyDiscount causing 5xx responses"
+    },
+    {
+      "started_at": "2026-09-22T13:44:21.217531+00:00",
+      "request": {
+        "query": "cart-service is returning 5xx errors after a deploy",
+        "service": "cart-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Cart-service experienced a sudden spike in 5xx errors immediately after the latest deployment. The spike is traced to repeated NullPointerExceptions in the PromotionEngine.applyDiscount method, which were not present in the baseline metrics.",
+        "likely_causes": [
+          {
+            "title": "NullPointerException in PromotionEngine.applyDiscount triggered by null promotion data",
+            "rationale": "The deployment introduced a code change that fails to guard against null promotion objects, causing the PromotionEngine to throw a NullPointerException. This exception propagates to the HTTP layer, resulting in 5xx responses.",
+            "confidence": 0.95,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+              },
+              {
+                "source": "metrics",
+                "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated)"
+              }
+            ]
+          },
+          {
+            "title": "Missing null-checks in PromotionEngine leading to unhandled exceptions",
+            "rationale": "The code path in PromotionEngine.applyDiscount lacks defensive null checks for promotion data, which was exposed by the new deployment. This structural issue caused the observed errors.",
+            "confidence": 0.85,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+              },
+              {
+                "source": "metrics",
+                "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Rollback cart-service to the last known good deployment to restore service availability.",
+          "Patch PromotionEngine.applyDiscount to include null checks for promotion data before processing.",
+          "Add unit tests covering null promotion scenarios and run them as part of CI.",
+          "Deploy the patched version after successful testing and monitor metrics for regression.",
+          "Update deployment documentation to include null-check verification as a pre-deploy check."
+        ],
+        "confidence": 0.9
+      },
+      "error": null,
+      "elapsed_seconds": 5.363061567999466,
+      "finished_at": "2026-09-22T13:44:26.580642+00:00",
+      "scenario": "bad_deploy",
+      "repeat": 2,
+      "expected_culprit": "cart-service",
+      "correct": true,
+      "detail": "NullPointerException in PromotionEngine.applyDiscount triggered by null promotion data"
+    },
+    {
+      "started_at": "2026-09-22T13:45:31.603477+00:00",
+      "request": {
+        "query": "cart-service is returning 5xx errors after a deploy",
+        "service": "cart-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "After the latest deployment, cart-service began returning 5xx errors, with the error rate spiking from a near-zero baseline to 15.00pp. No ERROR-level logs were captured for 5xx responses during the anomaly window.",
+        "likely_causes": [
+          {
+            "title": "Bug introduced by the recent deployment causing unhandled exceptions in cart-service",
+            "rationale": "The metric anomaly indicates a sudden increase in 5xx responses immediately following the deploy, suggesting a code change that broke request handling.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated; anomaly_detected=True)"
+              }
+            ]
+          },
+          {
+            "title": "Logging configuration changed or logs are not being captured",
+            "rationale": "No ERROR-level log entries for 5xx or 500 messages were found in the expected time window, implying logs may not be emitted or collected.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "0 documents matched log query for ERROR level '500' messages"
+              },
+              {
+                "source": "logs",
+                "detail": "0 documents matched log query for ERROR level '5xx' messages"
+              }
+            ]
+          },
+          {
+            "title": "External dependency failure causing cart-service to return 5xx errors",
+            "rationale": "A sudden spike in 5xx responses could also result from upstream services becoming unavailable, even if cart-service code is unchanged.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated; anomaly_detected=True)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Review the recent deployment's code changes for potential bugs that could cause unhandled exceptions.",
+          "Verify that the logging configuration is correct and that ERROR-level logs are being emitted and collected.",
+          "Check the health and availability of any upstream services that cart-service depends on.",
+          "If a code issue is confirmed, roll back to the previous stable version and redeploy after fixing the bug."
+        ],
+        "confidence": 0.85
+      },
+      "error": null,
+      "elapsed_seconds": 4.649702541000806,
+      "finished_at": "2026-09-22T13:45:36.253232+00:00",
+      "scenario": "bad_deploy",
+      "repeat": 3,
+      "expected_culprit": "cart-service",
+      "correct": true,
+      "detail": "Bug introduced by the recent deployment causing unhandled exceptions in cart-service"
+    },
+    {
+      "started_at": "2026-09-22T13:46:41.306928+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Checkout-service memory usage increased from 697.53\u202fMiB to 1220.35\u202fMiB (1.7\u00d7), triggering frequent GC overhead warnings and OutOfMemoryError exceptions.",
+        "likely_causes": [
+          {
+            "title": "Java heap exhaustion due to insufficient heap size or memory leak",
+            "rationale": "The service consistently reached 92\u202f% heap usage and threw OutOfMemoryError, indicating the allocated heap is insufficient for the workload or a leak is present.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 697.53MiB to 1220.35MiB"
+              },
+              {
+                "source": "logs",
+                "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92%"
+              },
+              {
+                "source": "logs",
+                "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+              }
+            ]
+          },
+          {
+            "title": "Memory leak in application code",
+            "rationale": "Repeated GC overhead warnings and OOM errors over a short period suggest objects are not being released, pointing to a memory leak.",
+            "confidence": 0.7,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92%"
+              },
+              {
+                "source": "logs",
+                "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+              }
+            ]
+          },
+          {
+            "title": "External load increase causing higher memory usage",
+            "rationale": "The 1.7\u00d7 rise in resident memory aligns with a sudden spike in traffic or transaction volume.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 697.53MiB to 1220.35MiB"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Increase the JVM heap size or adjust GC settings to accommodate higher memory demand.",
+          "Run a heap profiler (e.g., VisualVM, JProfiler) to identify objects retaining memory and pinpoint leaks.",
+          "Analyze traffic patterns and load metrics to confirm whether the memory spike correlates with increased request volume."
+        ],
+        "confidence": 0.8
+      },
+      "error": null,
+      "elapsed_seconds": 4.7968931020004675,
+      "finished_at": "2026-09-22T13:46:46.103864+00:00",
+      "scenario": "memory_leak",
+      "repeat": 1,
+      "expected_culprit": "checkout-service",
+      "correct": true,
+      "detail": "Java heap exhaustion due to insufficient heap size or memory leak"
+    },
+    {
+      "started_at": "2026-09-22T13:47:51.142176+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Checkout-service resident memory rose 1.7\u00d7 (711.46\u202fMiB \u2192 1225.50\u202fMiB) over a 3\u2011hour window with no corresponding ERROR/WARN logs mentioning memory, indicating a likely memory leak or sustained high load.",
+        "likely_causes": [
+          {
+            "title": "Memory leak in checkout-service",
+            "rationale": "The sustained 1.7\u00d7 increase in resident memory without any error or warning logs suggests that the service is allocating memory that is not being released, i.e., a memory leak.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 711.46MiB to 1225.50MiB (query: process_resident_memory_bytes{service=\"checkout-service\"}; threshold-validated; anomaly_detected=True)"
+              },
+              {
+                "source": "logs",
+                "detail": "0 documents matched ERROR/WARN logs containing 'memory' for checkout-service"
+              }
+            ]
+          },
+          {
+            "title": "Increased traffic or workload causing higher memory usage",
+            "rationale": "A sudden spike in concurrent requests or larger payloads can raise memory consumption even if the code is correct.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 711.46MiB to 1225.50MiB (query: process_resident_memory_bytes{service=\"checkout-service\"}; threshold-validated; anomaly_detected=True)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Collect heap dumps at peak memory usage and analyze for retained objects.",
+          "Review recent code changes or deployments that could introduce new allocations.",
+          "Check request volume and payload size during the anomaly window.",
+          "Apply GC tuning or increase heap size if the spike is due to legitimate load."
+        ],
+        "confidence": 0.85
+      },
+      "error": null,
+      "elapsed_seconds": 5.62432729899956,
+      "finished_at": "2026-09-22T13:47:56.766555+00:00",
+      "scenario": "memory_leak",
+      "repeat": 2,
+      "expected_culprit": "checkout-service",
+      "correct": true,
+      "detail": "Memory leak in checkout-service"
+    },
+    {
+      "started_at": "2026-09-22T13:49:01.821559+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Checkout-service memory usage spiked due to Java heap exhaustion, likely caused by a memory leak or insufficient heap size, as indicated by rising resident memory and OutOfMemoryError logs.",
+        "likely_causes": [
+          {
+            "title": "Java heap exhaustion due to memory leak or high load",
+            "rationale": "Logs show GC overhead limit approaching and repeated OutOfMemoryError, while metrics confirm a 1.7x increase in resident memory, indicating the heap is being exhausted.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92%"
+              },
+              {
+                "source": "logs",
+                "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+              },
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 732.43MiB to 1225.50MiB"
+              }
+            ]
+          },
+          {
+            "title": "Insufficient heap size configuration",
+            "rationale": "The OutOfMemoryError directly indicates the configured heap is too small for the workload.",
+            "confidence": 0.7,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+              }
+            ]
+          },
+          {
+            "title": "Increased traffic load causing higher memory usage",
+            "rationale": "A 1.7x increase in resident memory could be due to higher request volume or larger payloads.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.7x, from 732.43MiB to 1225.50MiB"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Increase the JVM heap size and restart the service",
+          "Profile the application to identify memory leaks or large object retention",
+          "Implement stricter memory usage alerts and thresholds",
+          "Review recent code or configuration changes that may have increased memory demand"
+        ],
+        "confidence": 0.8
+      },
+      "error": null,
+      "elapsed_seconds": 6.12206198199965,
+      "finished_at": "2026-09-22T13:49:07.943670+00:00",
+      "scenario": "memory_leak",
+      "repeat": 3,
+      "expected_culprit": "checkout-service",
+      "correct": true,
+      "detail": "Java heap exhaustion due to memory leak or high load"
+    },
+    {
+      "started_at": "2026-09-22T13:50:12.997175+00:00",
+      "request": {
+        "query": "payment-service latency has degraded",
+        "service": "payment-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Payment-service p95 latency increased from 0.24s to 0.94s over a 5\u2011minute window, indicating degraded performance.",
+        "likely_causes": [
+          {
+            "title": "High request volume causing increased latency",
+            "rationale": "Latency spike correlates with increased traffic load.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          },
+          {
+            "title": "Resource contention within payment-service pods",
+            "rationale": "High latency may be due to CPU/memory contention within the service pods.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          },
+          {
+            "title": "External dependency slowdown",
+            "rationale": "Payment-service may be waiting on external services such as databases or payment gateways.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Check request volume metrics for payment-service",
+          "Inspect pod CPU/memory usage and limits",
+          "Verify health and latency of external dependencies"
+        ],
+        "confidence": 0.7
+      },
+      "error": null,
+      "elapsed_seconds": 4.566846416000772,
+      "finished_at": "2026-09-22T13:50:17.564062+00:00",
+      "scenario": "slow_dependency",
+      "repeat": 1,
+      "expected_culprit": "fraud-api",
+      "correct": false,
+      "detail": "High request volume causing increased latency"
+    },
+    {
+      "started_at": "2026-09-22T13:51:22.616138+00:00",
+      "request": {
+        "query": "payment-service latency has degraded",
+        "service": "payment-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Payment-service p95 latency increased from 0.24s to 0.94s over a 5\u2011minute window, indicating degraded performance.",
+        "likely_causes": [
+          {
+            "title": "Increased traffic load",
+            "rationale": "Higher request volume can raise latency as the service processes more concurrent requests.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          },
+          {
+            "title": "Resource contention (CPU/memory)",
+            "rationale": "Elevated CPU or memory pressure can slow request handling, raising latency.",
+            "confidence": 0.4,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          },
+          {
+            "title": "Code regression in payment-service",
+            "rationale": "Recent code changes may have introduced inefficiencies or blocking operations.",
+            "confidence": 0.3,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          },
+          {
+            "title": "External dependency slowdown",
+            "rationale": "Latency in downstream services (e.g., database, payment gateway) can propagate back to payment-service.",
+            "confidence": 0.2,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Verify current request rate and compare to historical peaks.",
+          "Check CPU and memory utilization of payment-service pods.",
+          "Review recent deployments or code changes for potential regressions.",
+          "Inspect latency of external dependencies (DB, payment gateway) during the incident window."
+        ],
+        "confidence": 0.5
+      },
+      "error": null,
+      "elapsed_seconds": 4.800552810998852,
+      "finished_at": "2026-09-22T13:51:27.416729+00:00",
+      "scenario": "slow_dependency",
+      "repeat": 2,
+      "expected_culprit": "fraud-api",
+      "correct": false,
+      "detail": "Increased traffic load"
+    },
+    {
+      "started_at": "2026-09-22T13:52:32.455287+00:00",
+      "request": {
+        "query": "payment-service latency has degraded",
+        "service": "payment-service",
+        "minutes_back": 180
+      },
+      "report": {
+        "summary": "Payment-service p95 latency increased from 0.24s to 0.94s over a 5\u2011minute window, indicating a significant degradation in request handling performance.",
+        "likely_causes": [
+          {
+            "title": "Increased traffic to payment-service",
+            "rationale": "A sudden spike in request volume can push the service beyond its optimal load, causing higher latency.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+              }
+            ]
+          },
+          {
+            "title": "External dependency slowdown (e.g., database or payment gateway)",
+            "rationale": "Latency can be amplified if downstream services become slower, propagating delays back to payment-service.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+              }
+            ]
+          },
+          {
+            "title": "Recent code change introduced performance regression",
+            "rationale": "A recent deployment may have added inefficient logic or increased resource contention, raising latency.",
+            "confidence": 0.3,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Verify current traffic patterns and compare against historical baselines.",
+          "Check health and response times of external dependencies (DB, payment gateway).",
+          "Review recent deployments for changes affecting payment-service performance.",
+          "Run targeted load tests to isolate the cause of latency increase."
+        ],
+        "confidence": 0.7
+      },
+      "error": null,
+      "elapsed_seconds": 5.101547006001056,
+      "finished_at": "2026-09-22T13:52:37.556880+00:00",
+      "scenario": "slow_dependency",
+      "repeat": 3,
+      "expected_culprit": "fraud-api",
+      "correct": false,
+      "detail": "Increased traffic to payment-service"
+    }
+  ]
+}

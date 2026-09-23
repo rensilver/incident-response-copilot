@@ -1,0 +1,172 @@
+HTTP Request: GET http://localhost:8000/health "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:11434/api/ps "HTTP/1.1 200 OK"
+{"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:11.644741Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:12.465533Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790073791.644904&end=1790084591.644904&step=30s "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.120s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.016s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:13.594502Z"}
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:13.595022Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:16.186721Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "ef901fce-7703-493a-b57c-d30cf3485a05", "level": "info", "timestamp": "2026-09-22T13:43:16.187459Z"}
+MEASUREMENT bad_deploy 1/3: mention_match=False elapsed=4.543s
+{"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:21.217688Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:22.026239Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.020s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790073861.217797&end=1790084661.217797&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.008s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:23.570815Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:24.382359Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 2, "event": "correlation_complete", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:26.580237Z"}
+{"causes": 2, "event": "investigation_complete", "correlation_id": "3aa12333-65a3-465b-860c-12164478d828", "level": "info", "timestamp": "2026-09-22T13:44:26.580598Z"}
+MEASUREMENT bad_deploy 2/3: mention_match=True elapsed=5.363s
+{"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:31.603643Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:32.222196Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790073931.603751&end=1790084731.603751&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.009s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:33.401281Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.009s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:33.686399Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:36.252715Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "5d436164-8e0f-4349-bc62-d5f78c66d664", "level": "info", "timestamp": "2026-09-22T13:45:36.253162Z"}
+MEASUREMENT bad_deploy 3/3: mention_match=True elapsed=4.650s
+{"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:41.307069Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:42.113274Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790074001.307151&end=1790084801.307151&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.007s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.010s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:43.357942Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:43.541246Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:46.102894Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "d16be291-5904-4e46-9ef6-fdf8d3946d10", "level": "info", "timestamp": "2026-09-22T13:46:46.103764Z"}
+MEASUREMENT memory_leak 1/3: mention_match=True elapsed=4.797s
+{"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:51.142327Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:51.748839Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.007s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790074071.14242&end=1790084871.14242&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.006s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:52.793659Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:53.589454Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 2, "event": "correlation_complete", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:56.765385Z"}
+{"causes": 2, "event": "investigation_complete", "correlation_id": "69ca4da9-f29f-4951-963c-fc9800d49be2", "level": "info", "timestamp": "2026-09-22T13:47:56.766357Z"}
+MEASUREMENT memory_leak 2/3: mention_match=True elapsed=5.624s
+{"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:01.821701Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:03.625783Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790074141.821788&end=1790084941.821788&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.007s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.011s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:04.836441Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:05.654749Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:07.943182Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "023fcdc3-d5eb-43e2-94ed-19bbba283eec", "level": "info", "timestamp": "2026-09-22T13:49:07.943623Z"}
+MEASUREMENT memory_leak 3/3: mention_match=True elapsed=6.122s
+{"query": "payment-service latency has degraded", "service": "payment-service", "event": "investigation_started", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:12.997301Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:13.873063Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28http_request_duration_seconds_bucket%7Bservice%3D%22payment-service%22%7D%5B5m%5D%29%29%29&start=1790074212.997382&end=1790085012.997382&step=30s "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.013s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:15.515447Z"}
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.007s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:15.522689Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:17.563252Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "8dddc5c3-8ac0-470e-b378-9149486e247e", "level": "info", "timestamp": "2026-09-22T13:50:17.563930Z"}
+MEASUREMENT slow_dependency 1/3: mention_match=False elapsed=4.567s
+{"query": "payment-service latency has degraded", "service": "payment-service", "event": "investigation_started", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:22.616249Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:23.213555Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.009s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28http_request_duration_seconds_bucket%7Bservice%3D%22payment-service%22%7D%5B5m%5D%29%29%29&start=1790074282.616309&end=1790085082.616309&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.006s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:24.227189Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:24.861185Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 4, "event": "correlation_complete", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:27.416310Z"}
+{"causes": 4, "event": "investigation_complete", "correlation_id": "c5c2c6d2-47bd-4871-b578-6f66d18c4455", "level": "info", "timestamp": "2026-09-22T13:51:27.416686Z"}
+MEASUREMENT slow_dependency 2/3: mention_match=False elapsed=4.801s
+{"query": "payment-service latency has degraded", "service": "payment-service", "event": "investigation_started", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:32.455424Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:33.540898Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.006s]
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9090/api/v1/query_range?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28http_request_duration_seconds_bucket%7Bservice%3D%22payment-service%22%7D%5B5m%5D%29%29%29&start=1790074352.455508&end=1790085152.455508&step=30s "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+POST http://localhost:9200/app-logs/_search [status:200 duration:0.007s]
+{"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:34.783249Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:35.390054Z"}
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+{"causes": 3, "event": "correlation_complete", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:37.556395Z"}
+{"causes": 3, "event": "investigation_complete", "correlation_id": "75127e4f-19de-4ce5-931a-82d1deaf59fd", "level": "info", "timestamp": "2026-09-22T13:52:37.556819Z"}
+MEASUREMENT slow_dependency 3/3: mention_match=False elapsed=5.102s
+[FAIL] bad_deploy: NullPointerException in PromotionEngine.applyDiscount causing 5xx responses
+[PASS] bad_deploy: NullPointerException in PromotionEngine.applyDiscount triggered by null promotion data
+[PASS] bad_deploy: Bug introduced by the recent deployment causing unhandled exceptions in cart-service
+[PASS] memory_leak: Java heap exhaustion due to insufficient heap size or memory leak
+[PASS] memory_leak: Memory leak in checkout-service
+[PASS] memory_leak: Java heap exhaustion due to memory leak or high load
+[FAIL] slow_dependency: High request volume causing increased latency
+[FAIL] slow_dependency: Increased traffic load
+[FAIL] slow_dependency: Increased traffic to payment-service
+
+memory_leak: 3/3
+slow_dependency: 0/3
+bad_deploy: 2/3
+
+Overall: 5/9
+HTTP Request: GET http://localhost:8000/health "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:11434/api/ps "HTTP/1.1 200 OK"

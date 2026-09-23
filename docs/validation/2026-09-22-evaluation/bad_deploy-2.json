@@ -1,0 +1,59 @@
+{
+  "started_at": "2026-09-22T13:44:21.217531+00:00",
+  "request": {
+    "query": "cart-service is returning 5xx errors after a deploy",
+    "service": "cart-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "Cart-service experienced a sudden spike in 5xx errors immediately after the latest deployment. The spike is traced to repeated NullPointerExceptions in the PromotionEngine.applyDiscount method, which were not present in the baseline metrics.",
+    "likely_causes": [
+      {
+        "title": "NullPointerException in PromotionEngine.applyDiscount triggered by null promotion data",
+        "rationale": "The deployment introduced a code change that fails to guard against null promotion objects, causing the PromotionEngine to throw a NullPointerException. This exception propagates to the HTTP layer, resulting in 5xx responses.",
+        "confidence": 0.95,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+          },
+          {
+            "source": "metrics",
+            "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated)"
+          }
+        ]
+      },
+      {
+        "title": "Missing null-checks in PromotionEngine leading to unhandled exceptions",
+        "rationale": "The code path in PromotionEngine.applyDiscount lacks defensive null checks for promotion data, which was exposed by the new deployment. This structural issue caused the observed errors.",
+        "confidence": 0.85,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "ERROR cart-service: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)"
+          },
+          {
+            "source": "metrics",
+            "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated)"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Rollback cart-service to the last known good deployment to restore service availability.",
+      "Patch PromotionEngine.applyDiscount to include null checks for promotion data before processing.",
+      "Add unit tests covering null promotion scenarios and run them as part of CI.",
+      "Deploy the patched version after successful testing and monitor metrics for regression.",
+      "Update deployment documentation to include null-check verification as a pre-deploy check."
+    ],
+    "confidence": 0.9
+  },
+  "error": null,
+  "elapsed_seconds": 5.363061567999466,
+  "finished_at": "2026-09-22T13:44:26.580642+00:00",
+  "scenario": "bad_deploy",
+  "repeat": 2,
+  "expected_culprit": "cart-service",
+  "correct": true,
+  "detail": "NullPointerException in PromotionEngine.applyDiscount triggered by null promotion data"
+}

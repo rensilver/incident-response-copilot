@@ -104,9 +104,12 @@ Finalize the project
 4. **Offline baseline and configured-provider integration pass.** All 250 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
-5. **Verify the complete demo and measure results.** Seed fresh data, exercise all
-   three scenarios through the API and UI, and run the evaluation harness. Record
-   provider/model, scores, latency, and failures. The current score only checks
+5. **Nine-run evaluation measured; report grounding and UI remain pending.** The
+   retained 2026-09-22 evaluation completed all nine attempts: bad deploy 2/3, memory
+   leak 3/3, slow dependency 0/3; overall 5/9 service-name matches, zero request
+   errors, and 5.063 s mean service-call latency. See the evaluation record below.
+   Investigate report grounding next, then remeasure after any fixes and exercise
+   all three scenarios through the UI. The current score only checks
    whether the expected service name appears in the top cause or its evidence;
    describe that limitation rather than presenting it as proof of RCA accuracy.
    Report validation requires evidence entries but does not verify that their
@@ -263,6 +266,43 @@ Finalize the project
   explicitly blocked; do not mark it verified. Report grounding (including missed
   `fraud-api`), repeated evaluation, LangSmith, Streamlit/media, and the README remain
   pending. V4 and the final V1–V5 release checks are still incomplete.
+
+### Evaluation validation — 2026-09-22; finalized 2026-09-23
+
+- The interrupted session's background evaluation completed its ninth attempt on
+  2026-09-22. All nine individual artifacts match `summary.json`; rescoring the saved
+  reports reproduces every result. No failed attempt was replaced or rerun.
+- Groq `openai/gpt-oss-20b`: bad deploy **2/3**, memory leak **3/3**, slow dependency
+  **0/3**, overall **5/9 (55.6%)** culprit-service mentions. All nine investigations
+  returned reports; there were no investigation errors or logged fallback events.
+  This is a service-name substring check, not proven RCA accuracy.
+- Mean service-call latency was **5.063 s**, median **4.801 s**, range
+  **4.543–6.122 s**. The pass took **565.913 s** including 65-second pacing between
+  attempts. These are host `IncidentService` calls against real Groq and Docker
+  data backends, not HTTP or UI latency measurements. Tracing was disabled.
+- All three slow-dependency reports omitted `fraud-api`, ranked unsupported traffic
+  causes first, and misstated the window as five minutes. Recorded Prometheus range
+  requests used the correct 180-minute interval. Bad deploy attempt 1 recognized
+  the seeded exception but failed the score because the service name appeared only
+  in the summary. Passing mention scores also included unsupported causal claims.
+- Forty-seven memory samples measured **1,437.11–1,591.21 MiB** across five containers,
+  **2,438.12–3,065.33 MiB** host available RAM, and **137.39–140.83 MiB** harness RSS.
+  No Ollama model was loaded before or after the pass; successful local inference
+  remains blocked and unverified. Sampling does not establish peak memory demand.
+- Added `scripts/measure_evaluation.py` to retain per-attempt reports, errors, scores,
+  latency, runtime configuration, and memory samples around the existing harness.
+  Prompts, scoring rules, and production behavior were unchanged. Corrected the
+  obsolete investigation-window comment in `evaluation/eval_runner.py`.
+- Final offline checks on 2026-09-23 passed: **250 unit tests in 2.91 seconds**, Ruff,
+  strict mypy (59 source files including the recorder), Black (111 files), and diff
+  checks. The sandbox helper failed at startup; checks ran outside the sandbox.
+- [Measured results, reports, logs, and reproduction commands](docs/validation/2026-09-22-evaluation/README.md)
+  retain all nine attempts and their limitations. No new live calls, seeding, or
+  container changes were needed on 2026-09-23. No commit or push was performed.
+- Stop for owner review and commit. Next action: investigate report grounding,
+  including dependency discovery, unsupported causes, and incorrect window prose.
+  LangSmith delivery, Streamlit/media, the final README rewrite, and final V1–V5
+  release verification remain pending. V4 is not complete.
 
 ### Additional release improvements to consider
 
