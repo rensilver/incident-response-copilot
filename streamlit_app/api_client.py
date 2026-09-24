@@ -1,20 +1,23 @@
 """Thin HTTP client over the incident-copilot FastAPI API.
 
-Deliberately independent of the incident_copilot package - this app only ever talks to
-the API over HTTP, per CLAUDE.md's rule that the UI is a client of the API, not a
-consumer of the agents/connectors/llm library code.
+The UI models deliberately remain independent of the incident_copilot package.
 """
 
 import os
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Annotated
 
 import httpx
+from pydantic import Field, TypeAdapter, ValidationError
 
 DEFAULT_API_URL = "http://localhost:8000"
+INVESTIGATION_TIMEOUT_SECONDS = 300.0
+Confidence = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
 
 
 class InvestigationError(Exception):
-    """Raised when the API is unreachable or rejects an investigation request."""
+    """Raised when the API is unreachable or returns an unusable response."""
 
 
 @dataclass(frozen=True)
@@ -31,8 +34,16 @@ class LikelyCause:
 
     title: str
     rationale: str
-    confidence: float
+    confidence: Confidence
     supporting_evidence: tuple[EvidenceRef, ...]
+
+
+@dataclass(frozen=True)
+class InvestigationWindow:
+    """Authoritative API timestamps, independent of generated report prose."""
+
+    start: datetime
+    end: datetime
 
 
 @dataclass(frozen=True)
@@ -42,7 +53,11 @@ class IncidentReport:
     summary: str
     likely_causes: tuple[LikelyCause, ...]
     next_steps: tuple[str, ...]
-    confidence: float
+    confidence: Confidence
+    investigation_window: InvestigationWindow | None = None
+
+
+_REPORT_ADAPTER = TypeAdapter(IncidentReport)
 
 
 def _api_url() -> str:
@@ -50,56 +65,50 @@ def _api_url() -> str:
 
 
 def fetch_health() -> dict[str, object]:
-    """Return the API's /health payload, or an unreachable placeholder."""
+    """Return the API's health payload, or an unreachable placeholder."""
     try:
         response = httpx.get(f"{_api_url()}/health", timeout=5.0)
         response.raise_for_status()
-        payload: dict[str, object] = response.json()
-        return payload
-    except httpx.HTTPError:
+        payload = response.json()
+        if not isinstance(payload, dict):
+            raise ValueError("Health response must be an object")
+        return dict(payload)
+    except (httpx.HTTPError, ValueError):
         return {"status": "unreachable", "dependencies": {}}
 
 
 def run_investigation(query: str, service: str | None, minutes_back: int) -> IncidentReport:
-    """Call POST /api/v1/investigations and parse the structured report.
+    """POST an investigation, validating the response before rendering it.
 
-    Args:
-        query: The incident question.
-        service: Service to focus on, if any.
-        minutes_back: Length of the window to investigate.
-
-    Returns:
-        The structured report.
-
-    Raises:
-        InvestigationError: If the API is unreachable or rejects the request.
+    HTTPX's timeout limits network inactivity per operation, not total wall time.
+    A client timeout does not cancel the server's investigation.
     """
     payload = {"query": query, "service": service, "minutes_back": minutes_back}
     try:
-        response = httpx.post(f"{_api_url()}/api/v1/investigations", json=payload, timeout=300.0)
+        response = httpx.post(
+            f"{_api_url()}/api/v1/investigations",
+            json=payload,
+            timeout=INVESTIGATION_TIMEOUT_SECONDS,
+        )
+    except httpx.TimeoutException as exc:
+        raise InvestigationError(
+            "The API timed out after 300 seconds without network progress. "
+            "The investigation may still be running on the server."
+        ) from exc
     except httpx.HTTPError as exc:
         raise InvestigationError(f"can't reach the API at {_api_url()}") from exc
 
     if response.status_code >= 400:
-        detail = response.json().get("detail", response.text)
-        raise InvestigationError(str(detail))
+        detail = response.text
+        try:
+            error = response.json()
+            if isinstance(error, dict):
+                detail = str(error.get("detail", detail))
+        except ValueError:
+            pass
+        raise InvestigationError(f"API error {response.status_code}: {detail[:1000]}")
 
-    data = response.json()
-    causes = tuple(
-        LikelyCause(
-            title=c["title"],
-            rationale=c["rationale"],
-            confidence=c["confidence"],
-            supporting_evidence=tuple(
-                EvidenceRef(source=e["source"], detail=e["detail"])
-                for e in c["supporting_evidence"]
-            ),
-        )
-        for c in data["likely_causes"]
-    )
-    return IncidentReport(
-        summary=data["summary"],
-        likely_causes=causes,
-        next_steps=tuple(data["next_steps"]),
-        confidence=data["confidence"],
-    )
+    try:
+        return _REPORT_ADAPTER.validate_json(response.content)
+    except ValidationError as exc:
+        raise InvestigationError("The API returned an invalid investigation report.") from exc

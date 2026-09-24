@@ -1,0 +1,126 @@
+ic-app  | {"provider": "groq", "event": "app_created", "level": "info", "timestamp": "2026-09-22T11:49:03.509245Z"}
+ic-app  | INFO:     Started server process [1]
+ic-app  | INFO:     Waiting for application startup.
+ic-app  | INFO:     Application startup complete.
+ic-app  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:57958 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:60806 - "GET /health HTTP/1.1" 200 OK
+ic-app  | {"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:50:58.300888Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:50:59.145259Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.109s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790067058.300956&end=1790077858.300956&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "logs_agent_complete", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:51:00.874497Z"}
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:51:00.874600Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 2, "event": "correlation_complete", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:51:03.688665Z"}
+ic-app  | {"causes": 2, "event": "investigation_complete", "correlation_id": "fefda204-f919-40fd-bd4c-b7a76fd39e0b", "level": "info", "timestamp": "2026-09-22T11:51:03.689349Z"}
+ic-app  | INFO:     172.18.0.1:60810 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | {"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "info", "timestamp": "2026-09-22T11:51:03.714185Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.773900Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2431 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "supervisor_route_unparsable", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.794520Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.864344Z"}
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.872057Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"round": 1, "error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "tool_round_llm_failed", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.890269Z"}
+ic-app  | {"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "info", "timestamp": "2026-09-22T11:51:03.890400Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"round": 1, "error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "tool_round_llm_failed", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.892710Z"}
+ic-app  | {"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "info", "timestamp": "2026-09-22T11:51:03.892829Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.949817Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2423 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "correlation_failed", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "warning", "timestamp": "2026-09-22T11:51:03.959553Z"}
+ic-app  | {"errors": "routing fallback: Groq failed; Ollama fallback unavailable: Ollama skipped: 2431 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2426 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; correlation failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2423 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "investigation_failed", "correlation_id": "e292546e-409e-4d7e-94fb-ac31a2943e94", "level": "error", "timestamp": "2026-09-22T11:51:03.960081Z"}
+ic-app  | INFO:     172.18.0.1:39798 - "POST /api/v1/investigations HTTP/1.1" 503 Service Unavailable
+ic-app  | {"query": "payment-service latency has degraded", "service": "payment-service", "event": "investigation_started", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "info", "timestamp": "2026-09-22T11:51:04.043508Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.100408Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2414 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "supervisor_route_unparsable", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.117762Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.180737Z"}
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.189628Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"round": 1, "error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2406 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "tool_round_llm_failed", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.201140Z"}
+ic-app  | {"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "info", "timestamp": "2026-09-22T11:51:04.201339Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"round": 1, "error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2398 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "tool_round_llm_failed", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.204371Z"}
+ic-app  | {"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "info", "timestamp": "2026-09-22T11:51:04.204553Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+ic-app  | {"primary": "groq", "fallback": "ollama", "reason": "Groq request failed (RateLimitError, status=429)", "event": "llm_fallback", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:04.992941Z"}
+ic-app  | HTTP Request: GET http://ollama:11434/api/ps "HTTP/1.1 200 OK"
+ic-app  | {"error": "Groq failed; Ollama fallback unavailable: Ollama skipped: 2383 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "correlation_failed", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "warning", "timestamp": "2026-09-22T11:51:05.003326Z"}
+ic-app  | {"errors": "routing fallback: Groq failed; Ollama fallback unavailable: Ollama skipped: 2414 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2398 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2406 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.; correlation failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2383 MiB RAM available; 4096 MiB required. Free memory or configure Ollama on a larger machine.", "event": "investigation_failed", "correlation_id": "a2fd560a-5a67-4527-a79e-249aad5e5869", "level": "error", "timestamp": "2026-09-22T11:51:05.003835Z"}
+ic-app  | INFO:     172.18.0.1:39802 - "POST /api/v1/investigations HTTP/1.1" 503 Service Unavailable
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:50986 - "GET /health HTTP/1.1" 200 OK
+ic-app  | {"query": "cart-service is returning 5xx errors after a deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:28.332558Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:29.452503Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.018s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790067268.332615&end=1790078068.332615&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:30.757373Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "logs_agent_complete", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:30.817354Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 3, "event": "correlation_complete", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:33.008474Z"}
+ic-app  | {"causes": 3, "event": "investigation_complete", "correlation_id": "c3df9d5d-039e-4c77-8701-09f4722e12ac", "level": "info", "timestamp": "2026-09-22T11:54:33.008910Z"}
+ic-app  | INFO:     172.18.0.1:59630 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | {"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:38.085210Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:39.923450Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.009s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790067338.085283&end=1790078138.085283&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.008s]
+ic-app  | {"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:40.947934Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:41.562237Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 3, "event": "correlation_complete", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:44.523920Z"}
+ic-app  | {"causes": 3, "event": "investigation_complete", "correlation_id": "813c8774-9368-4b16-b7bb-55fd39c89356", "level": "info", "timestamp": "2026-09-22T11:55:44.524365Z"}
+ic-app  | INFO:     172.18.0.1:41430 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | {"query": "payment-service latency has degraded", "service": "payment-service", "event": "investigation_started", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:49.599327Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:50.186248Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.007s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28http_request_duration_seconds_bucket%7Bservice%3D%22payment-service%22%7D%5B5m%5D%29%29%29&start=1790067409.599402&end=1790078209.599402&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.006s]
+ic-app  | {"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:51.179459Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:51.450849Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 4, "event": "correlation_complete", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:54.344570Z"}
+ic-app  | {"causes": 4, "event": "investigation_complete", "correlation_id": "c67f8f04-f366-4378-b24c-1d25c04b1ac1", "level": "info", "timestamp": "2026-09-22T11:56:54.345270Z"}
+ic-app  | INFO:     172.18.0.1:36848 - "POST /api/v1/investigations HTTP/1.1" 200 OK

@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-09-24T19:49:27.676406+00:00",
+  "python": "3.13.13",
+  "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.43",
+  "source_commit": "fac0892f3322ffee8514214ccc5cd1fa51f77e71",
+  "packages": {
+    "streamlit": "1.62.0",
+    "playwright": "1.61.0",
+    "httpx": "0.28.1",
+    "pydantic": "2.13.4"
+  },
+  "api_url": "http://127.0.0.1:8000",
+  "delay_seconds": 65,
+  "method": "Browser -> Streamlit -> recording HTTP relay -> deployed API (live cases only)",
+  "browser": "149.0.7827.55",
+  "finished_at": "2026-09-24T19:57:51.175471+00:00"
+}

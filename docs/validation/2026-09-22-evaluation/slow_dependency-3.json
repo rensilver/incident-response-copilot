@@ -1,0 +1,61 @@
+{
+  "started_at": "2026-09-22T13:52:32.455287+00:00",
+  "request": {
+    "query": "payment-service latency has degraded",
+    "service": "payment-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "Payment-service p95 latency increased from 0.24s to 0.94s over a 5\u2011minute window, indicating a significant degradation in request handling performance.",
+    "likely_causes": [
+      {
+        "title": "Increased traffic to payment-service",
+        "rationale": "A sudden spike in request volume can push the service beyond its optimal load, causing higher latency.",
+        "confidence": 0.9,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+          }
+        ]
+      },
+      {
+        "title": "External dependency slowdown (e.g., database or payment gateway)",
+        "rationale": "Latency can be amplified if downstream services become slower, propagating delays back to payment-service.",
+        "confidence": 0.6,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+          }
+        ]
+      },
+      {
+        "title": "Recent code change introduced performance regression",
+        "rationale": "A recent deployment may have added inefficient logic or increased resource contention, raising latency.",
+        "confidence": 0.3,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "p95 latency rose 4.0x, from 0.24s to 0.94s (histogram_quantile query)"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Verify current traffic patterns and compare against historical baselines.",
+      "Check health and response times of external dependencies (DB, payment gateway).",
+      "Review recent deployments for changes affecting payment-service performance.",
+      "Run targeted load tests to isolate the cause of latency increase."
+    ],
+    "confidence": 0.7
+  },
+  "error": null,
+  "elapsed_seconds": 5.101547006001056,
+  "finished_at": "2026-09-22T13:52:37.556880+00:00",
+  "scenario": "slow_dependency",
+  "repeat": 3,
+  "expected_culprit": "fraud-api",
+  "correct": false,
+  "detail": "Increased traffic to payment-service"
+}

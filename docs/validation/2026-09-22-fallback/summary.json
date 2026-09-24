@@ -1,0 +1,33 @@
+{
+  "host_available_mib_before": 2995,
+  "default_cold_load_guard_mib": 4096,
+  "injected_refusal_floor_mib": 7718,
+  "baseline_health": {
+    "status": "ok",
+    "dependencies": {
+      "prometheus": true,
+      "elasticsearch": true,
+      "llm": true
+    }
+  },
+  "final_health": {
+    "status": "ok",
+    "dependencies": {
+      "prometheus": true,
+      "elasticsearch": true,
+      "llm": true
+    }
+  },
+  "models_before": {
+    "models": []
+  },
+  "models_after": {
+    "models": []
+  },
+  "cases_passed": [
+    "memory_refusal",
+    "ollama_unreachable",
+    "fallback_disabled"
+  ],
+  "successful_local_inference": "blocked; not attempted on this laptop"
+}

@@ -1,0 +1,11 @@
+{"provider": "groq", "event": "app_created", "level": "info", "timestamp": "2026-09-22T13:27:22.785397Z"}
+INFO:     172.18.0.1:43710 - "GET /health HTTP/1.1" 200 OK
+{"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "info", "timestamp": "2026-09-22T13:27:23.345305Z"}
+{"error": "Groq request failed (AuthenticationError, status=401)", "event": "supervisor_route_unparsable", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "warning", "timestamp": "2026-09-22T13:27:23.502876Z"}
+{"round": 1, "error": "Groq request failed (AuthenticationError, status=401)", "event": "tool_round_llm_failed", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "warning", "timestamp": "2026-09-22T13:27:23.568418Z"}
+{"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "info", "timestamp": "2026-09-22T13:27:23.568492Z"}
+{"round": 1, "error": "Groq request failed (AuthenticationError, status=401)", "event": "tool_round_llm_failed", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "warning", "timestamp": "2026-09-22T13:27:23.660325Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "info", "timestamp": "2026-09-22T13:27:23.660396Z"}
+{"error": "Groq request failed (AuthenticationError, status=401)", "event": "correlation_failed", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "warning", "timestamp": "2026-09-22T13:27:23.716085Z"}
+{"errors": "routing fallback: Groq request failed (AuthenticationError, status=401); model call failed: Groq request failed (AuthenticationError, status=401); model call failed: Groq request failed (AuthenticationError, status=401); correlation failed: Groq request failed (AuthenticationError, status=401)", "event": "investigation_failed", "correlation_id": "74a2c7b1-b2ca-4529-9b8f-7c391f43b20f", "level": "error", "timestamp": "2026-09-22T13:27:23.716705Z"}
+INFO:     172.18.0.1:43710 - "POST /api/v1/investigations HTTP/1.1" 503 Service Unavailable

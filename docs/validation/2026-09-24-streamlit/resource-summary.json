@@ -1,0 +1,26 @@
+{
+  "samples": 29,
+  "sample_errors": 0,
+  "available_mib": {
+    "min": 1750.3203125,
+    "max": 2735.2578125
+  },
+  "swap_used_mib": {
+    "min": 1556.140625,
+    "max": 2400.1328125
+  },
+  "streamlit_rss_mib": {
+    "min": 1.671875,
+    "max": 76.33203125
+  },
+  "recorder_and_children_rss_mib": {
+    "min": 59.83984375,
+    "max": 980.296875
+  },
+  "five_containers_mib": {
+    "min": 809.75,
+    "max": 1437.8
+  },
+  "browser_cases": 12,
+  "timeout_seconds": 300.2267606910027
+}

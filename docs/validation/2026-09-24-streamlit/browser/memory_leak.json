@@ -1,0 +1,126 @@
+{
+  "case": "memory_leak",
+  "mode": "live",
+  "started_at": "2026-09-24T19:49:29.458784+00:00",
+  "displayed_window": "Queried window: 2026-09-24T16:49:34.003313+00:00 \u2192 2026-09-24T19:49:34.003313+00:00 (180 minutes; API timestamps)",
+  "submit_to_result_seconds": 6.439837489000638,
+  "passed": true,
+  "events": [
+    {
+      "case": "memory_leak",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:49:30.280678+00:00",
+      "status": 200,
+      "duration_seconds": 0.431257808002556,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "memory_leak",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:49:31.358582+00:00",
+      "status": 200,
+      "duration_seconds": 0.36676202000307967,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "memory_leak",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:49:33.441912+00:00",
+      "status": 200,
+      "duration_seconds": 0.5345842059978168,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "memory_leak",
+      "mode": "live",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:49:33.992577+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "status": 200,
+      "duration_seconds": 5.418698505000066,
+      "response": {
+        "summary": "Checkout-service experienced a significant increase in resident memory usage, leading to OutOfMemoryError exceptions and GC overhead warnings during the investigation window.",
+        "likely_causes": [
+          {
+            "title": "Memory leak in application code causing gradual heap exhaustion",
+            "rationale": "The resident memory rose 1.8x and repeated OutOfMemoryError and GC overhead warnings indicate heap exhaustion, typical of a memory leak.",
+            "confidence": 0.8,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.8x, from 677.75MiB to 1220.35MiB"
+              },
+              {
+                "source": "logs",
+                "detail": "java.lang.OutOfMemoryError: Java heap space (sample timestamps 2026-09-24T19:18:55+00:00 to 2026-09-24T19:39:55+00:00)"
+              },
+              {
+                "source": "logs",
+                "detail": "GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)"
+              }
+            ]
+          },
+          {
+            "title": "Insufficient JVM heap size configuration",
+            "rationale": "Heap usage reached 92% and OOM errors occurred, suggesting the configured heap size may be too low for the workload.",
+            "confidence": 0.6,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)"
+              },
+              {
+                "source": "metrics",
+                "detail": "resident memory rose 1.8x, from 677.75MiB to 1220.35MiB"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Collect and analyze heap dumps from the affected instances to identify retained objects",
+          "Review recent code changes or deployments that could introduce memory leaks",
+          "Increase JVM heap size and monitor memory usage to confirm mitigation",
+          "Enable detailed GC logging to correlate GC pauses with memory spikes",
+          "Verify request rates during the window to rule out traffic-induced load"
+        ],
+        "confidence": 0.75,
+        "investigation_window": {
+          "start": "2026-09-24T16:49:34.003313Z",
+          "end": "2026-09-24T19:49:34.003313Z"
+        }
+      }
+    }
+  ]
+}

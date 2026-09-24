@@ -1,0 +1,82 @@
+{
+  "case": "recovery",
+  "mode": "literal_html",
+  "started_at": "2026-09-24T19:57:48.461256+00:00",
+  "submit_to_result_seconds": 0.147594369998842,
+  "passed": true,
+  "events": [
+    {
+      "case": "recovery",
+      "mode": "literal_html",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:57:49.014337+00:00",
+      "status": 200,
+      "duration_seconds": 1.7621998267713934e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "recovery",
+      "mode": "literal_html",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:57:49.422653+00:00",
+      "status": 200,
+      "duration_seconds": 2.3513999622082338e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "recovery",
+      "mode": "literal_html",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:57:49.658749+00:00",
+      "status": 200,
+      "duration_seconds": 2.2492000425700098e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "recovery",
+      "mode": "literal_html",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:57:49.674163+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "status": 200,
+      "duration_seconds": 2.1569001546595246e-05,
+      "response": {
+        "summary": "Fixture <img src=x onerror=alert(1)>",
+        "likely_causes": [],
+        "confidence": 0,
+        "next_steps": [
+          "Check <literal>"
+        ]
+      }
+    }
+  ]
+}

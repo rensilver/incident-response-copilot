@@ -78,9 +78,7 @@ async def run_scenario(service: _Investigator, scenario: EvalScenario) -> RunRes
     request = InvestigationRequest(
         query=scenario.query,
         service=scenario.target_service,
-        # NOTE: not currently threaded through to what window the specialist agents
-        # query — see the agent layer; this only sets state["time_window"], which
-        # nothing reads yet.
+        # Specialists pass this fixed investigation window to all temporal tools.
         minutes_back=180,
     )
     try:

@@ -4,6 +4,8 @@ Never imports from incident_copilot.agents, .connectors, or .llm: every piece of
 shown here comes from an HTTP call to the API, exactly like any other consumer.
 """
 
+from html import escape
+
 import streamlit as st
 from api_client import IncidentReport, InvestigationError, fetch_health, run_investigation
 from styles import BASE_CSS, confidence_meter
@@ -27,8 +29,8 @@ def _render_status_bar() -> None:
     deps: dict[str, bool] = deps_raw if isinstance(deps_raw, dict) else {}
     if deps:
         dep_html = "".join(
-            f'<span class="ic-dep"><span class="dot {"up" if up else "down"}"></span>'
-            f"{name.upper()}</span>"
+            f'<span class="ic-dep"><span class="dot {"up" if up is True else "down"}"></span>'
+            f"{escape(str(name).upper())}</span>"
             for name, up in deps.items()
         )
     else:
@@ -41,9 +43,16 @@ def _render_status_bar() -> None:
 
 
 def _render_report(report: IncidentReport) -> None:
+    if report.investigation_window:
+        window = report.investigation_window
+        minutes = (window.end - window.start).total_seconds() / 60
+        st.caption(
+            f"Queried window: {window.start.isoformat()} → {window.end.isoformat()} "
+            f"({minutes:g} minutes; API timestamps)"
+        )
     st.markdown(
         f'<div class="ic-card"><div class="ic-eyebrow">Summary &middot; overall confidence</div>'
-        f'<div class="ic-title">{report.summary}</div>'
+        f'<div class="ic-title">{escape(report.summary)}</div>'
         f'<div style="margin-top:0.6rem">{confidence_meter(report.confidence, "p1")}</div></div>',
         unsafe_allow_html=True,
     )
@@ -51,15 +60,16 @@ def _render_report(report: IncidentReport) -> None:
     for rank, cause in enumerate(report.likely_causes):
         tier = _tier(rank)
         evidence_html = "".join(
-            f'<div class="ic-evidence"><span class="src">{e.source}</span>{e.detail}</div>'
+            f'<div class="ic-evidence"><span class="src">{escape(e.source)}</span>'
+            f"{escape(e.detail)}</div>"
             for e in cause.supporting_evidence
         )
         st.markdown(
             f'<div class="ic-card">'
             f'<div class="ic-eyebrow"><span class="ic-rank {tier}">P{rank + 1}</span>'
             f"Root cause candidate</div>"
-            f'<div class="ic-title">{cause.title}</div>'
-            f'<div class="ic-rationale">{cause.rationale}</div>'
+            f'<div class="ic-title">{escape(cause.title)}</div>'
+            f'<div class="ic-rationale">{escape(cause.rationale)}</div>'
             f"{confidence_meter(cause.confidence, tier)}"
             f"{evidence_html}"
             f"</div>",
@@ -67,7 +77,7 @@ def _render_report(report: IncidentReport) -> None:
         )
 
     if report.next_steps:
-        steps_html = "".join(f"<li>&rsaquo; {step}</li>" for step in report.next_steps)
+        steps_html = "".join(f"<li>&rsaquo; {escape(step)}</li>" for step in report.next_steps)
         st.markdown(
             f'<div class="ic-card"><div class="ic-eyebrow">Next steps</div>'
             f'<ul class="ic-steps">{steps_html}</ul></div>',
@@ -121,7 +131,7 @@ def main() -> None:
         try:
             report = run_investigation(query, service or None, int(minutes_back))
         except InvestigationError as exc:
-            st.markdown(f'<div class="ic-error">{exc}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="ic-error">{escape(str(exc))}</div>', unsafe_allow_html=True)
             return
 
     _render_report(report)

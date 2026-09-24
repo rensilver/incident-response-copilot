@@ -1,0 +1,31 @@
+$ make lint
+.venv/bin/ruff check src tests
+All checks passed!
+.venv/bin/mypy --strict src
+Success: no issues found in 58 source files
+Exit status: 0
+
+$ .venv/bin/black --check src tests scripts/measure_evaluation.py
+All done! ✨ 🍰 ✨
+111 files would be left unchanged.
+Exit status: 0
+
+$ .venv/bin/ruff check scripts/measure_evaluation.py
+All checks passed!
+Exit status: 0
+
+$ .venv/bin/mypy --strict src scripts/measure_evaluation.py
+Success: no issues found in 59 source files
+Exit status: 0
+
+$ .venv/bin/pytest tests/unit -q
+........................................................................ [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 86%]
+..................................                                       [100%]
+250 passed in 2.91s
+Exit status: 0
+
+$ git diff --check
+Exit status: 0
+

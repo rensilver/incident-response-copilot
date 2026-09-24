@@ -1,0 +1,78 @@
+{
+  "case": "json_503",
+  "mode": "json_503",
+  "started_at": "2026-09-24T19:52:38.937191+00:00",
+  "displayed_error": "API error 503: Both providers unavailable (injected UI fixture)",
+  "submit_to_result_seconds": 0.11738451699784491,
+  "passed": true,
+  "events": [
+    {
+      "case": "json_503",
+      "mode": "json_503",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:39.365810+00:00",
+      "status": 200,
+      "duration_seconds": 2.0147002942394465e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "json_503",
+      "mode": "json_503",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:39.750041+00:00",
+      "status": 200,
+      "duration_seconds": 1.7262002074858174e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "json_503",
+      "mode": "json_503",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:39.868816+00:00",
+      "status": 200,
+      "duration_seconds": 2.1771000319859013e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "json_503",
+      "mode": "json_503",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:52:39.878844+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "status": 503,
+      "duration_seconds": 2.9959992389194667e-06,
+      "response": {
+        "detail": "Both providers unavailable (injected UI fixture)"
+      }
+    }
+  ]
+}

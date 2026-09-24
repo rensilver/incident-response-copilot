@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-09-22T13:45:31.603477+00:00",
+  "request": {
+    "query": "cart-service is returning 5xx errors after a deploy",
+    "service": "cart-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "After the latest deployment, cart-service began returning 5xx errors, with the error rate spiking from a near-zero baseline to 15.00pp. No ERROR-level logs were captured for 5xx responses during the anomaly window.",
+    "likely_causes": [
+      {
+        "title": "Bug introduced by the recent deployment causing unhandled exceptions in cart-service",
+        "rationale": "The metric anomaly indicates a sudden increase in 5xx responses immediately following the deploy, suggesting a code change that broke request handling.",
+        "confidence": 0.9,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated; anomaly_detected=True)"
+          }
+        ]
+      },
+      {
+        "title": "Logging configuration changed or logs are not being captured",
+        "rationale": "No ERROR-level log entries for 5xx or 500 messages were found in the expected time window, implying logs may not be emitted or collected.",
+        "confidence": 0.6,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "0 documents matched log query for ERROR level '500' messages"
+          },
+          {
+            "source": "logs",
+            "detail": "0 documents matched log query for ERROR level '5xx' messages"
+          }
+        ]
+      },
+      {
+        "title": "External dependency failure causing cart-service to return 5xx errors",
+        "rationale": "A sudden spike in 5xx responses could also result from upstream services becoming unavailable, even if cart-service code is unchanged.",
+        "confidence": 0.4,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (threshold-validated; anomaly_detected=True)"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Review the recent deployment's code changes for potential bugs that could cause unhandled exceptions.",
+      "Verify that the logging configuration is correct and that ERROR-level logs are being emitted and collected.",
+      "Check the health and availability of any upstream services that cart-service depends on.",
+      "If a code issue is confirmed, roll back to the previous stable version and redeploy after fixing the bug."
+    ],
+    "confidence": 0.85
+  },
+  "error": null,
+  "elapsed_seconds": 4.649702541000806,
+  "finished_at": "2026-09-22T13:45:36.253232+00:00",
+  "scenario": "bad_deploy",
+  "repeat": 3,
+  "expected_culprit": "cart-service",
+  "correct": true,
+  "detail": "Bug introduced by the recent deployment causing unhandled exceptions in cart-service"
+}

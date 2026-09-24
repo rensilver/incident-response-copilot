@@ -86,4 +86,5 @@ class IncidentService:
             raise InvestigationError(f"investigation produced no report: {errors}")
 
         logger.info("investigation_complete", causes=len(report.likely_causes))
-        return report
+        # Query scope is application metadata. Never trust a model-authored interval.
+        return report.model_copy(update={"investigation_window": state["time_window"]})

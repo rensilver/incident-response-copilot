@@ -1,0 +1,72 @@
+{
+  "started_at": "2026-09-22T13:46:41.306928+00:00",
+  "request": {
+    "query": "checkout-service memory keeps climbing",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "Checkout-service memory usage increased from 697.53\u202fMiB to 1220.35\u202fMiB (1.7\u00d7), triggering frequent GC overhead warnings and OutOfMemoryError exceptions.",
+    "likely_causes": [
+      {
+        "title": "Java heap exhaustion due to insufficient heap size or memory leak",
+        "rationale": "The service consistently reached 92\u202f% heap usage and threw OutOfMemoryError, indicating the allocated heap is insufficient for the workload or a leak is present.",
+        "confidence": 0.9,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "resident memory rose 1.7x, from 697.53MiB to 1220.35MiB"
+          },
+          {
+            "source": "logs",
+            "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92%"
+          },
+          {
+            "source": "logs",
+            "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+          }
+        ]
+      },
+      {
+        "title": "Memory leak in application code",
+        "rationale": "Repeated GC overhead warnings and OOM errors over a short period suggest objects are not being released, pointing to a memory leak.",
+        "confidence": 0.7,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "WARN checkout-service: GC overhead limit approaching; heap usage 92%"
+          },
+          {
+            "source": "logs",
+            "detail": "ERROR checkout-service: java.lang.OutOfMemoryError: Java heap space"
+          }
+        ]
+      },
+      {
+        "title": "External load increase causing higher memory usage",
+        "rationale": "The 1.7\u00d7 rise in resident memory aligns with a sudden spike in traffic or transaction volume.",
+        "confidence": 0.4,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "resident memory rose 1.7x, from 697.53MiB to 1220.35MiB"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Increase the JVM heap size or adjust GC settings to accommodate higher memory demand.",
+      "Run a heap profiler (e.g., VisualVM, JProfiler) to identify objects retaining memory and pinpoint leaks.",
+      "Analyze traffic patterns and load metrics to confirm whether the memory spike correlates with increased request volume."
+    ],
+    "confidence": 0.8
+  },
+  "error": null,
+  "elapsed_seconds": 4.7968931020004675,
+  "finished_at": "2026-09-22T13:46:46.103864+00:00",
+  "scenario": "memory_leak",
+  "repeat": 1,
+  "expected_culprit": "checkout-service",
+  "correct": true,
+  "detail": "Java heap exhaustion due to insufficient heap size or memory leak"
+}

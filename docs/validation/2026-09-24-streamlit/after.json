@@ -1,0 +1,13 @@
+{
+  "health": {
+    "status": "ok",
+    "dependencies": {
+      "prometheus": true,
+      "elasticsearch": true,
+      "llm": true
+    }
+  },
+  "ollama_loaded": {
+    "models": []
+  }
+}

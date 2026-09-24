@@ -1,0 +1,27 @@
+{
+  "2026-09-22": {
+    "attempts": 9,
+    "mention_matches": 5,
+    "rescore": "pass"
+  },
+  "2026-09-23": {
+    "attempts": 9,
+    "mention_matches": 4,
+    "rescore": "pass"
+  },
+  "memory_leak": {
+    "posts": 1,
+    "request_metadata_and_display_agree": true,
+    "api_seconds": 5.418698505000066
+  },
+  "slow_dependency": {
+    "posts": 1,
+    "request_metadata_and_display_agree": true,
+    "api_seconds": 5.59567825999693
+  },
+  "bad_deploy": {
+    "posts": 1,
+    "request_metadata_and_display_agree": true,
+    "api_seconds": 3.776679353999498
+  }
+}

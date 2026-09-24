@@ -1,0 +1,28 @@
+{
+  "case": "memory_refusal",
+  "timestamp": "2026-09-22T13:27:10.339571+00:00",
+  "overrides": {
+    "GROQ_API_KEY": "deliberately-invalid-validation-key",
+    "LLM_PROVIDER": "groq",
+    "GROQ_MODEL": "openai/gpt-oss-20b",
+    "LLM_FALLBACK_PROVIDER": "ollama",
+    "OLLAMA_MODEL": "qwen3:4b",
+    "LANGSMITH_TRACING": "false",
+    "LANGCHAIN_TRACING_V2": "false",
+    "OLLAMA_MIN_AVAILABLE_MEMORY_MB": "7718"
+  },
+  "health": {
+    "status": "ok",
+    "dependencies": {
+      "prometheus": true,
+      "elasticsearch": true,
+      "llm": true
+    }
+  },
+  "http_status": 503,
+  "elapsed_seconds": 0.4231004789999133,
+  "response": {
+    "detail": "investigation produced no report: routing fallback: Groq failed; Ollama fallback unavailable: Ollama skipped: 2823 MiB RAM available; 7718 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2823 MiB RAM available; 7718 MiB required. Free memory or configure Ollama on a larger machine.; model call failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2822 MiB RAM available; 7718 MiB required. Free memory or configure Ollama on a larger machine.; correlation failed: Groq failed; Ollama fallback unavailable: Ollama skipped: 2822 MiB RAM available; 7718 MiB required. Free memory or configure Ollama on a larger machine."
+  },
+  "fallback_events": 4
+}

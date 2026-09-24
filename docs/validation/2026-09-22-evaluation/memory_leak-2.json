@@ -1,0 +1,54 @@
+{
+  "started_at": "2026-09-22T13:47:51.142176+00:00",
+  "request": {
+    "query": "checkout-service memory keeps climbing",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "Checkout-service resident memory rose 1.7\u00d7 (711.46\u202fMiB \u2192 1225.50\u202fMiB) over a 3\u2011hour window with no corresponding ERROR/WARN logs mentioning memory, indicating a likely memory leak or sustained high load.",
+    "likely_causes": [
+      {
+        "title": "Memory leak in checkout-service",
+        "rationale": "The sustained 1.7\u00d7 increase in resident memory without any error or warning logs suggests that the service is allocating memory that is not being released, i.e., a memory leak.",
+        "confidence": 0.9,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "resident memory rose 1.7x, from 711.46MiB to 1225.50MiB (query: process_resident_memory_bytes{service=\"checkout-service\"}; threshold-validated; anomaly_detected=True)"
+          },
+          {
+            "source": "logs",
+            "detail": "0 documents matched ERROR/WARN logs containing 'memory' for checkout-service"
+          }
+        ]
+      },
+      {
+        "title": "Increased traffic or workload causing higher memory usage",
+        "rationale": "A sudden spike in concurrent requests or larger payloads can raise memory consumption even if the code is correct.",
+        "confidence": 0.6,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "resident memory rose 1.7x, from 711.46MiB to 1225.50MiB (query: process_resident_memory_bytes{service=\"checkout-service\"}; threshold-validated; anomaly_detected=True)"
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Collect heap dumps at peak memory usage and analyze for retained objects.",
+      "Review recent code changes or deployments that could introduce new allocations.",
+      "Check request volume and payload size during the anomaly window.",
+      "Apply GC tuning or increase heap size if the spike is due to legitimate load."
+    ],
+    "confidence": 0.85
+  },
+  "error": null,
+  "elapsed_seconds": 5.62432729899956,
+  "finished_at": "2026-09-22T13:47:56.766555+00:00",
+  "scenario": "memory_leak",
+  "repeat": 2,
+  "expected_culprit": "checkout-service",
+  "correct": true,
+  "detail": "Memory leak in checkout-service"
+}

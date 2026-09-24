@@ -1,0 +1,924 @@
+[
+  {
+    "case": "memory_leak",
+    "mode": "live",
+    "started_at": "2026-09-24T19:49:29.458784+00:00",
+    "displayed_window": "Queried window: 2026-09-24T16:49:34.003313+00:00 \u2192 2026-09-24T19:49:34.003313+00:00 (180 minutes; API timestamps)",
+    "submit_to_result_seconds": 6.439837489000638,
+    "passed": true,
+    "events": [
+      {
+        "case": "memory_leak",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:49:30.280678+00:00",
+        "status": 200,
+        "duration_seconds": 0.431257808002556,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "memory_leak",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:49:31.358582+00:00",
+        "status": 200,
+        "duration_seconds": 0.36676202000307967,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "memory_leak",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:49:33.441912+00:00",
+        "status": 200,
+        "duration_seconds": 0.5345842059978168,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "memory_leak",
+        "mode": "live",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:49:33.992577+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 5.418698505000066,
+        "response": {
+          "summary": "Checkout-service experienced a significant increase in resident memory usage, leading to OutOfMemoryError exceptions and GC overhead warnings during the investigation window.",
+          "likely_causes": [
+            {
+              "title": "Memory leak in application code causing gradual heap exhaustion",
+              "rationale": "The resident memory rose 1.8x and repeated OutOfMemoryError and GC overhead warnings indicate heap exhaustion, typical of a memory leak.",
+              "confidence": 0.8,
+              "supporting_evidence": [
+                {
+                  "source": "metrics",
+                  "detail": "resident memory rose 1.8x, from 677.75MiB to 1220.35MiB"
+                },
+                {
+                  "source": "logs",
+                  "detail": "java.lang.OutOfMemoryError: Java heap space (sample timestamps 2026-09-24T19:18:55+00:00 to 2026-09-24T19:39:55+00:00)"
+                },
+                {
+                  "source": "logs",
+                  "detail": "GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)"
+                }
+              ]
+            },
+            {
+              "title": "Insufficient JVM heap size configuration",
+              "rationale": "Heap usage reached 92% and OOM errors occurred, suggesting the configured heap size may be too low for the workload.",
+              "confidence": 0.6,
+              "supporting_evidence": [
+                {
+                  "source": "logs",
+                  "detail": "GC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)"
+                },
+                {
+                  "source": "metrics",
+                  "detail": "resident memory rose 1.8x, from 677.75MiB to 1220.35MiB"
+                }
+              ]
+            }
+          ],
+          "next_steps": [
+            "Collect and analyze heap dumps from the affected instances to identify retained objects",
+            "Review recent code changes or deployments that could introduce memory leaks",
+            "Increase JVM heap size and monitor memory usage to confirm mitigation",
+            "Enable detailed GC logging to correlate GC pauses with memory spikes",
+            "Verify request rates during the window to rule out traffic-induced load"
+          ],
+          "confidence": 0.75,
+          "investigation_window": {
+            "start": "2026-09-24T16:49:34.003313Z",
+            "end": "2026-09-24T19:49:34.003313Z"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "case": "slow_dependency",
+    "mode": "live",
+    "started_at": "2026-09-24T19:50:55.597205+00:00",
+    "displayed_window": "Queried window: 2026-09-24T16:50:59.325510+00:00 \u2192 2026-09-24T19:50:59.325510+00:00 (180 minutes; API timestamps)",
+    "submit_to_result_seconds": 6.4099195880007755,
+    "passed": true,
+    "events": [
+      {
+        "case": "slow_dependency",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:50:56.025739+00:00",
+        "status": 200,
+        "duration_seconds": 0.38049089099877165,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "slow_dependency",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:50:56.902891+00:00",
+        "status": 200,
+        "duration_seconds": 0.3571543270008988,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "slow_dependency",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:50:58.925017+00:00",
+        "status": 200,
+        "duration_seconds": 0.37660395500279265,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "slow_dependency",
+        "mode": "live",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:50:59.314608+00:00",
+        "request": {
+          "query": "payment-service latency is elevated",
+          "service": "payment-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 5.59567825999693,
+        "response": {
+          "summary": "During the 3\u2011hour investigation window, payment\u2011service p95 latency rose from 0.24\u202fs to 0.94\u202fs, accompanied by 10 ERRORs and 20 WARNs indicating fraud\u2011API timeouts and unavailability.",
+          "likely_causes": [
+            {
+              "title": "Fraud\u2011API unavailability or high latency",
+              "rationale": "The payment\u2011service logged multiple timeouts when calling fraud\u2011API and subsequent PaymentAuthorizationException errors, which likely caused the service to wait longer and increase latency.",
+              "confidence": 0.9,
+              "supporting_evidence": [
+                {
+                  "source": "metrics",
+                  "detail": "payment-service p95 latency rose 4.0x, from 0.24s to 0.94s (query: histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"payment-service\"}[5m]))); threshold-validated; anomaly_detected=True)"
+                },
+                {
+                  "source": "logs",
+                  "detail": "WARN payment-service: upstream timeout calling fraud-api after 2000ms (sample timestamps 2026-09-24T19:04:55Z to 2026-09-24T19:42:55Z)"
+                },
+                {
+                  "source": "logs",
+                  "detail": "ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (sample timestamps 2026-09-24T18:44:55Z to 2026-09-24T19:38:55Z)"
+                }
+              ]
+            }
+          ],
+          "next_steps": [
+            "Collect request\u2011rate metrics for payment\u2011service to confirm traffic levels during the incident window.",
+            "Query fraud\u2011API metrics (latency, error rate, availability) for the same window to confirm its health status.",
+            "Inspect network path between payment\u2011service and fraud\u2011API for packet loss or increased RTT.",
+            "Review any recent deployments or configuration changes to payment\u2011service or fraud\u2011API that could affect timeout thresholds or retry logic."
+          ],
+          "confidence": 0.9,
+          "investigation_window": {
+            "start": "2026-09-24T16:50:59.325510Z",
+            "end": "2026-09-24T19:50:59.325510Z"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "case": "bad_deploy",
+    "mode": "live",
+    "started_at": "2026-09-24T19:52:19.052243+00:00",
+    "displayed_window": "Queried window: 2026-09-24T16:52:24.815520+00:00 \u2192 2026-09-24T19:52:24.815520+00:00 (180 minutes; API timestamps)",
+    "submit_to_result_seconds": 4.364958218000538,
+    "passed": true,
+    "events": [
+      {
+        "case": "bad_deploy",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:19.506200+00:00",
+        "status": 200,
+        "duration_seconds": 2.093182690998219,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "bad_deploy",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:22.417524+00:00",
+        "status": 200,
+        "duration_seconds": 0.3757301899968297,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "bad_deploy",
+        "mode": "live",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:24.434460+00:00",
+        "status": 200,
+        "duration_seconds": 0.36113338400173234,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "bad_deploy",
+        "mode": "live",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:24.806382+00:00",
+        "request": {
+          "query": "cart-service error rate spiked after the last deploy",
+          "service": "cart-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 3.776679353999498,
+        "response": {
+          "summary": "During the 3\u2011hour investigation window, cart\u2011service exhibited a sudden spike in 5xx error rate (15.00pp) that coincided with 20 ERROR log entries reporting a NullPointerException in PromotionEngine.applyDiscount.",
+          "likely_causes": [
+            {
+              "title": "NullPointerException in PromotionEngine.applyDiscount due to missing promotion data",
+              "rationale": "The error logs show a consistent NullPointerException at PromotionEngine.applyDiscount, and the metrics reveal a sharp rise in 5xx errors during the same period, indicating that the exception is causing request failures.",
+              "confidence": 0.9,
+              "supporting_evidence": [
+                {
+                  "source": "logs",
+                  "detail": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88) (20 occurrences)"
+                },
+                {
+                  "source": "metrics",
+                  "detail": "5xx error rate spiked to 15.00pp from near\u2011zero baseline"
+                }
+              ]
+            }
+          ],
+          "next_steps": [
+            "Investigate PromotionEngine.applyDiscount for null handling and missing promotion data.",
+            "Verify promotion data ingestion pipeline for recent changes or data gaps.",
+            "Consider rolling back to v1.4.9 if regression is confirmed.",
+            "Add defensive null checks and unit tests for promotion application logic."
+          ],
+          "confidence": 0.9,
+          "investigation_window": {
+            "start": "2026-09-24T16:52:24.815520Z",
+            "end": "2026-09-24T19:52:24.815520Z"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "case": "empty_query",
+    "mode": "json_503",
+    "started_at": "2026-09-24T19:52:37.638752+00:00",
+    "displayed_error": "query is required.",
+    "submit_to_result_seconds": 0.14877825700023095,
+    "passed": true,
+    "events": [
+      {
+        "case": "empty_query",
+        "mode": "json_503",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:38.084079+00:00",
+        "status": 200,
+        "duration_seconds": 1.7661997844697908e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "empty_query",
+        "mode": "json_503",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:38.474713+00:00",
+        "status": 200,
+        "duration_seconds": 4.115599949727766e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "case": "json_503",
+    "mode": "json_503",
+    "started_at": "2026-09-24T19:52:38.937191+00:00",
+    "displayed_error": "API error 503: Both providers unavailable (injected UI fixture)",
+    "submit_to_result_seconds": 0.11738451699784491,
+    "passed": true,
+    "events": [
+      {
+        "case": "json_503",
+        "mode": "json_503",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:39.365810+00:00",
+        "status": 200,
+        "duration_seconds": 2.0147002942394465e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "json_503",
+        "mode": "json_503",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:39.750041+00:00",
+        "status": 200,
+        "duration_seconds": 1.7262002074858174e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "json_503",
+        "mode": "json_503",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:39.868816+00:00",
+        "status": 200,
+        "duration_seconds": 2.1771000319859013e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "json_503",
+        "mode": "json_503",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:39.878844+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 503,
+        "duration_seconds": 2.9959992389194667e-06,
+        "response": {
+          "detail": "Both providers unavailable (injected UI fixture)"
+        }
+      }
+    ]
+  },
+  {
+    "case": "text_502",
+    "mode": "text_502",
+    "started_at": "2026-09-24T19:52:40.257240+00:00",
+    "displayed_error": "API error 502: <html>Bad gateway (injected UI fixture)</html>",
+    "submit_to_result_seconds": 0.11719438599902787,
+    "passed": true,
+    "events": [
+      {
+        "case": "text_502",
+        "mode": "text_502",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:40.698894+00:00",
+        "status": 200,
+        "duration_seconds": 1.6991001757560298e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "text_502",
+        "mode": "text_502",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:41.097663+00:00",
+        "status": 200,
+        "duration_seconds": 2.201100141974166e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "text_502",
+        "mode": "text_502",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:41.219121+00:00",
+        "status": 200,
+        "duration_seconds": 1.632999919820577e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "text_502",
+        "mode": "text_502",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:41.230377+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 502,
+        "duration_seconds": 2.0840016077272594e-06,
+        "response_text": "<html>Bad gateway (injected UI fixture)</html>"
+      }
+    ]
+  },
+  {
+    "case": "invalid_report",
+    "mode": "invalid_report",
+    "started_at": "2026-09-24T19:52:41.607101+00:00",
+    "displayed_error": "The API returned an invalid investigation report.",
+    "submit_to_result_seconds": 0.13951879900196218,
+    "passed": true,
+    "events": [
+      {
+        "case": "invalid_report",
+        "mode": "invalid_report",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:42.162181+00:00",
+        "status": 200,
+        "duration_seconds": 2.317300095455721e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "invalid_report",
+        "mode": "invalid_report",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:42.584314+00:00",
+        "status": 200,
+        "duration_seconds": 4.374099808046594e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "invalid_report",
+        "mode": "invalid_report",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:42.753550+00:00",
+        "status": 200,
+        "duration_seconds": 2.516699896659702e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "invalid_report",
+        "mode": "invalid_report",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:42.766090+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 2.053999196505174e-06,
+        "response": {}
+      }
+    ]
+  },
+  {
+    "case": "literal_html",
+    "mode": "literal_html",
+    "started_at": "2026-09-24T19:52:43.068811+00:00",
+    "submit_to_result_seconds": 0.13083708799968008,
+    "passed": true,
+    "events": [
+      {
+        "case": "literal_html",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:43.494542+00:00",
+        "status": 200,
+        "duration_seconds": 1.6080000932561234e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "literal_html",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:43.899937+00:00",
+        "status": 200,
+        "duration_seconds": 1.654100196901709e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "literal_html",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:44.018040+00:00",
+        "status": 200,
+        "duration_seconds": 1.7102000128943473e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "literal_html",
+        "mode": "literal_html",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:44.028366+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 2.1149000531295314e-05,
+        "response": {
+          "summary": "Fixture <img src=x onerror=alert(1)>",
+          "likely_causes": [],
+          "confidence": 0,
+          "next_steps": [
+            "Check <literal>"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "case": "bad_health",
+    "mode": "bad_health",
+    "started_at": "2026-09-24T19:52:44.356995+00:00",
+    "submit_to_result_seconds": 0.13712576500256546,
+    "passed": true,
+    "events": [
+      {
+        "case": "bad_health",
+        "mode": "bad_health",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:44.823041+00:00",
+        "status": 200,
+        "duration_seconds": 1.718199928291142e-05,
+        "response_text": "not JSON"
+      },
+      {
+        "case": "bad_health",
+        "mode": "bad_health",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:45.220942+00:00",
+        "status": 200,
+        "duration_seconds": 2.5147000997094437e-05,
+        "response_text": "not JSON"
+      }
+    ]
+  },
+  {
+    "case": "unreachable",
+    "mode": "disconnect",
+    "started_at": "2026-09-24T19:52:45.694217+00:00",
+    "displayed_error": "can't reach the API at http://127.0.0.1:36317",
+    "submit_to_result_seconds": 0.1823841769983119,
+    "passed": true,
+    "events": [
+      {
+        "case": "unreachable",
+        "mode": "disconnect",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:46.166623+00:00",
+        "behavior": "closed socket without a response"
+      },
+      {
+        "case": "unreachable",
+        "mode": "disconnect",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:46.608979+00:00",
+        "behavior": "closed socket without a response"
+      },
+      {
+        "case": "unreachable",
+        "mode": "disconnect",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:46.625600+00:00",
+        "request": {
+          "query": "fixture incident",
+          "service": null,
+          "minutes_back": 60
+        },
+        "behavior": "closed socket without a response"
+      }
+    ]
+  },
+  {
+    "case": "timeout",
+    "mode": "timeout",
+    "started_at": "2026-09-24T19:52:47.079884+00:00",
+    "displayed_error": "The API timed out after 300 seconds without network progress. The investigation may still be running on the server.",
+    "submit_to_result_seconds": 300.2267606910027,
+    "passed": true,
+    "events": [
+      {
+        "case": "timeout",
+        "mode": "timeout",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:47.607869+00:00",
+        "status": 200,
+        "duration_seconds": 2.8802998713217676e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "timeout",
+        "mode": "timeout",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:48.033800+00:00",
+        "status": 200,
+        "duration_seconds": 2.6678997528506443e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "timeout",
+        "mode": "timeout",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:52:48.168364+00:00",
+        "status": 200,
+        "duration_seconds": 2.329299968550913e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "timeout",
+        "mode": "timeout",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:52:48.180429+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "behavior": "accepted request; sent no response headers or body"
+      }
+    ]
+  },
+  {
+    "case": "recovery",
+    "mode": "literal_html",
+    "started_at": "2026-09-24T19:57:48.461256+00:00",
+    "submit_to_result_seconds": 0.147594369998842,
+    "passed": true,
+    "events": [
+      {
+        "case": "recovery",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:57:49.014337+00:00",
+        "status": 200,
+        "duration_seconds": 1.7621998267713934e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "recovery",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:57:49.422653+00:00",
+        "status": 200,
+        "duration_seconds": 2.3513999622082338e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "recovery",
+        "mode": "literal_html",
+        "method": "GET",
+        "path": "/health",
+        "started_at": "2026-09-24T19:57:49.658749+00:00",
+        "status": 200,
+        "duration_seconds": 2.2492000425700098e-05,
+        "response": {
+          "status": "ok",
+          "dependencies": {
+            "prometheus": true,
+            "elasticsearch": true,
+            "llm": true
+          }
+        }
+      },
+      {
+        "case": "recovery",
+        "mode": "literal_html",
+        "method": "POST",
+        "path": "/api/v1/investigations",
+        "started_at": "2026-09-24T19:57:49.674163+00:00",
+        "request": {
+          "query": "checkout-service memory keeps climbing",
+          "service": "checkout-service",
+          "minutes_back": 180
+        },
+        "status": 200,
+        "duration_seconds": 2.1569001546595246e-05,
+        "response": {
+          "summary": "Fixture <img src=x onerror=alert(1)>",
+          "likely_causes": [],
+          "confidence": 0,
+          "next_steps": [
+            "Check <literal>"
+          ]
+        }
+      }
+    ]
+  }
+]

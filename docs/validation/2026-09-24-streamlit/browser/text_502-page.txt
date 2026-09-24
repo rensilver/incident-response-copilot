@@ -1,0 +1,18 @@
+Deploy
+INCIDENT-COPILOT
+PROMETHEUSELASTICSEARCHLLM
+$ INVESTIGATE
+
+Memory leak
+
+Slow dependency
+
+Bad deploy
+
+service
+
+window (minutes)
+
+RUN INVESTIGATION ▶
+
+API error 502: <html>Bad gateway (injected UI fixture)</html>

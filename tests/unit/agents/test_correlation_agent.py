@@ -1,4 +1,7 @@
 import json
+from datetime import UTC, datetime, timedelta
+
+import pytest
 
 from incident_copilot.agents.correlation_agent import build_correlation_agent
 from incident_copilot.agents.state import initial_state
@@ -96,3 +99,27 @@ async def test_malformed_model_output_is_recorded_not_raised() -> None:
     result = await build_correlation_agent(provider)(_state([_typed(True, "rose")]))
     assert result["report"] is None
     assert result["errors"]
+
+
+@pytest.mark.parametrize("minutes", [17, 180])
+async def test_correlation_receives_exact_scope_despite_five_minute_promql(minutes: int) -> None:
+    end = datetime(2026, 9, 23, tzinfo=UTC)
+    window = TimeWindow(start=end - timedelta(minutes=minutes), end=end)
+    state = _state(
+        [
+            _typed(True, "p95 rose").model_copy(
+                update={"query": "rate(http_request_duration_seconds_bucket[5m])"}
+            )
+        ]
+    )
+    state["time_window"] = window
+    state["errors"] = ["log search unavailable"]
+    provider = FakeLLMProvider([REPORT])
+    await build_correlation_agent(provider)(state)
+    prompt = provider.calls[0][-1].content
+    assert window.start.isoformat() in prompt
+    assert window.end.isoformat() in prompt
+    assert f"({minutes} minutes)" in prompt
+    assert "[5m]" in prompt
+    assert "log search unavailable" in prompt
+    assert "Service of interest: cart-service" in prompt

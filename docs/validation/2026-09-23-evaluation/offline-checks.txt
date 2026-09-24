@@ -1,0 +1,38 @@
+First ad-hoc recorder probe failed because its standalone Settings(_env_file=None) fixture had no Groq key; no provider was contacted. Repeated with LLM_PROVIDER=ollama and FakeLLMProvider, it passed. Full lint/type/format/unit checks below passed on the first run.
+
+Traceback (most recent call last):
+  File "<stdin>", line 24, in <module>
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "<stdin>", line 10, in check
+  File "tests/unit/agents/test_graph.py", line 86, in _graph
+    Settings(_env_file=None),
+    ~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pydantic_settings/main.py", line 262, in __init__
+    super().__init__(**__pydantic_self__.__class__._settings_build_values(sources, init_kwargs))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pydantic/main.py", line 263, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
+  Value error, GROQ_API_KEY is required when LLM_PROVIDER=groq [type=value_error, input_value={'langsmith_tracing': 'false'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+.venv/bin/ruff check src tests
+All checks passed!
+.venv/bin/mypy --strict src
+Success: no issues found in 58 source files
+All done! ✨ 🍰 ✨
+111 files would be left unchanged.
+All checks passed!
+Success: no issues found in 59 source files
+........................................................................ [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.........................................                                [100%]
+257 passed in 3.89s

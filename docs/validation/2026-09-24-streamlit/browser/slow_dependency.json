@@ -1,0 +1,110 @@
+{
+  "case": "slow_dependency",
+  "mode": "live",
+  "started_at": "2026-09-24T19:50:55.597205+00:00",
+  "displayed_window": "Queried window: 2026-09-24T16:50:59.325510+00:00 \u2192 2026-09-24T19:50:59.325510+00:00 (180 minutes; API timestamps)",
+  "submit_to_result_seconds": 6.4099195880007755,
+  "passed": true,
+  "events": [
+    {
+      "case": "slow_dependency",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:50:56.025739+00:00",
+      "status": 200,
+      "duration_seconds": 0.38049089099877165,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "slow_dependency",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:50:56.902891+00:00",
+      "status": 200,
+      "duration_seconds": 0.3571543270008988,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "slow_dependency",
+      "mode": "live",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:50:58.925017+00:00",
+      "status": 200,
+      "duration_seconds": 0.37660395500279265,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "slow_dependency",
+      "mode": "live",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:50:59.314608+00:00",
+      "request": {
+        "query": "payment-service latency is elevated",
+        "service": "payment-service",
+        "minutes_back": 180
+      },
+      "status": 200,
+      "duration_seconds": 5.59567825999693,
+      "response": {
+        "summary": "During the 3\u2011hour investigation window, payment\u2011service p95 latency rose from 0.24\u202fs to 0.94\u202fs, accompanied by 10 ERRORs and 20 WARNs indicating fraud\u2011API timeouts and unavailability.",
+        "likely_causes": [
+          {
+            "title": "Fraud\u2011API unavailability or high latency",
+            "rationale": "The payment\u2011service logged multiple timeouts when calling fraud\u2011API and subsequent PaymentAuthorizationException errors, which likely caused the service to wait longer and increase latency.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "payment-service p95 latency rose 4.0x, from 0.24s to 0.94s (query: histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"payment-service\"}[5m]))); threshold-validated; anomaly_detected=True)"
+              },
+              {
+                "source": "logs",
+                "detail": "WARN payment-service: upstream timeout calling fraud-api after 2000ms (sample timestamps 2026-09-24T19:04:55Z to 2026-09-24T19:42:55Z)"
+              },
+              {
+                "source": "logs",
+                "detail": "ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (sample timestamps 2026-09-24T18:44:55Z to 2026-09-24T19:38:55Z)"
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Collect request\u2011rate metrics for payment\u2011service to confirm traffic levels during the incident window.",
+          "Query fraud\u2011API metrics (latency, error rate, availability) for the same window to confirm its health status.",
+          "Inspect network path between payment\u2011service and fraud\u2011API for packet loss or increased RTT.",
+          "Review any recent deployments or configuration changes to payment\u2011service or fraud\u2011API that could affect timeout thresholds or retry logic."
+        ],
+        "confidence": 0.9,
+        "investigation_window": {
+          "start": "2026-09-24T16:50:59.325510Z",
+          "end": "2026-09-24T19:50:59.325510Z"
+        }
+      }
+    }
+  ]
+}
