@@ -1,0 +1,44 @@
+{
+  "case": "empty_query",
+  "mode": "json_503",
+  "started_at": "2026-09-24T19:52:37.638752+00:00",
+  "displayed_error": "query is required.",
+  "submit_to_result_seconds": 0.14877825700023095,
+  "passed": true,
+  "events": [
+    {
+      "case": "empty_query",
+      "mode": "json_503",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:38.084079+00:00",
+      "status": 200,
+      "duration_seconds": 1.7661997844697908e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "empty_query",
+      "mode": "json_503",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:38.474713+00:00",
+      "status": 200,
+      "duration_seconds": 4.115599949727766e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    }
+  ]
+}

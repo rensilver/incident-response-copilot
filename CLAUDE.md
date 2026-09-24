@@ -31,17 +31,19 @@ this repository.
   no import of `incident_copilot`), `styles.py` (injected CSS + the confidence-meter
   HTML builder); a dark console-styled thin client over the FastAPI API only
 
-V1–V5 have implementations, but final release verification is incomplete. The
-latest nine-run Groq evaluation returned 4/9 culprit-service mentions (not RCA
-accuracy), including one Groq 429 / local-RAM refusal. Both returned slow-dependency
-reports now cite `fraud-api`; identifier-sensitive scoring and unsupported causal
-claims remain limitations. The prior pass scored 5/9. See
-`docs/validation/2026-09-23-evaluation/README.md` for full evidence and measurements.
-LangSmith delivery and tracing-disabled operation are now verified for the shared
-host service path; see `docs/validation/2026-09-23-langsmith/README.md`. Its tracing
-flag/cache fix and 263 passing unit tests await owner review and commit. Further
-scoring/grounding review, Streamlit/media, and the final README remain pending. Successful local fallback is blocked by available RAM. Complete one action
-at a time and wait for owner review and commit, as required by `AGENTS.md`.
+V1–V5 functional validation is now recorded for the cloud-backed desktop demo;
+V4's Docker, evaluation, LangSmith, and measured-results README requirements are
+complete. Actions 5 and 6 were explicitly requested together and await owner review
+and commit. See `docs/validation/2026-09-24-streamlit/README.md`: 276 offline tests,
+12 live integration tests, 12 browser cases, real 300.227-second timeout, screenshots,
+and a 55.2-second recording. The README setup was checked with a fresh install.
+
+The latest nine-run Groq evaluation remains 4/9 culprit-service mentions (not RCA
+accuracy), including one Groq 429 / local-RAM refusal; the prior pass scored 5/9.
+Scoring sensitivity, unsupported causal claims, and uncalibrated confidence remain
+limitations. Successful local inference is blocked by available RAM. No blanket
+production-readiness or diagnostic-accuracy claim is justified. Future changes
+return to one action at a time with owner review/commit unless explicitly overridden.
 
 **Generated state, not source:** `docker/prometheus/data/` holds backfilled TSDB blocks
 and is gitignored. Recreate it with `make demo-reset`, never by hand.
@@ -308,17 +310,21 @@ Prometheus/Elasticsearch belongs in `tests/integration`.
 
 ## Roadmap
 
-- **V1 (implemented; final release verification incomplete)** — Connectors and basic
-  tool-calling over Prometheus and Elasticsearch; offline and live connector checks pass.
-- **V2 (implemented; final release verification incomplete)** — LangGraph supervisor
-  and specialists; graph tests pass, but evaluation exposes report-quality issues.
-- **V3 (implemented; final release verification incomplete)** — Correlation reports,
-  FastAPI, and seeded data; live API checks pass, but report grounding remains unresolved.
-- **V4 (incomplete)** — Docker startup and the nine-run evaluation are validated.
-  LangSmith delivery and publication of measured results in the final README remain
-  unverified/incomplete. Tracing-disabled investigations passed.
-- **V5 (implemented; live validation pending)** — Streamlit client over FastAPI;
-  scenario walkthroughs, screenshots, and the recorded demo remain pending.
+- **V1 (functional checks verified)** — Connectors and validated tools; offline and
+  real data-source checks pass, including requested query windows.
+- **V2 (functional checks verified)** — Supervisor/specialist graph; offline graph,
+  real API/UI runs and remote trace spans verify execution. RCA quality is limited.
+- **V3 (functional checks verified)** — Structured reports, API, seed data, windows,
+  and tested error behavior. Report causality and factual claims are not guaranteed.
+- **V4 (required evidence complete)** — Docker deployment, retained nine-run evaluation,
+  real LangSmith delivery and disabled mode, measured results in the rewritten README.
+- **V5 (desktop validation complete)** — Three live UI scenarios, controlled failures,
+  real 300-second timeout, screenshots, and recorded demo. Other browsers/mobile and
+  server cancellation are unverified. Successful local fallback remains blocked.
+
+Actions 5/6 and their documentation await owner review and commit. Remaining
+quality/capacity limitations are explicit in the validation records; no milestone
+label establishes production readiness or proven RCA accuracy.
 
 ## What Claude Code should NOT do
 

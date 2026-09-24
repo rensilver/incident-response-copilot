@@ -1,0 +1,96 @@
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:36252 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:45448 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:45456 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:45470 - "GET /health HTTP/1.1" 200 OK
+ic-app  | {"query": "checkout-service memory keeps climbing", "service": "checkout-service", "event": "investigation_started", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:34.003178Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:34.713645Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=process_resident_memory_bytes%7Bservice%3D%22checkout-service%22%7D&start=1790268574.003313&end=1790279374.003313&step=30s "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.460s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:36.330377Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.012s]
+ic-app  | {"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:36.655488Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 2, "event": "correlation_complete", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:39.409211Z"}
+ic-app  | {"causes": 2, "event": "investigation_complete", "correlation_id": "d8b1a6b0-90f3-4cc5-baa9-d37efbee0f75", "level": "info", "timestamp": "2026-09-24T19:49:39.410011Z"}
+ic-app  | INFO:     172.18.0.1:45480 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:44554 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:54240 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:54252 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:50664 - "GET /health HTTP/1.1" 200 OK
+ic-app  | {"query": "payment-service latency is elevated", "service": "payment-service", "event": "investigation_started", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:50:59.325405Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:50:59.966625Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.032s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=histogram_quantile%280.95%2C+sum+by+%28le%29+%28rate%28http_request_duration_seconds_bucket%7Bservice%3D%22payment-service%22%7D%5B5m%5D%29%29%29&start=1790268659.32551&end=1790279459.32551&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.017s]
+ic-app  | {"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:51:01.132950Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:51:01.695198Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 1, "event": "correlation_complete", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:51:04.907232Z"}
+ic-app  | {"causes": 1, "event": "investigation_complete", "correlation_id": "1443efe9-432d-4657-af39-13df93926e69", "level": "info", "timestamp": "2026-09-24T19:51:04.908086Z"}
+ic-app  | INFO:     172.18.0.1:50670 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:52042 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:52052 - "GET /health HTTP/1.1" 200 OK
+ic-app  | HTTP Request: GET http://prometheus:9090/-/ready "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://elasticsearch:9200/_cluster/health "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET https://api.groq.com/openai/v1/models "HTTP/1.1 200 OK"
+ic-app  | INFO:     172.18.0.1:52058 - "GET /health HTTP/1.1" 200 OK
+ic-app  | {"query": "cart-service error rate spiked after the last deploy", "service": "cart-service", "event": "investigation_started", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:24.815402Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"agents": ["metrics_agent", "logs_agent"], "event": "supervisor_routed", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:25.322060Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: GET http://prometheus:9090/api/v1/query_range?query=sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum%28rate%28http_requests_total%7Bservice%3D%22cart-service%22%7D%5B5m%5D%29%29&start=1790268744.81552&end=1790279544.81552&step=30s "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.071s]
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | POST http://elasticsearch:9200/app-logs/_search [status:200 duration:0.021s]
+ic-app  | {"findings": 2, "errors": 0, "event": "logs_agent_complete", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:26.439853Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"findings": 1, "errors": 0, "event": "metrics_agent_complete", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:26.827958Z"}
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ic-app  | {"causes": 1, "event": "correlation_complete", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:28.580816Z"}
+ic-app  | {"causes": 1, "event": "investigation_complete", "correlation_id": "788fe34f-724a-467e-ab2f-9a39fb41ffe9", "level": "info", "timestamp": "2026-09-24T19:52:28.581628Z"}
+ic-app  | INFO:     172.18.0.1:52068 - "POST /api/v1/investigations HTTP/1.1" 200 OK
+ic-app  | INFO:     172.18.0.1:55000 - "GET /openapi.json HTTP/1.1" 200 OK

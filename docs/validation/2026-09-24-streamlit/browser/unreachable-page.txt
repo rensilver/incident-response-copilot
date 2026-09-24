@@ -1,0 +1,18 @@
+Deploy
+INCIDENT-COPILOT
+API UNREACHABLE
+$ INVESTIGATE
+
+Memory leak
+
+Slow dependency
+
+Bad deploy
+
+service
+
+window (minutes)
+
+RUN INVESTIGATION ▶
+
+can't reach the API at http://127.0.0.1:36317

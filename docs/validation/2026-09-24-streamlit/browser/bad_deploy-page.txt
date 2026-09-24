@@ -1,0 +1,33 @@
+Deploy
+INCIDENT-COPILOT
+PROMETHEUSELASTICSEARCHLLM
+$ INVESTIGATE
+
+Memory leak
+
+Slow dependency
+
+Bad deploy
+
+service
+
+window (minutes)
+
+RUN INVESTIGATION ▶
+
+Queried window: 2026-09-24T16:52:24.815520+00:00 → 2026-09-24T19:52:24.815520+00:00 (180 minutes; API timestamps)
+
+SUMMARY · OVERALL CONFIDENCE
+During the 3‑hour investigation window, cart‑service exhibited a sudden spike in 5xx error rate (15.00pp) that coincided with 20 ERROR log entries reporting a NullPointerException in PromotionEngine.applyDiscount.
+90%
+P1ROOT CAUSE CANDIDATE
+NullPointerException in PromotionEngine.applyDiscount due to missing promotion data
+The error logs show a consistent NullPointerException at PromotionEngine.applyDiscount, and the metrics reveal a sharp rise in 5xx errors during the same period, indicating that the exception is causing request failures.
+90%
+LOGSNullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88) (20 occurrences)
+METRICS5xx error rate spiked to 15.00pp from near‑zero baseline
+NEXT STEPS
+› Investigate PromotionEngine.applyDiscount for null handling and missing promotion data.
+› Verify promotion data ingestion pipeline for recent changes or data gaps.
+› Consider rolling back to v1.4.9 if regression is confirmed.
+› Add defensive null checks and unit tests for promotion application logic.

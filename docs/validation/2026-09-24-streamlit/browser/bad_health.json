@@ -1,0 +1,29 @@
+{
+  "case": "bad_health",
+  "mode": "bad_health",
+  "started_at": "2026-09-24T19:52:44.356995+00:00",
+  "submit_to_result_seconds": 0.13712576500256546,
+  "passed": true,
+  "events": [
+    {
+      "case": "bad_health",
+      "mode": "bad_health",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:44.823041+00:00",
+      "status": 200,
+      "duration_seconds": 1.718199928291142e-05,
+      "response_text": "not JSON"
+    },
+    {
+      "case": "bad_health",
+      "mode": "bad_health",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:45.220942+00:00",
+      "status": 200,
+      "duration_seconds": 2.5147000997094437e-05,
+      "response_text": "not JSON"
+    }
+  ]
+}

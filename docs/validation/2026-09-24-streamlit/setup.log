@@ -1,0 +1,17 @@
+docker compose --profile app up -d --build
+app built and started: http://localhost:8000
+.venv/bin/python scripts/seed_demo_data.py
+{"scenario": "memory_leak", "event": "seeding_scenario", "level": "info", "timestamp": "2026-09-24T19:45:53.865581Z"}
+{"blocks": 2, "event": "metrics_backfilled", "level": "info", "timestamp": "2026-09-24T19:45:55.111954Z"}
+{"scenario": "slow_dependency", "event": "seeding_scenario", "level": "info", "timestamp": "2026-09-24T19:45:55.113592Z"}
+{"blocks": 2, "event": "metrics_backfilled", "level": "info", "timestamp": "2026-09-24T19:45:55.675772Z"}
+{"scenario": "bad_deploy", "event": "seeding_scenario", "level": "info", "timestamp": "2026-09-24T19:45:55.677478Z"}
+{"blocks": 2, "event": "metrics_backfilled", "level": "info", "timestamp": "2026-09-24T19:45:56.213627Z"}
+HTTP Request: DELETE http://localhost:9200/app-logs "HTTP/1.1 404 Not Found"
+HTTP Request: PUT http://localhost:9200/app-logs "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:9200/_bulk "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:9200/app-logs/_refresh "HTTP/1.1 200 OK"
+{"index": "app-logs", "documents": 1231, "event": "logs_indexed", "level": "info", "timestamp": "2026-09-24T19:45:57.214996Z"}
+seeded 3 scenario(s); 1231 log documents. Restart prometheus to load new blocks: docker compose restart prometheus
+docker compose restart prometheus
+seeded; prometheus restarted

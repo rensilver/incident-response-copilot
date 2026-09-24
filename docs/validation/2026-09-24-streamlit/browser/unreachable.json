@@ -1,0 +1,39 @@
+{
+  "case": "unreachable",
+  "mode": "disconnect",
+  "started_at": "2026-09-24T19:52:45.694217+00:00",
+  "displayed_error": "can't reach the API at http://127.0.0.1:36317",
+  "submit_to_result_seconds": 0.1823841769983119,
+  "passed": true,
+  "events": [
+    {
+      "case": "unreachable",
+      "mode": "disconnect",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:46.166623+00:00",
+      "behavior": "closed socket without a response"
+    },
+    {
+      "case": "unreachable",
+      "mode": "disconnect",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:46.608979+00:00",
+      "behavior": "closed socket without a response"
+    },
+    {
+      "case": "unreachable",
+      "mode": "disconnect",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:52:46.625600+00:00",
+      "request": {
+        "query": "fixture incident",
+        "service": null,
+        "minutes_back": 60
+      },
+      "behavior": "closed socket without a response"
+    }
+  ]
+}

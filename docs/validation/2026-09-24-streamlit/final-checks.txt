@@ -1,0 +1,8 @@
+.venv/bin/ruff check src tests
+All checks passed!
+.venv/bin/mypy --strict src
+Success: no issues found in 58 source files
+All checks passed!
+Success: no issues found in 3 source files
+All done! ✨ 🍰 ✨
+115 files would be left unchanged.

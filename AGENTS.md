@@ -101,7 +101,7 @@ Finalize the project
    four temporal data tools use its exact start/end timestamps, independent of
    model-selected durations. Offline regressions and live checks for all four tools
    pass. Model-written report prose can still misstate the interval; see item 5.
-4. **Offline baseline and configured-provider integration pass.** All 263 unit tests
+4. **Offline baseline and configured-provider integration pass.** All 276 unit tests
    pass outside the execution sandbox. Integration investigations now use real HTTP
    to the deployed API and its configured provider; they no longer force Ollama.
 5. **Grounding mitigation committed (`2a66a8b`); fresh nine-run evaluation retained.**
@@ -115,7 +115,7 @@ Finalize the project
    This does not establish improved overall RCA accuracy: cart reports recognize the
    exception but omit the service name from scored fields; a Unicode hyphen causes
    another false negative. Unsupported heap-size and code-level causal claims remain.
-   Review and commit this measurement action before changing scoring or grounding.
+   This measurement action is committed; scoring and grounding limits remain recorded.
    The current score is a substring service-mention check, not verified causality.
    See the new validation record below; the original 5/9 baseline remains retained.
 6. **Hardware capacity assessed; live Ollama benchmark constrained.** See
@@ -123,21 +123,27 @@ Finalize the project
    The five-container stack used about 1.4 GiB without a local model or Streamlit.
    Host available RAM remained below the 4 GiB cold-load guard. Live quota failures
    triggered fallback and safe RAM refusal, resulting in HTTP 503. Successful local
-   inference, combined stack/model memory, and the UI timeout remain unverified.
+   inference and combined stack/model memory remain unverified. The UI timeout
+   passed its real 300-second validation on 2026-09-24.
    The owner confirmed continued use of this laptop and recording successful local
    inference as blocked. Additional failure validation passed; see the record below.
-7. **LangSmith validation passed; awaiting owner review and commit.** Real Groq
+7. **LangSmith validation passed and committed (`bdd6c7e`, `fac0892`).** Real Groq
    tracing produced 28 completed remote spans, including all four agents, seven
    LLM calls, and four tool calls; remote graph inputs/report match local capture.
    Both tracing-disabled investigations succeeded without a tracing key in settings,
    including inherited-enabled flags after a helper/cache fix. Neither disabled run
    ID was found in LangSmith. See the 2026-09-23 LangSmith validation record below.
-8. **Complete Task 3: rewrite README.md.** Explain purpose, stack, architecture
-   diagram, package structure, configuration, build/run steps, API/UI usage, and
-   verified results. Include screenshots and a demo recording. Correct the
-   missing measured-results anchor and stale provider/model descriptions. Keep
-   future work in AGENTS.md/CLAUDE.md and omit references to those files from the
-   README, as requested.
+8. **Actions 5 and 6 completed together at the owner's explicit request — awaiting review/commit.**
+   All three live Streamlit scenarios and nine controlled browser cases pass, including
+   the unchanged 300-second timeout (300.227 s observed). Screenshots and a 55.2-second
+   recorded demo are retained. The README now contains setup, architecture, package
+   structure, measured evaluation/UI results, tracing evidence, media, and limitations.
+   Final checks: 276 unit tests, 12 live integration tests, lint, strict backend/UI
+   typing, formatting, and documentation/media audits pass. V4's required evidence
+   (evaluation, tracing, Docker, published-in-README measurements) is complete.
+   V1–V5 functional validation is recorded by scope below; successful local inference
+   remains blocked. Owner review and commit are the next release boundary. No blanket
+   claim of production readiness or proven RCA accuracy is made.
 
 ### Task 2 implementation and validation — 2026-09-21
 
@@ -428,6 +434,56 @@ Finalize the project
   error/timeout behavior, screenshots, and recording. The README rewrite and final
   V1–V5 verification remain pending; V4 is not complete. Successful local inference
   remains blocked. No commit or push was performed.
+
+### Streamlit validation and README completion — 2026-09-24
+
+- The owner explicitly requested actions 5 and 6 together, overriding the earlier
+  one-action review boundary for this turn. No commit or push was performed.
+- Rebuilt/started the five-container stack and seeded six current metric blocks and
+  1,231 logs. Three real Chromium/Streamlit investigations used the deployed Groq
+  `openai/gpt-oss-20b` API through a recording HTTP relay. All returned HTTP 200;
+  submit-to-render times were **6.440 s** (memory), **6.410 s** (dependency), and
+  **4.365 s** (deploy). Each submitted/returned/displayed window is exactly 180 minutes.
+  These are functional walkthroughs, not a repeated RCA evaluation.
+- **12/12 browser cases passed.** Controlled fixtures cover empty input, JSON 503,
+  non-JSON 502, malformed reports/health, literal HTML, dropped connections, a real
+  stalled response, and a fresh-session recovery check. The actual unchanged timeout
+  returned after **300.227 s**. This is an HTTPX inactivity limit, not an overall
+  server deadline; server cancellation and a slow local-model investigation are unverified.
+- Fixed reproduced uncaught JSON/shape errors in the UI client, distinguished timeout
+  messages, escaped API text before HTML rendering, and displayed authoritative window
+  metadata. The client remains independent of backend implementation code. Thirteen
+  new offline cases cover these HTTP/report contracts.
+- Retained screenshots for all three scenarios and failures, full requests/reports,
+  original WebM clips, and a **55.2-second MP4**. Actual model reports are unchanged,
+  including unsupported heap/missing-data hypotheses and an invented rollback version.
+  Media presents observed output, not a claim that the diagnosis is correct.
+- **276 unit tests passed in 3.29 s**; a fresh dev/UI install also passed **276 in
+  4.46 s**. Final paced live integration: **12 passed in 210.60 s**, no skips. Ruff,
+  strict backend/UI mypy, Black (115 files), and whitespace checks pass. The initial
+  formatting mismatch was corrected. Tools ran outside the broken execution sandbox.
+- Twenty-nine samples: containers **809.75–1,437.80 MiB**, available host RAM
+  **1,750.32–2,735.26 MiB**, Streamlit RSS up to **76.33 MiB**, recorder plus child
+  RSS up to **980.30 MiB**. Startup and other validation activity are included;
+  sampled/process-sum values do not establish isolated peaks or inference capacity.
+  No local model was loaded or pulled. Successful Ollama inference remains blocked.
+- Rewrote README with about/stack/design/package/setup/API/UI/configuration sections,
+  both retained nine-run evaluation results, hardware, failures, tracing, latency,
+  screenshots/video, and explicit limitations. Removed unsupported end-to-end readiness
+  and obsolete model claims; verified the measured-results anchor. Root README has no
+  future-work list or references to agent instruction files.
+- **V1:** connector/tool functionality verified by offline/live tests. **V2:** graph
+  routing and specialist functionality verified, with diagnostic-quality limits retained.
+  **V3:** report/API/window and error behavior verified within the tested cases; causality
+  remains unproven. **V4:** evaluation harness, LangSmith delivery/disabled mode, Docker,
+  and measured-results publication in README verified. **V5:** desktop UI scenarios,
+  controlled failures/timeout, screenshots, and recording verified. Successful local
+  inference and combined stack/model capacity remain blocked, not marked verified.
+- [Full UI evidence, commands, and limitations](docs/validation/2026-09-24-streamlit/README.md).
+  Existing evaluation scores remain **5/9** and **4/9** service mentions; rescoring
+  reproduces both. The five containers and the normal Streamlit UI on port 8501 remain
+  running for review. Stop for owner review
+  and commit; further scoring/grounding changes are separate actions.
 
 ### Additional release improvements to consider
 

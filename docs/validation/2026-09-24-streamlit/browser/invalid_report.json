@@ -1,0 +1,76 @@
+{
+  "case": "invalid_report",
+  "mode": "invalid_report",
+  "started_at": "2026-09-24T19:52:41.607101+00:00",
+  "displayed_error": "The API returned an invalid investigation report.",
+  "submit_to_result_seconds": 0.13951879900196218,
+  "passed": true,
+  "events": [
+    {
+      "case": "invalid_report",
+      "mode": "invalid_report",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:42.162181+00:00",
+      "status": 200,
+      "duration_seconds": 2.317300095455721e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "invalid_report",
+      "mode": "invalid_report",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:42.584314+00:00",
+      "status": 200,
+      "duration_seconds": 4.374099808046594e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "invalid_report",
+      "mode": "invalid_report",
+      "method": "GET",
+      "path": "/health",
+      "started_at": "2026-09-24T19:52:42.753550+00:00",
+      "status": 200,
+      "duration_seconds": 2.516699896659702e-05,
+      "response": {
+        "status": "ok",
+        "dependencies": {
+          "prometheus": true,
+          "elasticsearch": true,
+          "llm": true
+        }
+      }
+    },
+    {
+      "case": "invalid_report",
+      "mode": "invalid_report",
+      "method": "POST",
+      "path": "/api/v1/investigations",
+      "started_at": "2026-09-24T19:52:42.766090+00:00",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "service": "checkout-service",
+        "minutes_back": 180
+      },
+      "status": 200,
+      "duration_seconds": 2.053999196505174e-06,
+      "response": {}
+    }
+  ]
+}

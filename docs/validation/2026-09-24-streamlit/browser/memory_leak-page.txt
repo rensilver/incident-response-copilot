@@ -1,0 +1,41 @@
+Deploy
+INCIDENT-COPILOT
+PROMETHEUSELASTICSEARCHLLM
+$ INVESTIGATE
+
+Memory leak
+
+Slow dependency
+
+Bad deploy
+
+service
+
+window (minutes)
+
+RUN INVESTIGATION ▶
+
+Queried window: 2026-09-24T16:49:34.003313+00:00 → 2026-09-24T19:49:34.003313+00:00 (180 minutes; API timestamps)
+
+SUMMARY · OVERALL CONFIDENCE
+Checkout-service experienced a significant increase in resident memory usage, leading to OutOfMemoryError exceptions and GC overhead warnings during the investigation window.
+75%
+P1ROOT CAUSE CANDIDATE
+Memory leak in application code causing gradual heap exhaustion
+The resident memory rose 1.8x and repeated OutOfMemoryError and GC overhead warnings indicate heap exhaustion, typical of a memory leak.
+80%
+METRICSresident memory rose 1.8x, from 677.75MiB to 1220.35MiB
+LOGSjava.lang.OutOfMemoryError: Java heap space (sample timestamps 2026-09-24T19:18:55+00:00 to 2026-09-24T19:39:55+00:00)
+LOGSGC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)
+P2ROOT CAUSE CANDIDATE
+Insufficient JVM heap size configuration
+Heap usage reached 92% and OOM errors occurred, suggesting the configured heap size may be too low for the workload.
+60%
+LOGSGC overhead limit approaching; heap usage 92% (sample timestamps 2026-09-24T18:24:55+00:00 to 2026-09-24T19:39:55+00:00)
+METRICSresident memory rose 1.8x, from 677.75MiB to 1220.35MiB
+NEXT STEPS
+› Collect and analyze heap dumps from the affected instances to identify retained objects
+› Review recent code changes or deployments that could introduce memory leaks
+› Increase JVM heap size and monitor memory usage to confirm mitigation
+› Enable detailed GC logging to correlate GC pauses with memory spikes
+› Verify request rates during the window to rule out traffic-induced load

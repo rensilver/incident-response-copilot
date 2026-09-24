@@ -64,8 +64,9 @@ A larger machine or a remote Ollama server is needed to validate local inference
 without the current memory constraint. The initial port conflict was absent during
 the 2026-09-22 validation; all five project containers started successfully.
 
-Cold-load time, local-model investigation latency, and the Streamlit client's
-300-second timeout remain unverified. No local model benchmark or successful live
+Cold-load time and local-model investigation latency remain unverified. The
+Streamlit client's 300-second inactivity timeout was verified on 2026-09-24 with
+a deliberately stalled HTTP response (300.227 s observed). No local model benchmark or successful live
 fallback is claimed by this assessment.
 
 ## Docker/Groq measurements — 2026-09-22
@@ -105,3 +106,17 @@ guarantee no inference; the production guard was unchanged. Simulated HTTP tests
 covered successful fallback through the real adapters, but no local inference success
 or model-memory benchmark is claimed. See the
 [failure-validation record](validation/2026-09-22-fallback/README.md).
+
+## UI and recording measurements — 2026-09-24
+
+Twenty-nine samples during desktop browser validation measured 809.75–1,437.80 MiB
+across the five containers, up to 76.33 MiB Streamlit RSS, and 1,750.32–2,735.26 MiB
+available host RAM. Recorder plus child-process RSS reached 980.30 MiB, including
+the UI, Chromium, and video capture; shared pages can be counted more than once.
+Startup and concurrent validation activity are included. These samples can miss
+peaks and do not establish combined stack/local-model capacity. No model was loaded.
+
+All three Groq UI scenarios returned in 4.365–6.440 s from submit to rendered result.
+The normal client timeout returned after 300.227 s against a silent HTTP fixture;
+it does not establish an overall investigation deadline or server cancellation.
+See the [UI validation record](validation/2026-09-24-streamlit/README.md).
