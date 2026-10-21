@@ -13,7 +13,7 @@ from pydantic import SecretStr
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
-from incident_copilot.llm.ollama_provider import to_langchain_messages
+from incident_copilot.llm.messages import to_langchain_messages
 from incident_copilot.utils.exceptions import ConfigurationError, LLMProviderError
 
 

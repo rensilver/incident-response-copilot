@@ -6,7 +6,7 @@ from collections.abc import Sequence
 import httpx
 import psutil
 from langchain_core.language_models import BaseChatModel, LanguageModelInput
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage
 from langchain_core.runnables import Runnable, RunnableConfig, RunnableLambda
 from langchain_core.tools import BaseTool
 from langchain_ollama import ChatOllama
@@ -14,13 +14,8 @@ from ollama import ResponseError
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
+from incident_copilot.llm.messages import to_langchain_messages
 from incident_copilot.utils.exceptions import LLMProviderError
-
-
-def to_langchain_messages(messages: Sequence[ChatMessage]) -> list[BaseMessage]:
-    """Convert internal chat messages to LangChain messages."""
-    mapping = {"system": SystemMessage, "user": HumanMessage, "assistant": AIMessage}
-    return [mapping[m.role](content=m.content) for m in messages]
 
 
 class OllamaProvider(LLMProvider):
