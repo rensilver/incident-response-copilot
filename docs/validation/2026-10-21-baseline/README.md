@@ -1,4 +1,13 @@
-# Refactoring baseline — environment and commands
+# Refactoring baseline — evidence index and environment
+
+Phase 1, action 1.1 is complete. The [final baseline review](review.md) maps
+each task to its evidence, records verification and remaining limits, and closes
+this action at the owner's requested commit boundary. Action 1.2 requires
+separate authorization. The records below retain their original capture dates,
+revisions, and task scopes; passing baseline checks do not validate the planned
+replacement application.
+
+## Original environment capture
 
 Captured on 2026-10-21 at 19:43:10 UTC (16:43:10 America/Recife).
 This record completes only the first task of Phase 1, action 1.1: Git state,
@@ -9,7 +18,7 @@ action 1.1. The subsequent [baseline checks](checks.md) record fresh
 lint/types/format/offline-suite results and the conditional asyncio sandbox
 investigation. The separately authorized [surface inventory](surfaces.md) records
 provider, UI, assistant-tooling, hardware, media, and ignored local surfaces.
-The final action review remains pending.
+The subsequent [final review](review.md) closes action 1.1.
 Historical passing results do not validate this snapshot.
 
 ## Evidence and collection boundaries
