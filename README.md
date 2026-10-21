@@ -18,7 +18,7 @@ mentions, not proven root-cause accuracy**. See [Measured results](#measured-res
 
 ## Build and run
 
-Prerequisites: Python **3.12+**, [uv](https://docs.astral.sh/uv/), Docker Engine with
+Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
 Compose, and a Groq API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
 container memory measurements below.
 
@@ -26,8 +26,7 @@ container memory measurements below.
 cp .env.example .env
 # Edit .env and set GROQ_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
 
-uv venv .venv
-uv pip install --python .venv/bin/python -e 'backend[dev,ui]'
+make install-ui       # locked backend, development tools, and existing UI
 
 make docker-app-up   # build FastAPI and start all five services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
@@ -159,7 +158,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 
 | Layer | Technology |
 |---|---|
-| Language and packaging | Python 3.12+, uv, Hatchling |
+| Language and packaging | Python 3.12/3.13, uv, Hatchling |
 | Orchestration | LangGraph, LangChain Core |
 | API and validation | FastAPI, Pydantic v2, pydantic-settings |
 | Model adapters | langchain-groq, langchain-ollama; common provider interface |
@@ -356,11 +355,31 @@ not establish factual grounding; model confidence is not an accuracy estimate.
 
 Successful local fallback, local-model latency/memory, mobile/browser compatibility
 beyond desktop Chromium, tracing outages, and server cancellation after UI timeout
-are unverified. Dependencies and several container tags are not locked; retained
-version/image records identify tested environments. Model output and cloud quotas
+are unverified. Python dependencies are locked in `backend/uv.lock`; several
+container tags remain unpinned. Retained version/image records identify historical
+tested environments. Model output and cloud quotas
 can vary between runs.
 
 ## Development and reproduction
+
+Install uv 0.12.5 before running `make install` (backend and development tools) or
+`make install-ui` (also includes Streamlit). Both install from `backend/uv.lock`
+into the root `.venv/` and fail if the lock does not match the manifest. They
+retain unrelated installed packages when reusing a compatible environment; changing
+the interpreter recreates it. The default interpreter is Python 3.12.14,
+recorded in `backend/.python-version`; uv can download it if needed. To use
+Python 3.13 in a separate environment, run
+`make install-ui PYTHON=3.13 VENV=/tmp/incident-copilot-dev313`, then pass the same
+`VENV` to root check commands.
+
+From `backend/`, the equivalent install is
+`UV_PROJECT_ENVIRONMENT="$(pwd)/../.venv" uv sync --locked --extra dev --extra ui --inexact`.
+Without that environment selector, uv uses `backend/.venv/`, which the root Make
+commands do not use. To intentionally change dependencies, edit the manifest,
+run `uv lock --project backend`, review the lock diff, and rerun the checks below.
+Commit the manifest and lock together. The Hatchling build backend and uv version
+are pinned separately in the manifest because uv does not lock isolated build
+dependencies in `uv.lock`.
 
 ```bash
 make test                 # offline unit suite; no live providers or Docker required

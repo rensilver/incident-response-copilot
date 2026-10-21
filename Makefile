@@ -1,7 +1,9 @@
-.PHONY: install lint format format-check test test-integration docker-up docker-down docker-logs \
+.PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
         docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
 
-VENV := .venv
+VENV ?= .venv
+UV ?= uv
+PYTHON ?= $(shell cat backend/.python-version)
 PY := $(VENV)/bin/python
 PYPROJECT := backend/pyproject.toml
 
@@ -9,9 +11,12 @@ export HOST_UID := $(shell id -u)
 export HOST_GID := $(shell id -g)
 
 install:
-	python3 -m pip install --quiet --upgrade uv
-	uv venv $(VENV) --allow-existing
-	uv pip install --python $(PY) -e "backend[dev]"
+	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
+		--python $(PYTHON) --locked --extra dev --inexact
+
+install-ui:
+	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
+		--python $(PYTHON) --locked --extra dev --extra ui --inexact
 
 lint:
 	$(VENV)/bin/ruff check backend/src backend/tests

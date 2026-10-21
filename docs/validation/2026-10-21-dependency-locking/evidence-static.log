@@ -1,0 +1,36 @@
+E501 Line too long (108 > 100)
+  --> docs/validation/2026-10-21-dependency-locking/check_installation.py:28:101
+   |
+26 |     "prefix": sys.prefix,
+27 |     "package": incident_copilot.__file__,
+28 |     "versions": {d.metadata["Name"].lower().replace("_", "-"): d.version for d in metadata.distributions()},
+   |                                                                                                     ^^^^^^^^
+29 | }))
+30 | """
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> docs/validation/2026-10-21-dependency-locking/run_check.py:40:33
+   |
+38 |     "cwd": str(root / cwd),
+39 |     "environment_keys": ["PATH"],
+40 |     "finished_at": datetime.now(timezone.utc).isoformat(),
+   |                                 ^^^^^^^^^^^^
+41 |     "elapsed_seconds": round(time.monotonic() - started, 3),
+42 |     "exit_code": code,
+   |
+help: Convert to `datetime.UTC` alias
+   |
+8  | import time
+   - from datetime import datetime, timezone
+9  + from datetime import datetime, timezone, UTC
+10 | from pathlib import Path
+--------------------------------------------------------------------------------
+39 |     "environment_keys": ["PATH"],
+   -     "finished_at": datetime.now(timezone.utc).isoformat(),
+40 +     "finished_at": datetime.now(UTC).isoformat(),
+41 |     "elapsed_seconds": round(time.monotonic() - started, 3),
+   |
+
+Found 2 errors.
+[*] 1 fixable with the `--fix` option.

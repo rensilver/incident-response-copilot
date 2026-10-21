@@ -98,9 +98,14 @@ the next task. A request to commit includes authorization for that task's commit
   `make format-check` for relevant Python changes. UI changes also require
   `.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app` and
   `.venv/bin/ruff check --config backend/pyproject.toml streamlit_app`.
-  Packaging uses `uv` and `backend/pyproject.toml`; `make install` installs backend
-  development dependencies, and the UI extra is installed with
-  `uv pip install --python .venv/bin/python -e 'backend[dev,ui]'`.
+  Packaging uses uv 0.12.5 and `backend/uv.lock` with Python 3.12/3.13 (default
+  3.12.14 in `backend/.python-version`). `make install` installs locked backend/dev
+  dependencies; `make install-ui` also installs the UI extra. Both retain unrelated
+  packages in compatible environments; changing Python recreates the environment.
+  Use `VENV=/absolute/path` and optionally `PYTHON=3.13` for isolated checks.
+  From `backend/`, set `UV_PROJECT_ENVIRONMENT` to the absolute root `.venv/` path
+  when syncing. Regenerate with `uv lock --project backend` only for intentional
+  dependency changes and commit the lock with the manifest.
   Documentation-only changes require diff, reference, and scope checks.
 - Bound potentially stalled checks and retain failures. If the asyncio/thread stall
   recurs, distinguish the execution environment from application defects using the

@@ -1,0 +1,11 @@
+worker ran
+Timeout (0:00:05)!
+Thread 0x00007d72af8e4780 (most recent call first):
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/selectors.py", line 468 in select
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1961 in _run_once
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645 in run_forever
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 678 in run_until_complete
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 72 in close
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 62 in __exit__
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 194 in run
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-21-baseline/probe_asyncio.py", line 20 in <module>

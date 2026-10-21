@@ -1,0 +1,66 @@
+[
+  {
+    "name": "initial",
+    "query": "",
+    "service": "",
+    "minutes_back": 60,
+    "min": 1,
+    "max": 1440
+  },
+  {
+    "name": "preset",
+    "label": "Memory leak",
+    "query": "checkout-service memory keeps climbing",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  {
+    "name": "preset",
+    "label": "Slow dependency",
+    "query": "payment-service latency is elevated",
+    "service": "payment-service",
+    "minutes_back": 180
+  },
+  {
+    "name": "preset",
+    "label": "Bad deploy",
+    "query": "cart-service error rate spiked after the last deploy",
+    "service": "cart-service",
+    "minutes_back": 180
+  },
+  {
+    "name": "blank_rejected",
+    "query": ""
+  },
+  {
+    "name": "blank_rejected",
+    "query": "   "
+  },
+  {
+    "name": "report_render",
+    "call": {
+      "query": "synthetic",
+      "service": null,
+      "minutes_back": 17
+    },
+    "caption": "Queried window: 2026-10-21T14:55:00+00:00 \u2192 2026-10-21T15:00:00+00:00 (5 minutes; API timestamps)",
+    "markdown": [
+      "<style>\n@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');\n\n:root {\n  --bg: #0A0E14;\n  --panel: #131A24;\n  --panel-2: #1A2330;\n  --line: #26313F;\n  --ink: #E8EEF4;\n  --ink-dim: #8493A3;\n  --critical: #F0563D;\n  --warning: #E3A83B;\n  --ok: #35C48A;\n}\n\nhtml, body, [class*=\"css\"] { font-family: 'IBM Plex Sans', sans-serif; }\n.stApp { background: var(--bg); color: var(--ink); }\n\n/* status bar */\n.ic-statusbar {\n  display: flex; align-items: center; justify-content: space-between;\n  padding: 0.6rem 1rem; margin: -1rem -1rem 1.5rem -1rem;\n  background: var(--panel); border-bottom: 1px solid var(--line);\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.02em;\n}\n.ic-brand { color: var(--ink); font-weight: 600; }\n.ic-brand::before { content: \"\\25CF \"; color: var(--ok); }\n.ic-dep { color: var(--ink-dim); margin-left: 1.1rem; }\n.ic-dep .dot {\n  display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 0.35rem;\n}\n.ic-dep .dot.up { background: var(--ok); box-shadow: 0 0 6px var(--ok); }\n.ic-dep .dot.down { background: var(--critical); box-shadow: 0 0 6px var(--critical); }\n\n/* cards */\n.ic-card {\n  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;\n  padding: 1.1rem 1.3rem; margin-bottom: 0.9rem;\n  animation: ic-rise 0.35s ease-out;\n}\n@keyframes ic-rise {\n  from { opacity: 0; transform: translateY(6px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n@media (prefers-reduced-motion: reduce) { .ic-card { animation: none; } }\n\n.ic-eyebrow {\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em;\n  color: var(--ink-dim); text-transform: uppercase; margin-bottom: 0.5rem;\n}\n\n.ic-rank {\n  display: inline-block; font-family: 'IBM Plex Mono', monospace; font-weight: 600;\n  font-size: 0.72rem; padding: 0.1rem 0.45rem; border-radius: 3px; margin-right: 0.6rem;\n  color: #0A0E14;\n}\n.ic-rank.p1 { background: var(--critical); }\n.ic-rank.p2 { background: var(--warning); }\n.ic-rank.p3 { background: var(--ink-dim); }\n\n.ic-title { font-size: 1.05rem; font-weight: 600; color: var(--ink); }\n.ic-rationale { color: var(--ink-dim); margin: 0.5rem 0 0.7rem 0; line-height: 1.5; }\n\n/* confidence meter - the signature element */\n.ic-meter { display: flex; align-items: center; gap: 0.5rem; }\n.ic-meter-track { display: flex; gap: 2px; }\n.ic-meter-tick { width: 6px; height: 14px; background: var(--line); border-radius: 1px; }\n.ic-meter-tick.on.p1 { background: var(--critical); }\n.ic-meter-tick.on.p2 { background: var(--warning); }\n.ic-meter-tick.on.p3 { background: var(--ok); }\n.ic-meter-label {\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--ink-dim);\n}\n\n/* evidence */\n.ic-evidence {\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--ink-dim);\n  background: var(--panel-2); border-left: 2px solid var(--line);\n  padding: 0.3rem 0.6rem; margin-top: 0.35rem;\n}\n.ic-evidence .src {\n  color: var(--ink); text-transform: uppercase; font-weight: 600; margin-right: 0.5rem;\n}\n\n/* next steps */\n.ic-steps { list-style: none; padding-left: 0; margin: 0; }\n.ic-steps li {\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem; color: var(--ink);\n  margin-bottom: 0.4rem;\n}\n\n/* error panel */\n.ic-error {\n  border: 1px solid var(--critical); background: rgba(240, 86, 61, 0.08);\n  color: var(--ink); padding: 1rem 1.2rem; border-radius: 6px;\n  font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;\n}\n</style>",
+      "<div class=\"ic-statusbar\"><span class=\"ic-brand\">INCIDENT-COPILOT</span><span><span class=\"ic-dep\"><span class=\"dot up\"></span>PROMETHEUS</span><span class=\"ic-dep\"><span class=\"dot up\"></span>ELASTICSEARCH</span><span class=\"ic-dep\"><span class=\"dot up\"></span>LLM</span></span></div>",
+      "<div class=\"ic-eyebrow\">$ investigate</div>",
+      "<div class=\"ic-card\"><div class=\"ic-eyebrow\">Summary &middot; overall confidence</div><div class=\"ic-title\">Synthetic &lt;summary&gt;; no telemetry or model used</div><div style=\"margin-top:0.6rem\"><div class=\"ic-meter\"><div class=\"ic-meter-track\"><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span></div><span class=\"ic-meter-label\">60%</span></div></div></div>",
+      "<div class=\"ic-card\"><div class=\"ic-eyebrow\"><span class=\"ic-rank p1\">P1</span>Root cause candidate</div><div class=\"ic-title\">Higher</div><div class=\"ic-rationale\">Synthetic rationale</div><div class=\"ic-meter\"><div class=\"ic-meter-track\"><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick on p1\"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span></div><span class=\"ic-meter-label\">80%</span></div><div class=\"ic-evidence\"><span class=\"src\">logs</span>Synthetic &lt;log&gt;</div></div>",
+      "<div class=\"ic-card\"><div class=\"ic-eyebrow\"><span class=\"ic-rank p2\">P2</span>Root cause candidate</div><div class=\"ic-title\">Lower</div><div class=\"ic-rationale\">Synthetic rationale</div><div class=\"ic-meter\"><div class=\"ic-meter-track\"><span class=\"ic-meter-tick on p2\"></span><span class=\"ic-meter-tick on p2\"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span><span class=\"ic-meter-tick \"></span></div><span class=\"ic-meter-label\">20%</span></div><div class=\"ic-evidence\"><span class=\"src\">metrics</span>Synthetic &lt;metric&gt;</div></div>",
+      "<div class=\"ic-card\"><div class=\"ic-eyebrow\">Next steps</div><ul class=\"ic-steps\"><li>&rsaquo; Check &lt;literal&gt;</li></ul></div>"
+    ]
+  },
+  {
+    "name": "error_retains_form",
+    "message": "Synthetic <unavailable>",
+    "previous_report_present": false
+  },
+  {
+    "name": "empty_causes_steps_and_absent_window",
+    "summary": "No observations"
+  }
+]

@@ -1,0 +1,12 @@
+Staged scope: 54 files, only authorized packaging/install guidance and evidence.
+Application source, tests, and UI code unchanged.
+Staged whitespace check passed.
+39 unique bounded attempts have retained logs and cleared base environments.
+Retained nonzero attempts: lock-seed-sandbox, lock-guards, evidence-static, production-smoke, probe-sandbox, test312-sandbox, test313-sandbox
+Both fresh-environment host suite logs report 338 passing cases.
+59 local Markdown file references exist.
+103 locked packages; 100 shared baseline versions identical; public PyPI artifacts have SHA-256 hashes.
+Lock SHA-256: 275082145392e11f3598479d8d7f3774a8fc28c25c9f9259dfd3a10aae536bf8
+Private dotenv and local plan remain ignored and untracked.
+Staged content credential-pattern scan passed; no private configuration staged.
+Backend image build and final action review remain separately authorized; no Docker operation performed.
