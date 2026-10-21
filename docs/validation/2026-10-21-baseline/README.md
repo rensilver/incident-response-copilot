@@ -123,9 +123,12 @@ availability, and no API health request was made against the unrelated service.
 
 The following definitions were read from the root [Makefile](../../../Makefile),
 [pyproject.toml](../../../pyproject.toml), [Dockerfile](../../../Dockerfile),
-[README](../../../README.md), and [historical guidance](../../../CLAUDE.md) at
-the recorded HEAD. They describe the current application. Cataloging a command
-does not execute or validate it, or authorize its side effects.
+[README](../../../README.md), and the historical `CLAUDE.md` at the recorded HEAD.
+That guidance has since been removed; retrieve the captured version with
+`git show 3c6d563dbefad95abc5ecb886bfacacd78a1fe3e:CLAUDE.md`. Current development
+conventions live in [AGENTS.md](../../../AGENTS.md#codex-development-conventions).
+The catalog describes the application at capture time. Cataloging a command does
+not execute or validate it, or authorize its side effects.
 
 All commands assume the repository root. `Makefile` sets `VENV := .venv`,
 `PY := .venv/bin/python`, and exports the invoking user's UID/GID for Compose.

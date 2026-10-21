@@ -11,6 +11,5 @@ seed-*/
 tests/
 docs/
 
-.claude/
 *-api.txt
 *.key
