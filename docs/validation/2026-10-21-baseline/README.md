@@ -7,7 +7,9 @@ This environment record predates the separately authorized
 [API/UI contract capture](contracts.md), which completes the second task of
 action 1.1. The subsequent [baseline checks](checks.md) record fresh
 lint/types/format/offline-suite results and the conditional asyncio sandbox
-investigation. The surface inventory and final action review remain pending.
+investigation. The separately authorized [surface inventory](surfaces.md) records
+provider, UI, assistant-tooling, hardware, media, and ignored local surfaces.
+The final action review remains pending.
 Historical passing results do not validate this snapshot.
 
 ## Evidence and collection boundaries
