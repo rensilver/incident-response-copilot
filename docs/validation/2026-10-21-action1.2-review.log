@@ -1,0 +1,29 @@
+Action 1.2 final review audit — 2026-10-21 (America/Recife)
+Starting revision: 462f1f8dc04cd129e5c25cc4adba81c28a11fd0b
+
+Command: .venv/bin/python < embedded Python audit in companion review
+PASS: one worktree; no stale registrations; Git connectivity; retained ancestor branch
+PASS: recovery archive hash; 13 member sizes/hashes; private archive permissions
+PASS: seven recoverable historical sources; local tooling absent; remaining text references confined to validation
+PASS: 194 local Markdown links and anchors (external URLs not fetched)
+PASS: conventions preserved; current commands/paths; executable AST unchanged; action scope; ignored private/generated files; whitespace
+exit_code=0
+
+Initial sandbox staging
+Command: git add -- docs/validation/2026-10-21-action1.2-review.md docs/validation/2026-10-21-action1.2-review.log
+fatal: Unable to create '/home/rensilver/workspaces/incident-response-copilot/.git/index.lock': Read-only file system
+exit_code=128
+
+Scoped staging with host access
+exit_code=0
+
+Fresh audit rerun after staging
+PASS: one worktree; no stale registrations; Git connectivity; retained ancestor branch
+PASS: recovery archive hash; 13 member sizes/hashes; private archive permissions
+PASS: seven recoverable historical sources; local tooling absent; remaining text references confined to validation
+PASS: 194 local Markdown links and anchors (external URLs not fetched)
+PASS: conventions preserved; current commands/paths; executable AST unchanged; action scope; ignored private/generated files; whitespace
+exit_code=0
+
+PASS: exactly two staged review files; no unrelated unstaged/untracked files
+PASS: staged credential-pattern scan; working/staged whitespace checks
