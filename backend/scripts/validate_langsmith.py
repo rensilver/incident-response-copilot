@@ -10,6 +10,7 @@ import json
 import os
 import platform
 import subprocess
+import sys
 import time
 from collections import Counter
 from collections.abc import Mapping
@@ -20,6 +21,10 @@ from typing import Any
 from unittest.mock import patch
 from urllib.parse import urlsplit
 from uuid import uuid4
+
+# Direct checkout scripts must work before an editable install is refreshed.
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import psutil
 import requests
@@ -34,6 +39,8 @@ from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import Settings
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.logging import configure_logging
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -143,6 +150,7 @@ def remote_evidence(graph: IdentifiedGraph, output: Path) -> dict[str, Any]:
 
 async def validate(output: Path, enabled: bool) -> bool:
     """Retain one live attempt, including failures; never retry an investigation."""
+    output = REPO_ROOT / output
     output.mkdir(parents=True, exist_ok=False)
     # Settings handles the app config. These optional SDK-only fields need exporting
     # for a host invocation; Docker already exports env_file to the process.
@@ -162,7 +170,9 @@ async def validate(output: Path, enabled: bool) -> bool:
     configure_logging(settings.log_level)
     evidence: dict[str, Any] = {
         "started_at": datetime.now(UTC),
-        "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "source_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
+        ).strip(),
         "mode": "enabled" if enabled else "disabled",
         "provider": settings.llm_provider.value,
         "model": settings.groq_model,
@@ -260,6 +270,11 @@ async def validate(output: Path, enabled: bool) -> bool:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("enabled", "disabled"), required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="New artifact directory (relative to repository root)",
+    )
     args = parser.parse_args()
     raise SystemExit(0 if asyncio.run(validate(args.output, args.mode == "enabled")) else 1)

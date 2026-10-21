@@ -189,11 +189,17 @@ def sample_memory(output, stop, ui):
 def main():
     """Run each browser case once; preserve failures without replacing attempts."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--output",
+        required=True,
+        type=Path,
+        help="New artifact directory (relative to repository root)",
+    )
     parser.add_argument("--api-url", default="http://127.0.0.1:8000")
     parser.add_argument("--delay-seconds", type=float, default=65)
     parser.add_argument("--ui-port", type=int, default=8501)
     args = parser.parse_args()
+    args.output = ROOT / args.output
     args.output.mkdir(parents=True, exist_ok=False)
     (args.output / "media").mkdir()
     relay = Relay(("127.0.0.1", 0), args.api_url, args.output)
@@ -226,7 +232,9 @@ def main():
         "started_at": now(),
         "python": platform.python_version(),
         "platform": platform.platform(),
-        "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "source_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip(),
         "packages": {
             name: importlib.metadata.version(name)
             for name in ["streamlit", "playwright", "httpx", "pydantic"]

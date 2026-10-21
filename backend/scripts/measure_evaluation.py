@@ -9,6 +9,7 @@ import asyncio
 import json
 import platform
 import subprocess
+import sys
 import threading
 import time
 from collections.abc import Mapping
@@ -17,6 +18,10 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 from uuid import UUID
+
+# Direct checkout scripts must work before an editable install is refreshed.
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import httpx
 import psutil
@@ -32,6 +37,8 @@ from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.logging import configure_logging
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def timestamp() -> str:
     """Return an explicitly UTC timestamp."""
@@ -40,7 +47,9 @@ def timestamp() -> str:
 
 def command(*args: str) -> str:
     """Capture a bounded read-only command, including any failure."""
-    result = subprocess.run(args, capture_output=True, text=True, timeout=30, check=True)
+    result = subprocess.run(
+        args, cwd=REPO_ROOT, capture_output=True, text=True, timeout=30, check=True
+    )
     return result.stdout.strip()
 
 
@@ -167,6 +176,7 @@ class RecordingService:
 
 async def measure(output: Path, delay: float) -> None:
     """Run the unmodified scenario harness and retain every attempt immediately."""
+    output = REPO_ROOT / output
     settings = get_settings()
     configure_logging(settings.log_level)
     output.mkdir(parents=True, exist_ok=False)
@@ -292,7 +302,12 @@ async def measure(output: Path, delay: float) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, required=True, help="New artifact directory")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="New artifact directory (relative to repository root)",
+    )
     parser.add_argument("--delay-seconds", type=float, default=65)
     args = parser.parse_args()
     if args.delay_seconds < 0:

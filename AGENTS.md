@@ -27,6 +27,10 @@ variables or an absolute `INCIDENT_COPILOT_ENV_FILE` set before Python starts
 (empty disables dotenv). Compose injects the root file as process variables.
 Offline tests disable dotenv loading before application collection.
 
+Checkout backend scripts import `backend/src/` directly. Evaluation/validation
+recorders resolve relative output paths from the repository root and preserve
+absolute paths; browser media stays within the selected output directory.
+
 The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
 requires explicit owner authorization for each task. Complete the authorized
 scope, verify it, and stop at its owner review/commit boundary before starting

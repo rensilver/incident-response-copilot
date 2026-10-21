@@ -2,7 +2,7 @@
 
 Run with the existing Docker stack up::
 
-    .venv/bin/python scripts/validate_provider_failures.py --output /tmp/provider-validation
+    .venv/bin/python backend/scripts/validate_provider_failures.py --output /tmp/provider-validation
 
 Uses a deliberately invalid Groq key and real HTTP requests. Existing containers and
 the .env file are unchanged. Each temporary app is removed even if an assertion fails.
@@ -19,10 +19,14 @@ from pathlib import Path
 import httpx
 import psutil
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def docker(*args: str) -> str:
     """Run Docker with captured output (also works with the Snap Docker wrapper)."""
-    result = subprocess.run(["docker", *args], capture_output=True, text=True, timeout=90)
+    result = subprocess.run(
+        ["docker", *args], cwd=REPO_ROOT, capture_output=True, text=True, timeout=90
+    )
     if result.returncode:
         raise RuntimeError(f"Docker failed: {result.stderr.strip()}")
     return result.stdout.strip()
@@ -122,8 +126,14 @@ def validate_case(name: str, overrides: dict[str, str], output: Path) -> dict[st
 def main() -> None:
     """Run failure cases, preserving evidence without modifying deployment settings."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Artifact directory (relative to repository root)",
+    )
     args = parser.parse_args()
+    args.output = REPO_ROOT / args.output
     args.output.mkdir(parents=True, exist_ok=True)
     memory = psutil.virtual_memory()
     # Raising the floor above total physical RAM guarantees that this fault-injection

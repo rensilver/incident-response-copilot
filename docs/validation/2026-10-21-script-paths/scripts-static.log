@@ -1,0 +1,229 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/scripts/measure_evaluation.py:26:1
+   |
+24 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+25 |
+26 | / import httpx
+27 | | import psutil
+28 | | from langchain_core.callbacks import BaseCallbackHandler
+29 | | from langgraph.graph.state import CompiledStateGraph
+30 | | from pydantic_core import to_jsonable_python
+31 | |
+32 | | from incident_copilot.composition import build_collaborators
+33 | | from incident_copilot.config.settings import get_settings
+34 | | from incident_copilot.evaluation.eval_runner import REPEATS, RunResult, _print_results, run_scenario
+35 | | from incident_copilot.evaluation.scenarios import SCENARIOS
+36 | | from incident_copilot.models.report import IncidentReport
+37 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+38 | | from incident_copilot.utils.logging import configure_logging
+   | |____________________________________________________________^
+39 |
+40 |   REPO_ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+27 | import psutil
+   - from langchain_core.callbacks import BaseCallbackHandler
+   - from langgraph.graph.state import CompiledStateGraph
+   - from pydantic_core import to_jsonable_python
+   -
+28 | from incident_copilot.composition import build_collaborators
+--------------------------------------------------------------------------------
+34 | from incident_copilot.utils.logging import configure_logging
+35 + from langchain_core.callbacks import BaseCallbackHandler
+36 + from langgraph.graph.state import CompiledStateGraph
+37 + from pydantic_core import to_jsonable_python
+38 |
+   |
+
+E501 Line too long (105 > 100)
+   --> backend/scripts/measure_evaluation.py:306:101
+    |
+304 |     parser = argparse.ArgumentParser(description=__doc__)
+305 |     parser.add_argument(
+306 |         "--output", type=Path, required=True, help="New artifact directory (relative to repository root)"
+    |                                                                                                     ^^^^^
+307 |     )
+308 |     parser.add_argument("--delay-seconds", type=float, default=65)
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/scripts/seed_demo_data.py:24:1
+   |
+22 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+23 |
+24 | / import httpx
+25 | |
+26 | | from incident_copilot.config.settings import get_settings
+27 | | from incident_copilot.demo.es_index import LOG_INDEX_MAPPING, bulk_body
+28 | | from incident_copilot.demo.logs_render import render_log_documents
+29 | | from incident_copilot.demo.metrics_render import render_openmetrics
+30 | | from incident_copilot.demo.scenarios import SCENARIOS, ScenarioName, get_scenario
+31 | | from incident_copilot.utils.logging import configure_logging, get_logger
+   | |________________________________________________________________________^
+32 |
+33 |   logger = get_logger(__name__)
+   |
+help: Organize imports
+   |
+24 | import httpx
+   -
+25 | from incident_copilot.config.settings import get_settings
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/scripts/validate_langsmith.py:29:1
+   |
+27 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+28 |
+29 | / import psutil
+30 | | import requests
+31 | | from dotenv import dotenv_values
+32 | | from langchain_core.tracers.langchain import get_client
+33 | | from langgraph.graph.state import CompiledStateGraph
+34 | | from langsmith.schemas import Run
+35 | | from langsmith.utils import LangSmithNotFoundError, tracing_is_enabled
+36 | | from pydantic_core import to_jsonable_python
+37 | |
+38 | | from incident_copilot.composition import build_collaborators
+39 | | from incident_copilot.config.settings import Settings
+40 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+41 | | from incident_copilot.utils.logging import configure_logging
+   | |____________________________________________________________^
+42 |
+43 |   REPO_ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+31 | from dotenv import dotenv_values
+32 + from incident_copilot.composition import build_collaborators
+33 + from incident_copilot.config.settings import Settings
+34 + from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+35 + from incident_copilot.utils.logging import configure_logging
+36 | from langchain_core.tracers.langchain import get_client
+--------------------------------------------------------------------------------
+40 | from pydantic_core import to_jsonable_python
+   -
+   - from incident_copilot.composition import build_collaborators
+   - from incident_copilot.config.settings import Settings
+   - from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+   - from incident_copilot.utils.logging import configure_logging
+41 |
+   |
+
+E501 Line too long (105 > 100)
+   --> backend/scripts/validate_langsmith.py:274:101
+    |
+272 |     parser.add_argument("--mode", choices=("enabled", "disabled"), required=True)
+273 |     parser.add_argument(
+274 |         "--output", type=Path, required=True, help="New artifact directory (relative to repository root)"
+    |                                                                                                     ^^^^^
+275 |     )
+276 |     args = parser.parse_args()
+    |
+
+E501 Line too long (101 > 100)
+   --> backend/scripts/validate_provider_failures.py:130:101
+    |
+128 |     parser = argparse.ArgumentParser(description=__doc__)
+129 |     parser.add_argument(
+130 |         "--output", type=Path, required=True, help="Artifact directory (relative to repository root)"
+    |                                                                                                     ^
+131 |     )
+132 |     args = parser.parse_args()
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/test_script_paths.py:1:1
+
+N818 Exception name `BeforeExternalIO` should be named with an Error suffix
+  --> backend/tests/unit/test_script_paths.py:20:7
+   |
+20 | class BeforeExternalIO(Exception):
+   |       ^^^^^^^^^^^^^^^^
+21 |     pass
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/test_script_paths.py:20:7
+   |
+20 | class BeforeExternalIO(Exception):
+   |       ^^^^^^^^^^^^^^^^
+21 |     pass
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_script_paths.py:25:5
+   |
+24 | @pytest.fixture
+25 | def checkout(tmp_path: Path) -> Path:
+   |     ^^^^^^^^
+26 |     source = Path(__file__).resolve().parents[3]
+27 |     root = tmp_path / "checkout"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_script_paths.py:36:5
+   |
+34 | @pytest.mark.parametrize("script_name", BACKEND_SCRIPTS)
+35 | @pytest.mark.parametrize("working_directory", [".", "backend", "unrelated"])
+36 | def test_relocated_script_cli_imports_checkout_without_editable_install(
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     checkout: Path, tmp_path: Path, script_name: str, working_directory: str
+38 | ) -> None:
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_script_paths.py:53:5
+   |
+53 | def load_script(path: Path) -> ModuleType:
+   |     ^^^^^^^^^^^
+54 |     spec = importlib.util.spec_from_file_location(f"paths_test_{path.stem}", path)
+55 |     assert spec is not None and spec.loader is not None
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_script_paths.py:67:11
+   |
+65 | @pytest.mark.parametrize("working_directory", [".", "backend", "unrelated"])
+66 | @pytest.mark.parametrize("absolute_output", [False, True], ids=["relative", "absolute"])
+67 | async def test_backend_artifacts_resolve_from_checkout_and_preserve_absolute_paths(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |     checkout: Path,
+69 |     tmp_path: Path,
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/test_script_paths.py:106:5
+    |
+104 | @pytest.mark.parametrize("working_directory", [".", "backend", "unrelated"])
+105 | @pytest.mark.parametrize("absolute_output", [False, True], ids=["relative", "absolute"])
+106 | def test_browser_artifacts_and_media_remain_at_checkout_root(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+107 |     checkout: Path,
+108 |     tmp_path: Path,
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/test_script_paths.py:140:5
+    |
+139 | @pytest.mark.parametrize("script_name", ["measure_evaluation.py", "validate_provider_failures.py"])
+140 | def test_repository_commands_use_checkout_from_unrelated_cwd(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+141 |     checkout: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, script_name: str
+142 | ) -> None:
+    |
+
+E501 Line too long (105 > 100)
+   --> scripts/validate_streamlit.py:193:101
+    |
+191 |     parser = argparse.ArgumentParser(description=__doc__)
+192 |     parser.add_argument(
+193 |         "--output", required=True, type=Path, help="New artifact directory (relative to repository root)"
+    |                                                                                                     ^^^^^
+194 |     )
+195 |     parser.add_argument("--api-url", default="http://127.0.0.1:8000")
+    |
+
+Found 16 errors.
+[*] 3 fixable with the `--fix` option.

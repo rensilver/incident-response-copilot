@@ -376,12 +376,33 @@ INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 # The output directory must not already exist.
 LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65
+
+# Optional live validators; use new directories for each tracing/browser run.
+.venv/bin/python backend/scripts/validate_langsmith.py \
+  --mode disabled --output docs/validation/langsmith-repeat
+.venv/bin/python backend/scripts/validate_provider_failures.py \
+  --output docs/validation/provider-failures-repeat
+.venv/bin/python scripts/validate_streamlit.py \
+  --output docs/validation/browser-repeat --delay-seconds 65
 ```
 
 Direct backend checks also work from `backend/`, for example
 `../.venv/bin/pytest tests/unit` and `../.venv/bin/mypy --strict src`.
 Root pytest commands select `pytest.ini`; its test paths and source path are
 relative to the repository, including when invoked from `backend/`.
+Checkout scripts import the relocated backend source directly. From `backend/`,
+use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
+For all four evaluation/validation recorders, relative `--output` paths resolve
+from the repository root, including when launched elsewhere. Absolute paths such
+as `/tmp/incident-eval-repeat` are preserved. Browser screenshots and videos stay
+under the selected output directory's `media/`; documentation and published media
+remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
+commands also use the repository root.
+
+The tracing validator accepts `--mode enabled` to check remote delivery with
+configured LangSmith credentials. The provider failure validator requires the
+existing Docker stack with no local model loaded; it creates disposable app
+containers. These are live commands, separate from the offline suite.
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
 The recorder above uses that same scorer and is the route used for the published
