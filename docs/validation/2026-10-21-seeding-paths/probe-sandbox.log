@@ -1,0 +1,11 @@
+worker ran
+Timeout (0:00:05)!
+Thread 0x0000712fb2272780 (most recent call first):
+  File "/home/rensilver/miniconda3/lib/python3.13/selectors.py", line 452 in select
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 2023 in _run_once
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 683 in run_forever
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 712 in run_until_complete
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 72 in close
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 62 in __exit__
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 194 in run
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-21-baseline/probe_asyncio.py", line 20 in <module>

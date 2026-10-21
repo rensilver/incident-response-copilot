@@ -1,0 +1,3 @@
+.venv/bin/python backend/scripts/seed_demo_data.py
+docker compose restart prometheus
+echo "seeded; prometheus restarted"

@@ -6,7 +6,7 @@ timestamps.
 
 Run with the stack up::
 
-    python scripts/seed_demo_data.py
+    .venv/bin/python backend/scripts/seed_demo_data.py
 """
 
 import argparse
@@ -28,7 +28,8 @@ from incident_copilot.utils.logging import configure_logging, get_logger
 
 logger = get_logger(__name__)
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+# This script lives in backend/scripts; Docker bind mounts are rooted in the checkout.
+REPO_ROOT = Path(__file__).resolve().parents[2]
 PROM_DATA = REPO_ROOT / "docker" / "prometheus" / "data"
 PROM_IMAGE = "prom/prometheus:latest"
 
