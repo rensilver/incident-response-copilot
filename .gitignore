@@ -20,3 +20,6 @@ docker/prometheus/data/
 seed-*/
 
 .claude
+
+# local implementation plan
+/REFACTORING_PLAN.md

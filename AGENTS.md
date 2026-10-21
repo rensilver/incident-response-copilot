@@ -1,5 +1,16 @@
 # Incident Response Copilot
 
+## Planned architecture — 2026-10-21
+
+The current direction supersedes conflicting historical instructions below: a
+FastAPI/LangGraph backend in `backend/`, a React/Next.js frontend in `frontend/`,
+and an extensible LLM provider abstraction using OpenAI `gpt-6-luna` with
+`reasoning={"effort": "none"}`. Retire previous providers, their hardware constraints,
+and assistant-specific tooling outside Codex; consolidate guidance here. The local,
+gitignored `REFACTORING_PLAN.md` defines the phases. Planning only is authorized;
+implementation requires explicit authorization, one action at a time with owner
+review and commit between actions.
+
 ## Intro:
 
 This project was about to be finished, but some hardware limitations prevented its completion.
