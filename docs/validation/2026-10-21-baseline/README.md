@@ -5,8 +5,10 @@ This record completes only the first task of Phase 1, action 1.1: Git state,
 installed Python/package versions, existing processes, and current commands.
 This environment record predates the separately authorized
 [API/UI contract capture](contracts.md), which completes the second task of
-action 1.1. Full baseline lint/types/format/tests and the remaining tasks are
-still pending. Historical passing results do not validate this snapshot.
+action 1.1. The subsequent [baseline checks](checks.md) record fresh
+lint/types/format/offline-suite results and the conditional asyncio sandbox
+investigation. The surface inventory and final action review remain pending.
+Historical passing results do not validate this snapshot.
 
 ## Evidence and collection boundaries
 
