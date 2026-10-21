@@ -19,7 +19,5 @@ docker/prometheus/data/
 # seeding scratch (must live under the repo for snap docker bind mounts)
 seed-*/
 
-.claude
-
 # local implementation plan
 /REFACTORING_PLAN.md

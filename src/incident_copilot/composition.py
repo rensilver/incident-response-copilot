@@ -2,7 +2,7 @@
 
 The one place a provider name or connector class is chosen from settings. main.py and
 evaluation/eval_runner.py both depend on this function, never on a concrete connector
-or provider directly (CLAUDE.md's Dependency Inversion rule).
+or provider directly, keeping application entrypoints independent of concrete clients.
 """
 
 from dataclasses import dataclass
