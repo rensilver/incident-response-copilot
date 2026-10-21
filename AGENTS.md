@@ -21,6 +21,12 @@ use the root `.venv/`; root `pytest.ini` configures collection from both root an
 `backend/`. `streamlit_app/` and its validator in root `scripts/` remain until the
 authorized frontend replacement. Further migration tasks remain in the local plan.
 
+Checkout/editable settings load the root `.env` independently of the working
+directory; process variables override file values. Installed wheels use process
+variables or an absolute `INCIDENT_COPILOT_ENV_FILE` set before Python starts
+(empty disables dotenv). Compose injects the root file as process variables.
+Offline tests disable dotenv loading before application collection.
+
 The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
 requires explicit owner authorization for each task. Complete the authorized
 scope, verify it, and stop at its owner review/commit boundary before starting

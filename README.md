@@ -41,8 +41,8 @@ The UI runs on the host; FastAPI and the four supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
 
-The backend directory move is in progress. Environment loading, seeding internals,
-and evaluation/validation script paths still await repair; the live walkthrough
+The backend directory move is in progress. Seeding internals and
+evaluation/validation script paths still await repair; the live walkthrough
 above has not been revalidated for this layout.
 
 | Service | Local URL | Purpose |
@@ -202,7 +202,21 @@ docs/validation/           # reports, measurements, commands, screenshots
 ## Configuration and failure behavior
 
 [`.env.example`](.env.example) lists the supported application settings. Never put
-keys in tracked source. The default configuration is:
+keys in tracked source. Source checkout and editable-install commands load the
+repository-root `.env`, including when launched from `backend/` or another working
+directory. A `backend/.env` or caller-directory `.env` is ignored. Process environment
+values override file values.
+
+For an installed wheel, supply process variables or set `INCIDENT_COPILOT_ENV_FILE`
+to an absolute dotenv path **before starting Python**. This selector also overrides
+the checkout default; an empty value disables dotenv loading. The selection is
+fixed when the settings module is imported. Missing dotenv files leave process
+variables and defaults in effect. Docker Compose injects the root `.env` as process
+variables, with its service URLs taking precedence; the file is excluded from the
+image. Offline unit tests disable dotenv loading and use isolated dummy settings.
+Python callers can also use `Settings(_env_file=None)` to disable file loading.
+
+The default configuration is:
 
 | Setting | Default |
 |---|---|

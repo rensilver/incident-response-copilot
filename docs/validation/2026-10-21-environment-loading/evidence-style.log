@@ -1,0 +1,11 @@
+E501 Line too long (178 > 88)
+  --> docs/validation/2026-10-21-environment-loading/check_compose.py:48:89
+   |
+46 | …s()
+47 | …
+48 | …kend cwd; service environment overrides file; private dotenv excluded from image context. No services started."
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+49 | …
+   |
+
+Found 1 error.

@@ -146,7 +146,13 @@ async def validate(output: Path, enabled: bool) -> bool:
     output.mkdir(parents=True, exist_ok=False)
     # Settings handles the app config. These optional SDK-only fields need exporting
     # for a host invocation; Docker already exports env_file to the process.
-    local = dotenv_values(".env")
+    env_files = Settings.model_config.get("env_file")
+    if isinstance(env_files, (str, Path)):
+        env_files = [env_files]
+    local: dict[str, str | None] = {}
+    # Preserve Pydantic's file ordering; dotenv_values(None) would search cwd.
+    for env_file in env_files or ():
+        local.update(dotenv_values(env_file))
     for key in ("LANGSMITH_ENDPOINT", "LANGSMITH_WORKSPACE_ID"):
         if local.get(key) and key not in os.environ:
             os.environ[key] = str(local[key])

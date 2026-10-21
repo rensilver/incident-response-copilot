@@ -1,5 +1,7 @@
 """Environment-driven application settings."""
 
+import os
+from pathlib import Path
 from typing import Literal, Self
 
 from pydantic import Field, model_validator
@@ -8,10 +10,36 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from incident_copilot.models.enums import LLMProviderName
 
 
-class Settings(BaseSettings):
-    """Application settings, populated from environment variables and ``.env``."""
+def _default_env_file() -> Path | None:
+    """Select dotenv at import time without searching the caller's directory."""
+    configured = os.environ.get("INCIDENT_COPILOT_ENV_FILE")
+    if configured is not None:
+        if not configured:
+            return None
+        path = Path(configured)
+        if not path.is_absolute():
+            raise ValueError("INCIDENT_COPILOT_ENV_FILE must be an absolute path")
+        return path
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    package = Path(__file__).resolve().parent.parent
+    backend = package.parent.parent
+    # Only the source checkout has a repository dotenv. Wheels and containers
+    # receive process variables or an explicitly selected external file.
+    if (
+        package.parent.name == "src"
+        and backend.name == "backend"
+        and (backend / "pyproject.toml").is_file()
+    ):
+        return backend.parent / ".env"
+    return None
+
+
+class Settings(BaseSettings):
+    """Application settings; process variables override the selected dotenv file."""
+
+    model_config = SettingsConfigDict(
+        env_file=_default_env_file(), env_file_encoding="utf-8", extra="ignore"
+    )
 
     llm_provider: LLMProviderName = LLMProviderName.GROQ
     llm_fallback_provider: Literal["ollama", "none"] = "ollama"
@@ -54,5 +82,5 @@ class Settings(BaseSettings):
 
 
 def get_settings() -> Settings:
-    """Build settings from the environment."""
+    """Build settings using process variables and the startup dotenv selection."""
     return Settings()
