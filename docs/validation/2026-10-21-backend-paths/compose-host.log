@@ -1,0 +1,2 @@
+PASS: Compose config parses; app uses repository context and backend/Dockerfile; COPY sources exist.
+No environment values or resolved service configuration retained.

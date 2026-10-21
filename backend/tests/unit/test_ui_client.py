@@ -9,7 +9,7 @@ import pytest
 
 # Load the thin client without importing Streamlit or the backend implementation.
 _spec = importlib.util.spec_from_file_location(
-    "ui_client_under_test", Path(__file__).parents[2] / "streamlit_app" / "api_client.py"
+    "ui_client_under_test", Path(__file__).resolve().parents[3] / "streamlit_app" / "api_client.py"
 )
 assert _spec and _spec.loader
 client = importlib.util.module_from_spec(_spec)

@@ -15,10 +15,11 @@ report history, and additional production providers are outside the current scop
 
 ## Current layout and execution scope
 
-The backend currently lives in `src/incident_copilot/` with root `tests/`,
-`scripts/`, `pyproject.toml`, and `Dockerfile`; `streamlit_app/` remains the HTTP
-client until its authorized replacement. The target architecture is planned;
-this guidance does not establish that the migration has been implemented.
+The Python project lives in `backend/`, including `src/incident_copilot/`,
+`tests/`, backend `scripts/`, `pyproject.toml`, and `Dockerfile`. Root Make targets
+use the root `.venv/`; root `pytest.ini` configures collection from both root and
+`backend/`. `streamlit_app/` and its validator in root `scripts/` remain until the
+authorized frontend replacement. Further migration tasks remain in the local plan.
 
 The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
 requires explicit owner authorization for each task. Complete the authorized
@@ -82,11 +83,14 @@ the next task. A request to commit includes authorization for that task's commit
 - For behavior changes, add meaningful failing regression coverage before the fix.
   Unit tests use fake providers, mocked transports/connectors, and isolated settings;
   they must run without Docker, network access, live credentials, or the owner's `.env`.
-  Put live dependency checks in `tests/integration` with the integration marker.
+  Put live dependency checks in `backend/tests/integration` with the integration marker.
 - From the current repository root, run `make lint`, `make test`, and
-  `.venv/bin/black --check src tests streamlit_app` for relevant Python changes.
-  UI changes also require `.venv/bin/mypy --strict streamlit_app` and
-  `.venv/bin/ruff check streamlit_app`. Packaging uses `uv` and `pyproject.toml`.
+  `make format-check` for relevant Python changes. UI changes also require
+  `.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app` and
+  `.venv/bin/ruff check --config backend/pyproject.toml streamlit_app`.
+  Packaging uses `uv` and `backend/pyproject.toml`; `make install` installs backend
+  development dependencies, and the UI extra is installed with
+  `uv pip install --python .venv/bin/python -e 'backend[dev,ui]'`.
   Documentation-only changes require diff, reference, and scope checks.
 - Bound potentially stalled checks and retain failures. If the asyncio/thread stall
   recurs, distinguish the execution environment from application defects using the

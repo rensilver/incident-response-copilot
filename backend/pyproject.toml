@@ -60,6 +60,7 @@ target-version = ["py312"]
 
 [tool.mypy]
 python_version = "3.12"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 strict = true
 plugins = ["pydantic.mypy"]
 warn_unreachable = true
@@ -68,9 +69,3 @@ disallow_any_generics = true
 [[tool.mypy.overrides]]
 module = ["elasticsearch.*"]
 ignore_missing_imports = true
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-asyncio_mode = "auto"
-addopts = "-ra --strict-markers"
-markers = ["integration: requires the docker-compose stack"]

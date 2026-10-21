@@ -27,7 +27,7 @@ cp .env.example .env
 # Edit .env and set GROQ_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
 
 uv venv .venv
-uv pip install --python .venv/bin/python -e '.[dev,ui]'
+uv pip install --python .venv/bin/python -e 'backend[dev,ui]'
 
 make docker-app-up   # build FastAPI and start all five services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
@@ -40,6 +40,10 @@ submitting an investigation. If the API is still starting, repeat the health che
 The UI runs on the host; FastAPI and the four supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
+
+The backend directory move is in progress. Environment loading, seeding internals,
+and evaluation/validation script paths still await repair; the live walkthrough
+above has not been revalidated for this layout.
 
 | Service | Local URL | Purpose |
 |---|---|---|
@@ -168,7 +172,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 ### Package structure
 
 ```text
-src/incident_copilot/
+backend/src/incident_copilot/
 ├── config/           # environment-driven settings
 ├── models/           # reports, findings, metrics, logs, windows
 ├── analysis/         # deterministic trends and evidence rendering
@@ -183,12 +187,16 @@ src/incident_copilot/
 ├── utils/            # tracing, logging, exceptions
 ├── composition.py    # shared construction for API and evaluation
 └── main.py           # FastAPI entry point
-streamlit_app/        # independent HTTP client, page, styles
-scripts/              # seeding and retained validation recorders
-tests/unit/           # offline tests with fake/stub dependencies
-tests/integration/    # live stack and deployed API checks
-docker/               # service configuration and Grafana provisioning
-docs/validation/      # reports, measurements, commands, screenshots
+streamlit_app/             # independent HTTP client, page, styles
+backend/scripts/           # seeding and backend validation recorders
+backend/tests/unit/        # offline tests with fake/stub dependencies
+backend/tests/integration/ # live stack and deployed API checks
+backend/pyproject.toml     # Python package and static-tool configuration
+backend/Dockerfile         # built with the repository root as context
+pytest.ini                 # shared root/backend test collection configuration
+scripts/                   # existing Streamlit validation recorder
+docker/                    # service configuration and Grafana provisioning
+docs/validation/           # reports, measurements, commands, screenshots
 ```
 
 ## Configuration and failure behavior
@@ -343,23 +351,28 @@ can vary between runs.
 ```bash
 make test                 # offline unit suite; no live providers or Docker required
 make lint                 # Ruff and strict backend mypy
-.venv/bin/black --check src tests streamlit_app
-.venv/bin/ruff check streamlit_app scripts/validate_streamlit.py
-.venv/bin/mypy --strict streamlit_app
+make format-check         # Black for backend, tests, and existing UI
+.venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
+.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
 # Requires a running API, freshly seeded data, and a configured Groq key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 
 # Retains all nine attempts, evidence, timings, and resource samples.
 # The output directory must not already exist.
-LANGSMITH_TRACING=false .venv/bin/python -u scripts/measure_evaluation.py \
+LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65
 ```
+
+Direct backend checks also work from `backend/`, for example
+`../.venv/bin/pytest tests/unit` and `../.venv/bin/mypy --strict src`.
+Root pytest commands select `pytest.ini`; its test paths and source path are
+relative to the repository, including when invoked from `backend/`.
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
 The recorder above uses that same scorer and is the route used for the published
 measurements. Browser capture additionally requires Playwright/Chromium; the
 [UI validation record](docs/validation/2026-09-24-streamlit/README.md#reproduction)
-contains its installation, capture, and video-encoding commands. Setup was checked
-with a fresh host environment, a rebuilt Docker app, fresh seed data, reachable
-service URLs, and the live browser walkthroughs.
+contains its installation, capture, and video-encoding commands. The published
+setup was checked with a fresh host environment, a rebuilt Docker app, fresh seed
+data, reachable service URLs, and the live browser walkthroughs.

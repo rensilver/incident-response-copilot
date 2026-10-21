@@ -1,0 +1,20 @@
+{
+  "command": [
+    "timeout",
+    "--signal=KILL",
+    "30s",
+    "docker",
+    "compose",
+    "--env-file",
+    "/dev/null",
+    "config",
+    "--no-env-resolution",
+    "--no-interpolate",
+    "--format",
+    "json"
+  ],
+  "environment": {
+    "PATH": "<inherited PATH>"
+  },
+  "exit_code": 0
+}

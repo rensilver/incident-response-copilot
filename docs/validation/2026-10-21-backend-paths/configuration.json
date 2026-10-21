@@ -1,0 +1,18 @@
+{
+  "base_revision": "b1b9df8976e4e0401d00709bfc03e8a935b511b9",
+  "python_project": "backend/pyproject.toml",
+  "wheel_package": "backend/src/incident_copilot",
+  "unchanged_sections": [
+    "project (Python constraints and dependencies)",
+    "build-system",
+    "tool.hatch"
+  ],
+  "source_sha256": {
+    "Makefile": "b5c517dd1b57b49f2971508d8950000398255c58cace71fd60646220cb9f2307",
+    "pytest.ini": "7e951da77a5a3d1c4e1fabf80a5603a03cf291843a84a7f5878ca39879146bc7",
+    "backend/pyproject.toml": "164191c4c9ed1fe216f199c4a2713aefdd6b2fe7cbef26d7411a32d75fa8c702",
+    "backend/Dockerfile": "f2e900ed1f8f52840ef5c6143d2db8296ee2ed08e3a7ef6565b7cfb0e1c19e4d",
+    "docker-compose.yml": "8d7aa56ff0de2f233a72fb07fec911e412437dffd8603569c1e1919f9b23ae35",
+    "backend/tests/unit/test_ui_client.py": "b8e5e111c53cb9f45019ba5ca03b5af11baa47cd90065c2cfb3a6ea9771ec444"
+  }
+}
