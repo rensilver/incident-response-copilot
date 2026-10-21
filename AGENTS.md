@@ -15,10 +15,21 @@ report history, and additional production providers are outside the current scop
 
 ## Current layout and execution scope
 
-The backend currently lives in `src/incident_copilot/` with root `tests/`,
-`scripts/`, `pyproject.toml`, and `Dockerfile`; `streamlit_app/` remains the HTTP
-client until its authorized replacement. The target architecture is planned;
-this guidance does not establish that the migration has been implemented.
+The Python project lives in `backend/`, including `src/incident_copilot/`,
+`tests/`, backend `scripts/`, `pyproject.toml`, and `Dockerfile`. Root Make targets
+use the root `.venv/`; root `pytest.ini` configures collection from both root and
+`backend/`. `streamlit_app/` and its validator in root `scripts/` remain until the
+authorized frontend replacement. Further migration tasks remain in the local plan.
+
+Checkout/editable settings load the root `.env` independently of the working
+directory; process variables override file values. Installed wheels use process
+variables or an absolute `INCIDENT_COPILOT_ENV_FILE` set before Python starts
+(empty disables dotenv). Compose injects the root file as process variables.
+Offline tests disable dotenv loading before application collection.
+
+Checkout backend scripts import `backend/src/` directly. Evaluation/validation
+recorders resolve relative output paths from the repository root and preserve
+absolute paths; browser media stays within the selected output directory.
 
 The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
 requires explicit owner authorization for each task. Complete the authorized
@@ -82,11 +93,19 @@ the next task. A request to commit includes authorization for that task's commit
 - For behavior changes, add meaningful failing regression coverage before the fix.
   Unit tests use fake providers, mocked transports/connectors, and isolated settings;
   they must run without Docker, network access, live credentials, or the owner's `.env`.
-  Put live dependency checks in `tests/integration` with the integration marker.
+  Put live dependency checks in `backend/tests/integration` with the integration marker.
 - From the current repository root, run `make lint`, `make test`, and
-  `.venv/bin/black --check src tests streamlit_app` for relevant Python changes.
-  UI changes also require `.venv/bin/mypy --strict streamlit_app` and
-  `.venv/bin/ruff check streamlit_app`. Packaging uses `uv` and `pyproject.toml`.
+  `make format-check` for relevant Python changes. UI changes also require
+  `.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app` and
+  `.venv/bin/ruff check --config backend/pyproject.toml streamlit_app`.
+  Packaging uses uv 0.12.5 and `backend/uv.lock` with Python 3.12/3.13 (default
+  3.12.14 in `backend/.python-version`). `make install` installs locked backend/dev
+  dependencies; `make install-ui` also installs the UI extra. Both retain unrelated
+  packages in compatible environments; changing Python recreates the environment.
+  Use `VENV=/absolute/path` and optionally `PYTHON=3.13` for isolated checks.
+  From `backend/`, set `UV_PROJECT_ENVIRONMENT` to the absolute root `.venv/` path
+  when syncing. Regenerate with `uv lock --project backend` only for intentional
+  dependency changes and commit the lock with the manifest.
   Documentation-only changes require diff, reference, and scope checks.
 - Bound potentially stalled checks and retain failures. If the asyncio/thread stall
   recurs, distinguish the execution environment from application defects using the

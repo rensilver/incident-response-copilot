@@ -8,8 +8,10 @@ __pycache__/
 .env
 docker/prometheus/data/
 seed-*/
-tests/
+backend/tests/
+backend/scripts/
 docs/
+REFACTORING_PLAN.md
 
 *-api.txt
 *.key

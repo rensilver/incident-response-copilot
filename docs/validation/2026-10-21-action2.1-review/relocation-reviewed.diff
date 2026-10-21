@@ -1,0 +1,188 @@
+--- Dockerfile
++++ backend/Dockerfile
+@@ -3 +3 @@
+-RUN pip install --no-cache-dir uv
++RUN pip install --no-cache-dir uv==0.12.5
+@@ -6,2 +6,2 @@
+-COPY pyproject.toml ./
+-COPY src ./src
++COPY backend/pyproject.toml backend/uv.lock ./
++COPY backend/src ./src
+@@ -9 +9,2 @@
+-RUN uv venv /opt/venv && uv pip install --python /opt/venv/bin/python --no-cache .
++RUN UV_PROJECT_ENVIRONMENT=/opt/venv uv sync --python /usr/local/bin/python3 \
++    --locked --no-dev --no-editable --no-cache
+@@ -15 +16 @@
+-COPY src ./src
++COPY backend/src ./src
+--- pyproject.toml
++++ backend/pyproject.toml
+@@ -5 +5 @@
+-requires-python = ">=3.12"
++requires-python = ">=3.12,<3.14"
+@@ -37 +37 @@
+-requires = ["hatchling"]
++requires = ["hatchling==1.32.4"]
+@@ -38,0 +39,3 @@
++
++[tool.uv]
++required-version = "==0.12.5"
+@@ -62,0 +66 @@
++mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+@@ -71,6 +74,0 @@
+-
+-[tool.pytest.ini_options]
+-testpaths = ["tests"]
+-asyncio_mode = "auto"
+-addopts = "-ra --strict-markers"
+-markers = ["integration: requires the docker-compose stack"]
+--- scripts/measure_evaluation.py
++++ backend/scripts/measure_evaluation.py
+@@ -11,0 +12 @@
++import sys
+@@ -20,0 +22,4 @@
++# Direct checkout scripts must work before an editable install is refreshed.
++if __name__ == "__main__":
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++
+@@ -34,0 +40,2 @@
++REPO_ROOT = Path(__file__).resolve().parents[2]
++
+@@ -43 +50,3 @@
+-    result = subprocess.run(args, capture_output=True, text=True, timeout=30, check=True)
++    result = subprocess.run(
++        args, cwd=REPO_ROOT, capture_output=True, text=True, timeout=30, check=True
++    )
+@@ -169,0 +179 @@
++    output = REPO_ROOT / output
+@@ -295 +305,6 @@
+-    parser.add_argument("--output", type=Path, required=True, help="New artifact directory")
++    parser.add_argument(
++        "--output",
++        type=Path,
++        required=True,
++        help="New artifact directory (relative to repository root)",
++    )
+--- scripts/seed_demo_data.py
++++ backend/scripts/seed_demo_data.py
+@@ -9 +9 @@
+-    python scripts/seed_demo_data.py
++    .venv/bin/python backend/scripts/seed_demo_data.py
+@@ -18,0 +19,4 @@
++
++# Direct checkout scripts must work before an editable install is refreshed.
++if __name__ == "__main__":
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+@@ -31 +35,2 @@
+-REPO_ROOT = Path(__file__).resolve().parent.parent
++# This script lives in backend/scripts; Docker bind mounts are rooted in the checkout.
++REPO_ROOT = Path(__file__).resolve().parents[2]
+--- scripts/validate_langsmith.py
++++ backend/scripts/validate_langsmith.py
+@@ -12,0 +13 @@
++import sys
+@@ -23,0 +25,4 @@
++# Direct checkout scripts must work before an editable install is refreshed.
++if __name__ == "__main__":
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++
+@@ -36,0 +42,2 @@
++
++REPO_ROOT = Path(__file__).resolve().parents[2]
+@@ -145,0 +153 @@
++    output = REPO_ROOT / output
+@@ -149 +157,7 @@
+-    local = dotenv_values(".env")
++    env_files = Settings.model_config.get("env_file")
++    if isinstance(env_files, (str, Path)):
++        env_files = [env_files]
++    local: dict[str, str | None] = {}
++    # Preserve Pydantic's file ordering; dotenv_values(None) would search cwd.
++    for env_file in env_files or ():
++        local.update(dotenv_values(env_file))
+@@ -159 +173,3 @@
+-        "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
++        "source_commit": subprocess.check_output(
++            ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True
++        ).strip(),
+@@ -257 +273,6 @@
+-    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument(
++        "--output",
++        type=Path,
++        required=True,
++        help="New artifact directory (relative to repository root)",
++    )
+--- scripts/validate_provider_failures.py
++++ backend/scripts/validate_provider_failures.py
+@@ -5 +5 @@
+-    .venv/bin/python scripts/validate_provider_failures.py --output /tmp/provider-validation
++    .venv/bin/python backend/scripts/validate_provider_failures.py --output /tmp/provider-validation
+@@ -21,0 +22,2 @@
++REPO_ROOT = Path(__file__).resolve().parents[2]
++
+@@ -25 +27,3 @@
+-    result = subprocess.run(["docker", *args], capture_output=True, text=True, timeout=90)
++    result = subprocess.run(
++        ["docker", *args], cwd=REPO_ROOT, capture_output=True, text=True, timeout=90
++    )
+@@ -125 +129,6 @@
+-    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument(
++        "--output",
++        type=Path,
++        required=True,
++        help="Artifact directory (relative to repository root)",
++    )
+@@ -126,0 +136 @@
++    args.output = REPO_ROOT / args.output
+--- src/incident_copilot/config/settings.py
++++ backend/src/incident_copilot/config/settings.py
+@@ -2,0 +3,2 @@
++import os
++from pathlib import Path
+@@ -10,0 +13,24 @@
++def _default_env_file() -> Path | None:
++    """Select dotenv at import time without searching the caller's directory."""
++    configured = os.environ.get("INCIDENT_COPILOT_ENV_FILE")
++    if configured is not None:
++        if not configured:
++            return None
++        path = Path(configured)
++        if not path.is_absolute():
++            raise ValueError("INCIDENT_COPILOT_ENV_FILE must be an absolute path")
++        return path
++
++    package = Path(__file__).resolve().parent.parent
++    backend = package.parent.parent
++    # Only the source checkout has a repository dotenv. Wheels and containers
++    # receive process variables or an explicitly selected external file.
++    if (
++        package.parent.name == "src"
++        and backend.name == "backend"
++        and (backend / "pyproject.toml").is_file()
++    ):
++        return backend.parent / ".env"
++    return None
++
++
+@@ -12 +38 @@
+-    """Application settings, populated from environment variables and ``.env``."""
++    """Application settings; process variables override the selected dotenv file."""
+@@ -14 +40,3 @@
+-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
++    model_config = SettingsConfigDict(
++        env_file=_default_env_file(), env_file_encoding="utf-8", extra="ignore"
++    )
+@@ -57 +85 @@
+-    """Build settings from the environment."""
++    """Build settings using process variables and the startup dotenv selection."""
+--- tests/unit/conftest.py
++++ backend/tests/unit/conftest.py
+@@ -8,0 +9 @@
++    monkeypatch.delenv("INCIDENT_COPILOT_ENV_FILE", raising=False)
+--- tests/unit/test_ui_client.py
++++ backend/tests/unit/test_ui_client.py
+@@ -12 +12 @@
+-    "ui_client_under_test", Path(__file__).parents[2] / "streamlit_app" / "api_client.py"
++    "ui_client_under_test", Path(__file__).resolve().parents[3] / "streamlit_app" / "api_client.py"

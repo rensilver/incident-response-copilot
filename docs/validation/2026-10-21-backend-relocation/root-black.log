@@ -1,0 +1,4 @@
+Usage: black [OPTIONS] SRC ...
+Try 'black --help' for help.
+
+Error: Invalid value for 'SRC ...': Path 'src' does not exist.

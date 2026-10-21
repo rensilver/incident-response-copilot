@@ -1,0 +1,235 @@
+.FFFFFFFF..FF                                                            [100%]
+=================================== FAILURES ===================================
+_____ test_checkout_loads_root_dotenv_from_any_working_directory[backend] ______
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_checkout_loads_root_doten1/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_checkout_loads_root_doten1')
+working_directory = 'backend'
+
+    @pytest.mark.parametrize("working_directory", ["root", "backend", "unrelated"])
+    def test_checkout_loads_root_dotenv_from_any_working_directory(
+        checkout: Path, tmp_path: Path, working_directory: str
+    ) -> None:
+        directories = {"root": checkout, "backend": checkout / "backend", "unrelated": tmp_path}
+        (tmp_path / ".env").write_text("APP_ENV=wrong-cwd\nMAX_TOOL_ROUNDS=5\n")
+
+>       assert _read_settings(checkout / "backend/src", directories[working_directory]) == {
+            "app_env": "repository",
+            "max_tool_rounds": 4,
+        }
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 4}
+E
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 4}
+E         {'app_env': 'wrong-backend'} != {'app_env': 'repository'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:65: AssertionError
+____ test_checkout_loads_root_dotenv_from_any_working_directory[unrelated] _____
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_checkout_loads_root_doten2/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_checkout_loads_root_doten2')
+working_directory = 'unrelated'
+
+    @pytest.mark.parametrize("working_directory", ["root", "backend", "unrelated"])
+    def test_checkout_loads_root_dotenv_from_any_working_directory(
+        checkout: Path, tmp_path: Path, working_directory: str
+    ) -> None:
+        directories = {"root": checkout, "backend": checkout / "backend", "unrelated": tmp_path}
+        (tmp_path / ".env").write_text("APP_ENV=wrong-cwd\nMAX_TOOL_ROUNDS=5\n")
+
+>       assert _read_settings(checkout / "backend/src", directories[working_directory]) == {
+            "app_env": "repository",
+            "max_tool_rounds": 4,
+        }
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 4}
+E
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 4}
+E         {'app_env': 'wrong-cwd'} != {'app_env': 'repository'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:65: AssertionError
+______________ test_process_environment_overrides_checkout_dotenv ______________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_process_environment_overr0/checkout')
+
+    def test_process_environment_overrides_checkout_dotenv(checkout: Path) -> None:
+>       assert _read_settings(
+            checkout / "backend/src", checkout / "backend", {"APP_ENV": "process"}
+        ) == {"app_env": "process", "max_tool_rounds": 4}
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 4}
+E
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 4}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:72: AssertionError
+____________ test_missing_root_dotenv_does_not_load_backend_dotenv _____________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_missing_root_dotenv_does_0/checkout')
+
+    def test_missing_root_dotenv_does_not_load_backend_dotenv(checkout: Path) -> None:
+        (checkout / ".env").unlink()
+
+>       assert _read_settings(checkout / "backend/src", checkout / "backend") == {
+            "app_env": "dev",
+            "max_tool_rounds": 2,
+        }
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 2}
+E
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 2}
+E         {'app_env': 'wrong-backend'} != {'app_env': 'dev'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:80: AssertionError
+_________ test_explicit_dotenv_path_overrides_checkout_location[root] __________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_explicit_dotenv_path_over0/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_explicit_dotenv_path_over0')
+working_directory = 'root'
+
+    @pytest.mark.parametrize("working_directory", ["root", "backend"])
+    def test_explicit_dotenv_path_overrides_checkout_location(
+        checkout: Path, tmp_path: Path, working_directory: str
+    ) -> None:
+        configured = tmp_path / "selected.env"
+        configured.write_text("APP_ENV=selected\nMAX_TOOL_ROUNDS=3\n")
+        cwd = checkout if working_directory == "root" else checkout / "backend"
+
+>       assert _read_settings(
+            checkout / "backend/src", cwd, {"INCIDENT_COPILOT_ENV_FILE": str(configured)}
+        ) == {"app_env": "selected", "max_tool_rounds": 3}
+E       AssertionError: assert {'app_env': '...ol_rounds': 4} == {'app_env': '...ol_rounds': 3}
+E
+E         Differing items:
+E         {'max_tool_rounds': 4} != {'max_tool_rounds': 3}
+E         {'app_env': 'repository'} != {'app_env': 'selected'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:94: AssertionError
+________ test_explicit_dotenv_path_overrides_checkout_location[backend] ________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_explicit_dotenv_path_over1/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_explicit_dotenv_path_over1')
+working_directory = 'backend'
+
+    @pytest.mark.parametrize("working_directory", ["root", "backend"])
+    def test_explicit_dotenv_path_overrides_checkout_location(
+        checkout: Path, tmp_path: Path, working_directory: str
+    ) -> None:
+        configured = tmp_path / "selected.env"
+        configured.write_text("APP_ENV=selected\nMAX_TOOL_ROUNDS=3\n")
+        cwd = checkout if working_directory == "root" else checkout / "backend"
+
+>       assert _read_settings(
+            checkout / "backend/src", cwd, {"INCIDENT_COPILOT_ENV_FILE": str(configured)}
+        ) == {"app_env": "selected", "max_tool_rounds": 3}
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 3}
+E
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 3}
+E         {'app_env': 'wrong-backend'} != {'app_env': 'selected'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:94: AssertionError
+______________ test_empty_dotenv_selector_disables_checkout_file _______________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_empty_dotenv_selector_dis0/checkout')
+
+    def test_empty_dotenv_selector_disables_checkout_file(checkout: Path) -> None:
+>       assert _read_settings(
+            checkout / "backend/src", checkout, {"INCIDENT_COPILOT_ENV_FILE": ""}
+        ) == {"app_env": "dev", "max_tool_rounds": 2}
+E       AssertionError: assert {'app_env': '...ol_rounds': 4} == {'app_env': '...ol_rounds': 2}
+E
+E         Differing items:
+E         {'max_tool_rounds': 4} != {'max_tool_rounds': 2}
+E         {'app_env': 'repository'} != {'app_env': 'dev'}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:100: AssertionError
+__________________ test_relative_dotenv_selector_is_rejected ___________________
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_relative_dotenv_selector_0/checkout')
+
+    def test_relative_dotenv_selector_is_rejected(checkout: Path) -> None:
+>       with pytest.raises(subprocess.CalledProcessError) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CalledProcessError
+
+backend/tests/unit/config/test_environment_loading.py:106: Failed
+____ test_installed_layout_uses_process_environment_or_explicit_file[False] ____
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_installed_layout_uses_pro0/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_installed_layout_uses_pro0')
+explicit_selector = False
+
+    @pytest.mark.parametrize("explicit_selector", [False, True])
+    def test_installed_layout_uses_process_environment_or_explicit_file(
+        checkout: Path, tmp_path: Path, explicit_selector: bool
+    ) -> None:
+        site_packages = tmp_path / "install/lib/python/site-packages"
+        shutil.copytree(checkout / "backend/src/incident_copilot", site_packages / "incident_copilot")
+        # A nearby unrelated dotenv and the caller's dotenv must both be ignored.
+        (tmp_path / "install/lib/.env").write_text("APP_ENV=wrong-ancestor\nMAX_TOOL_ROUNDS=5\n")
+        environment = {"APP_ENV": "container-process"}
+        if explicit_selector:
+            environment["INCIDENT_COPILOT_ENV_FILE"] = str(checkout / ".env")
+
+>       assert _read_settings(site_packages, checkout / "backend", environment) == {
+            "app_env": "container-process",
+            "max_tool_rounds": 4 if explicit_selector else 2,
+        }
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 2}
+E
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 2}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:136: AssertionError
+____ test_installed_layout_uses_process_environment_or_explicit_file[True] _____
+
+checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_installed_layout_uses_pro1/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-34/test_installed_layout_uses_pro1')
+explicit_selector = True
+
+    @pytest.mark.parametrize("explicit_selector", [False, True])
+    def test_installed_layout_uses_process_environment_or_explicit_file(
+        checkout: Path, tmp_path: Path, explicit_selector: bool
+    ) -> None:
+        site_packages = tmp_path / "install/lib/python/site-packages"
+        shutil.copytree(checkout / "backend/src/incident_copilot", site_packages / "incident_copilot")
+        # A nearby unrelated dotenv and the caller's dotenv must both be ignored.
+        (tmp_path / "install/lib/.env").write_text("APP_ENV=wrong-ancestor\nMAX_TOOL_ROUNDS=5\n")
+        environment = {"APP_ENV": "container-process"}
+        if explicit_selector:
+            environment["INCIDENT_COPILOT_ENV_FILE"] = str(checkout / ".env")
+
+>       assert _read_settings(site_packages, checkout / "backend", environment) == {
+            "app_env": "container-process",
+            "max_tool_rounds": 4 if explicit_selector else 2,
+        }
+E       AssertionError: assert {'app_env': '...ol_rounds': 5} == {'app_env': '...ol_rounds': 4}
+E
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'max_tool_rounds': 5} != {'max_tool_rounds': 4}
+E         Use -v to get more diff
+
+backend/tests/unit/config/test_environment_loading.py:136: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/config/test_environment_loading.py::test_checkout_loads_root_dotenv_from_any_working_directory[backend]
+FAILED backend/tests/unit/config/test_environment_loading.py::test_checkout_loads_root_dotenv_from_any_working_directory[unrelated]
+FAILED backend/tests/unit/config/test_environment_loading.py::test_process_environment_overrides_checkout_dotenv
+FAILED backend/tests/unit/config/test_environment_loading.py::test_missing_root_dotenv_does_not_load_backend_dotenv
+FAILED backend/tests/unit/config/test_environment_loading.py::test_explicit_dotenv_path_overrides_checkout_location[root]
+FAILED backend/tests/unit/config/test_environment_loading.py::test_explicit_dotenv_path_overrides_checkout_location[backend]
+FAILED backend/tests/unit/config/test_environment_loading.py::test_empty_dotenv_selector_disables_checkout_file
+FAILED backend/tests/unit/config/test_environment_loading.py::test_relative_dotenv_selector_is_rejected
+FAILED backend/tests/unit/config/test_environment_loading.py::test_installed_layout_uses_process_environment_or_explicit_file[False]
+FAILED backend/tests/unit/config/test_environment_loading.py::test_installed_layout_uses_process_environment_or_explicit_file[True]
+10 failed, 3 passed in 2.89s

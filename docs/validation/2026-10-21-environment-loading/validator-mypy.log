@@ -1,0 +1,2 @@
+backend/scripts/validate_langsmith.py:151: error: Argument 1 to "dotenv_values" has incompatible type "Path | Sequence[Path | str]"; expected "str | PathLike[str] | None"  [arg-type]
+Found 1 error in 1 file (checked 1 source file)

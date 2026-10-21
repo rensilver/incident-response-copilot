@@ -1,0 +1,56 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/scripts/validate_langsmith.py:7:1
+   |
+ 5 |   """
+ 6 |
+ 7 | / import argparse
+ 8 | | import asyncio
+ 9 | | import json
+10 | | import os
+11 | | import platform
+12 | | import subprocess
+13 | | import time
+14 | | from collections import Counter
+15 | | from collections.abc import Mapping
+16 | | from datetime import UTC, datetime
+17 | | from importlib.metadata import version
+18 | | from pathlib import Path
+19 | | from typing import Any
+20 | | from unittest.mock import patch
+21 | | from urllib.parse import urlsplit
+22 | | from uuid import uuid4
+23 | |
+24 | | import psutil
+25 | | import requests
+26 | | from dotenv import dotenv_values
+27 | | from langchain_core.tracers.langchain import get_client
+28 | | from langgraph.graph.state import CompiledStateGraph
+29 | | from langsmith.schemas import Run
+30 | | from langsmith.utils import LangSmithNotFoundError, tracing_is_enabled
+31 | | from pydantic_core import to_jsonable_python
+32 | |
+33 | | from incident_copilot.composition import build_collaborators
+34 | | from incident_copilot.config.settings import Settings
+35 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+36 | | from incident_copilot.utils.logging import configure_logging
+   | |____________________________________________________________^
+help: Organize imports
+   |
+26 | from dotenv import dotenv_values
+27 + from incident_copilot.composition import build_collaborators
+28 + from incident_copilot.config.settings import Settings
+29 + from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+30 + from incident_copilot.utils.logging import configure_logging
+31 | from langchain_core.tracers.langchain import get_client
+--------------------------------------------------------------------------------
+35 | from pydantic_core import to_jsonable_python
+   -
+   - from incident_copilot.composition import build_collaborators
+   - from incident_copilot.config.settings import Settings
+   - from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+   - from incident_copilot.utils.logging import configure_logging
+36 |
+   |
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

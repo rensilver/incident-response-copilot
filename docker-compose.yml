@@ -58,7 +58,9 @@ services:
       - ollama-data:/root/.ollama
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: ic-app
     profiles: ["app"]
     env_file: .env

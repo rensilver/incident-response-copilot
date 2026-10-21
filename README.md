@@ -18,7 +18,7 @@ mentions, not proven root-cause accuracy**. See [Measured results](#measured-res
 
 ## Build and run
 
-Prerequisites: Python **3.12+**, [uv](https://docs.astral.sh/uv/), Docker Engine with
+Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
 Compose, and a Groq API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
 container memory measurements below.
 
@@ -26,8 +26,7 @@ container memory measurements below.
 cp .env.example .env
 # Edit .env and set GROQ_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
 
-uv venv .venv
-uv pip install --python .venv/bin/python -e '.[dev,ui]'
+make install-ui       # locked backend, development tools, and existing UI
 
 make docker-app-up   # build FastAPI and start all five services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
@@ -40,6 +39,10 @@ submitting an investigation. If the API is still starting, repeat the health che
 The UI runs on the host; FastAPI and the four supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
+
+The backend now lives in `backend/`; seeding and evaluation/validation paths
+resolve from the repository root. The live walkthrough above has not been
+revalidated for this layout.
 
 | Service | Local URL | Purpose |
 |---|---|---|
@@ -155,7 +158,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 
 | Layer | Technology |
 |---|---|
-| Language and packaging | Python 3.12+, uv, Hatchling |
+| Language and packaging | Python 3.12/3.13, uv, Hatchling |
 | Orchestration | LangGraph, LangChain Core |
 | API and validation | FastAPI, Pydantic v2, pydantic-settings |
 | Model adapters | langchain-groq, langchain-ollama; common provider interface |
@@ -168,7 +171,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 ### Package structure
 
 ```text
-src/incident_copilot/
+backend/src/incident_copilot/
 ├── config/           # environment-driven settings
 ├── models/           # reports, findings, metrics, logs, windows
 ├── analysis/         # deterministic trends and evidence rendering
@@ -183,18 +186,36 @@ src/incident_copilot/
 ├── utils/            # tracing, logging, exceptions
 ├── composition.py    # shared construction for API and evaluation
 └── main.py           # FastAPI entry point
-streamlit_app/        # independent HTTP client, page, styles
-scripts/              # seeding and retained validation recorders
-tests/unit/           # offline tests with fake/stub dependencies
-tests/integration/    # live stack and deployed API checks
-docker/               # service configuration and Grafana provisioning
-docs/validation/      # reports, measurements, commands, screenshots
+streamlit_app/             # independent HTTP client, page, styles
+backend/scripts/           # seeding and backend validation recorders
+backend/tests/unit/        # offline tests with fake/stub dependencies
+backend/tests/integration/ # live stack and deployed API checks
+backend/pyproject.toml     # Python package and static-tool configuration
+backend/Dockerfile         # built with the repository root as context
+pytest.ini                 # shared root/backend test collection configuration
+scripts/                   # existing Streamlit validation recorder
+docker/                    # service configuration and Grafana provisioning
+docs/validation/           # reports, measurements, commands, screenshots
 ```
 
 ## Configuration and failure behavior
 
 [`.env.example`](.env.example) lists the supported application settings. Never put
-keys in tracked source. The default configuration is:
+keys in tracked source. Source checkout and editable-install commands load the
+repository-root `.env`, including when launched from `backend/` or another working
+directory. A `backend/.env` or caller-directory `.env` is ignored. Process environment
+values override file values.
+
+For an installed wheel, supply process variables or set `INCIDENT_COPILOT_ENV_FILE`
+to an absolute dotenv path **before starting Python**. This selector also overrides
+the checkout default; an empty value disables dotenv loading. The selection is
+fixed when the settings module is imported. Missing dotenv files leave process
+variables and defaults in effect. Docker Compose injects the root `.env` as process
+variables, with its service URLs taking precedence; the file is excluded from the
+image. Offline unit tests disable dotenv loading and use isolated dummy settings.
+Python callers can also use `Settings(_env_file=None)` to disable file loading.
+
+The default configuration is:
 
 | Setting | Default |
 |---|---|
@@ -334,32 +355,78 @@ not establish factual grounding; model confidence is not an accuracy estimate.
 
 Successful local fallback, local-model latency/memory, mobile/browser compatibility
 beyond desktop Chromium, tracing outages, and server cancellation after UI timeout
-are unverified. Dependencies and several container tags are not locked; retained
-version/image records identify tested environments. Model output and cloud quotas
+are unverified. Python dependencies are locked in `backend/uv.lock`; several
+container tags remain unpinned. Retained version/image records identify historical
+tested environments. Model output and cloud quotas
 can vary between runs.
 
 ## Development and reproduction
 
+Install uv 0.12.5 before running `make install` (backend and development tools) or
+`make install-ui` (also includes Streamlit). Both install from `backend/uv.lock`
+into the root `.venv/` and fail if the lock does not match the manifest. They
+retain unrelated installed packages when reusing a compatible environment; changing
+the interpreter recreates it. The default interpreter is Python 3.12.14,
+recorded in `backend/.python-version`; uv can download it if needed. To use
+Python 3.13 in a separate environment, run
+`make install-ui PYTHON=3.13 VENV=/tmp/incident-copilot-dev313`, then pass the same
+`VENV` to root check commands.
+
+From `backend/`, the equivalent install is
+`UV_PROJECT_ENVIRONMENT="$(pwd)/../.venv" uv sync --locked --extra dev --extra ui --inexact`.
+Without that environment selector, uv uses `backend/.venv/`, which the root Make
+commands do not use. To intentionally change dependencies, edit the manifest,
+run `uv lock --project backend`, review the lock diff, and rerun the checks below.
+Commit the manifest and lock together. The Hatchling build backend and uv version
+are pinned separately in the manifest because uv does not lock isolated build
+dependencies in `uv.lock`.
+
 ```bash
 make test                 # offline unit suite; no live providers or Docker required
 make lint                 # Ruff and strict backend mypy
-.venv/bin/black --check src tests streamlit_app
-.venv/bin/ruff check streamlit_app scripts/validate_streamlit.py
-.venv/bin/mypy --strict streamlit_app
+make format-check         # Black for backend, tests, and existing UI
+.venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
+.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
 # Requires a running API, freshly seeded data, and a configured Groq key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 
 # Retains all nine attempts, evidence, timings, and resource samples.
 # The output directory must not already exist.
-LANGSMITH_TRACING=false .venv/bin/python -u scripts/measure_evaluation.py \
+LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65
+
+# Optional live validators; use new directories for each tracing/browser run.
+.venv/bin/python backend/scripts/validate_langsmith.py \
+  --mode disabled --output docs/validation/langsmith-repeat
+.venv/bin/python backend/scripts/validate_provider_failures.py \
+  --output docs/validation/provider-failures-repeat
+.venv/bin/python scripts/validate_streamlit.py \
+  --output docs/validation/browser-repeat --delay-seconds 65
 ```
+
+Direct backend checks also work from `backend/`, for example
+`../.venv/bin/pytest tests/unit` and `../.venv/bin/mypy --strict src`.
+Root pytest commands select `pytest.ini`; its test paths and source path are
+relative to the repository, including when invoked from `backend/`.
+Checkout scripts import the relocated backend source directly. From `backend/`,
+use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
+For all four evaluation/validation recorders, relative `--output` paths resolve
+from the repository root, including when launched elsewhere. Absolute paths such
+as `/tmp/incident-eval-repeat` are preserved. Browser screenshots and videos stay
+under the selected output directory's `media/`; documentation and published media
+remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
+commands also use the repository root.
+
+The tracing validator accepts `--mode enabled` to check remote delivery with
+configured LangSmith credentials. The provider failure validator requires the
+existing Docker stack with no local model loaded; it creates disposable app
+containers. These are live commands, separate from the offline suite.
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
 The recorder above uses that same scorer and is the route used for the published
 measurements. Browser capture additionally requires Playwright/Chromium; the
 [UI validation record](docs/validation/2026-09-24-streamlit/README.md#reproduction)
-contains its installation, capture, and video-encoding commands. Setup was checked
-with a fresh host environment, a rebuilt Docker app, fresh seed data, reachable
-service URLs, and the live browser walkthroughs.
+contains its installation, capture, and video-encoding commands. The published
+setup was checked with a fresh host environment, a rebuilt Docker app, fresh seed
+data, reachable service URLs, and the live browser walkthroughs.

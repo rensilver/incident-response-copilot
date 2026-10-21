@@ -1,0 +1,3650 @@
+.venv/bin/ruff check --config backend/pyproject.toml backend/src backend/tests
+D103 Missing docstring in public function
+  --> backend/tests/integration/conftest.py:18:5
+   |
+17 | @pytest.fixture(scope="session", autouse=True)
+18 | def require_stack() -> None:
+   |     ^^^^^^^^^^^^^
+19 |     if not _up(f"{PROMETHEUS}/-/ready"):
+20 |         pytest.skip("prometheus not reachable - run `make docker-up && make seed`")
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/integration/test_investigation_e2e.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/integration/test_investigation_e2e.py:26:11
+   |
+26 | async def test_health_reports_every_dependency_up() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     async with _client() as client:
+28 |         response = await client.get("/health")
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/integration/test_investigation_window.py:3:1
+   |
+ 1 |   """Verify fixed investigation windows against the live seeded data backends."""
+ 2 |
+ 3 | / import json
+ 4 | | from datetime import UTC, datetime, timedelta
+ 5 | |
+ 6 | | import httpx
+ 7 | | import pytest
+ 8 | | from elasticsearch import AsyncElasticsearch
+ 9 | | from pytest_mock import MockerFixture
+10 | |
+11 | | from incident_copilot.agents.graph import build_graph
+12 | | from incident_copilot.agents.state import initial_state
+13 | | from incident_copilot.config.settings import Settings
+14 | | from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+15 | | from incident_copilot.connectors.prometheus_connector import PrometheusConnector
+16 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+17 | | from incident_copilot.models.metrics import TimeWindow
+18 | | from incident_copilot.tools.elasticsearch_tools import build_log_tools
+19 | | from incident_copilot.tools.prometheus_tools import build_metrics_tools
+   | |_______________________________________________________________________^
+20 |
+21 |   pytestmark = pytest.mark.integration
+   |
+help: Organize imports
+   |
+8  | from elasticsearch import AsyncElasticsearch
+   - from pytest_mock import MockerFixture
+   -
+9  | from incident_copilot.agents.graph import build_graph
+--------------------------------------------------------------------------------
+17 | from incident_copilot.tools.prometheus_tools import build_metrics_tools
+18 + from pytest_mock import MockerFixture
+19 |
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/integration/test_seeded_stack.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/integration/test_seeded_stack.py:1:1
+   |
+ 1 | / from collections.abc import AsyncIterator
+ 2 | |
+ 3 | | import httpx
+ 4 | | import pytest
+ 5 | | from elasticsearch import AsyncElasticsearch
+ 6 | |
+ 7 | | from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+ 8 | | from incident_copilot.connectors.prometheus_connector import PrometheusConnector
+ 9 | | from incident_copilot.models.enums import LogLevel, MetricKind
+10 | | from incident_copilot.models.logs import LogSearchCriteria
+11 | | from incident_copilot.models.metrics import TimeWindow
+12 | | from incident_copilot.tools.prometheus_tools import build_metrics_tools
+   | |_______________________________________________________________________^
+13 |
+14 |   pytestmark = pytest.mark.integration
+   |
+help: Organize imports
+  |
+5 | from elasticsearch import AsyncElasticsearch
+  -
+6 | from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/integration/test_seeded_stack.py:38:11
+   |
+38 | async def test_seeded_services_are_discoverable() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     services = await _metrics().list_services()
+40 |     assert {"cart-service", "checkout-service", "fraud-api", "payment-service"} <= set(services)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/integration/test_seeded_stack.py:43:11
+   |
+43 | async def test_bad_deploy_error_rate_is_detected_as_an_anomaly() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 |     finding = await _tool("get_service_metric").ainvoke(
+45 |         {"service": "cart-service", "kind": MetricKind.ERROR_RATE, "minutes_back": 180}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/integration/test_seeded_stack.py:51:11
+   |
+51 | async def test_memory_leak_shows_growth_on_the_culprit_service() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+52 |     finding = await _tool("get_service_metric").ainvoke(
+53 |         {"service": "checkout-service", "kind": MetricKind.MEMORY, "minutes_back": 180}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/integration/test_seeded_stack.py:85:11
+   |
+85 | async def test_bad_deploy_errors_are_tagged_with_the_new_version(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     logs: ElasticsearchConnector,
+87 | ) -> None:
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_correlation_agent.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/agents/test_correlation_agent.py:1:1
+   |
+ 1 | / import json
+ 2 | | from datetime import UTC, datetime, timedelta
+ 3 | |
+ 4 | | import pytest
+ 5 | |
+ 6 | | from incident_copilot.agents.correlation_agent import build_correlation_agent
+ 7 | | from incident_copilot.agents.state import initial_state
+ 8 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+ 9 | | from incident_copilot.models.enums import MetricKind, TrendKind
+10 | | from incident_copilot.models.findings import RawMetricFinding, TypedMetricFinding
+11 | | from incident_copilot.models.metrics import TimeWindow
+   | |______________________________________________________^
+12 |
+13 |   REPORT = json.dumps(
+   |
+help: Organize imports
+  |
+4 | import pytest
+  -
+5 | from incident_copilot.agents.correlation_agent import build_correlation_agent
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_correlation_agent.py:72:11
+   |
+72 | async def test_produces_a_structured_report() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+73 |     provider = FakeLLMProvider([REPORT])
+74 |     result = await build_correlation_agent(provider)(_state([_typed(True, "rose")]))
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_correlation_agent.py:105:11
+    |
+104 | @pytest.mark.parametrize("minutes", [17, 180])
+105 | async def test_correlation_receives_exact_scope_despite_five_minute_promql(minutes: int) -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+106 |     end = datetime(2026, 9, 23, tzinfo=UTC)
+107 |     window = TimeWindow(start=end - timedelta(minutes=minutes), end=end)
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_graph.py:1:1
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_graph.py:33:7
+   |
+33 | class StubMetrics(MetricsSource):
+   |       ^^^^^^^^^^^
+34 |     async def query_range(
+35 |         self, query: str, window: TimeWindow, step: str = "30s"
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_graph.py:34:15
+   |
+33 | class StubMetrics(MetricsSource):
+34 |     async def query_range(
+   |               ^^^^^^^^^^^
+35 |         self, query: str, window: TimeWindow, step: str = "30s"
+36 |     ) -> list[MetricSeries]:
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_graph.py:49:15
+   |
+47 |         ]
+48 |
+49 |     async def list_services(self) -> list[str]:
+   |               ^^^^^^^^^^^^^
+50 |         return ["cart-service"]
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_graph.py:53:7
+   |
+53 | class StubLogs(LogSource):
+   |       ^^^^^^^^
+54 |     async def search(self, criteria: LogSearchCriteria) -> LogFinding:
+55 |         return LogFinding(
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_graph.py:54:15
+   |
+53 | class StubLogs(LogSource):
+54 |     async def search(self, criteria: LogSearchCriteria) -> LogFinding:
+   |               ^^^^^^
+55 |         return LogFinding(
+56 |             query="stub", matched_count=42, level_breakdown={LogLevel.ERROR: 42}, samples=()
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_graph.py:59:15
+   |
+57 |         )
+58 |
+59 |     async def level_histogram(self, service: str, window: TimeWindow) -> dict[str, int]:
+   |               ^^^^^^^^^^^^^^^
+60 |         return {"ERROR": 42}
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_graph.py:99:11
+    |
+ 99 | async def test_full_fan_out_produces_a_report_citing_both_sources() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+100 |     provider = FakeLLMProvider(
+101 |         ['{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}', REPORT],
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_graph.py:124:11
+    |
+124 | async def test_unroutable_decision_falls_back_to_both_specialists() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+125 |     provider = FakeLLMProvider(
+126 |         ["garbage", "garbage", "garbage", REPORT],
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_graph.py:136:11
+    |
+136 | async def test_graph_terminates_and_records_iterations() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+137 |     provider = FakeLLMProvider(
+138 |         ['{"agents": ["logs_agent"], "reasoning": "logs"}', REPORT], tool_rounds=[[_log_call()]]
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/agents/test_investigation_window.py:3:1
+   |
+ 1 |   """The caller's interval must reach connectors unchanged through the real graph."""
+ 2 |
+ 3 | / import asyncio
+ 4 | | import json
+ 5 | | from datetime import UTC, datetime, timedelta
+ 6 | | from typing import Any
+ 7 | | from unittest.mock import AsyncMock
+ 8 | |
+ 9 | | import pytest
+10 | |
+11 | | from incident_copilot.agents.graph import build_graph
+12 | | from incident_copilot.agents.logs_agent import build_logs_agent
+13 | | from incident_copilot.agents.metrics_agent import build_metrics_agent
+14 | | from incident_copilot.agents.state import initial_state
+15 | | from incident_copilot.config.settings import Settings
+16 | | from incident_copilot.connectors.base import LogSource, MetricsSource
+17 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+18 | | from incident_copilot.models.logs import LogFinding
+19 | | from incident_copilot.models.metrics import TimeWindow
+20 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+21 | | from incident_copilot.tools.elasticsearch_tools import build_log_tools
+22 | | from incident_copilot.tools.prometheus_tools import build_metrics_tools
+   | |_______________________________________________________________________^
+23 |
+24 |   REPORT = json.dumps(
+   |
+help: Organize imports
+   |
+9  | import pytest
+   -
+10 | from incident_copilot.agents.graph import build_graph
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_investigation_window.py:67:11
+   |
+66 | @pytest.mark.parametrize("model_minutes", [None, 60])
+67 | async def test_request_window_reaches_every_data_tool_across_rounds(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |     model_minutes: int | None,
+69 | ) -> None:
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_investigation_window.py:100:11
+    |
+ 99 | @pytest.mark.parametrize("specialist", ["metrics", "logs"])
+100 | async def test_concurrent_investigations_do_not_share_window(specialist: str) -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+101 |     metrics, logs = _sources()
+102 |     rendezvous = asyncio.Barrier(2)
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_prompts.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_prompts.py:66:5
+   |
+66 | def test_metric_finding_states_its_trust_tag() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+67 |     assert "not threshold-validated" in render_metric_finding(_raw()).lower()
+68 |     assert "threshold-validated" in render_metric_finding(_typed(True)).lower()
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_prompts.py:71:5
+   |
+71 | def test_metric_finding_reports_the_advisory_flag_without_acting_on_it() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 |     assert "anomaly_detected=False" in render_metric_finding(_typed(False))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_prompts.py:75:5
+   |
+75 | def test_log_finding_reports_total_matches_not_sample_count() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     text = render_log_finding(_log())
+77 |     assert "1043" in text
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_prompts.py:80:5
+   |
+80 | def test_render_evidence_marks_an_empty_section_explicitly() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+81 |     text = render_evidence([], [])
+82 |     assert "no metric findings" in text.lower()
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/agents/test_prompts.py:87:5
+   |
+86 |   def test_evidence_order_is_independent_of_the_order_findings_arrive_in() -> None:
+87 | /     """Reducer merge order is not stable between runs. If it leaked into the prompt,
+88 | |     identical evidence would produce different prompts - and LLMs weight earlier items
+89 | |     more heavily, so the reasoning could drift for no real reason."""
+   | |_____________________________________________________________________^
+90 |       a = _typed(True, "alpha")
+91 |       b = _typed(False, "beta")
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/agents/test_prompts.py:87:5
+   |
+86 |   def test_evidence_order_is_independent_of_the_order_findings_arrive_in() -> None:
+87 | /     """Reducer merge order is not stable between runs. If it leaked into the prompt,
+88 | |     identical evidence would produce different prompts - and LLMs weight earlier items
+89 | |     more heavily, so the reasoning could drift for no real reason."""
+   | |_____________________________________________________________________^
+90 |       a = _typed(True, "alpha")
+91 |       b = _typed(False, "beta")
+   |
+help: Move closing quotes to new line
+   |
+88 |     identical evidence would produce different prompts - and LLMs weight earlier items
+   -     more heavily, so the reasoning could drift for no real reason."""
+89 +     more heavily, so the reasoning could drift for no real reason.
+90 +     """
+91 |     a = _typed(True, "alpha")
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_prompts.py:98:5
+    |
+ 98 | def test_threshold_validated_findings_are_rendered_first() -> None:
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 99 |     text = render_evidence([_raw(), _typed(True, "validated marker")], [])
+100 |     assert text.index("validated marker") < text.index(_raw().summary)
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_prompts.py:103:5
+    |
+103 | def test_dependency_after_five_duplicate_errors_is_preserved() -> None:
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+104 |     base = datetime(2026, 9, 23, tzinfo=UTC)
+105 |     samples = tuple(
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_prompts.py:140:5
+    |
+140 | def test_distinct_versions_of_the_same_message_are_not_merged() -> None:
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+141 |     entries = tuple(
+142 |         LogEntry(
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_specialists.py:1:1
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_specialists.py:17:7
+   |
+17 | class StubMetrics(MetricsSource):
+   |       ^^^^^^^^^^^
+18 |     async def query_range(
+19 |         self, query: str, window: TimeWindow, step: str = "30s"
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_specialists.py:18:15
+   |
+17 | class StubMetrics(MetricsSource):
+18 |     async def query_range(
+   |               ^^^^^^^^^^^
+19 |         self, query: str, window: TimeWindow, step: str = "30s"
+20 |     ) -> list[MetricSeries]:
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_specialists.py:33:15
+   |
+31 |         ]
+32 |
+33 |     async def list_services(self) -> list[str]:
+   |               ^^^^^^^^^^^^^
+34 |         return ["cart-service"]
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_specialists.py:37:7
+   |
+37 | class StubLogs(LogSource):
+   |       ^^^^^^^^
+38 |     async def search(self, criteria: LogSearchCriteria) -> LogFinding:
+39 |         return LogFinding(
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_specialists.py:38:15
+   |
+37 | class StubLogs(LogSource):
+38 |     async def search(self, criteria: LogSearchCriteria) -> LogFinding:
+   |               ^^^^^^
+39 |         return LogFinding(
+40 |             query="stub", matched_count=7, level_breakdown={LogLevel.ERROR: 7}, samples=()
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/agents/test_specialists.py:43:15
+   |
+41 |         )
+42 |
+43 |     async def level_histogram(self, service: str, window: TimeWindow) -> dict[str, int]:
+   |               ^^^^^^^^^^^^^^^
+44 |         return {"ERROR": 7}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_specialists.py:74:11
+   |
+74 | async def test_metrics_agent_puts_typed_findings_into_state() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+75 |     provider = FakeLLMProvider(["done"], tool_rounds=[[_metric_call()]])
+76 |     agent = build_metrics_agent(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_specialists.py:85:11
+   |
+85 | async def test_logs_agent_puts_log_findings_into_state() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     provider = FakeLLMProvider(["done"], tool_rounds=[[_log_call()]])
+87 |     agent = build_logs_agent(provider, build_log_tools(StubLogs()), Settings(_env_file=None))
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_state.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_state.py:21:5
+   |
+21 | def test_scalar_fields_do_not_accumulate() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22 |     for field in ("correlation_id", "query", "route", "iterations", "report"):
+23 |         assert get_origin(_annotation(field)) is not Annotated, field
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_state.py:26:5
+   |
+26 | def test_initial_state_starts_empty_and_unrouted() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     state = initial_state(
+28 |         correlation_id="abc-123",
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_state.py:42:5
+   |
+42 | def test_initial_state_allows_no_target_service() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     state = initial_state(
+44 |         correlation_id="x",
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_supervisor.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/agents/test_supervisor.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.agents.state import initial_state
+4 | | from incident_copilot.agents.supervisor import SPECIALISTS, build_supervisor
+5 | | from incident_copilot.config.settings import Settings
+6 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+7 | | from incident_copilot.models.enums import AgentName
+8 | | from incident_copilot.models.metrics import TimeWindow
+  | |______________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.agents.state import initial_state
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_supervisor.py:26:11
+   |
+26 | async def test_valid_route_is_honoured() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     provider = FakeLLMProvider(['{"agents": ["metrics_agent"], "reasoning": "metrics only"}'])
+28 |     result = await build_supervisor(provider, _settings())(_state())
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/agents/test_supervisor.py:33:5
+   |
+32 |   async def test_malformed_route_falls_back_to_both_specialists() -> None:
+33 | /     """A 3b model emits junk often enough that this path is the difference between
+34 | |     a working demo and a dead end."""
+   | |_____________________________________^
+35 |       provider = FakeLLMProvider(["not json", "still not json", "nope"])
+36 |       result = await build_supervisor(provider, _settings())(_state())
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/agents/test_supervisor.py:33:5
+   |
+32 |   async def test_malformed_route_falls_back_to_both_specialists() -> None:
+33 | /     """A 3b model emits junk often enough that this path is the difference between
+34 | |     a working demo and a dead end."""
+   | |_____________________________________^
+35 |       provider = FakeLLMProvider(["not json", "still not json", "nope"])
+36 |       result = await build_supervisor(provider, _settings())(_state())
+   |
+help: Move closing quotes to new line
+   |
+33 |     """A 3b model emits junk often enough that this path is the difference between
+   -     a working demo and a dead end."""
+34 +     a working demo and a dead end.
+35 +     """
+36 |     provider = FakeLLMProvider(["not json", "still not json", "nope"])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_supervisor.py:48:11
+   |
+48 | async def test_iteration_ceiling_skips_the_model_entirely() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+49 |     provider = FakeLLMProvider(['{"agents": ["metrics_agent"], "reasoning": "x"}'])
+50 |     settings = _settings()
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_supervisor.py:58:11
+   |
+58 | async def test_supervisor_increments_iterations() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 |     provider = FakeLLMProvider(['{"agents": ["logs_agent"], "reasoning": "logs"}'])
+60 |     result = await build_supervisor(provider, _settings())(_state(iterations=1))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_supervisor.py:65:5
+   |
+64 | @pytest.mark.parametrize("agent", list(SPECIALISTS))
+65 | def test_specialists_are_exactly_the_two_data_agents(agent: AgentName) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+66 |     assert agent in {AgentName.METRICS, AgentName.LOGS}
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/agents/test_tool_loop.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/agents/test_tool_loop.py:1:1
+   |
+ 1 | / from datetime import UTC, datetime
+ 2 | | from enum import StrEnum
+ 3 | | from typing import Any
+ 4 | |
+ 5 | | import httpx
+ 6 | | from langchain_core.messages import AIMessage, ToolMessage
+ 7 | | from langchain_core.runnables import RunnableLambda
+ 8 | | from langchain_core.tools import BaseTool, StructuredTool
+ 9 | | from pydantic import BaseModel
+10 | |
+11 | | from incident_copilot.agents.tool_loop import run_tool_rounds
+12 | | from incident_copilot.llm.base import ChatMessage
+13 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+14 | | from incident_copilot.models.enums import LogLevel
+15 | | from incident_copilot.models.logs import LogEntry, LogFinding
+16 | | from incident_copilot.utils.exceptions import MetricsSourceError
+   | |________________________________________________________________^
+help: Organize imports
+   |
+5  | import httpx
+   - from langchain_core.messages import AIMessage, ToolMessage
+   - from langchain_core.runnables import RunnableLambda
+   - from langchain_core.tools import BaseTool, StructuredTool
+   - from pydantic import BaseModel
+   -
+6  | from incident_copilot.agents.tool_loop import run_tool_rounds
+--------------------------------------------------------------------------------
+11 | from incident_copilot.utils.exceptions import MetricsSourceError
+12 + from langchain_core.messages import AIMessage, ToolMessage
+13 + from langchain_core.runnables import RunnableLambda
+14 + from langchain_core.tools import BaseTool, StructuredTool
+15 + from pydantic import BaseModel
+16 |
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_tool_loop.py:19:7
+   |
+19 | class EchoArgs(BaseModel):
+   |       ^^^^^^^^
+20 |     value: str
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_tool_loop.py:23:7
+   |
+23 | class Level(StrEnum):
+   |       ^^^^^
+24 |     OK = "OK"
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/agents/test_tool_loop.py:27:7
+   |
+27 | class LeveledArgs(BaseModel):
+   |       ^^^^^^^^^^^
+28 |     level: Level
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_tool_loop.py:67:11
+   |
+67 | async def test_results_are_collected_from_every_round() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |     seen: list[str] = []
+69 |     provider = FakeLLMProvider(["done"], tool_rounds=[[_call("a")], [_call("b")]])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/agents/test_tool_loop.py:83:11
+   |
+83 | async def test_loop_stops_early_when_the_model_asks_for_nothing() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+84 |     seen: list[str] = []
+85 |     provider = FakeLLMProvider(["nothing needed"])
+   |
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/agents/test_tool_loop.py:119:5
+    |
+118 |   async def test_invalid_tool_call_args_are_recorded_not_raised() -> None:
+119 | /     """A hallucinated enum value fails schema validation before the tool body runs;
+120 | |     that must degrade the round like any other tool failure, not crash the node."""
+    | |___________________________________________________________________________________^
+121 |       seen: list[str] = []
+122 |       call = {"name": "leveled", "args": {"level": "bogus"}, "id": "c-1", "type": "tool_call"}
+    |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+   --> backend/tests/unit/agents/test_tool_loop.py:119:5
+    |
+118 |   async def test_invalid_tool_call_args_are_recorded_not_raised() -> None:
+119 | /     """A hallucinated enum value fails schema validation before the tool body runs;
+120 | |     that must degrade the round like any other tool failure, not crash the node."""
+    | |___________________________________________________________________________________^
+121 |       seen: list[str] = []
+122 |       call = {"name": "leveled", "args": {"level": "bogus"}, "id": "c-1", "type": "tool_call"}
+    |
+help: Move closing quotes to new line
+    |
+119 |     """A hallucinated enum value fails schema validation before the tool body runs;
+    -     that must degrade the round like any other tool failure, not crash the node."""
+120 +     that must degrade the round like any other tool failure, not crash the node.
+121 +     """
+122 |     seen: list[str] = []
+    |
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/agents/test_tool_loop.py:131:5
+    |
+130 |   async def test_an_unreachable_model_is_recorded_not_raised() -> None:
+131 | /     """The specialist runs inside the graph; letting a transport error escape here
+132 | |     aborts the whole investigation instead of degrading it."""
+    | |______________________________________________________________^
+133 |
+134 |       class DownProvider(FakeLLMProvider):
+    |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+   --> backend/tests/unit/agents/test_tool_loop.py:131:5
+    |
+130 |   async def test_an_unreachable_model_is_recorded_not_raised() -> None:
+131 | /     """The specialist runs inside the graph; letting a transport error escape here
+132 | |     aborts the whole investigation instead of degrading it."""
+    | |______________________________________________________________^
+133 |
+134 |       class DownProvider(FakeLLMProvider):
+    |
+help: Move closing quotes to new line
+    |
+131 |     """The specialist runs inside the graph; letting a transport error escape here
+    -     aborts the whole investigation instead of degrading it."""
+132 +     aborts the whole investigation instead of degrading it.
+133 +     """
+134 |
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/agents/test_tool_loop.py:148:11
+    |
+148 | async def test_followup_round_sees_dependency_and_sample_scope() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+149 |     finding = LogFinding(
+150 |         query="service:payment-service",
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/analysis/test_summarise.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_summarise.py:10:5
+   |
+10 | def test_rose_states_ratio_and_endpoints() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+11 |     text = render_summary("p95 latency", analyse(0.12, 0.63, LATENCY), LATENCY)
+12 |     assert text == "p95 latency rose 5.2x, from 0.12s to 0.63s"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_summarise.py:15:5
+   |
+15 | def test_dropped_states_percentage() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |     text = render_summary("p95 latency", analyse(0.60, 0.15, LATENCY), LATENCY)
+17 |     assert text == "p95 latency fell 75%, from 0.60s to 0.15s"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_summarise.py:20:5
+   |
+20 | def test_flat_avoids_any_ratio() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     text = render_summary("resident memory", analyse(512 * 1024**2, 513 * 1024**2, MEMORY), MEMORY)
+22 |     assert text == "resident memory held steady near 512.00MiB"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_summarise.py:26:5
+   |
+26 | def test_from_zero_never_renders_a_ratio() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     text = render_summary("5xx error rate", analyse(0.0, 0.153, ERROR_RATE), ERROR_RATE)
+28 |     assert text == (
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/analysis/test_thresholds.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/analysis/test_thresholds.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.analysis.thresholds import THRESHOLDS, analyse, quartile_means
+4 | | from incident_copilot.models.enums import MetricKind, TrendKind
+  | |_______________________________________________________________^
+5 |
+6 |   ERROR_RATE = THRESHOLDS[MetricKind.ERROR_RATE]
+  |
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.analysis.thresholds import THRESHOLDS, analyse, quartile_means
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:18:5
+   |
+18 | def test_tiny_emergence_below_epsilon_is_flat_and_quiet() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+19 |     result = analyse(0.0001, 0.0003, ERROR_RATE)
+20 |     assert result.trend is TrendKind.FLAT
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:37:5
+   |
+37 | def test_genuine_latency_regression_fires() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+38 |     result = analyse(0.12, 0.63, LATENCY)
+39 |     assert result.trend is TrendKind.ROSE
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:44:5
+   |
+44 | def test_both_values_zero_is_flat_with_zero_pct_change() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+45 |     result = analyse(0.0, 0.0, ERROR_RATE)
+46 |     assert result.trend is TrendKind.FLAT
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:50:5
+   |
+50 | def test_dropped_to_zero_is_minus_one_hundred_percent() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+51 |     result = analyse(0.5, 0.0, LATENCY)
+52 |     assert result.trend is TrendKind.DROPPED
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:57:5
+   |
+57 | def test_quartile_means_uses_first_and_last_quarter() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     baseline, current = quartile_means([1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 9.0, 9.0])
+59 |     assert baseline == pytest.approx(1.0)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/analysis/test_thresholds.py:63:5
+   |
+63 | def test_quartile_means_rejects_empty() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+64 |     with pytest.raises(ValueError, match="at least one sample"):
+65 |         quartile_means([])
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/api/test_routes.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/api/test_routes.py:1:1
+   |
+ 1 | / import asyncio
+ 2 | | from collections.abc import Awaitable, Callable
+ 3 | |
+ 4 | | import httpx
+ 5 | | from fastapi import FastAPI
+ 6 | |
+ 7 | | from incident_copilot.api.routes import build_router
+ 8 | | from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
+ 9 | | from incident_copilot.services.incident_service import InvestigationRequest
+10 | | from incident_copilot.utils.exceptions import InvestigationError
+   | |________________________________________________________________^
+11 |
+12 |   REPORT = IncidentReport(
+   |
+help: Organize imports
+  |
+5 | from fastapi import FastAPI
+  -
+6 | from incident_copilot.api.routes import build_router
+  |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/api/test_routes.py:27:7
+   |
+27 | class StubService:
+   |       ^^^^^^^^^^^
+28 |     def __init__(self, error: Exception | None = None) -> None:
+29 |         self.error = error
+   |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/api/test_routes.py:28:9
+   |
+27 | class StubService:
+28 |     def __init__(self, error: Exception | None = None) -> None:
+   |         ^^^^^^^^
+29 |         self.error = error
+30 |         self.seen: InvestigationRequest | None = None
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/api/test_routes.py:32:15
+   |
+30 |         self.seen: InvestigationRequest | None = None
+31 |
+32 |     async def investigate(self, request: InvestigationRequest) -> IncidentReport:
+   |               ^^^^^^^^^^^
+33 |         self.seen = request
+34 |         if self.error:
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/api/test_routes.py:48:11
+   |
+48 | async def test_investigation_returns_the_report() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+49 |     async with _client(StubService()) as client:
+50 |         response = await client.post(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/api/test_routes.py:60:11
+   |
+60 | async def test_request_body_is_validated() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 |     async with _client(StubService()) as client:
+62 |         response = await client.post("/api/v1/investigations", json={"query": ""})
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/api/test_routes.py:66:11
+   |
+66 | async def test_request_reaches_the_service_intact() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+67 |     service = StubService()
+68 |     async with _client(service) as client:
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/api/test_routes.py:79:11
+   |
+79 | async def test_failed_investigation_maps_to_503() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+80 |     service = StubService(error=InvestigationError("no report produced"))
+81 |     async with _client(service) as client:
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/api/test_routes.py:88:11
+   |
+88 | async def test_health_reports_each_dependency() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+89 |     async def up() -> bool:
+90 |         return True
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/api/test_routes.py:103:11
+    |
+103 | async def test_health_is_ok_when_everything_is_reachable() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+104 |     async def up() -> bool:
+105 |         return True
+    |
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/api/test_routes.py:115:5
+    |
+114 |   async def test_health_probes_run_concurrently() -> None:
+115 | /     """Probes have a per-request timeout each, so running them one after another puts
+116 | |     /health past a load balancer's patience. Both probes here wait on a barrier of two:
+117 | |     concurrent execution releases it, sequential execution cannot and times out.
+118 | |     """
+    | |_______^
+119 |       barrier = asyncio.Barrier(2)
+    |
+help: Insert single blank line
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/api/test_routes.py:133:5
+    |
+132 |   async def test_health_is_degraded_when_a_probe_raises() -> None:
+133 | /     """A probe that raises means the dependency is not reachable; it must not turn
+134 | |     /health itself into a 500."""
+    | |_________________________________^
+135 |
+136 |       async def boom() -> bool:
+    |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+   --> backend/tests/unit/api/test_routes.py:133:5
+    |
+132 |   async def test_health_is_degraded_when_a_probe_raises() -> None:
+133 | /     """A probe that raises means the dependency is not reachable; it must not turn
+134 | |     /health itself into a 500."""
+    | |_________________________________^
+135 |
+136 |       async def boom() -> bool:
+    |
+help: Move closing quotes to new line
+    |
+133 |     """A probe that raises means the dependency is not reachable; it must not turn
+    -     /health itself into a 500."""
+134 +     /health itself into a 500.
+135 +     """
+136 |
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/config/test_settings.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/config/test_settings.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.config.settings import Settings
+4 | | from incident_copilot.models.enums import LLMProviderName
+  | |_________________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.config.settings import Settings
+  |
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/config/test_settings.py:7:5
+  |
+7 | def test_defaults_select_groq_with_ollama_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 |     monkeypatch.delenv("LLM_PROVIDER", raising=False)
+9 |     settings = Settings(_env_file=None)
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/config/test_settings.py:17:5
+   |
+17 | def test_ollama_does_not_require_cloud_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+18 |     monkeypatch.delenv("GROQ_API_KEY", raising=False)
+19 |     assert Settings(_env_file=None, llm_provider="ollama").llm_provider is LLMProviderName.OLLAMA
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/config/test_settings.py:23:5
+   |
+22 | @pytest.mark.parametrize("fallback", ["groq", "fake", "invalid"])
+23 | def test_invalid_fallback_is_rejected(fallback: str) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 |     with pytest.raises(ValueError, match="llm_fallback_provider"):
+25 |         Settings(_env_file=None, llm_fallback_provider=fallback)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/config/test_settings.py:28:5
+   |
+28 | def test_env_overrides_provider(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+29 |     monkeypatch.setenv("LLM_PROVIDER", "groq")
+30 |     monkeypatch.setenv("GROQ_API_KEY", "test-key")
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/config/test_settings.py:36:5
+   |
+36 | def test_groq_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     monkeypatch.setenv("LLM_PROVIDER", "groq")
+38 |     monkeypatch.delenv("GROQ_API_KEY", raising=False)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/config/test_settings.py:43:5
+   |
+43 | def test_langsmith_tracing_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 |     monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+45 |     with pytest.raises(ValueError, match="LANGSMITH_API_KEY"):
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/conftest.py:3:1
+  |
+1 |   """Keep offline tests independent of local credentials and tracing configuration."""
+2 |
+3 | / import pytest
+4 | |
+5 | | from incident_copilot.config.settings import Settings
+  | |_____________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  -
+4 | from incident_copilot.config.settings import Settings
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/conftest.py:17:5
+   |
+17 | def pytest_configure(config: pytest.Config) -> None:
+   |     ^^^^^^^^^^^^^^^^
+18 |     # Runs before collection imports main.py and builds its module-level app.
+19 |     patch = pytest.MonkeyPatch()
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/conftest.py:26:5
+   |
+25 | @pytest.fixture(autouse=True)
+26 | def isolated_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^
+27 |     _set_test_environment(monkeypatch)
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/connectors/test_elasticsearch.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/connectors/test_elasticsearch.py:1:1
+  |
+1 | / from typing import Any
+2 | |
+3 | | import pytest
+4 | |
+5 | | from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+6 | | from incident_copilot.models.enums import LogLevel
+7 | | from incident_copilot.models.logs import LogSearchCriteria
+8 | | from incident_copilot.models.metrics import TimeWindow
+9 | | from incident_copilot.utils.exceptions import LogSourceError
+  | |____________________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  -
+4 | from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+  |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/connectors/test_elasticsearch.py:15:9
+   |
+13 |     """Minimal stand-in for AsyncElasticsearch."""
+14 |
+15 |     def __init__(self, response: dict[str, Any] | Exception) -> None:
+   |         ^^^^^^^^
+16 |         self.response = response
+17 |         self.last_body: dict[str, Any] | None = None
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/connectors/test_elasticsearch.py:19:15
+   |
+17 |         self.last_body: dict[str, Any] | None = None
+18 |
+19 |     async def search(self, *, index: str, body: dict[str, Any]) -> dict[str, Any]:
+   |               ^^^^^^
+20 |         self.last_body = body
+21 |         if isinstance(self.response, Exception):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_elasticsearch.py:38:11
+   |
+38 | async def test_search_maps_hits_and_total() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     stub = StubES({"hits": {"total": {"value": 1043}, "hits": [_hit("NullPointerException")]}})
+40 |     connector = ElasticsearchConnector(client=stub, index="app-logs")  # type: ignore[arg-type]  # stub
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_elasticsearch.py:56:11
+   |
+56 | async def test_level_filter_is_applied_to_the_query() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     stub = StubES({"hits": {"total": {"value": 0}, "hits": []}})
+58 |     connector = ElasticsearchConnector(client=stub, index="app-logs")  # type: ignore[arg-type]  # stub
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_elasticsearch.py:75:11
+   |
+75 | async def test_backend_failure_is_wrapped() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     stub = StubES(RuntimeError("connection refused"))
+77 |     connector = ElasticsearchConnector(client=stub, index="app-logs")  # type: ignore[arg-type]  # stub
+   |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/connectors/test_elasticsearch.py:88:9
+   |
+86 |     """Stub that records whether the client was closed."""
+87 |
+88 |     def __init__(self) -> None:
+   |         ^^^^^^^^
+89 |         super().__init__({"hits": {"hits": [], "total": {"value": 0}}})
+90 |         self.closed = False
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/connectors/test_elasticsearch.py:92:15
+   |
+90 |         self.closed = False
+91 |
+92 |     async def close(self) -> None:
+   |               ^^^^^
+93 |         self.closed = True
+   |
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/connectors/test_elasticsearch.py:97:5
+    |
+ 96 |   async def test_aclose_releases_the_underlying_client() -> None:
+ 97 | /     """The app builds one connector at startup and must hand its session back on
+ 98 | |     shutdown; without this Elasticsearch logs an unclosed session on exit."""
+    | |_____________________________________________________________________________^
+ 99 |       client = ClosableES()
+100 |       connector = ElasticsearchConnector(client=client, index="logs")  # type: ignore[arg-type]
+    |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+   --> backend/tests/unit/connectors/test_elasticsearch.py:97:5
+    |
+ 96 |   async def test_aclose_releases_the_underlying_client() -> None:
+ 97 | /     """The app builds one connector at startup and must hand its session back on
+ 98 | |     shutdown; without this Elasticsearch logs an unclosed session on exit."""
+    | |_____________________________________________________________________________^
+ 99 |       client = ClosableES()
+100 |       connector = ElasticsearchConnector(client=client, index="logs")  # type: ignore[arg-type]
+    |
+help: Move closing quotes to new line
+    |
+97  |     """The app builds one connector at startup and must hand its session back on
+    -     shutdown; without this Elasticsearch logs an unclosed session on exit."""
+98  +     shutdown; without this Elasticsearch logs an unclosed session on exit.
+99  +     """
+100 |     client = ClosableES()
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/connectors/test_prometheus.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/connectors/test_prometheus.py:1:1
+  |
+1 | / import httpx
+2 | | import pytest
+3 | | import respx
+4 | |
+5 | | from incident_copilot.connectors.prometheus_connector import PrometheusConnector
+6 | | from incident_copilot.models.metrics import TimeWindow
+7 | | from incident_copilot.utils.exceptions import MetricsSourceError
+  | |________________________________________________________________^
+8 |
+9 |   BASE = "http://prometheus:9090"
+  |
+help: Organize imports
+  |
+3 | import respx
+  -
+4 | from incident_copilot.connectors.prometheus_connector import PrometheusConnector
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_prometheus.py:17:11
+   |
+16 | @respx.mock
+17 | async def test_query_range_parses_matrix_response() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+18 |     respx.get(f"{BASE}/api/v1/query_range").mock(
+19 |         return_value=httpx.Response(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_prometheus.py:43:11
+   |
+42 | @respx.mock
+43 | async def test_prometheus_error_status_raises() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 |     respx.get(f"{BASE}/api/v1/query_range").mock(
+45 |         return_value=httpx.Response(200, json={"status": "error", "error": "parse error"})
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_prometheus.py:52:11
+   |
+51 | @respx.mock
+52 | async def test_http_failure_is_wrapped() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+53 |     respx.get(f"{BASE}/api/v1/query_range").mock(return_value=httpx.Response(503))
+54 |     with pytest.raises(MetricsSourceError, match="503"):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_prometheus.py:59:11
+   |
+58 | @respx.mock
+59 | async def test_list_services_reads_label_values() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+60 |     respx.get(f"{BASE}/api/v1/label/service/values").mock(
+61 |         return_value=httpx.Response(
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/connectors/test_prometheus.py:69:5
+   |
+68 |   async def test_aclose_releases_the_underlying_client() -> None:
+69 | /     """The app builds one connector at startup and must hand its socket back on
+70 | |     shutdown; without this the client leaks on every reload."""
+   | |_______________________________________________________________^
+71 |       client = httpx.AsyncClient()
+72 |       connector = PrometheusConnector(client=client, base_url=BASE)
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/connectors/test_prometheus.py:69:5
+   |
+68 |   async def test_aclose_releases_the_underlying_client() -> None:
+69 | /     """The app builds one connector at startup and must hand its socket back on
+70 | |     shutdown; without this the client leaks on every reload."""
+   | |_______________________________________________________________^
+71 |       client = httpx.AsyncClient()
+72 |       connector = PrometheusConnector(client=client, base_url=BASE)
+   |
+help: Move closing quotes to new line
+   |
+69 |     """The app builds one connector at startup and must hand its socket back on
+   -     shutdown; without this the client leaks on every reload."""
+70 +     shutdown; without this the client leaks on every reload.
+71 +     """
+72 |     client = httpx.AsyncClient()
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/connectors/test_promql.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/connectors/test_promql.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.connectors.promql import build_promql
+4 | | from incident_copilot.models.enums import MetricKind
+5 | | from incident_copilot.utils.exceptions import MetricsSourceError
+  | |________________________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.connectors.promql import build_promql
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_promql.py:8:5
+   |
+ 8 | def test_latency_uses_histogram_quantile() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 9 |     query = build_promql(MetricKind.LATENCY_P95, "cart-service")
+10 |     assert query == (
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_promql.py:16:5
+   |
+16 | def test_error_rate_is_a_ratio_of_rates() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     query = build_promql(MetricKind.ERROR_RATE, "cart-service")
+18 |     assert query.startswith('sum(rate(http_requests_total{service="cart-service",status=~"5.."}')
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/connectors/test_promql.py:22:5
+   |
+22 | def test_every_metric_kind_has_a_template() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+23 |     for kind in MetricKind:
+24 |         assert build_promql(kind, "svc")
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/demo/test_curves.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/demo/test_curves.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.demo.curves import time_grid, value_at
+4 | | from incident_copilot.demo.scenarios import MetricShape
+  | |_______________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.demo.curves import time_grid, value_at
+  |
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/demo/test_curves.py:7:5
+  |
+7 | def test_time_grid_is_ascending_epoch_seconds_ending_in_the_past() -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 |     grid = time_grid(hours=2, step_seconds=60)
+9 |     assert len(grid) == 120
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:14:5
+   |
+14 | def test_time_grid_step_is_honoured() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |     grid = time_grid(hours=1, step_seconds=30)
+16 |     assert grid[1] - grid[0] == 30
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:19:5
+   |
+19 | def test_steady_ignores_progress() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     assert value_at(MetricShape.STEADY, 5.0, 99.0, 0.9, 0.5) == 5.0
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:23:5
+   |
+23 | def test_ramp_is_flat_before_anomaly_start() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 |     assert value_at(MetricShape.RAMP, 1.0, 5.0, 0.2, 0.5) == 1.0
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:27:5
+   |
+27 | def test_ramp_reaches_peak_at_end() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |     assert value_at(MetricShape.RAMP, 1.0, 5.0, 1.0, 0.5) == pytest.approx(5.0)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:31:5
+   |
+31 | def test_ramp_is_monotonic_after_anomaly_start() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+32 |     values = [value_at(MetricShape.RAMP, 1.0, 5.0, p / 100, 0.5) for p in range(101)]
+33 |     assert values == sorted(values)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:36:5
+   |
+36 | def test_step_jumps_at_anomaly_start() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     assert value_at(MetricShape.STEP, 0.0, 0.15, 0.59, 0.6) == 0.0
+38 |     assert value_at(MetricShape.STEP, 0.0, 0.15, 0.61, 0.6) == pytest.approx(0.15)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_curves.py:41:5
+   |
+41 | def test_sawtooth_resets_and_stays_within_bounds() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+42 |     values = [value_at(MetricShape.SAWTOOTH, 380.0, 1900.0, p / 200, 0.1) for p in range(201)]
+43 |     assert min(values) >= 380.0
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/demo/test_es_index.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_es_index.py:17:5
+   |
+17 | def test_message_is_text_so_keyword_search_can_match_substrings() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+18 |     assert _prop("message")["type"] == "text"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_es_index.py:21:5
+   |
+21 | def test_timestamp_is_a_date() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+22 |     assert _prop("@timestamp")["type"] == "date"
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_es_index.py:25:5
+   |
+25 | def test_bulk_body_pairs_an_action_line_with_each_document() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+26 |     docs = [{"service": "cart-service"}, {"service": "payment-service"}]
+27 |     lines = bulk_body("app-logs", docs).strip().split("\n")
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/demo/test_logs_render.py:1:1
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/demo/test_logs_render.py:7:5
+  |
+7 | def test_documents_carry_the_fields_the_connector_reads() -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+8 |     docs = render_log_documents(get_scenario(ScenarioName.BAD_DEPLOY))
+9 |     assert docs
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:14:5
+   |
+14 | def test_timestamps_parse_as_iso8601() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |     docs = render_log_documents(get_scenario(ScenarioName.MEMORY_LEAK))
+16 |     datetime.fromisoformat(docs[0]["@timestamp"])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:19:5
+   |
+19 | def test_baseline_info_traffic_exists_so_error_ratio_is_meaningful() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     docs = render_log_documents(get_scenario(ScenarioName.BAD_DEPLOY))
+21 |     assert any(d["level"] == "INFO" for d in docs)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:24:5
+   |
+24 | def test_memory_leak_emits_out_of_memory_errors() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+25 |     docs = render_log_documents(get_scenario(ScenarioName.MEMORY_LEAK))
+26 |     assert any("OutOfMemoryError" in d["message"] for d in docs)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:30:5
+   |
+30 | def test_slow_dependency_names_the_upstream_in_the_message() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 |     docs = render_log_documents(get_scenario(ScenarioName.SLOW_DEPENDENCY))
+32 |     assert any("fraud-api" in d["message"] for d in docs)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:35:5
+   |
+35 | def test_bad_deploy_errors_are_tagged_with_the_new_version() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+36 |     docs = render_log_documents(get_scenario(ScenarioName.BAD_DEPLOY))
+37 |     npes = [d for d in docs if "NullPointerException" in d["message"]]
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_logs_render.py:42:5
+   |
+42 | def test_documents_are_sorted_by_timestamp() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     docs = render_log_documents(get_scenario(ScenarioName.SLOW_DEPENDENCY))
+44 |     stamps = [d["@timestamp"] for d in docs]
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/demo/test_metrics_render.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:16:5
+   |
+16 | def test_output_is_openmetrics_with_eof_terminator() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+18 |     assert text.endswith("# EOF\n")
+   |
+
+D403 [*] First word of the docstring should be capitalized: `promtool` -> `Promtool`
+  --> backend/tests/unit/demo/test_metrics_render.py:23:5
+   |
+22 | def test_timestamps_are_epoch_seconds_not_milliseconds() -> None:
+23 |     """promtool reads OpenMetrics timestamps as seconds; ms yields one block per sample."""
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+25 |     _, _, ts = _samples(text, "process_resident_memory_bytes")[0]
+   |
+help: Capitalize `promtool` to `Promtool`
+   |
+22 | def test_timestamps_are_epoch_seconds_not_milliseconds() -> None:
+   -     """promtool reads OpenMetrics timestamps as seconds; ms yields one block per sample."""
+23 +     """Promtool reads OpenMetrics timestamps as seconds; ms yields one block per sample."""
+24 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:29:5
+   |
+29 | def test_emits_every_metric_the_promql_templates_query() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+30 |     text = render_openmetrics(get_scenario(ScenarioName.MEMORY_LEAK))
+31 |     for metric in (
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:40:5
+   |
+40 | def test_latency_histogram_has_every_bucket_including_inf() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+41 |     text = render_openmetrics(get_scenario(ScenarioName.SLOW_DEPENDENCY))
+42 |     first_ts = _samples(text, "http_request_duration_seconds_bucket")[0][2]
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:52:5
+   |
+52 | def test_histogram_buckets_are_cumulative_and_monotonic_over_time() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+53 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+54 |     inf = [
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:65:5
+   |
+65 | def test_counters_never_decrease_for_error_requests() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+66 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+67 |     errors = [
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_metrics_render.py:92:5
+   |
+92 | def test_version_label_flips_for_the_bad_deploy() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+93 |     text = render_openmetrics(get_scenario(ScenarioName.BAD_DEPLOY))
+94 |     assert 'version="v1.4.2"' in text
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/demo/test_scenarios.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/demo/test_scenarios.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.demo.scenarios import SCENARIOS, ScenarioName, get_scenario
+  | |_________________________________________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.demo.scenarios import SCENARIOS, ScenarioName, get_scenario
+  |
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/demo/test_scenarios.py:6:5
+  |
+6 | def test_three_scenarios_are_defined() -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 |     assert {s.name for s in SCENARIOS} == {
+8 |         ScenarioName.MEMORY_LEAK,
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_scenarios.py:14:5
+   |
+14 | def test_every_scenario_has_ground_truth_and_a_culprit_service() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |     for scenario in SCENARIOS:
+16 |         assert scenario.ground_truth
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_scenarios.py:27:5
+   |
+27 | def test_bad_deploy_flips_version_label() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |     scenario = get_scenario(ScenarioName.BAD_DEPLOY)
+29 |     cart = next(p for p in scenario.services if p.service == "cart-service")
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/demo/test_scenarios.py:43:5
+   |
+43 | def test_get_scenario_rejects_unknown_name() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 |     with pytest.raises(KeyError, match="unknown scenario"):
+45 |         get_scenario("not-a-scenario")  # type: ignore[arg-type]  # deliberate
+   |
+
+D104 Missing docstring in public package
+--> backend/tests/unit/evaluation/__init__.py:1:1
+
+D100 Missing docstring in public module
+--> backend/tests/unit/evaluation/test_eval_runner.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/evaluation/test_eval_runner.py:1:1
+   |
+ 1 | / import pytest
+ 2 | |
+ 3 | | from incident_copilot.demo.scenarios import ScenarioName
+ 4 | | from incident_copilot.evaluation.eval_runner import (
+ 5 | |     RunResult,
+ 6 | |     _print_results,
+ 7 | |     run_scenario,
+ 8 | |     score_run,
+ 9 | | )
+10 | | from incident_copilot.evaluation.scenarios import EvalScenario
+11 | | from incident_copilot.models.enums import EvidenceSource
+12 | | from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
+13 | | from incident_copilot.services.incident_service import InvestigationRequest
+14 | | from incident_copilot.utils.exceptions import InvestigationError
+   | |________________________________________________________________^
+15 |
+16 |   SCENARIO = EvalScenario(
+   |
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.demo.scenarios import ScenarioName
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:42:5
+   |
+42 | def test_culprit_in_title_scores_correct() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     assert score_run(_report(title="cart-service bad deploy"), "cart-service") is True
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:46:5
+   |
+46 | def test_culprit_in_rationale_scores_correct() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     report = _report(title="x", rationale="cart-service rolled a bad version")
+48 |     assert score_run(report, "cart-service") is True
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:51:5
+   |
+51 | def test_culprit_in_evidence_detail_scores_correct() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+52 |     report = _report(title="x", detail="cart-service error rate rose")
+53 |     assert score_run(report, "cart-service") is True
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:56:5
+   |
+56 | def test_match_is_case_insensitive() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     assert score_run(_report(title="CART-SERVICE issue"), "cart-service") is True
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:60:5
+   |
+60 | def test_culprit_absent_scores_incorrect() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 |     assert score_run(_report(title="fraud-api issue"), "cart-service") is False
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:64:5
+   |
+64 | def test_empty_likely_causes_scores_incorrect() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |     report = IncidentReport(summary="s", likely_causes=(), next_steps=(), confidence=0.0)
+66 |     assert score_run(report, "cart-service") is False
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:85:11
+   |
+85 | async def test_run_scenario_scores_a_successful_investigation() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     service = _StubService(report=_report(title="cart-service bad deploy"))
+87 |     result = await run_scenario(service, SCENARIO)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_eval_runner.py:97:11
+   |
+97 | async def test_run_scenario_records_an_investigation_error_as_incorrect() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+98 |     service = _StubService(error=InvestigationError("no report produced"))
+99 |     result = await run_scenario(service, SCENARIO)
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/evaluation/test_eval_runner.py:106:11
+    |
+106 | async def test_run_scenario_reports_no_causes_when_the_report_is_empty() -> None:
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+107 |     empty = IncidentReport(summary="s", likely_causes=(), next_steps=(), confidence=0.0)
+108 |     service = _StubService(report=empty)
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/evaluation/test_eval_runner.py:115:5
+    |
+115 | def test_print_results_reports_per_run_per_scenario_and_overall(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+116 |     capsys: pytest.CaptureFixture[str],
+117 | ) -> None:
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/evaluation/test_scenarios.py:1:1
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/evaluation/test_scenarios.py:5:5
+  |
+5 | def test_every_scenario_name_is_covered_exactly_once() -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+6 |     assert {s.name for s in SCENARIOS} == set(ScenarioName)
+7 |     assert len(SCENARIOS) == len(set(ScenarioName))
+  |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/evaluation/test_scenarios.py:11:5
+   |
+10 |   def test_slow_dependency_culprit_is_the_upstream_not_the_target() -> None:
+11 | /     """The one scenario that actually tests correlation rather than the model just
+12 | |     repeating back the service name it was asked about."""
+   | |__________________________________________________________^
+13 |       slow_dep = next(s for s in SCENARIOS if s.name == ScenarioName.SLOW_DEPENDENCY)
+14 |       assert slow_dep.target_service == "payment-service"
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/evaluation/test_scenarios.py:11:5
+   |
+10 |   def test_slow_dependency_culprit_is_the_upstream_not_the_target() -> None:
+11 | /     """The one scenario that actually tests correlation rather than the model just
+12 | |     repeating back the service name it was asked about."""
+   | |__________________________________________________________^
+13 |       slow_dep = next(s for s in SCENARIOS if s.name == ScenarioName.SLOW_DEPENDENCY)
+14 |       assert slow_dep.target_service == "payment-service"
+   |
+help: Move closing quotes to new line
+   |
+11 |     """The one scenario that actually tests correlation rather than the model just
+   -     repeating back the service name it was asked about."""
+12 +     repeating back the service name it was asked about.
+13 +     """
+14 |     slow_dep = next(s for s in SCENARIOS if s.name == ScenarioName.SLOW_DEPENDENCY)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/evaluation/test_scenarios.py:18:5
+   |
+18 | def test_bad_deploy_and_memory_leak_culprit_is_their_own_target_service() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+19 |     for name in (ScenarioName.BAD_DEPLOY, ScenarioName.MEMORY_LEAK):
+20 |         scenario = next(s for s in SCENARIOS if s.name == name)
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_concrete_providers.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/llm/test_concrete_providers.py:1:1
+  |
+1 | / from collections.abc import Sequence
+2 | | from typing import Any
+3 | |
+4 | | from langchain_core.messages import AIMessage, BaseMessage
+5 | |
+6 | | from incident_copilot.llm.base import ChatMessage
+7 | | from incident_copilot.llm.ollama_provider import OllamaProvider
+  | |_______________________________________________________________^
+help: Organize imports
+  |
+3 |
+  - from langchain_core.messages import AIMessage, BaseMessage
+  -
+4 | from incident_copilot.llm.base import ChatMessage
+5 | from incident_copilot.llm.ollama_provider import OllamaProvider
+6 + from langchain_core.messages import AIMessage, BaseMessage
+7 |
+  |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/llm/test_concrete_providers.py:13:9
+   |
+11 |     """Minimal stand-in for a LangChain chat model."""
+12 |
+13 |     def __init__(self, reply: str) -> None:
+   |         ^^^^^^^^
+14 |         self.reply = reply
+15 |         self.received: list[Sequence[BaseMessage]] = []
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/llm/test_concrete_providers.py:17:15
+   |
+15 |         self.received: list[Sequence[BaseMessage]] = []
+16 |
+17 |     async def ainvoke(self, messages: Sequence[BaseMessage], **_: Any) -> AIMessage:
+   |               ^^^^^^^
+18 |         self.received.append(messages)
+19 |         return AIMessage(content=self.reply)
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/llm/test_concrete_providers.py:21:9
+   |
+19 |         return AIMessage(content=self.reply)
+20 |
+21 |     def bind_tools(self, tools: Any) -> Any:
+   |         ^^^^^^^^^^
+22 |         return self
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_concrete_providers.py:25:11
+   |
+25 | async def test_complete_returns_text_and_maps_roles() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+26 |     chat = StubChat("all good")
+27 |     provider = OllamaProvider(chat=chat, json_chat=chat)  # type: ignore[arg-type]  # stub
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_concrete_providers.py:38:11
+   |
+38 | async def test_generate_json_uses_the_json_configured_client() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     text_chat = StubChat("prose")
+40 |     json_chat = StubChat('{"ok": true}')
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_factory.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/llm/test_factory.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.config.settings import Settings
+4 | | from incident_copilot.llm.factory import build_llm_provider
+5 | | from incident_copilot.llm.fallback_provider import FallbackProvider
+6 | | from incident_copilot.llm.groq_provider import GroqProvider
+7 | | from incident_copilot.llm.ollama_provider import OllamaProvider
+8 | | from incident_copilot.models.enums import LLMProviderName
+9 | | from incident_copilot.utils.exceptions import ConfigurationError
+  | |________________________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.config.settings import Settings
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_factory.py:19:5
+   |
+19 | def test_default_factory_builds_groq_with_ollama_fallback() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     provider = build_llm_provider(Settings(_env_file=None))
+21 |     assert isinstance(provider, FallbackProvider)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_factory.py:26:5
+   |
+26 | def test_fallback_can_be_disabled() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     provider = build_llm_provider(Settings(_env_file=None, llm_fallback_provider="none"))
+28 |     assert isinstance(provider, GroqProvider)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_factory.py:31:5
+   |
+31 | def test_manual_ollama_remains_available() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+32 |     provider = build_llm_provider(Settings(_env_file=None, llm_provider="ollama"))
+33 |     assert isinstance(provider, OllamaProvider)
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_fake_tool_calls.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/llm/test_fake_tool_calls.py:1:1
+  |
+1 | / import asyncio
+2 | | from typing import Any
+3 | |
+4 | | from langchain_core.messages import HumanMessage
+5 | | from langchain_core.tools import BaseTool, StructuredTool
+6 | | from pydantic import BaseModel
+7 | |
+8 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+  | |______________________________________________________________^
+help: Organize imports
+  |
+3 |
+4 + from incident_copilot.llm.fake_provider import FakeLLMProvider
+5 | from langchain_core.messages import HumanMessage
+6 | from langchain_core.tools import BaseTool, StructuredTool
+7 | from pydantic import BaseModel
+  -
+  - from incident_copilot.llm.fake_provider import FakeLLMProvider
+8 |
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fake_tool_calls.py:58:11
+   |
+58 | async def test_second_round_returns_a_plain_message_so_the_loop_terminates() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 |     provider = FakeLLMProvider(["all done"], tool_rounds=[[_call("get_service_metric")]])
+60 |     runnable = provider.bind_tools(METRIC_TOOLS)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fake_tool_calls.py:69:11
+   |
+69 | async def test_a_round_naming_an_unbound_tool_is_never_served() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+70 |     provider = FakeLLMProvider(["done"], tool_rounds=[[_call("search_logs")]])
+71 |     message = await provider.bind_tools(METRIC_TOOLS).ainvoke([HumanMessage(content="go")])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fake_tool_calls.py:75:11
+   |
+75 | async def test_bind_tools_without_a_script_never_requests_tools() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     provider = FakeLLMProvider(["nothing to do"])
+77 |     message = await provider.bind_tools(METRIC_TOOLS).ainvoke([HumanMessage(content="go")])
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/llm/test_fake_tool_calls.py:82:5
+   |
+81 |   async def test_one_agents_rounds_are_served_in_order_despite_interleaving() -> None:
+82 | /     """A specialist needing two rounds must get round 1 first, even with another
+83 | |     agent's round sitting between them in the script."""
+   | |________________________________________________________^
+84 |       first = {"name": "get_service_metric", "args": {"n": 1}, "id": "1", "type": "tool_call"}
+85 |       second = {"name": "get_service_metric", "args": {"n": 2}, "id": "2", "type": "tool_call"}
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/llm/test_fake_tool_calls.py:82:5
+   |
+81 |   async def test_one_agents_rounds_are_served_in_order_despite_interleaving() -> None:
+82 | /     """A specialist needing two rounds must get round 1 first, even with another
+83 | |     agent's round sitting between them in the script."""
+   | |________________________________________________________^
+84 |       first = {"name": "get_service_metric", "args": {"n": 1}, "id": "1", "type": "tool_call"}
+85 |       second = {"name": "get_service_metric", "args": {"n": 2}, "id": "2", "type": "tool_call"}
+   |
+help: Move closing quotes to new line
+   |
+82 |     """A specialist needing two rounds must get round 1 first, even with another
+   -     agent's round sitting between them in the script."""
+83 +     agent's round sitting between them in the script.
+84 +     """
+85 |     first = {"name": "get_service_metric", "args": {"n": 1}, "id": "1", "type": "tool_call"}
+   |
+
+D205 1 blank line required between summary line and description
+   --> backend/tests/unit/llm/test_fake_tool_calls.py:97:5
+    |
+ 96 |   async def test_concurrent_claims_never_serve_an_unbound_round() -> None:
+ 97 | /     """Regression: specialists run concurrently and the lambda body runs in a worker
+ 98 | |     thread, so an unguarded scan-then-pop can hand a caller another agent's round."""
+    | |_____________________________________________________________________________________^
+ 99 |       provider = FakeLLMProvider(
+100 |           ["done"], tool_rounds=[[_call("get_service_metric")], [_call("search_logs")]]
+    |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+   --> backend/tests/unit/llm/test_fake_tool_calls.py:97:5
+    |
+ 96 |   async def test_concurrent_claims_never_serve_an_unbound_round() -> None:
+ 97 | /     """Regression: specialists run concurrently and the lambda body runs in a worker
+ 98 | |     thread, so an unguarded scan-then-pop can hand a caller another agent's round."""
+    | |_____________________________________________________________________________________^
+ 99 |       provider = FakeLLMProvider(
+100 |           ["done"], tool_rounds=[[_call("get_service_metric")], [_call("search_logs")]]
+    |
+help: Move closing quotes to new line
+    |
+97  |     """Regression: specialists run concurrently and the lambda body runs in a worker
+    -     thread, so an unguarded scan-then-pop can hand a caller another agent's round."""
+98  +     thread, so an unguarded scan-then-pop can hand a caller another agent's round.
+99  +     """
+100 |     provider = FakeLLMProvider(
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_fallback_provider.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/llm/test_fallback_provider.py:1:1
+   |
+ 1 | / import asyncio
+ 2 | | from unittest.mock import AsyncMock
+ 3 | |
+ 4 | | import pytest
+ 5 | | from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+ 6 | | from langchain_core.runnables import RunnableLambda
+ 7 | | from pydantic import BaseModel
+ 8 | |
+ 9 | | from incident_copilot.llm.base import ChatMessage
+10 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+11 | | from incident_copilot.llm.fallback_provider import FallbackProvider
+12 | | from incident_copilot.utils.exceptions import LLMProviderError
+   | |______________________________________________________________^
+help: Organize imports
+   |
+4  | import pytest
+   - from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+   - from langchain_core.runnables import RunnableLambda
+   - from pydantic import BaseModel
+   -
+5  | from incident_copilot.llm.base import ChatMessage
+6  | from incident_copilot.llm.fake_provider import FakeLLMProvider
+7  | from incident_copilot.llm.fallback_provider import FallbackProvider
+8  | from incident_copilot.utils.exceptions import LLMProviderError
+9  + from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+10 + from langchain_core.runnables import RunnableLambda
+11 + from pydantic import BaseModel
+12 |
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/llm/test_fallback_provider.py:15:7
+   |
+15 | class Answer(BaseModel):
+   |       ^^^^^^
+16 |     answer: str
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:19:5
+   |
+19 | def providers():
+   |     ^^^^^^^^^
+20 |     primary = FakeLLMProvider(["unused"])
+21 |     fallback = FakeLLMProvider(["unused"])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:25:11
+   |
+25 | async def test_success_does_not_contact_fallback():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+26 |     primary, fallback, provider = providers()
+27 |     primary.complete = AsyncMock(return_value="cloud")
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:33:11
+   |
+33 | async def test_text_failure_switches_once():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+34 |     primary, fallback, provider = providers()
+35 |     primary.complete = AsyncMock(side_effect=LLMProviderError("unavailable"))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:42:11
+   |
+42 | async def test_invalid_structured_output_exhausts_repairs_then_switches():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     primary = FakeLLMProvider(["bad JSON", "bad again"])
+44 |     fallback = FakeLLMProvider(['{"answer":"local"}'])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:49:11
+   |
+49 | async def test_tool_fallback_preserves_history_ids_and_config():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 |     primary, fallback, provider = providers()
+51 |     seen = []
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:74:11
+   |
+74 | async def test_both_providers_fail_with_clear_error():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+75 |     primary, fallback, provider = providers()
+76 |     primary.complete = AsyncMock(side_effect=LLMProviderError("cloud down"))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_provider.py:85:11
+   |
+84 | @pytest.mark.parametrize("error", [asyncio.CancelledError(), ValueError("coding error")])
+85 | async def test_cancellation_and_unexpected_errors_do_not_trigger_fallback(error):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     primary, fallback, provider = providers()
+87 |     primary.complete = AsyncMock(side_effect=error)
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/llm/test_fallback_transport.py:3:1
+   |
+ 1 |   """Exercise real provider adapters with simulated HTTP responses, without inference."""
+ 2 |
+ 3 | / import asyncio
+ 4 | | import json
+ 5 | | from types import SimpleNamespace
+ 6 | |
+ 7 | | import httpx
+ 8 | | import pytest
+ 9 | | import respx
+10 | | from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+11 | | from langchain_core.tools import StructuredTool
+12 | | from pydantic import BaseModel
+13 | |
+14 | | from incident_copilot.config.settings import Settings
+15 | | from incident_copilot.llm.base import ChatMessage
+16 | | from incident_copilot.llm.factory import build_llm_provider
+17 | | from incident_copilot.utils.exceptions import LLMProviderError
+   | |______________________________________________________________^
+18 |
+19 |   GROQ = "https://api.groq.com/openai/v1/chat/completions"
+   |
+help: Organize imports
+   |
+9  | import respx
+   - from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+   - from langchain_core.tools import StructuredTool
+   - from pydantic import BaseModel
+   -
+10 | from incident_copilot.config.settings import Settings
+11 | from incident_copilot.llm.base import ChatMessage
+12 | from incident_copilot.llm.factory import build_llm_provider
+13 | from incident_copilot.utils.exceptions import LLMProviderError
+14 + from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+15 + from langchain_core.tools import StructuredTool
+16 + from pydantic import BaseModel
+17 |
+   |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/llm/test_fallback_transport.py:24:7
+   |
+24 | class Answer(BaseModel):
+   |       ^^^^^^
+25 |     answer: str
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_transport.py:28:5
+   |
+28 | def cloud_reply(content):
+   |     ^^^^^^^^^^^
+29 |     return httpx.Response(
+30 |         200,
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_transport.py:45:5
+   |
+45 | def local_reply(content="local"):
+   |     ^^^^^^^^^^^
+46 |     message = {"role": "assistant", "content": content}
+47 |     return httpx.Response(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_transport.py:55:5
+   |
+54 | @pytest.fixture
+55 | def local_capacity(monkeypatch):
+   |     ^^^^^^^^^^^^^^
+56 |     # This simulates capacity only in offline tests; no local model is contacted.
+57 |     monkeypatch.setattr(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_transport.py:65:11
+   |
+63 | @pytest.mark.parametrize("failure", [401, 429, 503, "connection", "timeout"])
+64 | @respx.mock
+65 | async def test_transport_failures_fall_back_and_next_operation_retries_groq(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+66 |     local_capacity, failure
+67 | ):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_fallback_transport.py:97:11
+   |
+96 | @respx.mock
+97 | async def test_structured_repair_exhaustion_falls_back_through_real_adapters(local_capacity):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+98 |     cloud = respx.post(GROQ).mock(return_value=cloud_reply("not JSON"))
+99 |     respx.get(f"{OLLAMA}/api/ps").respond(200, json={"models": []})
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/llm/test_fallback_transport.py:109:11
+    |
+107 | @pytest.mark.parametrize("failure", ["connection", "timeout", "missing_model", "memory"])
+108 | @respx.mock(assert_all_called=False)
+109 | async def test_both_provider_failures_are_bounded_and_normalized(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+110 |     local_capacity, monkeypatch, failure, respx_mock
+111 | ):
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/llm/test_fallback_transport.py:141:11
+    |
+140 | @respx.mock
+141 | async def test_tool_history_survives_real_adapter_serialization(local_capacity):
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+142 |     respx.post(GROQ).respond(429, json={"error": {"message": "quota"}})
+143 |     respx.get(f"{OLLAMA}/api/ps").respond(200, json={"models": []})
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_groq_provider.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/llm/test_groq_provider.py:1:1
+   |
+ 1 | / import asyncio
+ 2 | | from unittest.mock import MagicMock
+ 3 | |
+ 4 | | import httpx
+ 5 | | import pytest
+ 6 | | from groq import APIConnectionError, APIStatusError
+ 7 | | from langchain_core.messages import AIMessage
+ 8 | | from langchain_core.runnables import RunnableLambda
+ 9 | |
+10 | | from incident_copilot.config.settings import Settings
+11 | | from incident_copilot.llm.groq_provider import GroqProvider
+12 | | from incident_copilot.utils.exceptions import LLMProviderError
+   | |______________________________________________________________^
+help: Organize imports
+   |
+6  | from groq import APIConnectionError, APIStatusError
+   - from langchain_core.messages import AIMessage
+   - from langchain_core.runnables import RunnableLambda
+   -
+7  | from incident_copilot.config.settings import Settings
+8  | from incident_copilot.llm.groq_provider import GroqProvider
+9  | from incident_copilot.utils.exceptions import LLMProviderError
+10 + from langchain_core.messages import AIMessage
+11 + from langchain_core.runnables import RunnableLambda
+12 |
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_groq_provider.py:16:11
+   |
+15 | @pytest.mark.parametrize("status", [400, 401, 403, 404, 429, 500, 503])
+16 | async def test_groq_api_errors_are_normalized_without_leaking_body(status):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     async def fail(messages):
+18 |         raise APIStatusError(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_groq_provider.py:30:11
+   |
+30 | async def test_connection_failure_is_normalized():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 |     async def fail(messages):
+32 |         raise APIConnectionError(request=httpx.Request("POST", "https://api.groq.com"))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_groq_provider.py:38:11
+   |
+38 | async def test_request_has_wall_clock_deadline():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 |     async def hang(messages):
+40 |         await asyncio.Event().wait()
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_groq_provider.py:46:11
+   |
+46 | async def test_json_mode_and_serial_tool_calls():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     async def reply(messages):
+48 |         return AIMessage(content='{"ok":true}')
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_groq_provider.py:60:5
+   |
+60 | def test_client_uses_configured_model_key_and_no_sdk_retries():
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 |     provider = GroqProvider.from_settings(Settings(_env_file=None, groq_model="openai/gpt-oss-20b"))
+62 |     assert provider._chat.model_name == "openai/gpt-oss-20b"
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_ollama_limits.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/llm/test_ollama_limits.py:1:1
+   |
+ 1 | / import asyncio
+ 2 | | from types import SimpleNamespace
+ 3 | |
+ 4 | | import httpx
+ 5 | | import pytest
+ 6 | | import respx
+ 7 | | from langchain_core.messages import AIMessage
+ 8 | | from langchain_core.runnables import RunnableLambda
+ 9 | |
+10 | | from incident_copilot.config.settings import Settings
+11 | | from incident_copilot.llm.ollama_provider import OllamaProvider
+12 | | from incident_copilot.utils.exceptions import LLMProviderError
+   | |______________________________________________________________^
+help: Organize imports
+   |
+6  | import respx
+   - from langchain_core.messages import AIMessage
+   - from langchain_core.runnables import RunnableLambda
+   -
+7  | from incident_copilot.config.settings import Settings
+8  | from incident_copilot.llm.ollama_provider import OllamaProvider
+9  | from incident_copilot.utils.exceptions import LLMProviderError
+10 + from langchain_core.messages import AIMessage
+11 + from langchain_core.runnables import RunnableLambda
+12 |
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_ollama_limits.py:20:11
+   |
+18 | )
+19 | @respx.mock
+20 | async def test_memory_guard_handles_cold_and_loaded_models(monkeypatch, loaded, available, allowed):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     monkeypatch.setattr(
+22 |         "incident_copilot.llm.ollama_provider.psutil.virtual_memory",
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_ollama_limits.py:45:11
+   |
+45 | async def test_local_calls_are_serialized_and_timeout_releases_lock():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+46 |     active = 0
+47 |     peak = 0
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_ollama_limits.py:71:5
+   |
+71 | def test_ollama_has_bounded_context_and_no_thinking():
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 |     provider = OllamaProvider.from_settings(Settings(_env_file=None))
+73 |     assert provider._chat.num_ctx == 4096
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/llm/test_structured_repair.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/llm/test_structured_repair.py:1:1
+  |
+1 | / from collections.abc import Sequence
+2 | |
+3 | | import httpx
+4 | | import pytest
+5 | | from pydantic import BaseModel
+6 | |
+7 | | from incident_copilot.llm.base import ChatMessage
+8 | | from incident_copilot.llm.fake_provider import FakeLLMProvider
+9 | | from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
+  | |_____________________________________________________________________________________^
+help: Organize imports
+  |
+4 | import pytest
+  - from pydantic import BaseModel
+  -
+5 | from incident_copilot.llm.base import ChatMessage
+6 | from incident_copilot.llm.fake_provider import FakeLLMProvider
+7 | from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
+8 + from pydantic import BaseModel
+9 |
+  |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/llm/test_structured_repair.py:12:7
+   |
+12 | class Answer(BaseModel):
+   |       ^^^^^^
+13 |     verdict: str
+14 |     score: int
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:20:11
+   |
+20 | async def test_valid_json_parses_first_try() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     provider = FakeLLMProvider(['{"verdict": "bad deploy", "score": 9}'])
+22 |     result = await provider.complete_structured(MESSAGES, Answer)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:27:11
+   |
+27 | async def test_malformed_json_is_repaired_on_retry() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |     provider = FakeLLMProvider(["not json at all", '{"verdict": "memory leak", "score": 7}'])
+29 |     result = await provider.complete_structured(MESSAGES, Answer)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:34:11
+   |
+34 | async def test_fenced_json_is_unwrapped() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+35 |     provider = FakeLLMProvider(['```json\n{"verdict": "ok", "score": 1}\n```'])
+36 |     result = await provider.complete_structured(MESSAGES, Answer)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:40:11
+   |
+40 | async def test_repair_prompt_includes_the_validation_error() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+41 |     provider = FakeLLMProvider(['{"verdict": "x"}', '{"verdict": "x", "score": 2}'])
+42 |     await provider.complete_structured(MESSAGES, Answer)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:47:11
+   |
+47 | async def test_exhausted_attempts_raise_with_raw_output() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+48 |     provider = FakeLLMProvider(["nope", "still nope", "nope again"])
+49 |     with pytest.raises(StructuredOutputError) as excinfo:
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/llm/test_structured_repair.py:62:5
+   |
+61 |   async def test_a_transport_failure_surfaces_as_a_provider_error() -> None:
+62 | /     """The agents catch LLMProviderError to degrade gracefully. A raw httpx error
+63 | |     would sail past those handlers and out of the graph as a 500."""
+   | |____________________________________________________________________^
+64 |       provider = UnreachableProvider(["unused"])
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/llm/test_structured_repair.py:62:5
+   |
+61 |   async def test_a_transport_failure_surfaces_as_a_provider_error() -> None:
+62 | /     """The agents catch LLMProviderError to degrade gracefully. A raw httpx error
+63 | |     would sail past those handlers and out of the graph as a 500."""
+   | |____________________________________________________________________^
+64 |       provider = UnreachableProvider(["unused"])
+   |
+help: Move closing quotes to new line
+   |
+62 |     """The agents catch LLMProviderError to degrade gracefully. A raw httpx error
+   -     would sail past those handlers and out of the graph as a 500."""
+63 +     would sail past those handlers and out of the graph as a 500.
+64 +     """
+65 |     provider = UnreachableProvider(["unused"])
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/llm/test_structured_repair.py:70:11
+   |
+70 | async def test_an_existing_provider_error_is_not_rewrapped() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+71 |     class Failing(FakeLLMProvider):
+72 |         async def _generate_json(self, messages: Sequence[ChatMessage]) -> str:
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/models/test_enums.py:1:1
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_enums.py:9:5
+   |
+ 9 | def test_trend_kind_members() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^
+10 |     assert {t.value for t in TrendKind} == {"rose", "dropped", "flat", "from_zero"}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_enums.py:13:5
+   |
+13 | def test_provider_names() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^
+14 |     assert LLMProviderName.OLLAMA.value == "ollama"
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/models/test_findings.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/models/test_findings.py:1:1
+   |
+ 1 | / import pytest
+ 2 | | from pydantic import ValidationError
+ 3 | |
+ 4 | | from incident_copilot.models.enums import MetricKind, TrendKind
+ 5 | | from incident_copilot.models.findings import (
+ 6 | |     RAW_FINDING_CAVEAT,
+ 7 | |     RawMetricFinding,
+ 8 | |     TypedMetricFinding,
+ 9 | |     metric_finding_adapter,
+10 | | )
+   | |_^
+help: Organize imports
+   |
+1  | import pytest
+   - from pydantic import ValidationError
+   -
+2  | from incident_copilot.models.enums import MetricKind, TrendKind
+--------------------------------------------------------------------------------
+8  | )
+9  + from pydantic import ValidationError
+10 |
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:46:5
+   |
+46 | def test_typed_finding_is_threshold_validated() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     assert _typed().threshold_validated is True
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:50:5
+   |
+50 | def test_raw_finding_is_not_threshold_validated() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+51 |     assert _raw().threshold_validated is False
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:54:5
+   |
+54 | def test_threshold_validated_is_serialized() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+55 |     assert _typed().model_dump()["threshold_validated"] is True
+56 |     assert _raw().model_dump()["threshold_validated"] is False
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:60:5
+   |
+60 | def test_round_trip_through_discriminator_preserves_flag() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 |     for finding, expected in ((_typed(), True), (_raw(), False)):
+62 |         restored = metric_finding_adapter.validate_python(finding.model_dump())
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:67:5
+   |
+67 | def test_threshold_validated_cannot_be_overridden() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |     assert _raw(threshold_validated=True).threshold_validated is False
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:71:5
+   |
+71 | def test_raw_summary_carries_caveat() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 |     assert _raw().summary.startswith(RAW_FINDING_CAVEAT)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:75:5
+   |
+75 | def test_pct_change_must_be_none_for_from_zero() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     with pytest.raises(ValidationError, match="pct_change must be None iff"):
+77 |         _typed(trend=TrendKind.FROM_ZERO, pct_change=800.0)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:80:5
+   |
+80 | def test_pct_change_required_when_not_from_zero() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+81 |     with pytest.raises(ValidationError, match="pct_change must be None iff"):
+82 |         _typed(trend=TrendKind.ROSE, pct_change=None)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_findings.py:85:5
+   |
+85 | def test_from_zero_with_none_pct_change_is_valid() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     finding = _typed(trend=TrendKind.FROM_ZERO, pct_change=None)
+87 |     assert finding.pct_change is None
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/models/test_logs.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/models/test_logs.py:1:1
+  |
+1 | / from datetime import UTC, datetime
+2 | |
+3 | | import pytest
+4 | | from pydantic import ValidationError
+5 | |
+6 | | from incident_copilot.models.enums import LogLevel
+7 | | from incident_copilot.models.logs import LogEntry, LogFinding, LogSearchCriteria
+8 | | from incident_copilot.models.metrics import TimeWindow
+  | |______________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  - from pydantic import ValidationError
+  -
+4 | from incident_copilot.models.enums import LogLevel
+5 | from incident_copilot.models.logs import LogEntry, LogFinding, LogSearchCriteria
+6 | from incident_copilot.models.metrics import TimeWindow
+7 + from pydantic import ValidationError
+8 |
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_logs.py:11:5
+   |
+11 | def test_log_entry_requires_known_level() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+12 |     with pytest.raises(ValidationError):
+13 |         LogEntry(timestamp=datetime.now(UTC), service="cart-service", level="LOUD", message="x")
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_logs.py:16:5
+   |
+16 | def test_search_criteria_defaults_limit() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     criteria = LogSearchCriteria(service="cart-service", window=TimeWindow.from_minutes_back(30))
+18 |     assert criteria.limit == 20
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_logs.py:22:5
+   |
+22 | def test_finding_reports_matched_count_independent_of_samples() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+23 |     finding = LogFinding(
+24 |         query="service:cart-service AND level:ERROR",
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/models/test_metrics.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/models/test_metrics.py:1:1
+  |
+1 | / from datetime import UTC, datetime, timedelta
+2 | |
+3 | | import pytest
+4 | | from pydantic import ValidationError
+5 | |
+6 | | from incident_copilot.models.metrics import MetricSample, MetricSeries, TimeWindow
+  | |__________________________________________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  - from pydantic import ValidationError
+  -
+4 | from incident_copilot.models.metrics import MetricSample, MetricSeries, TimeWindow
+5 + from pydantic import ValidationError
+6 |
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_metrics.py:9:5
+   |
+ 9 | def test_time_window_rejects_non_positive_duration() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+10 |     now = datetime.now(UTC)
+11 |     with pytest.raises(ValidationError, match="end must be after start"):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_metrics.py:15:5
+   |
+15 | def test_time_window_duration_seconds() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 |     start = datetime.now(UTC)
+17 |     window = TimeWindow(start=start, end=start + timedelta(minutes=30))
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_metrics.py:21:5
+   |
+21 | def test_from_minutes_back_spans_requested_window() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22 |     window = TimeWindow.from_minutes_back(60)
+23 |     assert 3599 <= window.duration_seconds <= 3601
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_metrics.py:26:5
+   |
+26 | def test_series_values_extracts_floats() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     now = datetime.now(UTC)
+28 |     series = MetricSeries(
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/models/test_report.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/models/test_report.py:1:1
+   |
+ 1 | / import pytest
+ 2 | | from pydantic import ValidationError
+ 3 | |
+ 4 | | from incident_copilot.models.enums import AgentName, EvidenceSource
+ 5 | | from incident_copilot.models.report import (
+ 6 | |     EvidenceRef,
+ 7 | |     IncidentReport,
+ 8 | |     LikelyCause,
+ 9 | |     RouteDecision,
+10 | | )
+   | |_^
+help: Organize imports
+   |
+1  | import pytest
+   - from pydantic import ValidationError
+   -
+2  | from incident_copilot.models.enums import AgentName, EvidenceSource
+--------------------------------------------------------------------------------
+8  | )
+9  + from pydantic import ValidationError
+10 |
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_report.py:26:5
+   |
+26 | def test_causes_are_sorted_by_descending_confidence() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     report = IncidentReport(
+28 |         summary="s",
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_report.py:36:5
+   |
+36 | def test_causes_without_evidence_are_dropped() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     report = IncidentReport(
+38 |         summary="s",
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_report.py:69:5
+   |
+69 | def test_confidence_is_bounded() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+70 |     with pytest.raises(ValidationError):
+71 |         _cause("x", 1.4)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_report.py:74:5
+   |
+74 | def test_route_decision_accepts_specialist_agents() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+75 |     decision = RouteDecision(agents=[AgentName.METRICS, AgentName.LOGS], reasoning="both")
+76 |     assert AgentName.METRICS in decision.agents
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/models/test_report.py:79:5
+   |
+79 | def test_route_decision_rejects_empty_route() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+80 |     with pytest.raises(ValidationError):
+81 |         RouteDecision(agents=[], reasoning="none")
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/services/test_incident_service.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> backend/tests/unit/services/test_incident_service.py:1:1
+   |
+ 1 | / from typing import Any
+ 2 | |
+ 3 | | import pytest
+ 4 | |
+ 5 | | from incident_copilot.models.metrics import TimeWindow
+ 6 | | from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
+ 7 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+ 8 | | from incident_copilot.utils.exceptions import InvestigationError
+   | |________________________________________________________________^
+ 9 |
+10 |   REPORT = IncidentReport(
+   |
+help: Organize imports
+  |
+3 | import pytest
+  -
+4 | from incident_copilot.models.metrics import TimeWindow
+  |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/services/test_incident_service.py:25:7
+   |
+25 | class StubGraph:
+   |       ^^^^^^^^^
+26 |     def __init__(self, final: dict[str, Any]) -> None:
+27 |         self.final = final
+   |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/services/test_incident_service.py:26:9
+   |
+25 | class StubGraph:
+26 |     def __init__(self, final: dict[str, Any]) -> None:
+   |         ^^^^^^^^
+27 |         self.final = final
+28 |         self.seen: dict[str, Any] | None = None
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/services/test_incident_service.py:30:15
+   |
+28 |         self.seen: dict[str, Any] | None = None
+29 |
+30 |     async def ainvoke(self, state: dict[str, Any]) -> dict[str, Any]:
+   |               ^^^^^^^
+31 |         self.seen = state
+32 |         return self.final
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/services/test_incident_service.py:35:11
+   |
+35 | async def test_returns_the_report_from_the_graph() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+36 |     graph = StubGraph({"report": REPORT, "errors": []})
+37 |     service = IncidentService(graph)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/services/test_incident_service.py:46:11
+   |
+46 | async def test_generates_a_correlation_id_per_investigation() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     graph = StubGraph({"report": REPORT, "errors": []})
+48 |     service = IncidentService(graph)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/services/test_incident_service.py:58:11
+   |
+58 | async def test_request_window_reaches_the_graph() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 |     graph = StubGraph({"report": REPORT, "errors": []})
+60 |     service = IncidentService(graph)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/services/test_incident_service.py:68:11
+   |
+68 | async def test_missing_report_raises_a_domain_error_carrying_the_graph_errors() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+69 |     graph = StubGraph({"report": None, "errors": ["correlation failed: bad json"]})
+70 |     service = IncidentService(graph)
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/services/test_incident_service.py:77:5
+   |
+76 |   async def test_missing_report_with_no_errors_still_raises() -> None:
+77 | /     """The graph can return no report and no explanation; the service must not hand
+78 | |     None back to the API layer regardless."""
+   | |_____________________________________________^
+79 |       graph = StubGraph({"report": None, "errors": []})
+80 |       service = IncidentService(graph)
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/services/test_incident_service.py:77:5
+   |
+76 |   async def test_missing_report_with_no_errors_still_raises() -> None:
+77 | /     """The graph can return no report and no explanation; the service must not hand
+78 | |     None back to the API layer regardless."""
+   | |_____________________________________________^
+79 |       graph = StubGraph({"report": None, "errors": []})
+80 |       service = IncidentService(graph)
+   |
+help: Move closing quotes to new line
+   |
+77 |     """The graph can return no report and no explanation; the service must not hand
+   -     None back to the API layer regardless."""
+78 +     None back to the API layer regardless.
+79 +     """
+80 |     graph = StubGraph({"report": None, "errors": []})
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/services/test_incident_service.py:87:5
+   |
+86 |   async def test_a_wrong_typed_report_is_rejected_like_a_missing_one() -> None:
+87 | /     """The graph returns an untyped mapping, so the service is the boundary that
+88 | |     proves the report is a report before the API layer serialises it."""
+   | |________________________________________________________________________^
+89 |       graph = StubGraph({"report": {"summary": "not a model"}, "errors": []})
+90 |       service = IncidentService(graph)
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/services/test_incident_service.py:87:5
+   |
+86 |   async def test_a_wrong_typed_report_is_rejected_like_a_missing_one() -> None:
+87 | /     """The graph returns an untyped mapping, so the service is the boundary that
+88 | |     proves the report is a report before the API layer serialises it."""
+   | |________________________________________________________________________^
+89 |       graph = StubGraph({"report": {"summary": "not a model"}, "errors": []})
+90 |       service = IncidentService(graph)
+   |
+help: Move closing quotes to new line
+   |
+87 |     """The graph returns an untyped mapping, so the service is the boundary that
+   -     proves the report is a report before the API layer serialises it."""
+88 +     proves the report is a report before the API layer serialises it.
+89 +     """
+90 |     graph = StubGraph({"report": {"summary": "not a model"}, "errors": []})
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/services/test_incident_service.py:96:5
+   |
+96 | def test_request_rejects_an_out_of_range_window() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+97 |     with pytest.raises(ValueError):
+98 |         InvestigationRequest(query="q", minutes_back=100_000)
+   |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/services/test_incident_service.py:101:5
+    |
+101 | def test_request_rejects_an_empty_query() -> None:
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+102 |     with pytest.raises(ValueError):
+103 |         InvestigationRequest(query="")
+    |
+
+D103 Missing docstring in public function
+   --> backend/tests/unit/services/test_incident_service.py:107:11
+    |
+106 | @pytest.mark.parametrize("model_window", [None, TimeWindow.from_minutes_back(5)])
+107 | async def test_report_window_is_set_by_service_even_if_model_invents_one(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+108 |     model_window: TimeWindow | None,
+109 | ) -> None:
+    |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/test_composition.py:1:1
+
+D205 1 blank line required between summary line and description
+ --> backend/tests/unit/test_composition.py:6:5
+  |
+5 |   def test_build_collaborators_wires_a_ready_to_invoke_graph() -> None:
+6 | /     """None of the constructors this wires together do network I/O eagerly, so this
+7 | |     is safe to run with no live stack - same assumption tests/unit/test_main.py
+8 | |     already makes about create_app(Settings(_env_file=None))."""
+  | |________________________________________________________________^
+9 |       collaborators = build_collaborators(Settings(_env_file=None))
+  |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+ --> backend/tests/unit/test_composition.py:6:5
+  |
+5 |   def test_build_collaborators_wires_a_ready_to_invoke_graph() -> None:
+6 | /     """None of the constructors this wires together do network I/O eagerly, so this
+7 | |     is safe to run with no live stack - same assumption tests/unit/test_main.py
+8 | |     already makes about create_app(Settings(_env_file=None))."""
+  | |________________________________________________________________^
+9 |       collaborators = build_collaborators(Settings(_env_file=None))
+  |
+help: Move closing quotes to new line
+   |
+7  |     is safe to run with no live stack - same assumption tests/unit/test_main.py
+   -     already makes about create_app(Settings(_env_file=None))."""
+8  +     already makes about create_app(Settings(_env_file=None)).
+9  +     """
+10 |     collaborators = build_collaborators(Settings(_env_file=None))
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/test_llm_health.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/test_llm_health.py:1:1
+  |
+1 | / import httpx
+2 | | import pytest
+3 | | import respx
+4 | |
+5 | | from incident_copilot.config.settings import Settings
+6 | | from incident_copilot.main import _llm_health
+  | |_____________________________________________^
+help: Organize imports
+  |
+3 | import respx
+  -
+4 | from incident_copilot.config.settings import Settings
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_llm_health.py:10:11
+   |
+ 9 | @respx.mock
+10 | async def test_groq_health_checks_configured_model_and_sends_auth():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+11 |     route = respx.get("https://api.groq.com/openai/v1/models").mock(
+12 |         return_value=httpx.Response(200, json={"data": [{"id": "openai/gpt-oss-20b"}]})
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_llm_health.py:20:11
+   |
+18 | @pytest.mark.parametrize("fallback,expected", [("ollama", True), ("none", False)])
+19 | @respx.mock
+20 | async def test_auth_failure_uses_only_enabled_fallback(fallback, expected):
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     respx.get("https://api.groq.com/openai/v1/models").mock(return_value=httpx.Response(401))
+22 |     if fallback == "ollama":
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_llm_health.py:30:11
+   |
+29 | @respx.mock
+30 | async def test_ollama_server_without_required_model_is_unhealthy():
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 |     respx.get("http://localhost:11434/api/tags").mock(
+32 |         return_value=httpx.Response(200, json={"models": []})
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/test_main.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/test_main.py:1:1
+  |
+1 | / import httpx
+2 | | import respx
+3 | |
+4 | | from incident_copilot.config.settings import Settings
+5 | | from incident_copilot.main import create_app
+  | |____________________________________________^
+help: Organize imports
+  |
+2 | import respx
+  -
+3 | from incident_copilot.config.settings import Settings
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_main.py:8:5
+   |
+ 8 | def test_app_exposes_both_routes() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 9 |     # Asserted through the OpenAPI schema rather than app.routes: FastAPI wraps an
+10 |     # included router in an object with no .path, and the schema is the surface
+   |
+
+D205 1 blank line required between summary line and description
+  --> backend/tests/unit/test_main.py:34:5
+   |
+33 |   async def test_shutdown_closes_both_connectors() -> None:
+34 | /     """The connectors are built once at startup and hold long-lived clients; the
+35 | |     lifespan has to hand them back or the app leaks a socket per reload."""
+   | |___________________________________________________________________________^
+36 |       app = create_app(Settings(_env_file=None))
+37 |       closed: list[str] = []
+   |
+help: Insert single blank line
+
+D209 [*] Multi-line docstring closing quotes should be on a separate line
+  --> backend/tests/unit/test_main.py:34:5
+   |
+33 |   async def test_shutdown_closes_both_connectors() -> None:
+34 | /     """The connectors are built once at startup and hold long-lived clients; the
+35 | |     lifespan has to hand them back or the app leaks a socket per reload."""
+   | |___________________________________________________________________________^
+36 |       app = create_app(Settings(_env_file=None))
+37 |       closed: list[str] = []
+   |
+help: Move closing quotes to new line
+   |
+34 |     """The connectors are built once at startup and hold long-lived clients; the
+   -     lifespan has to hand them back or the app leaks a socket per reload."""
+35 +     lifespan has to hand them back or the app leaks a socket per reload.
+36 +     """
+37 |     app = create_app(Settings(_env_file=None))
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/test_smoke.py:1:1
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/test_smoke.py:4:5
+  |
+4 | def test_package_exposes_version() -> None:
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 |     assert __version__ == "0.1.0"
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_ui_client.py:36:5
+   |
+34 |     ],
+35 | )
+36 | def test_unusable_response_is_a_displayable_error(monkeypatch, status, body, message):
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+37 |     monkeypatch.setattr(client.httpx, "post", lambda *a, **kw: httpx.Response(status, text=body))
+38 |     with pytest.raises(client.InvestigationError, match=message):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_ui_client.py:46:5
+   |
+44 |     [(httpx.ReadTimeout, "300 seconds"), (httpx.ConnectError, "can't reach the API")],
+45 | )
+46 | def test_transport_failure_and_timeout_contract(monkeypatch, exception, message):
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     def post(url, *, json, timeout):
+48 |         assert json == {"query": "incident", "service": "cart-service", "minutes_back": 17}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_ui_client.py:57:5
+   |
+57 | def test_report_preserves_authoritative_window_and_literal_evidence(monkeypatch):
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     payload = {
+59 |         "summary": "Observed <tag>",
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/test_ui_client.py:81:5
+   |
+80 | @pytest.mark.parametrize("body", ["bad json", "[]", "null"])
+81 | def test_malformed_health_degrades_without_crashing(monkeypatch, body):
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+82 |     monkeypatch.setattr(
+83 |         client.httpx,
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/tools/test_elasticsearch_tools.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/tools/test_elasticsearch_tools.py:1:1
+  |
+1 | / from datetime import UTC, datetime
+2 | |
+3 | | import pytest
+4 | |
+5 | | from incident_copilot.connectors.base import LogSource
+6 | | from incident_copilot.models.enums import LogLevel
+7 | | from incident_copilot.models.logs import LogFinding, LogSearchCriteria
+8 | | from incident_copilot.models.metrics import TimeWindow
+9 | | from incident_copilot.tools.elasticsearch_tools import build_log_tools
+  | |______________________________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  -
+4 | from incident_copilot.connectors.base import LogSource
+  |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:12:7
+   |
+12 | class StubLogs(LogSource):
+   |       ^^^^^^^^
+13 |     def __init__(self) -> None:
+14 |         self.last: LogSearchCriteria | None = None
+   |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:13:9
+   |
+12 | class StubLogs(LogSource):
+13 |     def __init__(self) -> None:
+   |         ^^^^^^^^
+14 |         self.last: LogSearchCriteria | None = None
+15 |         self.last_window: TimeWindow | None = None
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:17:15
+   |
+15 |         self.last_window: TimeWindow | None = None
+16 |
+17 |     async def search(self, criteria: LogSearchCriteria) -> LogFinding:
+   |               ^^^^^^
+18 |         self.last = criteria
+19 |         self.last_window = criteria.window
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:24:15
+   |
+22 |         )
+23 |
+24 |     async def level_histogram(self, service: str, window: TimeWindow) -> dict[str, int]:
+   |               ^^^^^^^^^^^^^^^
+25 |         self.last_window = window
+26 |         return {"ERROR": 42, "INFO": 900}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:33:11
+   |
+33 | async def test_search_logs_passes_filters_through() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+34 |     source = StubLogs()
+35 |     finding = await _tool(source, "search_logs").ainvoke(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:51:11
+   |
+51 | async def test_log_level_histogram_tool() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+52 |     result = await _tool(StubLogs(), "log_level_histogram").ainvoke(
+53 |         {"service": "cart-service", "minutes_back": 30}
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_elasticsearch_tools.py:60:11
+   |
+58 | @pytest.mark.parametrize("name", ["search_logs", "log_level_histogram"])
+59 | @pytest.mark.parametrize("minutes_back", [None, 30])
+60 | async def test_standalone_log_tools_keep_relative_windows(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 |     name: str, minutes_back: int | None
+62 | ) -> None:
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/tools/test_prometheus_tools.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/tools/test_prometheus_tools.py:1:1
+  |
+1 | / from datetime import UTC, datetime, timedelta
+2 | |
+3 | | import pytest
+4 | |
+5 | | from incident_copilot.connectors.base import MetricsSource
+6 | | from incident_copilot.models.enums import MetricKind, TrendKind
+7 | | from incident_copilot.models.findings import RAW_FINDING_CAVEAT
+8 | | from incident_copilot.models.metrics import MetricSample, MetricSeries, TimeWindow
+9 | | from incident_copilot.tools.prometheus_tools import build_metrics_tools
+  | |_______________________________________________________________________^
+help: Organize imports
+  |
+3 | import pytest
+  -
+4 | from incident_copilot.connectors.base import MetricsSource
+  |
+
+D101 Missing docstring in public class
+  --> backend/tests/unit/tools/test_prometheus_tools.py:12:7
+   |
+12 | class StubMetrics(MetricsSource):
+   |       ^^^^^^^^^^^
+13 |     def __init__(self, values: list[float]) -> None:
+14 |         self.values = values
+   |
+
+D107 Missing docstring in `__init__`
+  --> backend/tests/unit/tools/test_prometheus_tools.py:13:9
+   |
+12 | class StubMetrics(MetricsSource):
+13 |     def __init__(self, values: list[float]) -> None:
+   |         ^^^^^^^^
+14 |         self.values = values
+15 |         self.last_query: str | None = None
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/tools/test_prometheus_tools.py:18:15
+   |
+16 |         self.last_window: TimeWindow | None = None
+17 |
+18 |     async def query_range(
+   |               ^^^^^^^^^^^
+19 |         self, query: str, window: TimeWindow, step: str = "30s"
+20 |     ) -> list[MetricSeries]:
+   |
+
+D102 Missing docstring in public method
+  --> backend/tests/unit/tools/test_prometheus_tools.py:34:15
+   |
+32 |         ]
+33 |
+34 |     async def list_services(self) -> list[str]:
+   |               ^^^^^^^^^^^^^
+35 |         return ["cart-service", "payment-service"]
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_prometheus_tools.py:42:11
+   |
+42 | async def test_get_service_metric_returns_typed_threshold_validated_finding() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+43 |     source = StubMetrics([0.12] * 4 + [0.63] * 4)
+44 |     finding = await _tool(source, "get_service_metric").ainvoke(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_prometheus_tools.py:56:11
+   |
+56 | async def test_raw_query_returns_unvalidated_finding_with_caveat() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     source = StubMetrics([1.0, 1.0, 5.0, 5.0])
+58 |     finding = await _tool(source, "raw_promql_query").ainvoke({"query": "up", "minutes_back": 30})
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_prometheus_tools.py:66:11
+   |
+66 | async def test_list_services_tool() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^
+67 |     result = await _tool(StubMetrics([1.0]), "list_services").ainvoke({})
+68 |     assert result == ["cart-service", "payment-service"]
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_prometheus_tools.py:71:11
+   |
+71 | async def test_empty_series_yields_flat_non_anomalous_finding() -> None:
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 |     source = StubMetrics([])
+73 |     finding = await _tool(source, "get_service_metric").ainvoke(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/tools/test_prometheus_tools.py:83:11
+   |
+81 | @pytest.mark.parametrize("name", ["get_service_metric", "raw_promql_query"])
+82 | @pytest.mark.parametrize("minutes_back", [None, 30])
+83 | async def test_standalone_metric_tools_keep_relative_windows(
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+84 |     name: str, minutes_back: int | None
+85 | ) -> None:
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/utils/test_exceptions.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/utils/test_exceptions.py:1:1
+  |
+1 | / import pytest
+2 | |
+3 | | from incident_copilot.utils.exceptions import (
+4 | |     ConfigurationError,
+5 | |     IncidentCopilotError,
+6 | |     LLMProviderError,
+7 | |     MetricsSourceError,
+8 | |     StructuredOutputError,
+9 | | )
+  | |_^
+help: Organize imports
+  |
+1 | import pytest
+  -
+2 | from incident_copilot.utils.exceptions import (
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_exceptions.py:16:5
+   |
+14 |     [ConfigurationError, MetricsSourceError, LLMProviderError, StructuredOutputError],
+15 | )
+16 | def test_all_errors_derive_from_root(exc: type[Exception]) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     assert issubclass(exc, IncidentCopilotError)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_exceptions.py:20:5
+   |
+20 | def test_structured_output_error_carries_raw_payload() -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+21 |     err = StructuredOutputError("bad json", raw_output="{not json")
+22 |     assert err.raw_output == "{not json"
+   |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/utils/test_logging.py:1:1
+
+D103 Missing docstring in public function
+ --> backend/tests/unit/utils/test_logging.py:6:5
+  |
+6 | def test_log_output_is_json_with_correlation_id(capsys) -> None:  # type: ignore[no-untyped-def]  # pytest fixture
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 |     configure_logging("INFO")
+8 |     bind_correlation_id("abc-123")
+  |
+
+D100 Missing docstring in public module
+--> backend/tests/unit/utils/test_tracing.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> backend/tests/unit/utils/test_tracing.py:1:1
+  |
+1 | / import os
+2 | | from collections.abc import Iterator
+3 | |
+4 | | import pytest
+5 | | from langsmith.utils import get_env_var, get_tracer_project, tracing_is_enabled
+6 | |
+7 | | from incident_copilot.config.settings import Settings
+8 | | from incident_copilot.utils.tracing import configure_tracing
+  | |____________________________________________________________^
+help: Organize imports
+  |
+4 | import pytest
+  - from langsmith.utils import get_env_var, get_tracer_project, tracing_is_enabled
+  -
+5 | from incident_copilot.config.settings import Settings
+6 | from incident_copilot.utils.tracing import configure_tracing
+7 + from langsmith.utils import get_env_var, get_tracer_project, tracing_is_enabled
+8 |
+  |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:12:5
+   |
+11 | @pytest.fixture(autouse=True)
+12 | def clear_sdk_cache() -> Iterator[None]:
+   |     ^^^^^^^^^^^^^^^
+13 |     yield
+14 |     for lookup in (get_env_var, get_tracer_project):
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:26:5
+   |
+26 | def test_disabled_tracing_disables_sdk(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |     _clear_langchain_env(monkeypatch)
+28 |     settings = Settings(_env_file=None, langsmith_tracing=False)
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:35:5
+   |
+35 | def test_enabled_tracing_sets_langchain_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+36 |     _clear_langchain_env(monkeypatch)
+37 |     settings = Settings(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:56:5
+   |
+54 |     ["LANGSMITH_TRACING", "LANGSMITH_TRACING_V2", "LANGCHAIN_TRACING", "LANGCHAIN_TRACING_V2"],
+55 | )
+56 | def test_disabled_tracing_overrides_inherited_flags(
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     monkeypatch: pytest.MonkeyPatch, flag: str
+58 | ) -> None:
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:67:5
+   |
+67 | def test_disabling_after_enabled_build_stops_sdk_tracing(monkeypatch: pytest.MonkeyPatch) -> None:
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |     _clear_langchain_env(monkeypatch)
+69 |     configure_tracing(
+   |
+
+D103 Missing docstring in public function
+  --> backend/tests/unit/utils/test_tracing.py:79:5
+   |
+79 | def test_enabled_tracing_overrides_inherited_disabled_flags(
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+80 |     monkeypatch: pytest.MonkeyPatch,
+81 | ) -> None:
+   |
+
+Found 350 errors.
+[*] 51 fixable with the `--fix` option.
+make: *** [Makefile:17: lint] Error 1

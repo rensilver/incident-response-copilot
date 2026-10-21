@@ -1,33 +1,42 @@
-.PHONY: install lint format test test-integration docker-up docker-down docker-logs \
+.PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
         docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
 
-VENV := .venv
+VENV ?= .venv
+UV ?= uv
+PYTHON ?= $(shell cat backend/.python-version)
 PY := $(VENV)/bin/python
+PYPROJECT := backend/pyproject.toml
 
 export HOST_UID := $(shell id -u)
 export HOST_GID := $(shell id -g)
 
 install:
-	python3 -m pip install --quiet --upgrade uv
-	uv venv $(VENV) --allow-existing
-	uv pip install --python $(PY) -e ".[dev]"
+	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
+		--python $(PYTHON) --locked --extra dev --inexact
+
+install-ui:
+	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
+		--python $(PYTHON) --locked --extra dev --extra ui --inexact
 
 lint:
-	$(VENV)/bin/ruff check src tests
-	$(VENV)/bin/mypy --strict src
+	$(VENV)/bin/ruff check backend/src backend/tests
+	$(VENV)/bin/mypy --config-file $(PYPROJECT) --strict backend/src
 
 format:
-	$(VENV)/bin/black src tests
-	$(VENV)/bin/ruff check --fix src tests
+	$(VENV)/bin/black --config $(PYPROJECT) backend/src backend/tests
+	$(VENV)/bin/ruff check --fix backend/src backend/tests
+
+format-check:
+	$(VENV)/bin/black --config $(PYPROJECT) --check backend/src backend/tests streamlit_app
 
 test:
-	$(VENV)/bin/pytest tests/unit
+	$(VENV)/bin/pytest backend/tests/unit
 
 test-integration:
-	$(VENV)/bin/pytest tests/integration -m integration
+	$(VENV)/bin/pytest backend/tests/integration -m integration
 
 serve:
-	$(VENV)/bin/uvicorn incident_copilot.main:app --reload --port 8000
+	$(VENV)/bin/uvicorn incident_copilot.main:app --app-dir backend/src --reload --port 8000
 
 docker-up:
 	mkdir -p docker/prometheus/data
@@ -51,7 +60,7 @@ ollama-pull:
 	docker compose exec ollama ollama pull qwen3:4b
 
 seed:
-	$(VENV)/bin/python scripts/seed_demo_data.py
+	$(PY) backend/scripts/seed_demo_data.py
 	docker compose restart prometheus
 	@echo "seeded; prometheus restarted"
 
@@ -68,4 +77,5 @@ streamlit:
 	$(VENV)/bin/streamlit run streamlit_app/app.py
 
 clean:
-	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache
+	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache backend/.mypy_cache \
+		backend/.ruff_cache backend/.pytest_cache

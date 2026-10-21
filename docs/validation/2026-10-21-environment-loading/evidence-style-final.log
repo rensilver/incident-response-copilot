@@ -1,0 +1,12 @@
+E501 Line too long (90 > 88)
+  --> docs/validation/2026-10-21-environment-loading/check_compose.py:52:89
+   |
+50 |     print(
+51 |         "PASS: Compose loads synthetic project-root dotenv from backend cwd; "
+52 |         "service environment overrides file; private dotenv excluded from image context. "
+   |                                                                                         ^^
+53 |         "No services started."
+54 |     )
+   |
+
+Found 1 error.

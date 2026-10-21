@@ -1,0 +1,41 @@
+[
+  {
+    "name": "backend-mypy-retry",
+    "cwd": "backend",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "120s",
+      "../.venv/bin/mypy",
+      "--strict",
+      "src"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64",
+      "PYTHONPATH": "/home/rensilver/workspaces/incident-response-copilot/backend/src"
+    },
+    "exit_code": 0,
+    "elapsed_seconds": 0.707
+  },
+  {
+    "name": "backend-unit-subset",
+    "cwd": "backend",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "../.venv/bin/pytest",
+      "tests/unit",
+      "--ignore=tests/unit/test_ui_client.py",
+      "-vv",
+      "-o",
+      "faulthandler_timeout=15"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64",
+      "PYTHONPATH": "/home/rensilver/workspaces/incident-response-copilot/backend/src"
+    },
+    "exit_code": 124,
+    "elapsed_seconds": 45.089
+  }
+]

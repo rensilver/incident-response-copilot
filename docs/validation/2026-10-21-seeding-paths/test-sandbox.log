@@ -1,0 +1,11 @@
+.venv/bin/pytest backend/tests/unit
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 300 items
+
+backend/tests/unit/agents/test_correlation_agent.py .....                [  1%]
+backend/tests/unit/agents/test_graph.py
