@@ -1,0 +1,130 @@
+[
+  {
+    "name": "root-lint",
+    "cwd": ".",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "make",
+      "lint"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64"
+    },
+    "exit_code": 2,
+    "elapsed_seconds": 0.112
+  },
+  {
+    "name": "root-test",
+    "cwd": ".",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "make",
+      "test"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64"
+    },
+    "exit_code": 2,
+    "elapsed_seconds": 1.919
+  },
+  {
+    "name": "root-black",
+    "cwd": ".",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      ".venv/bin/black",
+      "--check",
+      "src",
+      "tests",
+      "streamlit_app"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64"
+    },
+    "exit_code": 2,
+    "elapsed_seconds": 0.352
+  },
+  {
+    "name": "backend-ruff",
+    "cwd": "backend",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "../.venv/bin/ruff",
+      "check",
+      "src",
+      "tests"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64"
+    },
+    "exit_code": 0,
+    "elapsed_seconds": 0.107
+  },
+  {
+    "name": "backend-mypy",
+    "cwd": "backend",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "../.venv/bin/mypy",
+      "--strict",
+      "src"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64",
+      "PYTHONPATH": "/home/rensilver/workspaces/incident-response-copilot/backend/src"
+    },
+    "exit_code": 124,
+    "elapsed_seconds": 45.153
+  },
+  {
+    "name": "relocated-black",
+    "cwd": ".",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      ".venv/bin/black",
+      "--config",
+      "backend/pyproject.toml",
+      "--check",
+      "backend/src",
+      "backend/tests",
+      "streamlit_app"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64"
+    },
+    "exit_code": 0,
+    "elapsed_seconds": 0.773
+  },
+  {
+    "name": "relocated-unit",
+    "cwd": "backend",
+    "command": [
+      "timeout",
+      "--signal=KILL",
+      "45s",
+      "../.venv/bin/pytest",
+      "tests/unit",
+      "-vv",
+      "-o",
+      "faulthandler_timeout=15"
+    ],
+    "environment": {
+      "PATH": "/home/rensilver/.local/bin:/home/rensilver/.codex/tmp/arg0/codex-arg0x1VObn:/home/rensilver/.local/bin:/home/rensilver/.opencode/bin:/home/rensilver/.sdkman/candidates/java/current/bin:/home/rensilver/.nvm/versions/node/v24.19.0/bin:/home/rensilver/.local/bin:/home/rensilver/miniconda3/bin:/home/rensilver/miniconda3/condabin:/home/rensilver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/rensilver/.vscode/extensions/openai.chatgpt-26.1007.21434-linux-x64/bin/linux-x86_64",
+      "PYTHONPATH": "/home/rensilver/workspaces/incident-response-copilot/backend/src"
+    },
+    "exit_code": 2,
+    "elapsed_seconds": 3.512
+  }
+]

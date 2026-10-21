@@ -1,0 +1,6 @@
+PASS: 117 moves preserve original/staged bytes, SHA-256 and filesystem/Git modes
+PASS: staged scope contains exactly the 117 R100 renames and new task evidence
+PASS: staged/unstaged whitespace checks and no unstaged tracked edits except the audit output being generated
+PASS: plan, environments, credentials, venv and caches remain ignored
+PASS: 17 evidence links and anchors resolve
+PASS: evidence contains no recognizable credential/key patterns; source changes are byte-identical
