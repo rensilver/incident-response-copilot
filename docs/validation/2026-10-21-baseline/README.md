@@ -3,9 +3,10 @@
 Captured on 2026-10-21 at 19:43:10 UTC (16:43:10 America/Recife).
 This record completes only the first task of Phase 1, action 1.1: Git state,
 installed Python/package versions, existing processes, and current commands.
-Contract capture, baseline lint/types/format/tests, and the remaining action 1.1
-tasks have not been performed in this step. Historical passing results do not
-validate this snapshot.
+This environment record predates the separately authorized
+[API/UI contract capture](contracts.md), which completes the second task of
+action 1.1. Full baseline lint/types/format/tests and the remaining tasks are
+still pending. Historical passing results do not validate this snapshot.
 
 ## Evidence and collection boundaries
 
