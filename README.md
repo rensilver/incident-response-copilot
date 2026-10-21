@@ -40,9 +40,9 @@ The UI runs on the host; FastAPI and the four supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
 
-The backend directory move is in progress. Seeding internals and
-evaluation/validation script paths still await repair; the live walkthrough
-above has not been revalidated for this layout.
+The backend now lives in `backend/`; seeding and evaluation/validation paths
+resolve from the repository root. The live walkthrough above has not been
+revalidated for this layout.
 
 | Service | Local URL | Purpose |
 |---|---|---|
