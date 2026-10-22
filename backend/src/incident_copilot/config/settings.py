@@ -45,20 +45,11 @@ class Settings(BaseSettings):
     )
 
     llm_provider: LLMProviderName = LLMProviderName.OPENAI
-    llm_fallback_provider: Literal["ollama", "none"] = "none"
     openai_api_key: SecretStr | None = None
     openai_model: Literal["gpt-6-luna"] = "gpt-6-luna"
     llm_operation_timeout_seconds: float = Field(default=60.0, gt=0, le=180, allow_inf_nan=False)
     llm_max_output_tokens: int = Field(default=4096, ge=16, le=16384)
     llm_max_structured_attempts: int = Field(default=3, ge=1, le=5)
-    groq_timeout_seconds: float = Field(default=30.0, gt=0, le=120)
-    ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "qwen3:4b"
-    ollama_timeout_seconds: float = Field(default=60.0, gt=0, le=180)
-    ollama_num_ctx: int = Field(default=4096, ge=1024, le=32768)
-    ollama_min_available_memory_mb: int = Field(default=4096, ge=0)
-    groq_api_key: str | None = None
-    groq_model: str = "openai/gpt-oss-20b"
 
     prometheus_url: str = "http://localhost:9090"
     grafana_url: str = "http://localhost:3000"
@@ -76,19 +67,11 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _validate_openai_configuration(self) -> Self:
-        """Require the selected OpenAI credential and forbid automatic fallback."""
-        if self.llm_provider is LLMProviderName.OPENAI:
-            if self.openai_api_key is None or not self.openai_api_key.get_secret_value().strip():
-                raise ValueError("OPENAI_API_KEY is required when LLM_PROVIDER=openai")
-            if self.llm_fallback_provider != "none":
-                raise ValueError("OpenAI requires LLM_FALLBACK_PROVIDER=none; fallback is disabled")
-        return self
-
-    @model_validator(mode="after")
-    def _require_key_for_groq(self) -> Self:
-        """Fail fast when Groq is selected without an API key."""
-        if self.llm_provider is LLMProviderName.GROQ and not self.groq_api_key:
-            raise ValueError("GROQ_API_KEY is required when LLM_PROVIDER=groq")
+        """Require the selected OpenAI credential."""
+        if self.llm_provider is LLMProviderName.OPENAI and (
+            self.openai_api_key is None or not self.openai_api_key.get_secret_value().strip()
+        ):
+            raise ValueError("OPENAI_API_KEY is required when LLM_PROVIDER=openai")
         return self
 
     @model_validator(mode="after")

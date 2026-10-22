@@ -10,7 +10,6 @@ def _set_test_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in Settings.model_fields:
         monkeypatch.delenv(name.upper(), raising=False)
     monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
-    monkeypatch.setenv("GROQ_API_KEY", "test-key")
     monkeypatch.setenv("LANGSMITH_TRACING", "false")
     monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
     monkeypatch.delenv("LANGCHAIN_API_KEY", raising=False)

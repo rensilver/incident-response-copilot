@@ -1,42 +1,25 @@
 import pytest
+from pydantic import ValidationError
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.models.enums import LLMProviderName
 
 
-def test_defaults_select_openai_without_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_defaults_select_openai(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     settings = Settings(_env_file=None)
     assert settings.llm_provider is LLMProviderName.OPENAI
-    assert settings.llm_fallback_provider == "none"
-    assert settings.groq_model == "openai/gpt-oss-20b"
-    assert settings.ollama_model == "qwen3:4b"
     assert settings.max_tool_rounds == 2
 
 
-def test_ollama_does_not_require_cloud_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
-    assert Settings(_env_file=None, llm_provider="ollama").llm_provider is LLMProviderName.OLLAMA
-
-
-@pytest.mark.parametrize("fallback", ["groq", "fake", "invalid"])
-def test_invalid_fallback_is_rejected(fallback: str) -> None:
-    with pytest.raises(ValueError, match="llm_fallback_provider"):
-        Settings(_env_file=None, llm_fallback_provider=fallback)
-
-
-def test_env_overrides_provider(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LLM_PROVIDER", "groq")
-    monkeypatch.setenv("GROQ_API_KEY", "test-key")
-    settings = Settings(_env_file=None)
-    assert settings.llm_provider is LLMProviderName.GROQ
-    assert settings.groq_api_key == "test-key"
-
-
-def test_groq_without_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LLM_PROVIDER", "groq")
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
-    with pytest.raises(ValueError, match="GROQ_API_KEY"):
+@pytest.mark.parametrize("provider", ["groq", "ollama", "fallback", "invalid"])
+def test_retired_provider_cannot_be_selected_from_environment(
+    monkeypatch: pytest.MonkeyPatch, provider: str
+) -> None:
+    monkeypatch.setenv("LLM_PROVIDER", provider)
+    # Valid synthetic credentials ensure rejection is for the selection itself.
+    monkeypatch.setenv("GROQ_API_KEY", "test-retired-key")
+    with pytest.raises(ValidationError, match="llm_provider"):
         Settings(_env_file=None)
 
 

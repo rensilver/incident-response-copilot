@@ -25,10 +25,6 @@ if __name__ == "__main__":
 
 import httpx
 import psutil
-from langchain_core.callbacks import BaseCallbackHandler
-from langgraph.graph.state import CompiledStateGraph
-from pydantic_core import to_jsonable_python
-
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import get_settings
 from incident_copilot.evaluation.eval_runner import REPEATS, RunResult, _print_results, run_scenario
@@ -36,6 +32,9 @@ from incident_copilot.evaluation.scenarios import SCENARIOS
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.logging import configure_logging
+from langchain_core.callbacks import BaseCallbackHandler
+from langgraph.graph.state import CompiledStateGraph
+from pydantic_core import to_jsonable_python
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -182,13 +181,10 @@ async def measure(output: Path, delay: float) -> None:
     output.mkdir(parents=True, exist_ok=False)
     safe_fields = {
         "llm_provider",
-        "llm_fallback_provider",
-        "groq_model",
-        "groq_timeout_seconds",
-        "ollama_model",
-        "ollama_timeout_seconds",
-        "ollama_num_ctx",
-        "ollama_min_available_memory_mb",
+        "openai_model",
+        "llm_operation_timeout_seconds",
+        "llm_max_output_tokens",
+        "llm_max_structured_attempts",
         "max_tool_rounds",
         "max_supervisor_iterations",
         "langsmith_tracing",
@@ -215,9 +211,8 @@ async def measure(output: Path, delay: float) -> None:
                 "incident-response-copilot",
                 "langgraph",
                 "langchain-core",
-                "langchain-groq",
-                "langchain-ollama",
-                "groq",
+                "langchain-openai",
+                "openai",
                 "pydantic",
                 "httpx",
                 "elasticsearch",
@@ -228,10 +223,7 @@ async def measure(output: Path, delay: float) -> None:
         "images": json.loads(command("docker", "compose", "images", "--format", "json")),
     }
     with httpx.Client(timeout=15) as client:
-        for label, url in (
-            ("health_before", "http://localhost:8000/health"),
-            ("ollama_loaded_before", f"{settings.ollama_base_url}/api/ps"),
-        ):
+        for label, url in (("health_before", "http://localhost:8000/health"),):
             response = client.get(url)
             response.raise_for_status()
             metadata[label] = response.json()
@@ -295,7 +287,6 @@ async def measure(output: Path, delay: float) -> None:
             {
                 "timestamp": timestamp(),
                 "health": client.get("http://localhost:8000/health").json(),
-                "ollama_loaded": client.get(f"{settings.ollama_base_url}/api/ps").json(),
             },
         )
 
