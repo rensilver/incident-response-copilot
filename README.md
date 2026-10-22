@@ -28,7 +28,7 @@ cp .env.example .env
 
 make install-ui       # locked backend, development tools, and existing UI
 
-make docker-app-up   # build FastAPI and start all five services
+make docker-app-up   # build FastAPI and start all four services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
 curl --fail http://localhost:8000/health
 make streamlit       # host UI on http://localhost:8501
@@ -38,7 +38,7 @@ OpenAI health currently reports `llm: false` (overall `degraded`) until the plan
 provider-owned probe is implemented; it does not contact a legacy provider. Check
 Prometheus and Elasticsearch readiness separately. This status does not establish
 OpenAI connectivity or inference access; the OpenAI walkthrough awaits live validation.
-The UI runs on the host; FastAPI and the four supporting services run in Docker.
+The UI runs on the host; FastAPI and the three supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
 
@@ -53,7 +53,6 @@ revalidated for this layout.
 | Prometheus | http://localhost:9090 | Seeded time series and PromQL |
 | Grafana | http://localhost:3000 | Provisioned Incident Overview dashboard |
 | Elasticsearch | http://localhost:9200 | Synthetic application logs |
-| Ollama | http://localhost:11434 | Optional local fallback server |
 
 Choose **Memory leak**, **Slow dependency**, or **Bad deploy**, then click
 **RUN INVESTIGATION**. Each example selects its target service and a 180-minute

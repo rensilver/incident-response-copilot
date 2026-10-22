@@ -44,7 +44,7 @@ docker-up:
 	docker compose up -d
 	@echo "waiting for elasticsearch..."
 	@until curl -sf http://localhost:9200/_cluster/health >/dev/null 2>&1; do sleep 2; done
-	@echo "stack up: prometheus :9090  elasticsearch :9200  grafana :3000  ollama :11434"
+	@echo "stack up: prometheus :9090  elasticsearch :9200  grafana :3000"
 
 docker-down:
 	docker compose down
