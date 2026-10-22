@@ -1,23 +1,108 @@
 """Provider health uses metadata only, with bounded and cancellable I/O."""
 
 import asyncio
+import logging
 import socket
 from typing import Any
 
 import httpx
 import pytest
 import respx
+from fastapi import FastAPI
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.messages import AIMessage
 from pydantic import SecretStr
 
+from incident_copilot.agents.graph import build_graph
+from incident_copilot.api.routes import build_router
+from incident_copilot.config.settings import Settings
 from incident_copilot.llm import base
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.fake_provider import FakeLLMProvider
 from incident_copilot.llm.openai_provider import OpenAIProvider
+from incident_copilot.services.incident_service import IncidentService
 from incident_copilot.utils.exceptions import LLMProviderError
+from incident_copilot.utils.logging import configure_logging
 
 MODEL = {"id": "gpt-6-luna", "object": "model", "created": 0, "owned_by": "openai"}
+HEALTH_CANARY = "synthetic-health-payload-secret"
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        pytest.param(
+            httpx.Response(status, json={"error": {"message": HEALTH_CANARY}}), id=f"http-{status}"
+        )
+        for status in (401, 403, 404, 429, 500)
+    ]
+    + [
+        pytest.param(httpx.ConnectError(HEALTH_CANARY), id="connection"),
+        pytest.param(httpx.ReadTimeout(HEALTH_CANARY), id="timeout"),
+        pytest.param(httpx.Response(200, json={}), id="empty-object"),
+        pytest.param(
+            httpx.Response(200, content="null", headers={"content-type": "application/json"}),
+            id="null",
+        ),
+        pytest.param(httpx.Response(200, json=[]), id="array"),
+        pytest.param(httpx.Response(200, json=HEALTH_CANARY), id="string"),
+        pytest.param(httpx.Response(200, json={"object": "model"}), id="missing-id"),
+        pytest.param(httpx.Response(200, json={"id": "gpt-6-luna"}), id="missing-object"),
+        pytest.param(httpx.Response(200, json={**MODEL, "id": "other-model"}), id="wrong-model"),
+        pytest.param(
+            httpx.Response(200, json={**MODEL, "id": ["gpt-6-luna"]}), id="invalid-id-type"
+        ),
+        pytest.param(httpx.Response(200, json={**MODEL, "object": "list"}), id="wrong-object"),
+        pytest.param(httpx.Response(200, json={**MODEL, "object": None}), id="null-object"),
+        pytest.param(
+            httpx.Response(
+                200, content=HEALTH_CANARY, headers={"content-type": "application/json"}
+            ),
+            id="invalid-json",
+        ),
+        pytest.param(httpx.Response(200, text=f"<html>{HEALTH_CANARY}</html>"), id="html"),
+    ],
+)
+@respx.mock
+async def test_health_failure_is_redacted_and_recovers_on_later_poll(
+    failure: httpx.Response | httpx.HTTPError,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Use the same provider/router through failure, recovery, and another poll."""
+    caplog.set_level(logging.DEBUG)
+    configure_logging("DEBUG")
+    key = "synthetic-health-auth-secret"
+    route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(
+        side_effect=[failure, httpx.Response(200, json=MODEL), httpx.Response(200, json=MODEL)]
+    )
+    provider = OpenAIProvider.from_api_key(SecretStr(key))
+    settings = Settings(_env_file=None)
+    app = FastAPI()
+    app.include_router(
+        build_router(
+            IncidentService(build_graph(provider, [], [], settings)), {"llm": provider.health_check}
+        )
+    )
+    try:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            for count, healthy in enumerate((False, True, True), start=1):
+                response = await client.get("/health")
+                assert response.status_code == 200
+                assert response.json() == {
+                    "status": "ok" if healthy else "degraded",
+                    "dependencies": {"llm": healthy},
+                }
+                assert route.call_count == len(respx.calls) == count
+        captured = capsys.readouterr()
+        surfaces = caplog.text + captured.out + captured.err + repr(provider)
+        assert HEALTH_CANARY not in surfaces
+        assert key not in surfaces
+        assert all(call.request.method == "GET" for call in respx.calls)
+    finally:
+        await provider.aclose()
 
 
 @pytest.fixture(autouse=True)

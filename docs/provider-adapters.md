@@ -130,6 +130,13 @@ Settings redaction alone does not sanitize upstream error messages. The OpenAI
 adapter additionally normalizes failures before application and tracing callbacks,
 as described below.
 
+`configure_logging` keeps the `openai` SDK logger at WARNING even when application
+logging uses DEBUG. SDK debug records can include raw request payloads and transport
+exception tracebacks before adapter normalization. Application debug events remain
+available; use the classified domain failures for provider diagnostics. The
+[failure validation evidence](validation/2026-10-22-openai-failure-validation/README.md)
+covers malformed health payloads, later-request recovery, and log redaction.
+
 OpenAI health uses the provider-owned metadata probe described below. Application
 lifecycle cleanup wiring and live account validation remain pending.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).

@@ -1,10 +1,27 @@
+from unittest.mock import Mock
+
 import httpx
 import pytest
 import respx
+from pydantic import ValidationError
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.fake_provider import FakeLLMProvider
 from incident_copilot.main import create_app
+
+
+@pytest.mark.parametrize("key", [None, "", " \t\n"])
+def test_missing_configuration_fails_before_collaborator_construction(
+    monkeypatch: pytest.MonkeyPatch, key: str | None
+) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    if key is not None:
+        monkeypatch.setenv("OPENAI_API_KEY", key)
+    construct = Mock(side_effect=AssertionError("Invalid startup must not construct clients"))
+    monkeypatch.setattr("incident_copilot.main.build_collaborators", construct)
+    with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
+        create_app()
+    construct.assert_not_called()
 
 
 @respx.mock

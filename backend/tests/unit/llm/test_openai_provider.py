@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 import socket
 import traceback
 from collections.abc import AsyncIterator
@@ -32,6 +33,7 @@ from incident_copilot.services.incident_service import IncidentService
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
 from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
+from incident_copilot.utils.logging import configure_logging, get_logger
 
 REPORT = {
     "summary": "Checkout has dependency timeouts.",
@@ -889,6 +891,82 @@ async def test_response_error_payload_is_a_safe_service_failure(
     assert len(exchange.bodies) == 1
 
 
+@pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+@pytest.mark.parametrize(
+    "failure, kind",
+    [
+        pytest.param(
+            httpx.Response(401, json={"error": {"message": "private-recovery-canary"}}),
+            "authentication",
+            id="authentication",
+        ),
+        pytest.param(
+            httpx.Response(
+                429,
+                json={
+                    "error": {"message": "private-recovery-canary", "code": "insufficient_quota"}
+                },
+            ),
+            "quota",
+            id="quota",
+        ),
+        pytest.param(
+            httpx.Response(
+                429,
+                json={
+                    "error": {"message": "private-recovery-canary", "code": "rate_limit_exceeded"}
+                },
+            ),
+            "rate_limit",
+            id="rate-limit",
+        ),
+        pytest.param(
+            httpx.Response(503, json={"error": {"message": "private-recovery-canary"}}),
+            "service",
+            id="service",
+        ),
+        pytest.param(httpx.ConnectError("private-recovery-canary"), "connection", id="connection"),
+        pytest.param(httpx.ReadTimeout("private-recovery-canary"), "timeout", id="timeout"),
+    ],
+)
+async def test_failed_operation_recovers_on_same_provider_without_hidden_retry(
+    respx_mock: respx.MockRouter,
+    operation: Operation,
+    failure: httpx.Response | httpx.HTTPError,
+    kind: str,
+) -> None:
+    exchange = Wire(outputs=[text_output(json.dumps(REPORT))])
+    route = respx_mock.post("https://api.openai.com/v1/responses")
+    if isinstance(failure, httpx.Response):
+        route.mock(return_value=failure)
+    else:
+        route.mock(side_effect=failure)
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    try:
+        with pytest.raises(LLMProviderError) as caught:
+            await invoke_operation(provider, operation)
+        assert getattr(caught.value, "kind", None) == kind
+        assert "private-recovery-canary" not in "".join(traceback.format_exception(caught.value))
+        assert caught.value.__cause__ is None
+        assert caught.value.__context__ is None
+        assert route.call_count == len(respx_mock.calls) == 1
+
+        route.mock(side_effect=exchange.respond)
+        result = await invoke_operation(provider, operation)
+        if operation == "structured":
+            assert isinstance(result, IncidentReport)
+            assert result.summary == REPORT["summary"]
+        elif operation == "text":
+            assert result == json.dumps(REPORT)
+        else:
+            assert isinstance(result, BaseMessage)
+            assert result.text == json.dumps(REPORT)
+        assert route.call_count == len(respx_mock.calls) == 2
+        assert_inference_policy([json.loads(call.request.content) for call in route.calls], 2)
+    finally:
+        await provider.aclose()
+
+
 async def test_http_failure_during_repair_stops_without_another_attempt(
     respx_mock: respx.MockRouter,
 ) -> None:
@@ -912,9 +990,14 @@ async def test_http_failure_during_repair_stops_without_another_attempt(
 
 
 @pytest.mark.parametrize("status", [401, 429, 503])
-async def test_persistent_provider_failure_reaches_api_as_safe_503(
-    respx_mock: respx.MockRouter, status: int, capsys: pytest.CaptureFixture[str]
+async def test_provider_failure_reaches_api_as_safe_503_then_recovers(
+    respx_mock: respx.MockRouter,
+    status: int,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
+    caplog.set_level(logging.DEBUG)
+    configure_logging("DEBUG")
     route = respx_mock.post("https://api.openai.com/v1/responses").respond(
         status, json={"error": {"message": "private-graph-error-canary"}}
     )
@@ -927,17 +1010,47 @@ async def test_persistent_provider_failure_reaches_api_as_safe_503(
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=app), base_url="http://test"
         ) as client:
-            response = await client.post("/api/v1/investigations", json={"query": "q"})
-        assert response.status_code == 503
-        assert response.json() == {
-            "detail": "Investigation unavailable; no usable report was produced."
-        }
-        # Four distinct graph operations: supervisor, two specialists, correlation.
-        # No validation repairs, transport retries, or other provider requests.
-        assert route.call_count == 4
-        assert len(respx_mock.calls) == 4
+            response = await client.post(
+                "/api/v1/investigations", json={"query": "initial-only question"}
+            )
+            assert response.status_code == 503
+            assert response.json() == {
+                "detail": "Investigation unavailable; no usable report was produced."
+            }
+            # Four distinct graph operations: supervisor, two specialists, correlation.
+            # No validation repairs, transport retries, or other provider requests.
+            assert route.call_count == len(respx_mock.calls) == 4
+
+            exchange = Wire(
+                outputs=[
+                    text_output(
+                        json.dumps({"agents": [AgentName.METRICS], "reasoning": "Inspect metrics."})
+                    ),
+                    text_output("No metric evidence retrieved."),
+                    text_output(json.dumps(REPORT)),
+                ]
+            )
+            route.mock(side_effect=exchange.respond)
+            recovered = await client.post(
+                "/api/v1/investigations",
+                json={"query": "recovery-only question", "minutes_back": 17},
+            )
+            assert recovered.status_code == 200
+            body = recovered.json()
+            assert body["summary"] == REPORT["summary"]
+            assert body["likely_causes"] == []
+            assert body["investigation_window"]
+            assert len(respx_mock.calls) == 7
+            assert_inference_policy(exchange.bodies, 3)
+            history = json.dumps(exchange.bodies)
+            assert "recovery-only question" in history
+            assert "initial-only question" not in history
+            assert "routing fallback" not in history
+        get_logger(__name__).debug("application_debug_remains_enabled")
         captured = capsys.readouterr()
-        assert "private-graph-error-canary" not in captured.out + captured.err
+        logs = captured.out + captured.err + caplog.text
+        assert "application_debug_remains_enabled" in logs
+        assert "private-graph-error-canary" not in logs
     finally:
         await provider.aclose()
 

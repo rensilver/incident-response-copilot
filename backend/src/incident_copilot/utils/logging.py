@@ -15,6 +15,9 @@ def configure_logging(level: str) -> None:
         level: Log level name, e.g. ``"INFO"``.
     """
     logging.basicConfig(format="%(message)s", level=getattr(logging, level.upper()))
+    # SDK DEBUG records include raw transport exceptions and request payloads,
+    # before the provider's sanitized error boundary can intercept them.
+    logging.getLogger("openai").setLevel(logging.WARNING)
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
