@@ -110,10 +110,28 @@ invalid calls and missing results for unknown tools remains part of the planned
 tool-loop review. These wire checks establish adapter compatibility, not live
 model access or complete malformed-call recovery.
 
-Settings and factory registration, operation budgets and error normalization,
-provider health, abstract lifecycle wiring, and live account validation remain
-planned work. This implementation is
-not yet selectable in the application. Official references:
+Settings now default to `LLM_PROVIDER=openai`, `OPENAI_MODEL=gpt-6-luna`, and
+`LLM_FALLBACK_PROVIDER=none`. `OPENAI_API_KEY` is a `SecretStr` and must be nonblank
+when OpenAI is selected. The model field accepts only the exact requested model;
+there is no model or reasoning substitution. The factory uses `from_settings`,
+which passes the secret directly to the adapter without printing it. Existing
+root-file selection and process precedence also apply to both OpenAI variables.
+Legacy provider settings remain until the separately planned retirement task.
+
+Settings reprs/JSON and normal validation exception text redact OpenAI credentials;
+`hide_input_in_errors` also prevents a model-level validation error from displaying
+the complete settings input mapping. LangChain serialization uses a secret reference,
+and offline callback/log/error tests use synthetic keys. Do not export raw settings
+inputs, explicitly reveal `SecretStr`, or log Pydantic `errors()`/`json()` with their
+default input inclusion; use `include_input=False` for structured validation errors.
+Provider response bodies and arbitrary upstream error messages are not sanitized by
+these settings controls; transport error normalization remains separately planned.
+
+Until the provider-owned health probe task, OpenAI health reports unavailable without
+HTTP or inference instead of contacting Groq/Ollama. Application lifecycle wiring,
+operation budgets, error normalization, and live account validation remain pending.
+See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
+Official references:
 [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
 [JSON mode](https://developers.openai.com/api/docs/guides/structured-outputs#json-mode),
 and [ChatOpenAI](https://reference.langchain.com/python/langchain-openai/chat_models/base/ChatOpenAI).

@@ -56,6 +56,7 @@ class EvidenceSource(StrEnum):
 class LLMProviderName(StrEnum):
     """Selectable LLM provider implementations."""
 
+    OPENAI = "openai"
     OLLAMA = "ollama"
     GROQ = "groq"
     FAKE = "fake"

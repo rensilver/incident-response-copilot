@@ -10,9 +10,10 @@ from langchain_openai import ChatOpenAI
 from openai import AsyncOpenAI, OpenAI
 from pydantic import BaseModel, SecretStr
 
+from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.llm.messages import to_langchain_messages
-from incident_copilot.utils.exceptions import StructuredOutputError
+from incident_copilot.utils.exceptions import ConfigurationError, StructuredOutputError
 
 
 class OpenAIProvider(LLMProvider):
@@ -22,6 +23,17 @@ class OpenAIProvider(LLMProvider):
         """Borrow an injected chat model."""
         self._chat = chat
         self._owned_clients: tuple[OpenAI, AsyncOpenAI] | None = None
+
+    @classmethod
+    def from_settings(cls, settings: Settings) -> "OpenAIProvider":
+        """Build from validated settings without inference or credential logging."""
+        if (
+            settings.openai_api_key is None
+            or not settings.openai_api_key.get_secret_value().strip()
+        ):
+            raise ConfigurationError("OPENAI_API_KEY is required for the openai provider")
+        # Settings accepts exactly gpt-6-luna; every operation shares that policy.
+        return cls.from_api_key(settings.openai_api_key)
 
     @classmethod
     def from_api_key(cls, api_key: SecretStr) -> "OpenAIProvider":

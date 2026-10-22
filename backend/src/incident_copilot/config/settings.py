@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from incident_copilot.models.enums import LLMProviderName
@@ -38,11 +38,16 @@ class Settings(BaseSettings):
     """Application settings; process variables override the selected dotenv file."""
 
     model_config = SettingsConfigDict(
-        env_file=_default_env_file(), env_file_encoding="utf-8", extra="ignore"
+        env_file=_default_env_file(),
+        env_file_encoding="utf-8",
+        extra="ignore",
+        hide_input_in_errors=True,
     )
 
-    llm_provider: LLMProviderName = LLMProviderName.GROQ
-    llm_fallback_provider: Literal["ollama", "none"] = "ollama"
+    llm_provider: LLMProviderName = LLMProviderName.OPENAI
+    llm_fallback_provider: Literal["ollama", "none"] = "none"
+    openai_api_key: SecretStr | None = None
+    openai_model: Literal["gpt-6-luna"] = "gpt-6-luna"
     groq_timeout_seconds: float = Field(default=30.0, gt=0, le=120)
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen3:4b"
@@ -65,6 +70,16 @@ class Settings(BaseSettings):
 
     max_tool_rounds: int = Field(default=2, ge=1, le=5)
     max_supervisor_iterations: int = Field(default=3, ge=1, le=10)
+
+    @model_validator(mode="after")
+    def _validate_openai_configuration(self) -> Self:
+        """Require the selected OpenAI credential and forbid automatic fallback."""
+        if self.llm_provider is LLMProviderName.OPENAI:
+            if self.openai_api_key is None or not self.openai_api_key.get_secret_value().strip():
+                raise ValueError("OPENAI_API_KEY is required when LLM_PROVIDER=openai")
+            if self.llm_fallback_provider != "none":
+                raise ValueError("OpenAI requires LLM_FALLBACK_PROVIDER=none; fallback is disabled")
+        return self
 
     @model_validator(mode="after")
     def _require_key_for_groq(self) -> Self:

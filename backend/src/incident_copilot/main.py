@@ -87,6 +87,10 @@ def _llm_health(settings: Settings) -> HealthCheck:
     """Check configured model availability without generating tokens or loading Ollama."""
 
     async def check() -> bool:
+        # Provider-owned OpenAI probing is a separate migration task. Until then,
+        # report unavailable rather than measuring an unrelated legacy service.
+        if settings.llm_provider is LLMProviderName.OPENAI:
+            return False
         async with httpx.AsyncClient(timeout=3.0) as client:
             if settings.llm_provider is LLMProviderName.GROQ:
                 try:

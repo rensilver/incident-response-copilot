@@ -1,0 +1,215 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 12 items
+
+backend/tests/unit/config/test_openai_settings.py::test_defaults_select_openai_without_fallback FAILED [  8%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[None] FAILED [ 16%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[] FAILED [ 25%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[ \t\n] FAILED [ 33%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[] FAILED [ 41%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-other] FAILED [ 50%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-6-luna ] FAILED [ 58%]
+backend/tests/unit/config/test_openai_settings.py::test_dotenv_openai_values_and_process_precedence FAILED [ 66%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_automatic_fallback[ollama] FAILED [ 75%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_key_is_redacted_from_settings_and_validation_errors FAILED [ 83%]
+backend/tests/unit/config/test_openai_settings.py::test_legacy_ollama_selection_does_not_require_openai_key PASSED [ 91%]
+backend/tests/unit/config/test_openai_settings.py::test_safe_example_requires_owner_key_and_runs_after_configuration FAILED [100%]
+
+=================================== FAILURES ===================================
+_________________ test_defaults_select_openai_without_fallback _________________
+
+    def test_defaults_select_openai_without_fallback() -> None:
+        settings = Settings(_env_file=None)
+>       assert settings.llm_provider.value == "openai"
+E       AssertionError: assert 'groq' == 'openai'
+E
+E         - openai
+E         + groq
+
+backend/tests/unit/config/test_openai_settings.py:14: AssertionError
+___________________ test_openai_requires_nonblank_key[None] ____________________
+
+key = None
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7384e2599910>
+
+    @pytest.mark.parametrize("key", [None, "", " \t\n"])
+    def test_openai_requires_nonblank_key(key: str | None, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+>       with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:22: Failed
+_____________________ test_openai_requires_nonblank_key[] ______________________
+
+key = ''
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7384e2581370>
+
+    @pytest.mark.parametrize("key", [None, "", " \t\n"])
+    def test_openai_requires_nonblank_key(key: str | None, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+>       with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:22: Failed
+___________________ test_openai_requires_nonblank_key[ \t\n] ___________________
+
+key = ' \t\n'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7384e2581d00>
+
+    @pytest.mark.parametrize("key", [None, "", " \t\n"])
+    def test_openai_requires_nonblank_key(key: str | None, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+>       with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:22: Failed
+___________________ test_openai_rejects_model_substitution[] ___________________
+
+model = ''
+
+    @pytest.mark.parametrize("model", ["", "gpt-other", "gpt-6-luna "])
+    def test_openai_rejects_model_substitution(model: str) -> None:
+>       with pytest.raises(ValidationError, match="openai_model"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:28: Failed
+______________ test_openai_rejects_model_substitution[gpt-other] _______________
+
+model = 'gpt-other'
+
+    @pytest.mark.parametrize("model", ["", "gpt-other", "gpt-6-luna "])
+    def test_openai_rejects_model_substitution(model: str) -> None:
+>       with pytest.raises(ValidationError, match="openai_model"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:28: Failed
+_____________ test_openai_rejects_model_substitution[gpt-6-luna ] ______________
+
+model = 'gpt-6-luna '
+
+    @pytest.mark.parametrize("model", ["", "gpt-other", "gpt-6-luna "])
+    def test_openai_rejects_model_substitution(model: str) -> None:
+>       with pytest.raises(ValidationError, match="openai_model"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:28: Failed
+_______________ test_dotenv_openai_values_and_process_precedence _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-2/test_dotenv_openai_values_and_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7384e24549b0>
+
+    def test_dotenv_openai_values_and_process_precedence(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        selected = tmp_path / "selected.env"
+        selected.write_text("OPENAI_API_KEY=synthetic-file-key\nOPENAI_MODEL=gpt-6-luna\n")
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        settings = Settings(_env_file=selected)
+>       assert isinstance(settings.openai_api_key, SecretStr)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/config/test_openai_settings.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Settings(llm_provider=<LLMProviderName.GROQ: 'groq'>, llm_fallback_provider='ollama', groq_timeout_seconds=30.0, ollam...ng=False, langsmith_api_key=None, langsmith_project='incident-copilot', max_tool_rounds=2, max_supervisor_iterations=3)
+item = 'openai_api_key'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'Settings' object has no attribute 'openai_api_key'
+
+.venv/lib/python3.13/site-packages/pydantic/main.py:1042: AttributeError
+________________ test_openai_rejects_automatic_fallback[ollama] ________________
+
+fallback = 'ollama'
+
+    @pytest.mark.parametrize("fallback", ["ollama"])
+    def test_openai_rejects_automatic_fallback(fallback: str) -> None:
+>       with pytest.raises(ValidationError, match="fallback"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:50: Failed
+_______ test_openai_key_is_redacted_from_settings_and_validation_errors ________
+
+    def test_openai_key_is_redacted_from_settings_and_validation_errors() -> None:
+        sentinel = "synthetic-config-secret"
+        settings = Settings(_env_file=None, openai_api_key=sentinel)
+        surfaces = [repr(settings), str(settings), settings.model_dump_json()]
+        for invalid in (
+            {"max_tool_rounds": 0},
+            {"openai_model": sentinel},
+            {"openai_api_key": [sentinel]},
+        ):
+>           with pytest.raises(ValidationError) as error:
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:63: Failed
+______ test_safe_example_requires_owner_key_and_runs_after_configuration _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7384e25ca210>
+
+    def test_safe_example_requires_owner_key_and_runs_after_configuration(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        example = Path(__file__).parents[4] / ".env.example"
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+>       with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:86: Failed
+=========================== short test summary info ============================
+FAILED backend/tests/unit/config/test_openai_settings.py::test_defaults_select_openai_without_fallback - AssertionError: assert 'groq' == 'openai'
+
+  - openai
+  + groq
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[None] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[ \t\n] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-other] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-6-luna ] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_dotenv_openai_values_and_process_precedence - AttributeError: 'Settings' object has no attribute 'openai_api_key'
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_automatic_fallback[ollama] - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_openai_key_is_redacted_from_settings_and_validation_errors - Failed: DID NOT RAISE ValidationError
+FAILED backend/tests/unit/config/test_openai_settings.py::test_safe_example_requires_owner_key_and_runs_after_configuration - Failed: DID NOT RAISE ValidationError
+========================= 11 failed, 1 passed in 0.16s =========================

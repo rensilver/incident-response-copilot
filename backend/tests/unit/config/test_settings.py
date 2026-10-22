@@ -4,11 +4,11 @@ from incident_copilot.config.settings import Settings
 from incident_copilot.models.enums import LLMProviderName
 
 
-def test_defaults_select_groq_with_ollama_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_defaults_select_openai_without_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     settings = Settings(_env_file=None)
-    assert settings.llm_provider is LLMProviderName.GROQ
-    assert settings.llm_fallback_provider == "ollama"
+    assert settings.llm_provider is LLMProviderName.OPENAI
+    assert settings.llm_fallback_provider == "none"
     assert settings.groq_model == "openai/gpt-oss-20b"
     assert settings.ollama_model == "qwen3:4b"
     assert settings.max_tool_rounds == 2

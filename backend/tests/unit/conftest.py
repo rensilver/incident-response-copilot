@@ -9,6 +9,7 @@ def _set_test_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("INCIDENT_COPILOT_ENV_FILE", raising=False)
     for name in Settings.model_fields:
         monkeypatch.delenv(name.upper(), raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
     monkeypatch.setenv("GROQ_API_KEY", "test-key")
     monkeypatch.setenv("LANGSMITH_TRACING", "false")
     monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")

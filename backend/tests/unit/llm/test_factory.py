@@ -16,15 +16,19 @@ def test_fake_provider_is_rejected_by_the_factory() -> None:
         build_llm_provider(settings)
 
 
-def test_default_factory_builds_groq_with_ollama_fallback() -> None:
-    provider = build_llm_provider(Settings(_env_file=None))
+def test_explicit_groq_with_ollama_fallback() -> None:
+    provider = build_llm_provider(
+        Settings(_env_file=None, llm_provider="groq", llm_fallback_provider="ollama")
+    )
     assert isinstance(provider, FallbackProvider)
     assert isinstance(provider.primary, GroqProvider)
     assert isinstance(provider.fallback, OllamaProvider)
 
 
 def test_fallback_can_be_disabled() -> None:
-    provider = build_llm_provider(Settings(_env_file=None, llm_fallback_provider="none"))
+    provider = build_llm_provider(
+        Settings(_env_file=None, llm_provider="groq", llm_fallback_provider="none")
+    )
     assert isinstance(provider, GroqProvider)
 
 

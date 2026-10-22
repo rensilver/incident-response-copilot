@@ -11,7 +11,7 @@ async def test_groq_health_checks_configured_model_and_sends_auth():
     route = respx.get("https://api.groq.com/openai/v1/models").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "openai/gpt-oss-20b"}]})
     )
-    assert await _llm_health(Settings(_env_file=None))()
+    assert await _llm_health(Settings(_env_file=None, llm_provider="groq"))()
     assert route.calls[0].request.headers["Authorization"] == "Bearer test-key"
 
 
@@ -23,7 +23,12 @@ async def test_auth_failure_uses_only_enabled_fallback(fallback, expected):
         respx.get("http://localhost:11434/api/tags").mock(
             return_value=httpx.Response(200, json={"models": [{"name": "qwen3:4b"}]})
         )
-    assert await _llm_health(Settings(_env_file=None, llm_fallback_provider=fallback))() is expected
+    assert (
+        await _llm_health(
+            Settings(_env_file=None, llm_provider="groq", llm_fallback_provider=fallback)
+        )()
+        is expected
+    )
 
 
 @respx.mock

@@ -21,6 +21,10 @@ def build_llm_provider(settings: Settings) -> LLMProvider:
         ConfigurationError: If the named provider cannot be built.
     """
     match settings.llm_provider:
+        case LLMProviderName.OPENAI:
+            from incident_copilot.llm.openai_provider import OpenAIProvider
+
+            return OpenAIProvider.from_settings(settings)
         case LLMProviderName.OLLAMA:
             from incident_copilot.llm.ollama_provider import OllamaProvider
 
