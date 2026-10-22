@@ -51,6 +51,10 @@ async def test_factory_uses_configured_key_without_inference_or_fallback(
     caplog.set_level(logging.DEBUG)
     sentinel = "synthetic-request-secret"
     monkeypatch.setenv("OPENAI_API_KEY", sentinel)
+    # Stale deployment variables must not reactivate a second provider on failure.
+    monkeypatch.setenv("LLM_FALLBACK_PROVIDER", "ollama")
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+    monkeypatch.setenv("GROQ_API_KEY", "synthetic-retired-secret")
     route = respx.post("https://api.openai.com/v1/responses").respond(
         401, json={"error": {"message": sentinel, "type": "invalid_api_key"}}
     )
@@ -67,7 +71,7 @@ async def test_factory_uses_configured_key_without_inference_or_fallback(
             pytest.raises(LLMProviderError) as error,
         ):
             await provider.bind_tools([]).ainvoke("Offline request", config={"callbacks": [trace]})
-        assert route.call_count == 1
+        assert route.call_count == len(respx.calls) == 1
         request = route.calls[0].request
         assert request.headers["Authorization"] == f"Bearer {sentinel}"
         body = json.loads(request.content)

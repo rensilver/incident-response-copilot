@@ -120,9 +120,12 @@ root-file selection and process precedence also apply to both OpenAI variables.
 OpenAI is the only production selection. Retired selections fail settings
 validation; the factory rejects `fake` as test-only. Retired provider/fallback
 settings are no longer fields; stale dotenv/process variables are ignored and
-cannot enable fallback. Cleanup of the private dotenv, Compose, and the legacy
-failure validator remains separately scoped. `psutil` is still required by
-measurement/validation scripts pending resource-sampling cleanup.
+cannot enable fallback. The private dotenv and Compose provider cleanup are
+complete. `backend/scripts/validate_provider_failures.py` runs the offline OpenAI
+failure matrix and rejects installed retired SDKs/adapters before starting tests.
+The [validator evidence](validation/2026-10-22-openai-only-failure-validator/README.md)
+records a fresh locked install and endpoint/fallback isolation. `psutil` is still
+required by measurement/validation scripts pending resource-sampling cleanup.
 
 Settings reprs/JSON and normal validation exception text redact OpenAI credentials;
 `hide_input_in_errors` also prevents a model-level validation error from displaying

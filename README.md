@@ -381,6 +381,7 @@ dependencies in `uv.lock`.
 make test                 # offline unit suite; no live providers or Docker required
 make lint                 # Ruff and strict backend mypy
 make format-check         # Black for backend, tests, and existing UI
+.venv/bin/python backend/scripts/validate_provider_failures.py
 .venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
 .venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
@@ -414,9 +415,15 @@ commands also use the repository root.
 
 The tracing validator accepts `--mode enabled` to check remote delivery with
 configured LangSmith credentials. These are live commands, separate from the
-offline suite. The previous local-model failure validator has been removed;
-an OpenAI-only replacement remains pending. Existing offline tests cover OpenAI
-failure handling without live credentials or Docker.
+offline suite. The OpenAI failure validator runs the real adapter/factory/API
+tests with intercepted HTTP and synthetic credentials; it clears inherited
+configuration and disables dotenv and remote tracing. It checks authentication,
+quota/rate limits, timeouts, malformed output, recovery, redaction, and absence
+of fallback or local-provider requests without Docker or live credentials.
+It exits nonzero on failed cases, retired installed provider packages, or its
+90-second deadline (`--timeout` accepts 1–300 seconds). Use a fresh locked
+development install if an older environment still contains retired packages.
+See the [validation evidence](docs/validation/2026-10-22-openai-only-failure-validator/README.md).
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
 The recorder above uses that same scorer and is the route used for the published
