@@ -17,6 +17,43 @@ def test_defaults_select_openai_without_fallback() -> None:
     assert settings.llm_fallback_provider == "none"
 
 
+def test_default_operation_limits() -> None:
+    settings = Settings(_env_file=None)
+    assert settings.llm_operation_timeout_seconds == 60.0
+    assert settings.llm_max_output_tokens == 4096
+    assert settings.llm_max_structured_attempts == 3
+
+
+@pytest.mark.parametrize(
+    "name,value",
+    [
+        ("llm_operation_timeout_seconds", 0),
+        ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0),
+        ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0),
+        ("llm_max_structured_attempts", 6),
+    ],
+)
+def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+    # The test deliberately supplies heterogeneous invalid settings at runtime.
+    overrides: dict[str, Any] = {name: value}
+    with pytest.raises(ValidationError, match=name):
+        Settings(_env_file=None, **overrides)
+
+
+def test_operation_limits_load_from_process(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LLM_OPERATION_TIMEOUT_SECONDS", "15")
+    monkeypatch.setenv("LLM_MAX_OUTPUT_TOKENS", "2048")
+    monkeypatch.setenv("LLM_MAX_STRUCTURED_ATTEMPTS", "2")
+    settings = Settings(_env_file=None)
+    assert settings.llm_operation_timeout_seconds == 15.0
+    assert settings.llm_max_output_tokens == 2048
+    assert settings.llm_max_structured_attempts == 2
+
+
 @pytest.mark.parametrize("key", [None, "", " \t\n"])
 def test_openai_requires_nonblank_key(key: str | None, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)

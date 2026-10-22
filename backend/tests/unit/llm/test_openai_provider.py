@@ -1,10 +1,11 @@
 """Exercise the adapter through real LangChain/SDK serialization, without a network."""
 
+import asyncio
 import json
 import socket
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 from unittest.mock import AsyncMock
 
 import httpx
@@ -13,16 +14,21 @@ import respx
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
+from openai import APIError
 from pydantic import SecretStr, ValidationError
 
+from incident_copilot.agents.graph import build_graph
+from incident_copilot.agents.state import initial_state
+from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.openai_provider import OpenAIProvider
 from incident_copilot.models.enums import AgentName, EvidenceSource
+from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.models.report import IncidentReport, RouteDecision
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
-from incident_copilot.utils.exceptions import StructuredOutputError
+from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
 
 REPORT = {
     "summary": "Checkout has dependency timeouts.",
@@ -109,6 +115,7 @@ def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
     for body in bodies:
         assert body["model"] == "gpt-6-luna"
         assert body["reasoning"] == {"effort": "none"}
+        assert body["max_output_tokens"] == 4096
         assert "messages" not in body  # Responses input, never Chat Completions.
         assert "previous_response_id" not in body  # Send the complete local history.
 
@@ -677,3 +684,218 @@ async def test_malformed_tool_json_retains_its_call_id_and_raw_arguments(
     assert isinstance(reply.content, list)
     assert reply.content[0] == invalid
     assert len(exchange.bodies) == 1  # No silent repair request or discarded call.
+
+
+type Operation = Literal["text", "structured", "tools"]
+
+
+async def invoke_operation(provider: OpenAIProvider, operation: Operation) -> object:
+    if operation == "text":
+        return await provider.complete(MESSAGES)
+    if operation == "structured":
+        return await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=100)
+    return await provider.bind_tools([]).ainvoke([HumanMessage(content="Inspect checkout")])
+
+
+@pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+async def test_deadline_cancels_inflight_http_without_retry(
+    respx_mock: respx.MockRouter, operation: Operation
+) -> None:
+    cancelled = asyncio.Event()
+    calls = 0
+
+    async def blocked(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+        raise AssertionError("Unreachable")
+
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=blocked)
+    provider = OpenAIProvider.from_settings(
+        Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
+    )
+    try:
+        with pytest.raises(LLMProviderError, match="deadline"):
+            await asyncio.wait_for(invoke_operation(provider, operation), timeout=1)
+        assert cancelled.is_set()
+        assert calls == 1
+    finally:
+        await provider.aclose()
+
+
+async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRouter) -> None:
+    exchange = Wire(outputs=[text_output("invalid"), text_output(json.dumps(REPORT))])
+    cancelled = asyncio.Event()
+    calls = 0
+
+    async def delayed(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        try:
+            await asyncio.sleep(0.08)
+        except asyncio.CancelledError:
+            cancelled.set()
+            raise
+        return exchange.respond(request)
+
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
+    provider = OpenAIProvider.from_settings(
+        Settings(_env_file=None, llm_operation_timeout_seconds=0.12)
+    )
+    try:
+        with pytest.raises(LLMProviderError, match="deadline"):
+            await asyncio.wait_for(
+                provider.complete_structured(MESSAGES, IncidentReport), timeout=1
+            )
+        assert calls == 2  # First invalid response was repaired, second request was cancelled.
+        assert cancelled.is_set()
+    finally:
+        await provider.aclose()
+
+
+async def test_cancellation_during_repair_reaches_http(respx_mock: respx.MockRouter) -> None:
+    exchange = Wire(outputs=[text_output("invalid")])
+    repair_started = asyncio.Event()
+    cancelled = asyncio.Event()
+    calls = 0
+
+    async def respond(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if not exchange.bodies:
+            return exchange.respond(request)
+        repair_started.set()
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.set()
+        raise AssertionError("Unreachable")
+
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    task = asyncio.create_task(provider.complete_structured(MESSAGES, IncidentReport))
+    try:
+        await asyncio.wait_for(repair_started.wait(), timeout=1)
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await asyncio.wait_for(task, timeout=1)
+        assert cancelled.is_set()
+        assert calls == 2
+    finally:
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+        await provider.aclose()
+
+
+@pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+@pytest.mark.parametrize("status", [400, 401, 403, 422, 429, 500, 503])
+async def test_http_failures_never_retry_even_with_server_retry_headers(
+    respx_mock: respx.MockRouter, operation: Operation, status: int
+) -> None:
+    route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+        status,
+        json={"error": {"message": "Synthetic upstream failure", "type": "invalid_request_error"}},
+        headers={"Retry-After": "0", "x-should-retry": "true"},
+    )
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    try:
+        # Normalizing all upstream exceptions is the next task. Here only count I/O.
+        with pytest.raises((APIError, LLMProviderError), match="Synthetic upstream failure"):
+            await invoke_operation(provider, operation)
+        assert route.call_count == 1
+    finally:
+        await provider.aclose()
+
+
+@pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+@pytest.mark.parametrize("failure", [httpx.ConnectError, httpx.ReadTimeout])
+async def test_transport_failures_never_retry(
+    respx_mock: respx.MockRouter, operation: Operation, failure: type[httpx.TransportError]
+) -> None:
+    route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+        side_effect=failure("Synthetic transport failure")
+    )
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    try:
+        with pytest.raises((APIError, LLMProviderError)):
+            await invoke_operation(provider, operation)
+        assert route.call_count == 1
+    finally:
+        await provider.aclose()
+
+
+@pytest.mark.parametrize("ceiling, requested", [(2, 100), (3, 1)])
+async def test_repair_attempts_respect_provider_and_caller_caps(
+    respx_mock: respx.MockRouter, ceiling: int, requested: int
+) -> None:
+    exchange = Wire(outputs=[text_output("invalid")] * 100)
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
+    provider = OpenAIProvider.from_settings(
+        Settings(_env_file=None, llm_max_structured_attempts=ceiling, llm_max_output_tokens=1234)
+    )
+    count = min(ceiling, requested)
+    try:
+        with pytest.raises(StructuredOutputError, match=f"after {count} attempts"):
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=requested)
+        assert len(exchange.bodies) == count
+        assert all(body["max_output_tokens"] == 1234 for body in exchange.bodies)
+        for client in provider._owned_clients or ():
+            assert client.max_retries == 0
+            assert client.timeout == 60.0
+    finally:
+        await provider.aclose()
+
+
+async def test_graph_call_budget_has_no_node_retry_multiplier(respx_mock: respx.MockRouter) -> None:
+    bodies: list[dict[str, Any]] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        bodies.append(body)
+        # Repeat a tool request to exercise the specialist round ceilings. Unknown
+        # tools are recorded by the existing graph without any connector I/O.
+        output = (
+            [
+                {
+                    "type": "function_call",
+                    "id": f"fc_{len(bodies)}",
+                    "call_id": f"call_{len(bodies)}",
+                    "name": "unknown_offline_tool",
+                    "arguments": "{}",
+                    "status": "completed",
+                }
+            ]
+            if "tools" in body
+            else text_output("invalid")
+        )
+        return Wire(outputs=[output]).respond(request)
+
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+    settings = Settings(_env_file=None)
+    provider = OpenAIProvider.from_settings(settings)
+
+    async def unused() -> str:
+        """Return an offline placeholder."""
+        return "unused"
+
+    tool = StructuredTool.from_function(coroutine=unused)
+    try:
+        graph = build_graph(provider, [tool], [tool], settings)
+        final = await graph.ainvoke(
+            initial_state(
+                correlation_id="offline-budget",
+                query="Investigate checkout",
+                time_window=TimeWindow.from_minutes_back(60),
+                target_service="checkout",
+            )
+        )
+        assert final["report"] is None
+        assert final["iterations"] == 1
+        assert len(bodies) == 9  # Supervisor 2 + two specialists * 2 + correlation 3.
+        assert sum("tools" in body for body in bodies) == 4
+        assert all(body["max_output_tokens"] == 4096 for body in bodies)
+    finally:
+        await provider.aclose()

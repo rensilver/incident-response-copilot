@@ -1,0 +1,2323 @@
+.FFFFFFFFFF...........FFFFFFFFFFFFFFFFFFFFFFFFFFF...F....F..FFFFF....... [ 75%]
+....................FFF                                                  [100%]
+=================================== FAILURES ===================================
+________________________ test_default_operation_limits _________________________
+
+    def test_default_operation_limits() -> None:
+        settings = Settings(_env_file=None)
+>       assert settings.llm_operation_timeout_seconds == 60.0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/config/test_openai_settings.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Settings(llm_provider=<LLMProviderName.OPENAI: 'openai'>, llm_fallback_provider='none', openai_api_key=SecretStr('****...ng=False, langsmith_api_key=None, langsmith_project='incident-copilot', max_tool_rounds=2, max_supervisor_iterations=3)
+item = 'llm_operation_timeout_seconds'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'Settings' object has no attribute 'llm_operation_timeout_seconds'
+
+.venv/lib/python3.13/site-packages/pydantic/main.py:1042: AttributeError
+__ test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-0] __
+
+name = 'llm_operation_timeout_seconds', value = 0
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+_ test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-181] _
+
+name = 'llm_operation_timeout_seconds', value = 181
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+_ test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-inf] _
+
+name = 'llm_operation_timeout_seconds', value = inf
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+_ test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-nan] _
+
+name = 'llm_operation_timeout_seconds', value = nan
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+______ test_rejects_unbounded_operation_settings[llm_max_output_tokens-0] ______
+
+name = 'llm_max_output_tokens', value = 0
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+____ test_rejects_unbounded_operation_settings[llm_max_output_tokens-16385] ____
+
+name = 'llm_max_output_tokens', value = 16385
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+___ test_rejects_unbounded_operation_settings[llm_max_structured_attempts-0] ___
+
+name = 'llm_max_structured_attempts', value = 0
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+___ test_rejects_unbounded_operation_settings[llm_max_structured_attempts-6] ___
+
+name = 'llm_max_structured_attempts', value = 6
+
+    @pytest.mark.parametrize("name,value", [
+        ("llm_operation_timeout_seconds", 0), ("llm_operation_timeout_seconds", 181),
+        ("llm_operation_timeout_seconds", float("inf")),
+        ("llm_operation_timeout_seconds", float("nan")),
+        ("llm_max_output_tokens", 0), ("llm_max_output_tokens", 16385),
+        ("llm_max_structured_attempts", 0), ("llm_max_structured_attempts", 6),
+    ])
+    def test_rejects_unbounded_operation_settings(name: str, value: float) -> None:
+>       with pytest.raises(ValidationError, match=name):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/config/test_openai_settings.py:35: Failed
+___________________ test_operation_limits_load_from_process ____________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x790826d9f790>
+
+    def test_operation_limits_load_from_process(monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("LLM_OPERATION_TIMEOUT_SECONDS", "15")
+        monkeypatch.setenv("LLM_MAX_OUTPUT_TOKENS", "2048")
+        monkeypatch.setenv("LLM_MAX_STRUCTURED_ATTEMPTS", "2")
+        settings = Settings(_env_file=None)
+>       assert settings.llm_operation_timeout_seconds == 15.0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/config/test_openai_settings.py:44:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = Settings(llm_provider=<LLMProviderName.OPENAI: 'openai'>, llm_fallback_provider='none', openai_api_key=SecretStr('****...ng=False, langsmith_api_key=None, langsmith_project='incident-copilot', max_tool_rounds=2, max_supervisor_iterations=3)
+item = 'llm_operation_timeout_seconds'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'Settings' object has no attribute 'llm_operation_timeout_seconds'
+
+.venv/lib/python3.13/site-packages/pydantic/main.py:1042: AttributeError
+__________ test_text_uses_responses_and_the_explicit_inference_policy __________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908265c1160>, Wire(outputs=[], bodies=[{'input': [{...', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False}], response_fields=[]))
+
+    async def test_text_uses_responses_and_the_explicit_inference_policy(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output("Checkout needs investigation.")]
+
+        assert await provider.complete(MESSAGES) == "Checkout needs investigation."
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:129:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_______ test_structured_generation_and_repairs_keep_json_mode_and_policy _______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259c02d0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+
+    async def test_structured_generation_and_repairs_keep_json_mode_and_policy(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+        invalid = json.dumps({**REPORT, "confidence": 2.0})
+        exchange.outputs = [text_output(invalid), text_output(json.dumps(REPORT))]
+
+        report = await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert report.summary == "Checkout has dependency timeouts."
+        assert report.confidence == 0.7
+        assert report.next_steps == ("Inspect inventory latency.",)
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:152:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_____ test_structured_refusal_is_terminal_even_with_a_valid_report[False] ______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259c2710>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+with_text = False
+
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_structured_refusal_is_terminal_even_with_a_valid_report(
+        wire: tuple[OpenAIProvider, Wire], with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        refusal = text_output(json.dumps(REPORT) if with_text else "")
+        refusal[0]["content"].append({"type": "refusal", "refusal": "Synthetic refusal text"})
+        exchange.outputs = [refusal, text_output(json.dumps(REPORT))]
+
+        with pytest.raises(StructuredOutputError, match="refus") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+        assert "Synthetic refusal text" not in str(caught.value)
+>       assert_inference_policy(exchange.bodies, 1)  # Never repair a refusal into a report.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:181:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+______ test_structured_refusal_is_terminal_even_with_a_valid_report[True] ______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259d2780>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+with_text = True
+
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_structured_refusal_is_terminal_even_with_a_valid_report(
+        wire: tuple[OpenAIProvider, Wire], with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        refusal = text_output(json.dumps(REPORT) if with_text else "")
+        refusal[0]["content"].append({"type": "refusal", "refusal": "Synthetic refusal text"})
+        exchange.outputs = [refusal, text_output(json.dumps(REPORT))]
+
+        with pytest.raises(StructuredOutputError, match="refus") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+        assert "Synthetic refusal text" not in str(caught.value)
+>       assert_inference_policy(exchange.bodies, 1)  # Never repair a refusal into a report.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:181:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[False-max_output_tokens] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259bc9d0>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'max_output_tokens', with_text = False
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [{"status": "incomplete", "incomplete_details": {"reason": reason}}]
+
+        with pytest.raises(StructuredOutputError, match="incomplete"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:199:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[False-content_filter] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259fa0f0>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'content_filter', with_text = False
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [{"status": "incomplete", "incomplete_details": {"reason": reason}}]
+
+        with pytest.raises(StructuredOutputError, match="incomplete"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:199:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[True-max_output_tokens] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259d45a0>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'max_output_tokens', with_text = True
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [{"status": "incomplete", "incomplete_details": {"reason": reason}}]
+
+        with pytest.raises(StructuredOutputError, match="incomplete"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:199:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[True-content_filter] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259d6690>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'content_filter', with_text = True
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [{"status": "incomplete", "incomplete_details": {"reason": reason}}]
+
+        with pytest.raises(StructuredOutputError, match="incomplete"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:199:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+__________ test_noncompleted_response_cannot_become_a_report[failed] ___________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259ded50>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'failed'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+        with pytest.raises(StructuredOutputError, match="not completed"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:213:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_________ test_noncompleted_response_cannot_become_a_report[cancelled] _________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x790826452550>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'cancelled'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+        with pytest.raises(StructuredOutputError, match="not completed"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:213:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+__________ test_noncompleted_response_cannot_become_a_report[queued] ___________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908264a0b90>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'queued'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+        with pytest.raises(StructuredOutputError, match="not completed"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:213:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+________ test_noncompleted_response_cannot_become_a_report[in_progress] ________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259f0aa0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'in_progress'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+        with pytest.raises(StructuredOutputError, match="not completed"):
+            await provider.complete_structured(MESSAGES, IncidentReport)
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:213:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checkout.', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+__ test_invalid_report_exhausts_repairs_without_returning_a_report[not-json] ___
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x790825a01fd0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = 'not json'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[truncated-json] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908263e6270>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary":'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[array-root] __
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x790825757110>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '[{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}]'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[fenced-json] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259e6510>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '```json\n{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}\n```'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[trailing-garbage] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259e7dd0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7} trailing garbage'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[multiple-objects] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x79082580eba0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "...ckout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[missing-fields] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x79082580fc20>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{}'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[confidence-bound] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x79082581c9b0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": -0.1}'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[nested-cause] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x79082581ddb0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [{"title": "Missing rationale/evidence"}], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+___ test_invalid_report_exhausts_repairs_without_returning_a_report[window] ____
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908259b4b90>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7, "investigation_window": {"start": "bad", "end": "bad"}}'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json",
+            "truncated-json",
+            "array-root",
+            "fenced-json",
+            "trailing-garbage",
+            "multiple-objects",
+            "missing-fields",
+            "confidence-bound",
+            "nested-cause",
+            "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+        with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert caught.value.raw_output == invalid
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:253:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+____ test_malformed_json_repairs_to_a_report_with_validated_nested_evidence ____
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258ee850>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+
+    async def test_malformed_json_repairs_to_a_report_with_validated_nested_evidence(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+        report = {
+            **REPORT,
+            "likely_causes": [
+                {
+                    "title": "Inventory latency",
+                    "rationale": "Candidate supported by retrieved dependency timeouts.",
+                    "confidence": 0.8,
+                    "supporting_evidence": [{"source": "logs", "detail": "café → inventory timeout"}],
+                }
+            ],
+        }
+        exchange.outputs = [text_output('{"summary":'), text_output(json.dumps(report))]
+
+        result = await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+        assert result.investigation_window is None  # The service supplies the authoritative window.
+        cause = result.likely_causes[0]
+        assert cause.confidence == 0.8
+        assert cause.supporting_evidence[0].source == EvidenceSource.LOGS
+        assert cause.supporting_evidence[0].detail == "café → inventory timeout"
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:281:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+____________ test_route_schema_is_validated_and_repaired[invalid0] _____________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258c3ed0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = {'agents': [], 'reasoning': 'No specialist'}
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            {"agents": [], "reasoning": "No specialist"},
+            {"agents": ["unknown"], "reasoning": "Invalid vocabulary"},
+            {"agents": ["logs_agent"]},
+        ],
+    )
+    async def test_route_schema_is_validated_and_repaired(
+        wire: tuple[OpenAIProvider, Wire], invalid: dict[str, Any]
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(invalid)),
+            text_output('{"agents":["logs_agent","metrics_agent"],"reasoning":"Inspect both"}'),
+        ]
+
+        result = await provider.complete_structured(MESSAGES, RouteDecision, max_attempts=2)
+
+        assert result.agents == (AgentName.LOGS, AgentName.METRICS)
+        assert result.reasoning == "Inspect both"
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:305:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+____________ test_route_schema_is_validated_and_repaired[invalid1] _____________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258273f0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = {'agents': ['unknown'], 'reasoning': 'Invalid vocabulary'}
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            {"agents": [], "reasoning": "No specialist"},
+            {"agents": ["unknown"], "reasoning": "Invalid vocabulary"},
+            {"agents": ["logs_agent"]},
+        ],
+    )
+    async def test_route_schema_is_validated_and_repaired(
+        wire: tuple[OpenAIProvider, Wire], invalid: dict[str, Any]
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(invalid)),
+            text_output('{"agents":["logs_agent","metrics_agent"],"reasoning":"Inspect both"}'),
+        ]
+
+        result = await provider.complete_structured(MESSAGES, RouteDecision, max_attempts=2)
+
+        assert result.agents == (AgentName.LOGS, AgentName.METRICS)
+        assert result.reasoning == "Inspect both"
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:305:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+____________ test_route_schema_is_validated_and_repaired[invalid2] _____________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258cf9a0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = {'agents': ['logs_agent']}
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            {"agents": [], "reasoning": "No specialist"},
+            {"agents": ["unknown"], "reasoning": "Invalid vocabulary"},
+            {"agents": ["logs_agent"]},
+        ],
+    )
+    async def test_route_schema_is_validated_and_repaired(
+        wire: tuple[OpenAIProvider, Wire], invalid: dict[str, Any]
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(invalid)),
+            text_output('{"agents":["logs_agent","metrics_agent"],"reasoning":"Inspect both"}'),
+        ]
+
+        result = await provider.complete_structured(MESSAGES, RouteDecision, max_attempts=2)
+
+        assert result.agents == (AgentName.LOGS, AgentName.METRICS)
+        assert result.reasoning == "Inspect both"
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:305:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'Investigate checko...}', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+________ test_tool_round_and_continuation_keep_policy_and_call_results _________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258aa1b0>, Wire(outputs=[], bodies=[{'input': [{... {'service': {'type': 'string'}}, 'required': ['service'], 'type': 'object'}, 'strict': False}]}], response_fields=[]))
+
+    async def test_tool_round_and_continuation_keep_policy_and_call_results(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+
+        async def lookup(service: str) -> str:
+            return f"{service}: timeout calling inventory"
+
+        tool = StructuredTool.from_function(
+            coroutine=lookup, name="lookup_logs", description="Read service logs."
+        )
+        exchange.outputs = [
+            [
+                {
+                    "type": "function_call",
+                    "id": "fc_offline",
+                    "call_id": "call_logs_1",
+                    "name": "lookup_logs",
+                    "arguments": '{"service":"checkout"}',
+                    "status": "completed",
+                }
+            ],
+            text_output("Inspect inventory after the checkout timeout."),
+        ]
+        runnable = provider.bind_tools([tool])
+        opening = HumanMessage(content="Inspect checkout logs")
+        reply = await runnable.ainvoke([opening])
+        assert isinstance(reply, AIMessage)
+        assert reply.tool_calls == [
+            {
+                "type": "tool_call",
+                "name": "lookup_logs",
+                "args": {"service": "checkout"},
+                "id": "call_logs_1",
+            }
+        ]
+        history: list[BaseMessage] = [
+            opening,
+            reply,
+            await tool.ainvoke(reply.tool_calls[0]),
+        ]
+        assert isinstance(history[-1], ToolMessage)
+        assert (await runnable.ainvoke(history)).text == (
+            "Inspect inventory after the checkout timeout."
+        )
+>       assert_inference_policy(exchange.bodies, 2)
+
+backend/tests/unit/llm/test_openai_provider.py:354:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Inspect checkout logs', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasonin... inventory', 'call_id': 'call_logs_1'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 2
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+___ test_application_tool_schemas_preserve_optional_defaults_and_validation ____
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x790825898ad0>, Wire(outputs=[], bodies=[{'input': [{...minimum': 1, 'type': 'integer'}}, 'required': ['service'], 'type': 'object'}, 'strict': False}]}], response_fields=[]))
+
+    async def test_application_tool_schemas_preserve_optional_defaults_and_validation(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+        metrics = AsyncMock(spec=MetricsSource)
+        logs = AsyncMock(spec=LogSource)
+        tools = [*build_metrics_tools(metrics), *build_log_tools(logs)]
+        exchange.outputs = [text_output("No tools needed.")]
+
+        await provider.bind_tools(tools).ainvoke([HumanMessage(content="Inspect checkout")])
+
+>       assert_inference_policy(exchange.bodies, 1)
+
+backend/tests/unit/llm/test_openai_provider.py:429:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Inspect checkout', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 1
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+______ test_multiple_calls_and_content_blocks_survive_every_continuation _______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258a0710>, Wire(outputs=[], bodies=[{'input': [{... {'service': {'type': 'string'}}, 'required': ['service'], 'type': 'object'}, 'strict': False}]}], response_fields=[]))
+
+    async def test_multiple_calls_and_content_blocks_survive_every_continuation(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+
+        async def lookup(service: str) -> str:
+            return f"{service}: timeout calling inventory"
+
+        async def histogram(service: str) -> list[dict[str, str]]:
+            return [{"type": "text", "text": f"{service}: ERROR=2"}]
+
+        lookup_tool = StructuredTool.from_function(
+            coroutine=lookup, name="lookup_logs", description="Read logs."
+        )
+        histogram_tool = StructuredTool.from_function(
+            coroutine=histogram, name="histogram", description="Count logs."
+        )
+        reasoning = {
+            "type": "reasoning",
+            "id": "rs_offline",
+            "summary": [
+                {"type": "summary_text", "text": "Inspect both services."},
+            ],
+        }
+        first_text = text_output("Checking checkout and café.")
+        first_calls = [
+            function_call("logs_1", "lookup_logs", {"service": "checkout"}),
+            function_call("logs_2", "lookup_logs", {"service": "café"}),
+        ]
+        second_call = function_call("hist_1", "histogram", {"service": "inventory"})
+        exchange.outputs = [
+            [reasoning, *first_text, *first_calls],
+            [second_call],
+            text_output("Inventory needs investigation."),
+        ]
+        runnable = provider.bind_tools([lookup_tool, histogram_tool])
+        history: list[BaseMessage] = [HumanMessage(content="Inspect checkout and café")]
+
+        reply = await runnable.ainvoke(history)
+        assert isinstance(reply, AIMessage)
+        assert reply.text == "Checking checkout and café."
+        assert reply.tool_calls == [
+            {
+                "type": "tool_call",
+                "id": "logs_1",
+                "name": "lookup_logs",
+                "args": {"service": "checkout"},
+            },
+            {"type": "tool_call", "id": "logs_2", "name": "lookup_logs", "args": {"service": "café"}},
+        ]
+        assert isinstance(reply.content, list)
+        assert reply.content[0] == reasoning
+        # Return same-name calls in reverse order: results must correlate by ID.
+        history.extend(
+            [
+                reply,
+                await lookup_tool.ainvoke(reply.tool_calls[1]),
+                await lookup_tool.ainvoke(reply.tool_calls[0]),
+            ]
+        )
+        second = await runnable.ainvoke(history)
+        assert isinstance(second, AIMessage)
+        assert second.text == ""
+        assert second.tool_calls == [
+            {
+                "type": "tool_call",
+                "id": "hist_1",
+                "name": "histogram",
+                "args": {"service": "inventory"},
+            },
+        ]
+        history.extend([second, await histogram_tool.ainvoke(second.tool_calls[0])])
+        final = await runnable.ainvoke(history)
+        assert final.text == "Inventory needs investigation."
+>       assert_inference_policy(exchange.bodies, 3)
+
+backend/tests/unit/llm/test_openai_provider.py:592:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+bodies = [{'input': [{'content': 'Inspect checkout and café', 'role': 'user', 'type': 'message'}], 'model': 'gpt-6-luna', 'reas... inventory', 'call_id': 'logs_2'}, ...], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}]
+count = 3
+
+    def assert_inference_policy(bodies: list[dict[str, Any]], count: int) -> None:
+        assert len(bodies) == count
+        for body in bodies:
+            assert body["model"] == "gpt-6-luna"
+            assert body["reasoning"] == {"effort": "none"}
+>           assert body["max_output_tokens"] == 4096
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:117: KeyError
+___________ test_deadline_cancels_inflight_http_without_retry[text] ____________
+
+provider = <incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258a1cd0>
+operation = 'text'
+
+    async def invoke_operation(provider: OpenAIProvider, operation: Operation) -> object:
+        if operation == "text":
+>           return await provider.complete(MESSAGES)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:693:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/src/incident_copilot/llm/openai_provider.py:77: in complete
+    return (await self._chat.ainvoke(to_langchain_messages(messages))).text
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:500: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1877: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1797: in agenerate
+    results = await asyncio.gather(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:2168: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py:1749: in _agenerate
+    await self.root_async_client.responses.with_raw_response.create(
+.venv/lib/python3.13/site-packages/openai/_legacy_response.py:386: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/resources/responses/responses.py:2869: in create
+    return await self._post(
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1992: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1709: in request
+    response = await self._send_request(
+.venv/lib/python3.13/site-packages/openai/_client.py:1097: in _send_request
+    response = await self._send_with_auth_retry(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_client.py:1075: in _send_with_auth_retry
+    response = await super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1628: in _send_request
+    return await self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:190: in amock
+    response = await cls._send_async_request(
+.venv/lib/python3.13/site-packages/respx/mocks.py:224: in _send_async_request
+    httpx_response = await cls.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:129: in async_handler
+    httpx_response = await router.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:318: in async_handler
+    resolved = await self.aresolve(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:298: in aresolve
+    prospect = await prospect
+               ^^^^^^^^^^^^^^
+backend/tests/unit/llm/test_openai_provider.py:707: in blocked
+    await asyncio.Event().wait()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.locks.Event object at 0x7908259c11d0 [unset]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another task calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+../../miniconda3/lib/python3.13/asyncio/locks.py:213: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+operation = 'text'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_deadline_cancels_inflight_http_without_retry(
+        respx_mock: respx.MockRouter, operation: Operation
+    ) -> None:
+        cancelled = asyncio.Event()
+
+        async def blocked(request: httpx.Request) -> httpx.Response:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            raise AssertionError("Unreachable")
+
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=blocked)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
+        )
+        try:
+            with pytest.raises(LLMProviderError, match="deadline"):
+>               await asyncio.wait_for(invoke_operation(provider, operation), timeout=1)
+
+backend/tests/unit/llm/test_openai_provider.py:718:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../../miniconda3/lib/python3.13/asyncio/tasks.py:506: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x790824e44040>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+
+            if self._task.uncancel() <= self._cancelling and exc_type is not None:
+                # Since there are no new cancel requests, we're
+                # handling this.
+                if issubclass(exc_type, exceptions.CancelledError):
+>                   raise TimeoutError from exc_val
+E                   TimeoutError
+
+../../miniconda3/lib/python3.13/asyncio/timeouts.py:116: TimeoutError
+________ test_deadline_cancels_inflight_http_without_retry[structured] _________
+
+provider = <incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7908258aaf30>
+operation = 'structured'
+
+    async def invoke_operation(provider: OpenAIProvider, operation: Operation) -> object:
+        if operation == "text":
+            return await provider.complete(MESSAGES)
+        if operation == "structured":
+>           return await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=100)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:695:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/src/incident_copilot/llm/base.py:86: in complete_structured
+    raw = await self._generate_json(conversation)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/src/incident_copilot/llm/openai_provider.py:86: in _generate_json
+    response = await chat.ainvoke(conversation)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/langchain_core/runnables/base.py:6015: in ainvoke
+    return await self.bound.ainvoke(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:500: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1877: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1797: in agenerate
+    results = await asyncio.gather(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:2168: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py:1749: in _agenerate
+    await self.root_async_client.responses.with_raw_response.create(
+.venv/lib/python3.13/site-packages/openai/_legacy_response.py:386: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/resources/responses/responses.py:2869: in create
+    return await self._post(
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1992: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1709: in request
+    response = await self._send_request(
+.venv/lib/python3.13/site-packages/openai/_client.py:1097: in _send_request
+    response = await self._send_with_auth_retry(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_client.py:1075: in _send_with_auth_retry
+    response = await super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1628: in _send_request
+    return await self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:190: in amock
+    response = await cls._send_async_request(
+.venv/lib/python3.13/site-packages/respx/mocks.py:224: in _send_async_request
+    httpx_response = await cls.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:129: in async_handler
+    httpx_response = await router.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:318: in async_handler
+    resolved = await self.aresolve(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:298: in aresolve
+    prospect = await prospect
+               ^^^^^^^^^^^^^^
+backend/tests/unit/llm/test_openai_provider.py:707: in blocked
+    await asyncio.Event().wait()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.locks.Event object at 0x7908259d0c30 [unset]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another task calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+../../miniconda3/lib/python3.13/asyncio/locks.py:213: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+operation = 'structured'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_deadline_cancels_inflight_http_without_retry(
+        respx_mock: respx.MockRouter, operation: Operation
+    ) -> None:
+        cancelled = asyncio.Event()
+
+        async def blocked(request: httpx.Request) -> httpx.Response:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            raise AssertionError("Unreachable")
+
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=blocked)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
+        )
+        try:
+            with pytest.raises(LLMProviderError, match="deadline"):
+>               await asyncio.wait_for(invoke_operation(provider, operation), timeout=1)
+
+backend/tests/unit/llm/test_openai_provider.py:718:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../../miniconda3/lib/python3.13/asyncio/tasks.py:506: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x79081f7d2940>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+
+            if self._task.uncancel() <= self._cancelling and exc_type is not None:
+                # Since there are no new cancel requests, we're
+                # handling this.
+                if issubclass(exc_type, exceptions.CancelledError):
+>                   raise TimeoutError from exc_val
+E                   TimeoutError
+
+../../miniconda3/lib/python3.13/asyncio/timeouts.py:116: TimeoutError
+___________ test_deadline_cancels_inflight_http_without_retry[tools] ___________
+
+provider = <incident_copilot.llm.openai_provider.OpenAIProvider object at 0x790825837d10>
+operation = 'tools'
+
+    async def invoke_operation(provider: OpenAIProvider, operation: Operation) -> object:
+        if operation == "text":
+            return await provider.complete(MESSAGES)
+        if operation == "structured":
+            return await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=100)
+>       return await provider.bind_tools([]).ainvoke([HumanMessage(content="Inspect checkout")])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:696:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.13/site-packages/langchain_core/runnables/base.py:6015: in ainvoke
+    return await self.bound.ainvoke(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:500: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1877: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:1797: in agenerate
+    results = await asyncio.gather(
+.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py:2168: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py:1749: in _agenerate
+    await self.root_async_client.responses.with_raw_response.create(
+.venv/lib/python3.13/site-packages/openai/_legacy_response.py:386: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/resources/responses/responses.py:2869: in create
+    return await self._post(
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1992: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1709: in request
+    response = await self._send_request(
+.venv/lib/python3.13/site-packages/openai/_client.py:1097: in _send_request
+    response = await self._send_with_auth_retry(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_client.py:1075: in _send_with_auth_retry
+    response = await super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/openai/_base_client.py:1628: in _send_request
+    return await self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.13/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_client.py:1730: in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/httpx/_transports/default.py:394: in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:190: in amock
+    response = await cls._send_async_request(
+.venv/lib/python3.13/site-packages/respx/mocks.py:224: in _send_async_request
+    httpx_response = await cls.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/mocks.py:129: in async_handler
+    httpx_response = await router.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:318: in async_handler
+    resolved = await self.aresolve(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/respx/router.py:298: in aresolve
+    prospect = await prospect
+               ^^^^^^^^^^^^^^
+backend/tests/unit/llm/test_openai_provider.py:707: in blocked
+    await asyncio.Event().wait()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.locks.Event object at 0x7908259f8290 [unset]>
+
+    async def wait(self):
+        """Block until the internal flag is true.
+
+        If the internal flag is true on entry, return True
+        immediately.  Otherwise, block until another task calls
+        set() to set the flag to true, then return True.
+        """
+        if self._value:
+            return True
+
+        fut = self._get_loop().create_future()
+        self._waiters.append(fut)
+        try:
+>           await fut
+E           asyncio.exceptions.CancelledError
+
+../../miniconda3/lib/python3.13/asyncio/locks.py:213: CancelledError
+
+The above exception was the direct cause of the following exception:
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+operation = 'tools'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_deadline_cancels_inflight_http_without_retry(
+        respx_mock: respx.MockRouter, operation: Operation
+    ) -> None:
+        cancelled = asyncio.Event()
+
+        async def blocked(request: httpx.Request) -> httpx.Response:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            raise AssertionError("Unreachable")
+
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=blocked)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
+        )
+        try:
+            with pytest.raises(LLMProviderError, match="deadline"):
+>               await asyncio.wait_for(invoke_operation(provider, operation), timeout=1)
+
+backend/tests/unit/llm/test_openai_provider.py:718:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../../miniconda3/lib/python3.13/asyncio/tasks.py:506: in wait_for
+    async with timeouts.timeout(timeout):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Timeout [expired]>
+exc_type = <class 'asyncio.exceptions.CancelledError'>
+exc_val = CancelledError(), exc_tb = <traceback object at 0x79081f01af80>
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Optional[bool]:
+        assert self._state in (_State.ENTERED, _State.EXPIRING)
+
+        if self._timeout_handler is not None:
+            self._timeout_handler.cancel()
+            self._timeout_handler = None
+
+        if self._state is _State.EXPIRING:
+            self._state = _State.EXPIRED
+
+            if self._task.uncancel() <= self._cancelling and exc_type is not None:
+                # Since there are no new cancel requests, we're
+                # handling this.
+                if issubclass(exc_type, exceptions.CancelledError):
+>                   raise TimeoutError from exc_val
+E                   TimeoutError
+
+../../miniconda3/lib/python3.13/asyncio/timeouts.py:116: TimeoutError
+__________________ test_structured_repairs_share_one_deadline __________________
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+
+    async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRouter) -> None:
+        exchange = Wire(outputs=[text_output("invalid"), text_output(json.dumps(REPORT))])
+        cancelled = asyncio.Event()
+        calls = 0
+
+        async def delayed(request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            try:
+                await asyncio.sleep(0.08)
+            except asyncio.CancelledError:
+                cancelled.set()
+                raise
+            return exchange.respond(request)
+
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.12)
+        )
+        try:
+>           with pytest.raises(LLMProviderError, match="deadline"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE LLMProviderError
+
+backend/tests/unit/llm/test_openai_provider.py:745: Failed
+_________________ test_cancellation_during_repair_reaches_http _________________
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+
+    async def test_cancellation_during_repair_reaches_http(respx_mock: respx.MockRouter) -> None:
+        exchange = Wire(outputs=[text_output("invalid")])
+        repair_started = asyncio.Event()
+        cancelled = asyncio.Event()
+
+        async def respond(request: httpx.Request) -> httpx.Response:
+            if not exchange.bodies:
+                return exchange.respond(request)
+            repair_started.set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            raise AssertionError("Unreachable")
+
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        task = asyncio.create_task(provider.complete_structured(MESSAGES, IncidentReport))
+        try:
+            await asyncio.wait_for(repair_started.wait(), timeout=1)
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await asyncio.wait_for(task, timeout=1)
+            assert cancelled.is_set()
+>           assert route.call_count == 2
+E           AssertionError: assert 1 == 2
+E            +  where 1 = <Route <Scheme eq 'https'> AND <Host eq 'api.openai.com'> AND <Path eq '/v1/responses'> AND <Method eq 'POST'>>.call_count
+
+backend/tests/unit/llm/test_openai_provider.py:777: AssertionError
+_________ test_repair_attempts_respect_provider_and_caller_caps[2-100] _________
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>, ceiling = 2
+requested = 100
+
+    @pytest.mark.parametrize("ceiling, requested", [(2, 100), (3, 1)])
+    async def test_repair_attempts_respect_provider_and_caller_caps(
+        respx_mock: respx.MockRouter, ceiling: int, requested: int
+    ) -> None:
+        exchange = Wire(outputs=[text_output("invalid")] * 100)
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_max_structured_attempts=ceiling, llm_max_output_tokens=1234)
+        )
+        count = min(ceiling, requested)
+        try:
+>           with pytest.raises(StructuredOutputError, match=f"after {count} attempts"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Regex pattern did not match.
+E             Expected regex: 'after 2 attempts'
+E             Actual message: 'could not obtain valid IncidentReport after 100 attempts'
+
+backend/tests/unit/llm/test_openai_provider.py:832: AssertionError
+__________ test_repair_attempts_respect_provider_and_caller_caps[3-1] __________
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>, ceiling = 3
+requested = 1
+
+    @pytest.mark.parametrize("ceiling, requested", [(2, 100), (3, 1)])
+    async def test_repair_attempts_respect_provider_and_caller_caps(
+        respx_mock: respx.MockRouter, ceiling: int, requested: int
+    ) -> None:
+        exchange = Wire(outputs=[text_output("invalid")] * 100)
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_max_structured_attempts=ceiling, llm_max_output_tokens=1234)
+        )
+        count = min(ceiling, requested)
+        try:
+            with pytest.raises(StructuredOutputError, match=f"after {count} attempts"):
+                await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=requested)
+            assert len(exchange.bodies) == count
+>           assert all(body["max_output_tokens"] == 1234 for body in exchange.bodies)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/llm/test_openai_provider.py:835:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x790824dad4b0>
+
+>   assert all(body["max_output_tokens"] == 1234 for body in exchange.bodies)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'max_output_tokens'
+
+backend/tests/unit/llm/test_openai_provider.py:835: KeyError
+_____________ test_graph_call_budget_has_no_node_retry_multiplier ______________
+
+respx_mock = <respx.router.MockRouter object at 0x79082a9e17f0>
+
+    async def test_graph_call_budget_has_no_node_retry_multiplier(respx_mock: respx.MockRouter) -> None:
+        bodies: list[dict[str, Any]] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            body = json.loads(request.content)
+            bodies.append(body)
+            # Repeat a tool request to exercise the specialist round ceilings. Unknown
+            # tools are recorded by the existing graph without any connector I/O.
+            output = (
+                [{"type": "function_call", "id": f"fc_{len(bodies)}", "call_id": f"call_{len(bodies)}",
+                  "name": "unknown_offline_tool", "arguments": "{}", "status": "completed"}]
+                if "tools" in body
+                else text_output("invalid")
+            )
+            return Wire(outputs=[output]).respond(request)
+
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+        settings = Settings(_env_file=None)
+        provider = OpenAIProvider.from_settings(settings)
+
+        async def unused() -> str:
+            """Return an offline placeholder."""
+            return "unused"
+
+        tool = StructuredTool.from_function(coroutine=unused)
+        try:
+            graph = build_graph(provider, [tool], [tool], settings)
+            final = await graph.ainvoke(initial_state(
+                correlation_id="offline-budget", query="Investigate checkout",
+                time_window=TimeWindow.from_minutes_back(60), target_service="checkout",
+            ))
+            assert final["report"] is None
+            assert final["iterations"] == 1
+>           assert len(bodies) == 9  # Supervisor 2 + two specialists * 2 + correlation 3.
+            ^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert 11 == 9
+E            +  where 11 = len([{'input': [{'content': 'Return a JSON object.', 'role': 'system', 'type': 'message'}, {'content': 'You route an incid...l', 'type': 'function_call', ...}], 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False, ...}, ...])
+
+backend/tests/unit/llm/test_openai_provider.py:876: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-22 09:25:29 [warning  ] supervisor_route_unparsable    error='could not obtain valid RouteDecision after 2 attempts'
+2026-10-22 09:25:29 [debug    ] tool_round_complete            results=0 round=1
+2026-10-22 09:25:29 [debug    ] tool_round_complete            results=0 round=1
+2026-10-22 09:25:29 [debug    ] tool_round_complete            results=0 round=2
+2026-10-22 09:25:29 [info     ] logs_agent_complete            errors=2 findings=0
+2026-10-22 09:25:29 [debug    ] tool_round_complete            results=0 round=2
+2026-10-22 09:25:29 [info     ] metrics_agent_complete         errors=2 findings=0
+2026-10-22 09:25:29 [warning  ] correlation_failed             error='could not obtain valid IncidentReport after 5 attempts'
+=========================== short test summary info ============================
+FAILED backend/tests/unit/config/test_openai_settings.py::test_default_operation_limits
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-0]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-181]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-inf]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_operation_timeout_seconds-nan]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_max_output_tokens-0]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_max_output_tokens-16385]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_max_structured_attempts-0]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_rejects_unbounded_operation_settings[llm_max_structured_attempts-6]
+FAILED backend/tests/unit/config/test_openai_settings.py::test_operation_limits_load_from_process
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_text_uses_responses_and_the_explicit_inference_policy
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_generation_and_repairs_keep_json_mode_and_policy
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[False]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[True]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-max_output_tokens]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-content_filter]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-max_output_tokens]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-content_filter]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[failed]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[cancelled]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[queued]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[in_progress]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[not-json]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[truncated-json]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[array-root]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[fenced-json]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[trailing-garbage]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[multiple-objects]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[missing-fields]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[confidence-bound]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[nested-cause]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[window]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_malformed_json_repairs_to_a_report_with_validated_nested_evidence
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_route_schema_is_validated_and_repaired[invalid0]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_route_schema_is_validated_and_repaired[invalid1]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_route_schema_is_validated_and_repaired[invalid2]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_tool_round_and_continuation_keep_policy_and_call_results
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_application_tool_schemas_preserve_optional_defaults_and_validation
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_multiple_calls_and_content_blocks_survive_every_continuation
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_deadline_cancels_inflight_http_without_retry[text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_deadline_cancels_inflight_http_without_retry[structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_deadline_cancels_inflight_http_without_retry[tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_repairs_share_one_deadline
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_cancellation_during_repair_reaches_http
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_repair_attempts_respect_provider_and_caller_caps[2-100]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_repair_attempts_respect_provider_and_caller_caps[3-1]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_graph_call_budget_has_no_node_retry_multiplier
+47 failed, 48 passed in 12.30s

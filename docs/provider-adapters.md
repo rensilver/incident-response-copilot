@@ -129,11 +129,70 @@ these settings controls; transport error normalization remains separately planne
 
 Until the provider-owned health probe task, OpenAI health reports unavailable without
 HTTP or inference instead of contacting Groq/Ollama. Application lifecycle wiring,
-operation budgets, error normalization, and live account validation remain pending.
+error normalization, and live account validation remain pending.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
+
+### Operation budgets and retry policy
+
+The configured OpenAI adapter reads these limits from `Settings` (also shown in
+[`.env.example`](../.env.example)):
+
+| Setting | Default | Accepted range | Scope |
+|---|---|---|---|
+| `LLM_OPERATION_TIMEOUT_SECONDS` | 60 seconds | Finite, greater than 0, at most 180 | One text call, one tool-bound invocation, or a complete structured operation including every repair |
+| `LLM_MAX_OUTPUT_TOKENS` | 4096 | 16–16384 | Every Responses request, including repairs and tool continuations |
+| `LLM_MAX_STRUCTURED_ATTEMPTS` | 3 | 1–5 | Total structured requests, including the initial generation; the caller's `max_attempts` can lower this ceiling |
+
+These settings currently apply to OpenAI; legacy adapters retain their existing
+limits until retirement. Production construction uses validated settings. Direct
+`from_api_key` construction accepts the same limit arguments for callers that
+already validated their configuration; injected test chat models retain ownership
+of their transport settings.
+
+An `asyncio.timeout` boundary cancels in-flight model I/O when the operation budget
+expires and raises `LLMProviderError("OpenAI operation deadline exceeded")`.
+Structured completion wraps the shared repair loop in one deadline: each repair
+uses the remaining time, rather than receiving another complete operation budget.
+The SDK clients and LangChain chat model also receive the configured transport
+timeout. Transport timeouts are separate from the total operation deadline.
+External `CancelledError` propagates through text, structured/repair, and tool
+calls without wrapping, retrying, or starting another request. These are cooperative
+async deadlines; they do not establish remote cancellation of an already accepted
+request or a total investigation/connector deadline.
+
+The single retry policy is **zero transport retries**. Both SDK clients and
+`ChatOpenAI` set `max_retries=0`. Connection errors, timeouts, authentication/access
+failures, invalid request/schema errors, quota/rate limits, and service errors each
+end that operation after one request, including responses with retry headers.
+No runnable retry wrapper, graph node retry policy, or automatic provider fallback
+is configured. A graph may continue to other operations after recording an error;
+that does not repeat the failed operation.
+
+Only a completed, nonrefused response whose JSON fails local validation enters the
+existing structured repair loop. This is a new request with validation feedback,
+bounded by `min(caller max_attempts, LLM_MAX_STRUCTURED_ATTEMPTS)` and the same total
+deadline. Upstream schema rejection, refusal, incomplete status, cancellation,
+transport failure, and deadline expiry never enter that repair path.
+
+With provider ceiling `A` and specialist round limit `R`, the current acyclic graph
+makes at most `min(2, A) + 2 * R + min(5, A)` inference requests. Defaults give nine:
+two supervisor requests, two per specialist, and three correlation requests. There
+is no node retry multiplier. Each request sends `max_output_tokens`; the default
+nine-request maximum is therefore 36,864 requested output tokens, with actual use
+depending on responses. This counts model requests, not local tool executions or
+an end-to-end latency guarantee. The graph regression exercises both branches and
+exhausts their limits without assuming parallel arrival order.
+
+The [budget evidence](validation/2026-10-22-openai-budgets/README.md) records serialized
+caps, shared-deadline cancellation, no-retry HTTP/transport failures, graph counts,
+and full offline verification. General upstream error normalization and its API
+mapping remain the next task; only application deadline expiry gains a fixed domain
+error here.
+
 Official references:
 [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
 [JSON mode](https://developers.openai.com/api/docs/guides/structured-outputs#json-mode),
+[Responses output-token limit](https://developers.openai.com/api/reference/python/resources/responses/methods/create),
 and [ChatOpenAI](https://reference.langchain.com/python/langchain-openai/chat_models/base/ChatOpenAI).
 
 ## Registering a future adapter
