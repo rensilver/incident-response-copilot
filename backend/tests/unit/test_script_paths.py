@@ -12,7 +12,6 @@ import pytest
 BACKEND_SCRIPTS = (
     "measure_evaluation.py",
     "validate_langsmith.py",
-    "validate_provider_failures.py",
     "seed_demo_data.py",
 )
 
@@ -52,8 +51,7 @@ def test_relocated_script_cli_imports_checkout_without_editable_install(
     assert result.returncode == 0, result.stderr
     assert "usage:" in result.stdout
     assert "--help" in result.stdout
-    if script_name != "validate_provider_failures.py":
-        assert "CHECKOUT_PACKAGE_USED" in result.stdout
+    assert "CHECKOUT_PACKAGE_USED" in result.stdout
 
 
 def load_script(path: Path) -> ModuleType:
@@ -66,7 +64,7 @@ def load_script(path: Path) -> ModuleType:
 
 @pytest.mark.parametrize(
     "script_name",
-    ["measure_evaluation.py", "validate_langsmith.py", "validate_provider_failures.py"],
+    ["measure_evaluation.py", "validate_langsmith.py"],
 )
 @pytest.mark.parametrize("working_directory", [".", "backend", "unrelated"])
 @pytest.mark.parametrize("absolute_output", [False, True], ids=["relative", "absolute"])
@@ -91,15 +89,10 @@ async def test_backend_artifacts_resolve_from_checkout_and_preserve_absolute_pat
         monkeypatch.setattr(module, "command", stop)
         with pytest.raises(BeforeExternalIOError):
             await module.measure(output, 0)
-    elif script_name == "validate_langsmith.py":
+    else:
         monkeypatch.setattr(module.subprocess, "check_output", stop)
         with pytest.raises(BeforeExternalIOError):
             await module.validate(output, False)
-    else:
-        monkeypatch.setattr(sys, "argv", [script_name, "--output", str(output)])
-        monkeypatch.setattr(module.psutil, "virtual_memory", stop)
-        with pytest.raises(BeforeExternalIOError):
-            module.main()
 
     assert expected.is_dir()
     assert list(expected.iterdir()) == []
@@ -142,20 +135,10 @@ def test_browser_artifacts_and_media_remain_at_checkout_root(
         assert not (cwd / output).exists()
 
 
-@pytest.mark.parametrize("script_name", ["measure_evaluation.py", "validate_provider_failures.py"])
 def test_repository_commands_use_checkout_from_unrelated_cwd(
-    checkout: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, script_name: str
+    checkout: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    module = load_script(checkout / "backend/scripts" / script_name)
+    module = load_script(checkout / "backend/scripts/measure_evaluation.py")
     monkeypatch.chdir(tmp_path)
-    if script_name == "measure_evaluation.py":
-        result = module.command(sys.executable, "-c", "import os; print(os.getcwd())")
-    else:
-        # Replace only the external Docker executable; run the real command wrapper.
-        executable = tmp_path / "bin/docker"
-        executable.parent.mkdir()
-        executable.write_text("#!/bin/sh\npwd\n")
-        executable.chmod(0o755)
-        monkeypatch.setenv("PATH", str(executable.parent) + os.pathsep + os.defpath)
-        result = module.docker("compose", "config")
+    result = module.command(sys.executable, "-c", "import os; print(os.getcwd())")
     assert result == str(checkout)

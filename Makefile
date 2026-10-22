@@ -1,5 +1,5 @@
 .PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
-        docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
+        docker-app-up seed demo-reset eval serve streamlit clean
 
 VENV ?= .venv
 UV ?= uv
@@ -55,9 +55,6 @@ docker-logs:
 docker-app-up:
 	docker compose --profile app up -d --build
 	@echo "app built and started: http://localhost:8000"
-
-ollama-pull:
-	docker compose exec ollama ollama pull qwen3:4b
 
 seed:
 	$(PY) backend/scripts/seed_demo_data.py

@@ -71,9 +71,8 @@ fresh metric blocks. For a clean demo reset, `make demo-reset` replaces generate
 data and starts the supporting services; follow it with `make docker-app-up` to
 restore the API. These commands affect this project's demo data.
 
-Stop the UI with Ctrl+C and the Docker stack with `make docker-down`. The Ollama
-model volume survives normal shutdown. `make ollama-pull` downloads `qwen3:4b` when
-local inference is needed; a download does not establish sufficient runtime RAM.
+Stop the UI with Ctrl+C and the Docker stack with `make docker-down`. Existing
+Docker volumes survive normal shutdown.
 The demo uses unauthenticated Elasticsearch and anonymous Grafana viewing and is
 intended for local synthetic data.
 
@@ -235,15 +234,11 @@ OpenAI keys use Pydantic `SecretStr`; settings validation messages hide input va
 SDK error normalization and operation budgets remain separate tasks; the current
 adapter's SDK retries are disabled.
 
-Legacy Groq/Ollama adapters and configuration remain pending their planned retirement.
-Selecting Groq explicitly still requires `GROQ_API_KEY`; its optional local fallback
-now requires explicit `LLM_FALLBACK_PROVIDER=ollama`. Legacy timeout, memory, context,
-and keep-alive settings retain their existing behavior.
-
-For a remote Ollama host, set its URL and manage memory there; the local RAM check
-can be disabled with `OLLAMA_MIN_AVAILABLE_MEMORY_MB=0` in that configuration.
-The laptop's RAM guard remains enabled. If neither provider can produce a report,
-the API returns 503 and the UI displays the error.
+OpenAI is the only production provider. The backend has no host RAM gate,
+model-loading probe, local inference lock, or local context/keep-alive setting.
+Provider operation deadlines and bounded structured-output repair remain enforced.
+If the provider cannot produce a report, the API returns 503 and the UI displays
+the error.
 
 Provider deadlines apply to individual operations. The UI has a **300-second HTTPX
 network-inactivity timeout**, not a total server deadline. A timed-out investigation
@@ -401,8 +396,6 @@ LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.p
 # Optional live validators; use new directories for each tracing/browser run.
 .venv/bin/python backend/scripts/validate_langsmith.py \
   --mode disabled --output docs/validation/langsmith-repeat
-.venv/bin/python backend/scripts/validate_provider_failures.py \
-  --output docs/validation/provider-failures-repeat
 .venv/bin/python scripts/validate_streamlit.py \
   --output docs/validation/browser-repeat --delay-seconds 65
 ```
@@ -413,7 +406,7 @@ Root pytest commands select `pytest.ini`; its test paths and source path are
 relative to the repository, including when invoked from `backend/`.
 Checkout scripts import the relocated backend source directly. From `backend/`,
 use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
-For all four evaluation/validation recorders, relative `--output` paths resolve
+For all three evaluation/validation recorders, relative `--output` paths resolve
 from the repository root, including when launched elsewhere. Absolute paths such
 as `/tmp/incident-eval-repeat` are preserved. Browser screenshots and videos stay
 under the selected output directory's `media/`; documentation and published media
@@ -421,9 +414,10 @@ remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
 commands also use the repository root.
 
 The tracing validator accepts `--mode enabled` to check remote delivery with
-configured LangSmith credentials. The provider failure validator requires the
-existing Docker stack with no local model loaded; it creates disposable app
-containers. These are live commands, separate from the offline suite.
+configured LangSmith credentials. These are live commands, separate from the
+offline suite. The previous local-model failure validator has been removed;
+an OpenAI-only replacement remains pending. Existing offline tests cover OpenAI
+failure handling without live credentials or Docker.
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
 The recorder above uses that same scorer and is the route used for the published
