@@ -6,7 +6,7 @@ from collections.abc import Sequence
 import httpx
 import psutil
 from langchain_core.language_models import BaseChatModel, LanguageModelInput
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import BaseMessage
 from langchain_core.runnables import Runnable, RunnableConfig, RunnableLambda
 from langchain_core.tools import BaseTool
 from langchain_ollama import ChatOllama
@@ -14,13 +14,8 @@ from ollama import ResponseError
 
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
+from incident_copilot.llm.messages import to_langchain_messages
 from incident_copilot.utils.exceptions import LLMProviderError
-
-
-def to_langchain_messages(messages: Sequence[ChatMessage]) -> list[BaseMessage]:
-    """Convert internal chat messages to LangChain messages."""
-    mapping = {"system": SystemMessage, "user": HumanMessage, "assistant": AIMessage}
-    return [mapping[m.role](content=m.content) for m in messages]
 
 
 class OllamaProvider(LLMProvider):
@@ -64,6 +59,17 @@ class OllamaProvider(LLMProvider):
             )
 
         return cls(chat=chat(False), json_chat=chat(True), settings=settings)
+
+    async def _probe_health(self) -> bool:
+        """Check the configured model inventory without loading a model."""
+        if self._settings is None:
+            return False
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            response = await client.get(f"{self._settings.ollama_base_url}/api/tags")
+        return response.is_success and any(
+            model.get("name") == self._settings.ollama_model
+            for model in response.json().get("models", [])
+        )
 
     async def _check_memory(self) -> None:
         """Conservatively guard a co-located Ollama server before loading a model.

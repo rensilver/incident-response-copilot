@@ -1,0 +1,21 @@
+Resolved 109 packages in 61ms
+   Building incident-response-copilot @ file:///home/rensilver/workspaces/incident-response-copilot/backend
+Downloading tiktoken (1.1MiB)
+Downloading openai (1.6MiB)
+ Downloaded tiktoken
+ Downloaded openai
+      Built incident-response-copilot @ file:///home/rensilver/workspaces/incident-response-copilot/backend
+Prepared 7 packages in 1.49s
+Uninstalled 1 package in 2ms
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 7 packages in 263ms
+ - incident-response-copilot==0.1.0 (from file:///home/rensilver/workspaces/incident-response-copilot)
+ + incident-response-copilot==0.1.0 (from file:///home/rensilver/workspaces/incident-response-copilot/backend)
+ + jiter==0.17.0
+ + langchain-openai==1.1.16
+ + openai==2.54.0
+ + regex==2026.9.29
+ + tiktoken==0.14.0
+ + tqdm==4.70.1

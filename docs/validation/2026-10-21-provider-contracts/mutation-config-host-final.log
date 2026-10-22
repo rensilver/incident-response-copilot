@@ -1,0 +1,81 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] _
+
+provider_factory = <function provider_factory.<locals>.<lambda> at 0x7c0736310cc0>
+tools = [StructuredTool(name='lookup_logs', description='Retrieve lookup_logs for a service.', args_schema=<class 'langchain_c...=<class 'langchain_core.utils.pydantic.lookup_metrics'>, coroutine=<function tools.<locals>.lookup at 0x7c0736310b80>)]
+operation = 'structured'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_inherited_callbacks_tags_and_metadata_reach_every_model_call(
+        provider_factory: ProviderFactory, tools: list[BaseTool], operation: Operation
+    ) -> None:
+        # Structured output deliberately repairs once: both calls must remain traceable.
+        replies = (
+            [AIMessage(content="invalid"), AIMessage(content=REPORT_JSON)]
+            if operation == "structured"
+            else [AIMessage(content="Observed dependency timeout.")]
+        )
+        chat = ScriptedChat(replies)
+        provider = provider_factory(chat)
+        recorder = TraceRecorder()
+
+        async def investigate(_: str) -> str:
+            return await invoke_operation(provider, operation, tools)
+
+        config: RunnableConfig = {
+            "callbacks": [recorder],
+            "tags": ["provider-contract"],
+            "metadata": {"investigation_id": "offline-investigation"},
+            "configurable": {"contract_scope": "checkout"},
+        }
+        result = await RunnableLambda(investigate).ainvoke("investigate", config=config)
+
+        assert result == (
+            "Checkout logged dependency timeouts."
+            if operation == "structured"
+            else "Observed dependency timeout."
+        )
+        assert len(recorder.starts) == (2 if operation == "structured" else 1)
+        assert len({trace.run_id for trace in recorder.starts}) == len(recorder.starts)
+        for trace in recorder.starts:
+            assert trace.parent_run_id is not None
+            assert "provider-contract" in trace.tags
+>           assert trace.metadata["investigation_id"] == "offline-investigation"
+E           AssertionError: assert 'wrong-investigation' == 'offline-investigation'
+E
+E             - offline-investigation
+E             ?  ---- ^
+E             + wrong-investigation
+E             ? ++  ^
+
+backend/tests/unit/llm/test_provider_contract.py:379: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; anyio
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; langsmith
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] - AssertionError: assert 'wrong-investigation' == 'offline-investigation'
+
+  - offline-investigation
+  ?  ---- ^
+  + wrong-investigation
+  ? ++  ^
+======================== 1 failed, 2 warnings in 0.13s =========================
+Mutation config: pytest exit=1; call failures=1

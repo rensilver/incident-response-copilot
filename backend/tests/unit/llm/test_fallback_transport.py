@@ -78,7 +78,14 @@ async def test_transport_failures_fall_back_and_next_operation_retries_groq(
     cloud = respx.post(GROQ).mock(side_effect=fail)
     status = respx.get(f"{OLLAMA}/api/ps").respond(200, json={"models": []})
     local = respx.post(f"{OLLAMA}/api/chat").mock(return_value=local_reply())
-    provider = build_llm_provider(Settings(_env_file=None, groq_timeout_seconds=0.1))
+    provider = build_llm_provider(
+        Settings(
+            _env_file=None,
+            llm_provider="groq",
+            llm_fallback_provider="ollama",
+            groq_timeout_seconds=0.1,
+        )
+    )
     assert await provider.complete(MESSAGES) == "local"
     assert attempts == ["failure"]
     assert status.call_count == local.call_count == 1
@@ -98,7 +105,9 @@ async def test_structured_repair_exhaustion_falls_back_through_real_adapters(loc
     cloud = respx.post(GROQ).mock(return_value=cloud_reply("not JSON"))
     respx.get(f"{OLLAMA}/api/ps").respond(200, json={"models": []})
     local = respx.post(f"{OLLAMA}/api/chat").mock(return_value=local_reply('{"answer":"local"}'))
-    provider = build_llm_provider(Settings(_env_file=None))
+    provider = build_llm_provider(
+        Settings(_env_file=None, llm_provider="groq", llm_fallback_provider="ollama")
+    )
     assert (await provider.complete_structured(MESSAGES, Answer, max_attempts=2)).answer == "local"
     assert cloud.call_count == 2
     assert local.call_count == 1
@@ -125,7 +134,14 @@ async def test_both_provider_failures_are_bounded_and_normalized(
             "incident_copilot.llm.ollama_provider.psutil.virtual_memory",
             lambda: SimpleNamespace(available=1000 * 1024**2),
         )
-    provider = build_llm_provider(Settings(_env_file=None, ollama_timeout_seconds=0.1))
+    provider = build_llm_provider(
+        Settings(
+            _env_file=None,
+            llm_provider="groq",
+            llm_fallback_provider="ollama",
+            ollama_timeout_seconds=0.1,
+        )
+    )
     expected = {
         "connection": "ConnectError",
         "timeout": "TimeoutError",
@@ -155,7 +171,9 @@ async def test_tool_history_survives_real_adapter_serialization(local_capacity):
         AIMessage(content="", tool_calls=[{"name": "observe", "args": {}, "id": "observation-1"}]),
         ToolMessage(content=tool.invoke({}), tool_call_id="observation-1", name="observe"),
     ]
-    provider = build_llm_provider(Settings(_env_file=None))
+    provider = build_llm_provider(
+        Settings(_env_file=None, llm_provider="groq", llm_fallback_provider="ollama")
+    )
     assert (await provider.bind_tools([tool]).ainvoke(history)).content == "done"
     body = json.loads(local.calls[0].request.content)
     assert body["messages"][-1]["role"] == "tool"

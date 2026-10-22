@@ -1,0 +1,9 @@
+Converter executable AST unchanged.
+LLMProvider ABC and factory byte-identical to HEAD.
+7 local documentation links resolve.
+git diff --check passed.
+21 staged files are within the authorized scope and match the worktree.
+27 local Markdown links resolve.
+All 11 recorded check outcomes and log files agree.
+No provider key patterns in staged content; private dotenv and plan are ignored.
+Staged whitespace check passed.

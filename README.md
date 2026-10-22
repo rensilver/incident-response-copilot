@@ -6,11 +6,11 @@ routes work to metrics and logs specialists; a correlation agent proposes ranked
 causes, cites observations, and suggests follow-up checks. Engineers can investigate
 through a FastAPI endpoint or a Streamlit console.
 
-**Groq `openai/gpt-oss-20b` is the default model**, with automatic Ollama `qwen3:4b`
-fallback. The cloud path, Docker stack, tracing, and all three UI scenarios have
-retained validation evidence. Successful local inference is blocked by available
-RAM on the demo laptop. The latest repeated evaluation scored **4/9 culprit-service
-mentions, not proven root-cause accuracy**. See [Measured results](#measured-results).
+**OpenAI Responses with `gpt-6-luna` is the default**, with reasoning effort
+`none` and no automatic fallback. Configuration and serialized requests have offline
+coverage; live OpenAI access, provider health, error normalization, and application
+client cleanup remain migration tasks. The recorded demo and measured results below
+use the previous Groq/Ollama configuration and do not validate the new default.
 
 [Watch/download the 55-second recorded demo](docs/media/streamlit-demo.mp4)
 
@@ -19,12 +19,12 @@ mentions, not proven root-cause accuracy**. See [Measured results](#measured-res
 ## Build and run
 
 Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
-Compose, and a Groq API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
+Compose, and an OpenAI API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
 container memory measurements below.
 
 ```bash
 cp .env.example .env
-# Edit .env and set GROQ_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
+# Edit .env and set OPENAI_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
 
 make install-ui       # locked backend, development tools, and existing UI
 
@@ -34,8 +34,10 @@ curl --fail http://localhost:8000/health
 make streamlit       # host UI on http://localhost:8501
 ```
 
-Wait until `/health` reports Prometheus, Elasticsearch, and LLM reachable before
-submitting an investigation. If the API is still starting, repeat the health check.
+OpenAI health currently reports `llm: false` (overall `degraded`) until the planned
+provider-owned probe is implemented; it does not contact a legacy provider. Check
+Prometheus and Elasticsearch readiness separately. This status does not establish
+OpenAI connectivity or inference access; the OpenAI walkthrough awaits live validation.
 The UI runs on the host; FastAPI and the four supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
@@ -133,9 +135,7 @@ flowchart TD
     Correlation --> Report[Validated incident report]
     Prom --> Grafana[Grafana dashboard]
     Service -. optional traces .-> LS[LangSmith]
-    Provider[Shared LLM provider] --> Groq[Groq: gpt-oss-20b]
-    Provider -. failed operation .-> Guard[Available RAM guard]
-    Guard --> Ollama[Ollama: qwen3:4b]
+    Provider[Shared LLM provider] --> OpenAI[OpenAI Responses: gpt-6-luna]
     Supervisor -. model calls .-> Provider
     Metrics -. model calls .-> Provider
     Logs -. model calls .-> Provider
@@ -177,7 +177,7 @@ backend/src/incident_copilot/
 ├── analysis/         # deterministic trends and evidence rendering
 ├── connectors/       # Prometheus and Elasticsearch adapters
 ├── tools/            # validated tools and fixed-window propagation
-├── llm/              # Groq, Ollama, fallback, fake provider, JSON repair
+├── llm/              # OpenAI adapter, legacy adapters, test fake, JSON repair
 ├── agents/           # supervisor, specialists, correlation, compiled graph
 ├── services/         # investigation use case and authoritative metadata
 ├── api/              # HTTP schemas, health and investigation routes
@@ -200,7 +200,7 @@ docs/validation/           # reports, measurements, commands, screenshots
 
 ## Configuration and failure behavior
 
-[`.env.example`](.env.example) lists the supported application settings. Never put
+[`.env.example`](.env.example) lists the current OpenAI and shared settings. Never put
 keys in tracked source. Source checkout and editable-install commands load the
 repository-root `.env`, including when launched from `backend/` or another working
 directory. A `backend/.env` or caller-directory `.env` is ignored. Process environment
@@ -219,24 +219,26 @@ The default configuration is:
 
 | Setting | Default |
 |---|---|
-| `LLM_PROVIDER` | `groq` |
-| `GROQ_MODEL` | `openai/gpt-oss-20b` |
-| `GROQ_TIMEOUT_SECONDS` | `30` |
-| `LLM_FALLBACK_PROVIDER` | `ollama` (`none` disables fallback) |
-| `OLLAMA_MODEL` | `qwen3:4b` |
-| `OLLAMA_TIMEOUT_SECONDS` | `60`, including queueing |
-| `OLLAMA_NUM_CTX` | `4096` |
-| `OLLAMA_MIN_AVAILABLE_MEMORY_MB` | `4096` before a cold load |
+| `LLM_PROVIDER` | `openai` |
+| `OPENAI_API_KEY` | Required; no default |
+| `OPENAI_MODEL` | `gpt-6-luna` (only accepted value) |
+| `LLM_FALLBACK_PROVIDER` | `none` (required for OpenAI) |
 | `MAX_TOOL_ROUNDS` | `2` per specialist |
 | `LANGSMITH_TRACING` | `false` |
 
-A missing Groq key fails configuration early. Groq API errors (including 401/429),
-connection failures, timeouts, and exhausted JSON repairs trigger local fallback.
-Tool history is preserved; each new model operation tries Groq first. Groq SDK
-retries are disabled. Ollama access is serialized, thinking is disabled, output is
-bounded, and keep-alive is one minute. An already loaded model requires 1,024 MiB
-available RAM; a cold model requires 4,096 MiB. These checks do not reserve memory
-or guarantee against OOM. `LLM_PROVIDER=ollama` selects local inference directly.
+A missing, empty, or whitespace-only OpenAI key fails configuration early.
+Model substitutions and automatic fallback are rejected. Process variables override
+the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`; existing private files are not
+rewritten. If a previous configuration explicitly selects Groq or Ollama, switch
+`LLM_PROVIDER=openai` and `LLM_FALLBACK_PROVIDER=none` to use the new adapter.
+OpenAI keys use Pydantic `SecretStr`; settings validation messages hide input values.
+SDK error normalization and operation budgets remain separate tasks; the current
+adapter's SDK retries are disabled.
+
+Legacy Groq/Ollama adapters and configuration remain pending their planned retirement.
+Selecting Groq explicitly still requires `GROQ_API_KEY`; its optional local fallback
+now requires explicit `LLM_FALLBACK_PROVIDER=ollama`. Legacy timeout, memory, context,
+and keep-alive settings retain their existing behavior.
 
 For a remote Ollama host, set its URL and manage memory there; the local RAM check
 can be disabled with `OLLAMA_MIN_AVAILABLE_MEMORY_MB=0` in that configuration.

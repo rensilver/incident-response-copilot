@@ -1,0 +1,93 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[groq] FAILED [100%]
+
+=================================== FAILURES ===================================
+____________ test_text_preserves_role_content_order_and_input[groq] ____________
+
+provider_factory = <function provider_factory.<locals>.<lambda> at 0x738a10ffce00>
+
+    async def test_text_preserves_role_content_order_and_input(
+        provider_factory: ProviderFactory,
+    ) -> None:
+        chat = ScriptedChat([AIMessage(content="Checkout needs investigation.")])
+        provider = provider_factory(chat)
+
+        result = await provider.complete(MESSAGES)
+
+        assert result == "Checkout needs investigation."
+        assert len(chat._calls) == 1
+>       assert [(message.type, message.content) for message in chat._calls[0].messages] == [
+            ("system", "Use observed evidence."),
+            ("human", "Investigate checkout."),
+            ("ai", "I will inspect checkout logs."),
+            ("human", "Include dependency failures."),
+        ]
+E       AssertionError: assert [('system', 'Use observed evidence.'), ('human', 'Investigate checkout.'), ('ai', 'I will inspect checkout logs.')] == [('system', 'Use observed evidence.'), ('human', 'Investigate checkout.'), ('ai', 'I will inspect checkout logs.'), ('human', 'Include dependency failures.')]
+E
+E         Right contains one more item: ('human', 'Include dependency failures.')
+E
+E         Full diff:
+E           [
+E               (
+E                   'system',
+E                   'Use observed evidence.',
+E               ),
+E               (
+E                   'human',
+E                   'Investigate checkout.',
+E               ),
+E               (
+E                   'ai',
+E                   'I will inspect checkout logs.',
+E               ),
+E         -     (
+E         -         'human',
+E         -         'Include dependency failures.',
+E         -     ),
+E           ]
+
+backend/tests/unit/llm/test_provider_contract.py:218: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; anyio
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; langsmith
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[groq] - AssertionError: assert [('system', 'Use observed evidence.'), ('human', 'Investigate checkout.'), ('ai', 'I will inspect checkout logs.')] == [('system', 'Use observed evidence.'), ('human', 'Investigate checkout.'), ('ai', 'I will inspect checkout logs.'), ('human', 'Include dependency failures.')]
+
+  Right contains one more item: ('human', 'Include dependency failures.')
+
+  Full diff:
+    [
+        (
+            'system',
+            'Use observed evidence.',
+        ),
+        (
+            'human',
+            'Investigate checkout.',
+        ),
+        (
+            'ai',
+            'I will inspect checkout logs.',
+        ),
+  -     (
+  -         'human',
+  -         'Include dependency failures.',
+  -     ),
+    ]
+======================== 1 failed, 2 warnings in 0.12s =========================
+Mutation text: pytest exit=1; call failures=1

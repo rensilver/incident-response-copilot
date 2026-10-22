@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 24 items
+
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[groq] PASSED [  4%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[ollama] PASSED [  8%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[groq] PASSED [ 12%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[ollama] PASSED [ 16%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[groq] PASSED [ 20%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[ollama] PASSED [ 25%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[groq] PASSED [ 29%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[ollama] PASSED [ 33%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[groq] PASSED [ 37%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[ollama] PASSED [ 41%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] PASSED [ 45%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[ollama] PASSED [ 50%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-text] PASSED [ 54%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] PASSED [ 58%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-tools] PASSED [ 62%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-text] PASSED [ 66%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-structured] PASSED [ 70%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-tools] PASSED [ 75%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-text] PASSED [ 79%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-structured] PASSED [ 83%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-tools] PASSED [ 87%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-text] PASSED [ 91%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-structured] PASSED [ 95%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-tools] PASSED [100%]
+
+============================== 24 passed in 0.64s ==============================

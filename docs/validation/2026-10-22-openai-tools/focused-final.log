@@ -1,0 +1,61 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 50 items
+
+backend/tests/unit/llm/test_openai_provider.py::test_text_uses_responses_and_the_explicit_inference_policy PASSED [  2%]
+backend/tests/unit/llm/test_openai_provider.py::test_structured_generation_and_repairs_keep_json_mode_and_policy PASSED [  4%]
+backend/tests/unit/llm/test_openai_provider.py::test_tool_round_and_continuation_keep_policy_and_call_results PASSED [  6%]
+backend/tests/unit/llm/test_openai_provider.py::test_owned_clients_close_without_closing_another_provider PASSED [  8%]
+backend/tests/unit/llm/test_openai_provider.py::test_cleanup_closes_both_owned_sdk_clients PASSED [ 10%]
+backend/tests/unit/llm/test_openai_provider.py::test_borrowed_chat_remains_usable_after_adapter_cleanup PASSED [ 12%]
+backend/tests/unit/llm/test_openai_provider.py::test_application_tool_schemas_preserve_optional_defaults_and_validation PASSED [ 14%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments0] PASSED [ 16%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments1] PASSED [ 18%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments2] PASSED [ 20%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments3] PASSED [ 22%]
+backend/tests/unit/llm/test_openai_provider.py::test_multiple_calls_and_content_blocks_survive_every_continuation PASSED [ 24%]
+backend/tests/unit/llm/test_openai_provider.py::test_text_completion_normalizes_multiple_blocks_without_reasoning PASSED [ 26%]
+backend/tests/unit/llm/test_openai_provider.py::test_malformed_tool_json_retains_its_call_id_and_raw_arguments PASSED [ 28%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[groq] PASSED [ 30%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[ollama] PASSED [ 32%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[openai] PASSED [ 34%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[groq] PASSED [ 36%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[ollama] PASSED [ 38%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[openai] PASSED [ 40%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[groq] PASSED [ 42%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[ollama] PASSED [ 44%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[openai] PASSED [ 46%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[groq] PASSED [ 48%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[ollama] PASSED [ 50%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[openai] PASSED [ 52%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[groq] PASSED [ 54%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[ollama] PASSED [ 56%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[openai] PASSED [ 58%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] PASSED [ 60%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[ollama] PASSED [ 62%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[openai] PASSED [ 64%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-text] PASSED [ 66%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] PASSED [ 68%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-tools] PASSED [ 70%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-text] PASSED [ 72%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-structured] PASSED [ 74%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-tools] PASSED [ 76%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-text] PASSED [ 78%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-structured] PASSED [ 80%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-tools] PASSED [ 82%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-text] PASSED [ 84%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-structured] PASSED [ 86%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-tools] PASSED [ 88%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-text] PASSED [ 90%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-structured] PASSED [ 92%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-tools] PASSED [ 94%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-text] PASSED [ 96%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-structured] PASSED [ 98%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-tools] PASSED [100%]
+
+============================== 50 passed in 1.94s ==============================

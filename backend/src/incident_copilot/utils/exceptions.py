@@ -1,5 +1,7 @@
 """Exception hierarchy for the incident copilot."""
 
+from incident_copilot.models.enums import LLMFailureKind
+
 
 class IncidentCopilotError(Exception):
     """Base class for every error raised by this package."""
@@ -23,6 +25,15 @@ class LogSourceError(ConnectorError):
 
 class LLMProviderError(IncidentCopilotError):
     """The LLM provider failed to produce a usable response."""
+
+
+class LLMUpstreamError(LLMProviderError):
+    """A classified model failure containing no vendor payload or credentials."""
+
+    def __init__(self, kind: LLMFailureKind) -> None:
+        """Store only a validated reason and a fixed, safe diagnostic message."""
+        self.kind = kind
+        super().__init__(f"Model provider operation failed ({kind.value})")
 
 
 class StructuredOutputError(LLMProviderError):

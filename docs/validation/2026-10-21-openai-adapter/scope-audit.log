@@ -1,0 +1,8 @@
+Starting revision: 4bd3ee780c3df6619a7b13baaa9957d8ce9d4498
+Unchanged application boundaries: 12
+All previous third-party dependency records preserved; added: ['jiter', 'langchain-openai', 'openai', 'regex', 'tiktoken', 'tqdm']
+Local Markdown references exist: 38
+Private .env and local plan remain ignored; neither was read for this audit.
+Unique retained check records with cleared environments: 23
+Credential-pattern review passed for 32 candidate files; synthetic offline-key only.
+Whitespace check passed. Adapter, contracts, manifest/lock and documentation/evidence only.

@@ -1,0 +1,65 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 22 items
+
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_reads_model_metadata_without_inference PASSED [  4%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[401] PASSED [  9%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[403] PASSED [ 13%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[404] PASSED [ 18%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[429] PASSED [ 22%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[500] PASSED [ 27%]
+backend/tests/unit/llm/test_provider_health.py::test_metadata_access_does_not_claim_successful_inference PASSED [ 31%]
+backend/tests/unit/llm/test_provider_health.py::test_provider_without_probe_is_unavailable_without_generating PASSED [ 36%]
+backend/tests/unit/llm/test_provider_health.py::test_probe_deadline_cancels_inflight_work PASSED [ 40%]
+backend/tests/unit/llm/test_provider_health.py::test_external_probe_cancellation_propagates PASSED [ 45%]
+backend/tests/unit/llm/test_provider_health.py::test_deadline_bounds_real_openai_metadata_request FAILED [ 50%]
+backend/tests/unit/test_main.py::test_health_uses_the_provider_built_for_the_graph PASSED [ 54%]
+backend/tests/unit/test_main.py::test_app_exposes_both_routes PASSED     [ 59%]
+backend/tests/unit/test_main.py::test_health_endpoint_answers_without_any_backend_running PASSED [ 63%]
+backend/tests/unit/test_main.py::test_shutdown_closes_both_connectors PASSED [ 68%]
+backend/tests/unit/test_llm_health.py::test_groq_health_checks_configured_model_and_sends_auth PASSED [ 72%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[ollama-True] PASSED [ 77%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[none-False] PASSED [ 81%]
+backend/tests/unit/test_llm_health.py::test_ollama_server_without_required_model_is_unhealthy PASSED [ 86%]
+backend/tests/unit/llm/test_openai_configuration.py::test_factory_uses_configured_key_without_inference_or_fallback[False] PASSED [ 90%]
+backend/tests/unit/llm/test_openai_configuration.py::test_factory_uses_configured_key_without_inference_or_fallback[True] PASSED [ 95%]
+backend/tests/unit/llm/test_openai_configuration.py::test_openai_health_does_not_probe_legacy_services PASSED [100%]
+
+=================================== FAILURES ===================================
+______________ test_deadline_bounds_real_openai_metadata_request _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x727d75027b60>
+
+    @respx.mock
+    async def test_deadline_bounds_real_openai_metadata_request(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        cancelled = asyncio.Event()
+
+        async def stalled(request: httpx.Request) -> httpx.Response:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            return httpx.Response(200, json=MODEL)
+
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(side_effect=stalled)
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        monkeypatch.setattr(base, "PROVIDER_HEALTH_TIMEOUT_SECONDS", 0.02, raising=False)
+        try:
+            assert await asyncio.wait_for(provider.health_check(), timeout=1.0) is False
+            assert cancelled.is_set()
+>           assert route.call_count == 1
+E           AssertionError: assert 0 == 1
+E            +  where 0 = <Route <Scheme eq 'https'> AND <Host eq 'api.openai.com'> AND <Path eq '/v1/models/gpt-6-luna'> AND <Method eq 'GET'>>.call_count
+
+backend/tests/unit/llm/test_provider_health.py:137: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_health.py::test_deadline_bounds_real_openai_metadata_request - AssertionError: assert 0 == 1
+ +  where 0 = <Route <Scheme eq 'https'> AND <Host eq 'api.openai.com'> AND <Path eq '/v1/models/gpt-6-luna'> AND <Method eq 'GET'>>.call_count
+========================= 1 failed, 21 passed in 2.37s =========================

@@ -2,12 +2,17 @@ import asyncio
 from collections.abc import Awaitable, Callable
 
 import httpx
+import pytest
 from fastapi import FastAPI
 
 from incident_copilot.api.routes import build_router
 from incident_copilot.models.report import EvidenceRef, IncidentReport, LikelyCause
 from incident_copilot.services.incident_service import InvestigationRequest
-from incident_copilot.utils.exceptions import InvestigationError
+from incident_copilot.utils.exceptions import (
+    InvestigationError,
+    LLMProviderError,
+    StructuredOutputError,
+)
 
 REPORT = IncidentReport(
     summary="cart-service regression",
@@ -76,13 +81,23 @@ async def test_request_reaches_the_service_intact() -> None:
     assert service.seen.minutes_back == 120
 
 
-async def test_failed_investigation_maps_to_503() -> None:
-    service = StubService(error=InvestigationError("no report produced"))
+@pytest.mark.parametrize(
+    "error",
+    [
+        InvestigationError("private-error-canary"),
+        LLMProviderError("private-error-canary"),
+        StructuredOutputError("private-error-canary", "private-output"),
+    ],
+)
+async def test_failed_investigation_maps_to_sanitized_503(error: Exception) -> None:
+    service = StubService(error=error)
     async with _client(service) as client:
         response = await client.post("/api/v1/investigations", json={"query": "q"})
 
     assert response.status_code == 503
-    assert "no report produced" in response.json()["detail"]
+    assert response.json() == {
+        "detail": "Investigation unavailable; no usable report was produced."
+    }
 
 
 async def test_health_reports_each_dependency() -> None:

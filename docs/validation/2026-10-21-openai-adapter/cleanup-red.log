@@ -1,0 +1,38 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 6 items / 5 deselected / 1 selected
+
+backend/tests/unit/llm/test_openai_provider.py::test_cleanup_closes_both_owned_sdk_clients FAILED [100%]
+
+=================================== FAILURES ===================================
+__________________ test_cleanup_closes_both_owned_sdk_clients __________________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x7c51a7ccc6e0>, Wire(outputs=[], bodies=[]))
+
+    async def test_cleanup_closes_both_owned_sdk_clients(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, _ = wire
+        sync_client = provider._chat.root_client
+        async_client = provider._chat.root_async_client
+        assert not sync_client.is_closed()
+        assert not async_client.is_closed()
+
+        await provider.aclose()
+
+>       assert sync_client.is_closed()
+E       assert False
+E        +  where False = is_closed()
+E        +    where is_closed = <openai.OpenAI object at 0x7c51a87a9a90>.is_closed
+
+backend/tests/unit/llm/test_openai_provider.py:234: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_cleanup_closes_both_owned_sdk_clients - assert False
+ +  where False = is_closed()
+ +    where is_closed = <openai.OpenAI object at 0x7c51a87a9a90>.is_closed
+======================= 1 failed, 5 deselected in 1.16s ========================

@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 11 items
+
+backend/tests/unit/llm/test_fallback_transport.py::test_transport_failures_fall_back_and_next_operation_retries_groq[401] PASSED [  9%]
+backend/tests/unit/llm/test_fallback_transport.py::test_transport_failures_fall_back_and_next_operation_retries_groq[429] PASSED [ 18%]
+backend/tests/unit/llm/test_fallback_transport.py::test_transport_failures_fall_back_and_next_operation_retries_groq[503] PASSED [ 27%]
+backend/tests/unit/llm/test_fallback_transport.py::test_transport_failures_fall_back_and_next_operation_retries_groq[connection] PASSED [ 36%]
+backend/tests/unit/llm/test_fallback_transport.py::test_transport_failures_fall_back_and_next_operation_retries_groq[timeout] PASSED [ 45%]
+backend/tests/unit/llm/test_fallback_transport.py::test_structured_repair_exhaustion_falls_back_through_real_adapters PASSED [ 54%]
+backend/tests/unit/llm/test_fallback_transport.py::test_both_provider_failures_are_bounded_and_normalized[connection] PASSED [ 63%]
+backend/tests/unit/llm/test_fallback_transport.py::test_both_provider_failures_are_bounded_and_normalized[timeout] PASSED [ 72%]
+backend/tests/unit/llm/test_fallback_transport.py::test_both_provider_failures_are_bounded_and_normalized[missing_model] PASSED [ 81%]
+backend/tests/unit/llm/test_fallback_transport.py::test_both_provider_failures_are_bounded_and_normalized[memory] PASSED [ 90%]
+backend/tests/unit/llm/test_fallback_transport.py::test_tool_history_survives_real_adapter_serialization PASSED [100%]
+
+============================== 11 passed in 1.25s ==============================

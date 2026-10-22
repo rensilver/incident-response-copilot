@@ -1,0 +1,357 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 38 items / 18 deselected / 20 selected
+
+backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[False] FAILED [  5%]
+backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[True] FAILED [ 10%]
+backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-max_output_tokens] FAILED [ 15%]
+backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-content_filter] FAILED [ 20%]
+backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-max_output_tokens] FAILED [ 25%]
+backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-content_filter] FAILED [ 30%]
+backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[failed] FAILED [ 35%]
+backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[cancelled] FAILED [ 40%]
+backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[queued] FAILED [ 45%]
+backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[in_progress] FAILED [ 50%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[not-json] PASSED [ 55%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[truncated-json] PASSED [ 60%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[array-root] FAILED [ 65%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[fenced-json] FAILED [ 70%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[trailing-garbage] FAILED [ 75%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[multiple-objects] PASSED [ 80%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[missing-fields] PASSED [ 85%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[confidence-bound] PASSED [ 90%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[nested-cause] PASSED [ 95%]
+backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[window] PASSED [100%]
+
+=================================== FAILURES ===================================
+_____ test_structured_refusal_is_terminal_even_with_a_valid_report[False] ______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44e189550>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+with_text = False
+
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_structured_refusal_is_terminal_even_with_a_valid_report(
+        wire: tuple[OpenAIProvider, Wire], with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        refusal = text_output(json.dumps(REPORT) if with_text else "")
+        refusal[0]["content"].append({"type": "refusal", "refusal": "Synthetic refusal text"})
+        exchange.outputs = [refusal, text_output(json.dumps(REPORT))]
+
+>       with pytest.raises(StructuredOutputError, match="refus") as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:171: Failed
+______ test_structured_refusal_is_terminal_even_with_a_valid_report[True] ______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44e24bd90>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+with_text = True
+
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_structured_refusal_is_terminal_even_with_a_valid_report(
+        wire: tuple[OpenAIProvider, Wire], with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        refusal = text_output(json.dumps(REPORT) if with_text else "")
+        refusal[0]["content"].append({"type": "refusal", "refusal": "Synthetic refusal text"})
+        exchange.outputs = [refusal, text_output(json.dumps(REPORT))]
+
+>       with pytest.raises(StructuredOutputError, match="refus") as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:171: Failed
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[False-max_output_tokens] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d656d50>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'max_output_tokens', with_text = False
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [
+            {"status": "incomplete", "incomplete_details": {"reason": reason}}
+        ]
+
+>       with pytest.raises(StructuredOutputError, match="incomplete"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:192: Failed
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[False-content_filter] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d638180>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'content_filter', with_text = False
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [
+            {"status": "incomplete", "incomplete_details": {"reason": reason}}
+        ]
+
+>       with pytest.raises(StructuredOutputError, match="incomplete"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:192: Failed
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[True-max_output_tokens] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d63a9e0>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'max_output_tokens', with_text = True
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [
+            {"status": "incomplete", "incomplete_details": {"reason": reason}}
+        ]
+
+>       with pytest.raises(StructuredOutputError, match="incomplete"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:192: Failed
+_ test_incomplete_response_is_terminal_even_if_its_json_validates[True-content_filter] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d629130>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+reason = 'content_filter', with_text = True
+
+    @pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+    @pytest.mark.parametrize("with_text", [False, True])
+    async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+        wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [
+            text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+            text_output(json.dumps(REPORT)),
+        ]
+        exchange.response_fields = [
+            {"status": "incomplete", "incomplete_details": {"reason": reason}}
+        ]
+
+>       with pytest.raises(StructuredOutputError, match="incomplete"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:192: Failed
+__________ test_noncompleted_response_cannot_become_a_report[failed] ___________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d60ecf0>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'failed'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+>       with pytest.raises(StructuredOutputError, match="not completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:206: Failed
+_________ test_noncompleted_response_cannot_become_a_report[cancelled] _________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d625480>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'cancelled'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+>       with pytest.raises(StructuredOutputError, match="not completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:206: Failed
+__________ test_noncompleted_response_cannot_become_a_report[queued] ___________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d65f450>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'queued'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+>       with pytest.raises(StructuredOutputError, match="not completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:206: Failed
+________ test_noncompleted_response_cannot_become_a_report[in_progress] ________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d3c1850>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+status = 'in_progress'
+
+    @pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+    async def test_noncompleted_response_cannot_become_a_report(
+        wire: tuple[OpenAIProvider, Wire], status: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": status}]
+
+>       with pytest.raises(StructuredOutputError, match="not completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:206: Failed
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[array-root] __
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d607e70>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '[{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}]'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json", "truncated-json", "array-root", "fenced-json", "trailing-garbage",
+            "multiple-objects", "missing-fields", "confidence-bound", "nested-cause", "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+>       with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:237: Failed
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[fenced-json] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d3c9e10>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '```json\n{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7}\n```'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json", "truncated-json", "array-root", "fenced-json", "trailing-garbage",
+            "multiple-objects", "missing-fields", "confidence-bound", "nested-cause", "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+>       with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:237: Failed
+_ test_invalid_report_exhausts_repairs_without_returning_a_report[trailing-garbage] _
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x75f44d3a8600>, Wire(outputs=[[{'type': 'message', 'i..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+invalid = '{"summary": "Checkout has dependency timeouts.", "likely_causes": [], "next_steps": ["Inspect inventory latency."], "confidence": 0.7} trailing garbage'
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            "not json",
+            '{"summary":',
+            "[" + json.dumps(REPORT) + "]",
+            "```json\n" + json.dumps(REPORT) + "\n```",
+            json.dumps(REPORT) + " trailing garbage",
+            json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+            "{}",
+            json.dumps({**REPORT, "confidence": -0.1}),
+            json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+            json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+        ],
+        ids=[
+            "not-json", "truncated-json", "array-root", "fenced-json", "trailing-garbage",
+            "multiple-objects", "missing-fields", "confidence-bound", "nested-cause", "window",
+        ],
+    )
+    async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+        wire: tuple[OpenAIProvider, Wire], invalid: str
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+>       with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE StructuredOutputError
+
+backend/tests/unit/llm/test_openai_provider.py:237: Failed
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[False] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_refusal_is_terminal_even_with_a_valid_report[True] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-max_output_tokens] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[False-content_filter] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-max_output_tokens] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_incomplete_response_is_terminal_even_if_its_json_validates[True-content_filter] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[failed] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[cancelled] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[queued] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_noncompleted_response_cannot_become_a_report[in_progress] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[array-root] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[fenced-json] - Failed: DID NOT RAISE StructuredOutputError
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_invalid_report_exhausts_repairs_without_returning_a_report[trailing-garbage] - Failed: DID NOT RAISE StructuredOutputError
+================= 13 failed, 7 passed, 18 deselected in 1.88s ==================

@@ -1,0 +1,89 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+backend/tests/unit/llm/test_provider_imports.py::test_groq_import_does_not_require_ollama_or_host_memory_packages FAILED [100%]
+
+=================================== FAILURES ===================================
+_______ test_groq_import_does_not_require_ollama_or_host_memory_packages _______
+
+    def test_groq_import_does_not_require_ollama_or_host_memory_packages() -> None:
+        source = Path(__file__).resolve().parents[3] / "src"
+        # A fresh interpreter prevents imports during suite collection from masking coupling.
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                """
+    import socket
+    import sys
+    from importlib.abc import MetaPathFinder
+
+    blocked = {"langchain_ollama", "ollama", "psutil"}
+
+    class RejectOtherAdapter(MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname.split(".")[0] in blocked:
+                raise ImportError(f"Unrelated adapter dependency: {fullname}")
+            return None
+
+    def deny_network(*args, **kwargs):
+        raise AssertionError("Provider imports must not access the network")
+
+    socket.socket.connect = deny_network
+    socket.socket.connect_ex = deny_network
+    socket.getaddrinfo = deny_network
+    sys.meta_path.insert(0, RejectOtherAdapter())
+    from incident_copilot.llm.groq_provider import GroqProvider
+
+    assert GroqProvider.__name__ == "GroqProvider"
+    assert not any(name.split(".")[0] in blocked for name in sys.modules)
+    assert "incident_copilot.llm.ollama_provider" not in sys.modules
+    """,
+            ],
+            env={
+                "PATH": os.defpath,
+                "PYTHONPATH": str(source),
+                "INCIDENT_COPILOT_ENV_FILE": "",
+            },
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 21, in <module>
+E             from incident_copilot.llm.groq_provider import GroqProvider
+E           File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/groq_provider.py", line 16, in <module>
+E             from incident_copilot.llm.ollama_provider import to_langchain_messages
+E           File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/ollama_provider.py", line 7, in <module>
+E             import psutil
+E           File "<string>", line 11, in find_spec
+E             raise ImportError(f"Unrelated adapter dependency: {fullname}")
+E         ImportError: Unrelated adapter dependency: psutil
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/rensilver/workspaces/incident-response-copilot/.venv/bin/python', '-c', '\nimport socket\nimport sys\nfrom importlib.abc import MetaPathFinder\n\nblocked = {"langchain_ollama", "ollama", "psutil"}\n\nclass RejectOtherAdapter(MetaPathFinder):\n    def find_spec(self, fullname, path=None, target=None):\n        if fullname.split(".")[0] in blocked:\n            raise ImportError(f"Unrelated adapter dependency: {fullname}")\n        return None\n\ndef deny_network(*args, **kwargs):\n    raise AssertionError("Provider imports must not access the network")\n\nsocket.socket.connect = deny_network\nsocket.socket.connect_ex = deny_network\nsocket.getaddrinfo = deny_network\nsys.meta_path.insert(0, RejectOtherAdapter())\nfrom incident_copilot.llm.groq_provider import GroqProvider\n\nassert GroqProvider.__name__ == "GroqProvider"\nassert not any(name.split(".")[0] in blocked for name in sys.modules)\nassert "incident_copilot.llm.ollama_provider" not in sys.modules\n'], returncode=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 21, in <module>\n    from incident_copilot.llm.groq_provider import GroqProvider\n  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/groq_provider.py", line 16, in <module>\n    from incident_copilot.llm.ollama_provider import to_langchain_messages\n  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/ollama_provider.py", line 7, in <module>\n    import psutil\n  File "<string>", line 11, in find_spec\n    raise ImportError(f"Unrelated adapter dependency: {fullname}")\nImportError: Unrelated adapter dependency: psutil\n').returncode
+
+backend/tests/unit/llm/test_provider_imports.py:53: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_imports.py::test_groq_import_does_not_require_ollama_or_host_memory_packages - AssertionError: Traceback (most recent call last):
+    File "<string>", line 21, in <module>
+      from incident_copilot.llm.groq_provider import GroqProvider
+    File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/groq_provider.py", line 16, in <module>
+      from incident_copilot.llm.ollama_provider import to_langchain_messages
+    File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/ollama_provider.py", line 7, in <module>
+      import psutil
+    File "<string>", line 11, in find_spec
+      raise ImportError(f"Unrelated adapter dependency: {fullname}")
+  ImportError: Unrelated adapter dependency: psutil
+
+assert 1 == 0
+ +  where 1 = CompletedProcess(args=['/home/rensilver/workspaces/incident-response-copilot/.venv/bin/python', '-c', '\nimport socket\nimport sys\nfrom importlib.abc import MetaPathFinder\n\nblocked = {"langchain_ollama", "ollama", "psutil"}\n\nclass RejectOtherAdapter(MetaPathFinder):\n    def find_spec(self, fullname, path=None, target=None):\n        if fullname.split(".")[0] in blocked:\n            raise ImportError(f"Unrelated adapter dependency: {fullname}")\n        return None\n\ndef deny_network(*args, **kwargs):\n    raise AssertionError("Provider imports must not access the network")\n\nsocket.socket.connect = deny_network\nsocket.socket.connect_ex = deny_network\nsocket.getaddrinfo = deny_network\nsys.meta_path.insert(0, RejectOtherAdapter())\nfrom incident_copilot.llm.groq_provider import GroqProvider\n\nassert GroqProvider.__name__ == "GroqProvider"\nassert not any(name.split(".")[0] in blocked for name in sys.modules)\nassert "incident_copilot.llm.ollama_provider" not in sys.modules\n'], returncode=1, stdout='', stderr='Traceback (most recent call last):\n  File "<string>", line 21, in <module>\n    from incident_copilot.llm.groq_provider import GroqProvider\n  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/groq_provider.py", line 16, in <module>\n    from incident_copilot.llm.ollama_provider import to_langchain_messages\n  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/ollama_provider.py", line 7, in <module>\n    import psutil\n  File "<string>", line 11, in find_spec\n    raise ImportError(f"Unrelated adapter dependency: {fullname}")\nImportError: Unrelated adapter dependency: psutil\n').returncode
+============================== 1 failed in 0.96s ===============================

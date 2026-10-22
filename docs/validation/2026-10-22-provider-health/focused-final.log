@@ -1,0 +1,45 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 34 items
+
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_reads_model_metadata_without_inference PASSED [  2%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[401] PASSED [  5%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[403] PASSED [  8%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[404] PASSED [ 11%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[429] PASSED [ 14%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[500] PASSED [ 17%]
+backend/tests/unit/llm/test_provider_health.py::test_metadata_access_does_not_claim_successful_inference PASSED [ 20%]
+backend/tests/unit/llm/test_provider_health.py::test_provider_without_probe_is_unavailable_without_generating PASSED [ 23%]
+backend/tests/unit/llm/test_provider_health.py::test_openai_probe_is_injectable_without_using_the_borrowed_chat PASSED [ 26%]
+backend/tests/unit/llm/test_provider_health.py::test_probe_deadline_cancels_inflight_work PASSED [ 29%]
+backend/tests/unit/llm/test_provider_health.py::test_external_probe_cancellation_propagates PASSED [ 32%]
+backend/tests/unit/llm/test_provider_health.py::test_deadline_bounds_real_openai_metadata_request PASSED [ 35%]
+backend/tests/unit/test_main.py::test_health_uses_the_provider_built_for_the_graph PASSED [ 38%]
+backend/tests/unit/test_main.py::test_app_exposes_both_routes PASSED     [ 41%]
+backend/tests/unit/test_main.py::test_health_endpoint_answers_without_any_backend_running PASSED [ 44%]
+backend/tests/unit/test_main.py::test_shutdown_closes_both_connectors PASSED [ 47%]
+backend/tests/unit/test_llm_health.py::test_groq_health_checks_configured_model_and_sends_auth PASSED [ 50%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[ollama-True] PASSED [ 52%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[none-False] PASSED [ 55%]
+backend/tests/unit/test_llm_health.py::test_ollama_server_without_required_model_is_unhealthy PASSED [ 58%]
+backend/tests/unit/llm/test_openai_configuration.py::test_factory_uses_configured_key_without_inference_or_fallback[False] PASSED [ 61%]
+backend/tests/unit/llm/test_openai_configuration.py::test_factory_uses_configured_key_without_inference_or_fallback[True] PASSED [ 64%]
+backend/tests/unit/llm/test_openai_configuration.py::test_openai_health_does_not_probe_legacy_services PASSED [ 67%]
+backend/tests/unit/test_composition.py::test_build_collaborators_wires_a_ready_to_invoke_graph PASSED [ 70%]
+backend/tests/unit/api/test_routes.py::test_investigation_returns_the_report PASSED [ 73%]
+backend/tests/unit/api/test_routes.py::test_request_body_is_validated PASSED [ 76%]
+backend/tests/unit/api/test_routes.py::test_request_reaches_the_service_intact PASSED [ 79%]
+backend/tests/unit/api/test_routes.py::test_failed_investigation_maps_to_sanitized_503[error0] PASSED [ 82%]
+backend/tests/unit/api/test_routes.py::test_failed_investigation_maps_to_sanitized_503[error1] PASSED [ 85%]
+backend/tests/unit/api/test_routes.py::test_failed_investigation_maps_to_sanitized_503[error2] PASSED [ 88%]
+backend/tests/unit/api/test_routes.py::test_health_reports_each_dependency PASSED [ 91%]
+backend/tests/unit/api/test_routes.py::test_health_is_ok_when_everything_is_reachable PASSED [ 94%]
+backend/tests/unit/api/test_routes.py::test_health_probes_run_concurrently PASSED [ 97%]
+backend/tests/unit/api/test_routes.py::test_health_is_degraded_when_a_probe_raises PASSED [100%]
+
+============================== 34 passed in 2.28s ==============================

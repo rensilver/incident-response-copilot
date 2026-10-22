@@ -43,7 +43,7 @@ def _read_settings(
         env={
             "PATH": os.defpath,
             "PYTHONPATH": str(package_parent),
-            "GROQ_API_KEY": "test-key",
+            "OPENAI_API_KEY": "test-openai-key",
             **(environment or {}),
         },
         capture_output=True,

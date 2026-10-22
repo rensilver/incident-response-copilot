@@ -1,0 +1,59 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 48 items
+
+backend/tests/unit/config/test_environment_loading.py::test_checkout_loads_root_dotenv_from_any_working_directory[root] PASSED [  2%]
+backend/tests/unit/config/test_environment_loading.py::test_checkout_loads_root_dotenv_from_any_working_directory[backend] PASSED [  4%]
+backend/tests/unit/config/test_environment_loading.py::test_checkout_loads_root_dotenv_from_any_working_directory[unrelated] PASSED [  6%]
+backend/tests/unit/config/test_environment_loading.py::test_process_environment_overrides_checkout_dotenv PASSED [  8%]
+backend/tests/unit/config/test_environment_loading.py::test_missing_root_dotenv_does_not_load_backend_dotenv PASSED [ 10%]
+backend/tests/unit/config/test_environment_loading.py::test_explicit_dotenv_path_overrides_checkout_location[root] PASSED [ 12%]
+backend/tests/unit/config/test_environment_loading.py::test_explicit_dotenv_path_overrides_checkout_location[backend] PASSED [ 14%]
+backend/tests/unit/config/test_environment_loading.py::test_empty_dotenv_selector_disables_checkout_file PASSED [ 16%]
+backend/tests/unit/config/test_environment_loading.py::test_relative_dotenv_selector_is_rejected PASSED [ 18%]
+backend/tests/unit/config/test_environment_loading.py::test_pytest_can_explicitly_disable_all_dotenv_loading[False] PASSED [ 20%]
+backend/tests/unit/config/test_environment_loading.py::test_pytest_can_explicitly_disable_all_dotenv_loading[True] PASSED [ 22%]
+backend/tests/unit/config/test_environment_loading.py::test_installed_layout_uses_process_environment_or_explicit_file[False] PASSED [ 25%]
+backend/tests/unit/config/test_environment_loading.py::test_installed_layout_uses_process_environment_or_explicit_file[True] PASSED [ 27%]
+backend/tests/unit/config/test_openai_settings.py::test_defaults_select_openai_without_fallback PASSED [ 29%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[None] PASSED [ 31%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[] PASSED [ 33%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_requires_nonblank_key[ \t\n] PASSED [ 35%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[] PASSED [ 37%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-other] PASSED [ 39%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_model_substitution[gpt-6-luna ] PASSED [ 41%]
+backend/tests/unit/config/test_openai_settings.py::test_dotenv_openai_values_and_process_precedence PASSED [ 43%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_rejects_automatic_fallback PASSED [ 45%]
+backend/tests/unit/config/test_openai_settings.py::test_openai_key_is_redacted_from_settings_and_validation_errors PASSED [ 47%]
+backend/tests/unit/config/test_openai_settings.py::test_legacy_ollama_selection_does_not_require_openai_key PASSED [ 50%]
+backend/tests/unit/config/test_openai_settings.py::test_safe_example_requires_owner_key_and_runs_after_configuration PASSED [ 52%]
+backend/tests/unit/config/test_settings.py::test_defaults_select_openai_without_fallback PASSED [ 54%]
+backend/tests/unit/config/test_settings.py::test_ollama_does_not_require_cloud_credentials PASSED [ 56%]
+backend/tests/unit/config/test_settings.py::test_invalid_fallback_is_rejected[groq] PASSED [ 58%]
+backend/tests/unit/config/test_settings.py::test_invalid_fallback_is_rejected[fake] PASSED [ 60%]
+backend/tests/unit/config/test_settings.py::test_invalid_fallback_is_rejected[invalid] PASSED [ 62%]
+backend/tests/unit/config/test_settings.py::test_env_overrides_provider PASSED [ 64%]
+backend/tests/unit/config/test_settings.py::test_groq_without_key_is_rejected PASSED [ 66%]
+backend/tests/unit/config/test_settings.py::test_langsmith_tracing_without_key_is_rejected PASSED [ 68%]
+backend/tests/unit/config/test_validation_environment.py::test_validator_sdk_configuration_uses_settings_dotenv_selection[False-False] PASSED [ 70%]
+backend/tests/unit/config/test_validation_environment.py::test_validator_sdk_configuration_uses_settings_dotenv_selection[False-True] PASSED [ 72%]
+backend/tests/unit/config/test_validation_environment.py::test_validator_sdk_configuration_uses_settings_dotenv_selection[True-False] PASSED [ 75%]
+backend/tests/unit/config/test_validation_environment.py::test_validator_sdk_configuration_uses_settings_dotenv_selection[True-True] PASSED [ 77%]
+backend/tests/unit/config/test_validation_environment.py::test_validator_preserves_exported_sdk_configuration PASSED [ 79%]
+backend/tests/unit/llm/test_openai_configuration.py::test_factory_uses_configured_key_without_inference_or_fallback PASSED [ 81%]
+backend/tests/unit/llm/test_openai_configuration.py::test_openai_health_does_not_probe_legacy_services PASSED [ 83%]
+backend/tests/unit/llm/test_factory.py::test_fake_provider_is_rejected_by_the_factory PASSED [ 85%]
+backend/tests/unit/llm/test_factory.py::test_explicit_groq_with_ollama_fallback PASSED [ 87%]
+backend/tests/unit/llm/test_factory.py::test_fallback_can_be_disabled PASSED [ 89%]
+backend/tests/unit/llm/test_factory.py::test_manual_ollama_remains_available PASSED [ 91%]
+backend/tests/unit/test_llm_health.py::test_groq_health_checks_configured_model_and_sends_auth PASSED [ 93%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[ollama-True] PASSED [ 95%]
+backend/tests/unit/test_llm_health.py::test_auth_failure_uses_only_enabled_fallback[none-False] PASSED [ 97%]
+backend/tests/unit/test_llm_health.py::test_ollama_server_without_required_model_is_unhealthy PASSED [100%]
+
+============================== 48 passed in 5.85s ==============================

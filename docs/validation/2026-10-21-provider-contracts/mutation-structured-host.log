@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[groq] FAILED [100%]
+
+=================================== FAILURES ===================================
+__ test_structured_repair_preserves_history_and_validates_report_fields[groq] __
+
+provider_factory = <function provider_factory.<locals>.<lambda> at 0x78d9e62fcea0>
+
+    async def test_structured_repair_preserves_history_and_validates_report_fields(
+        provider_factory: ProviderFactory,
+    ) -> None:
+        invalid = REPORT_JSON.replace('"confidence": 0.7', '"confidence": 2.0')
+        chat = ScriptedChat([AIMessage(content=invalid), AIMessage(content=REPORT_JSON)])
+
+        report = await provider_factory(chat).complete_structured(
+            MESSAGES, IncidentReport, max_attempts=2
+        )
+
+>       assert report.confidence == 0.7
+E       AssertionError: assert 2.0 == 0.7
+E        +  where 2.0 = IncidentReport(summary='Checkout logged dependency timeouts.', likely_causes=[{'title': 'Slow inventory dependency', 'rationale': 'Checkout logs name inventory timeouts; verify the dependency.', 'confidence': 2.0, 'supporting_evidence': [{'source': 'logs', 'detail': 'checkout: timeout calling inventory'}]}], next_steps=['Inspect inventory latency.'], confidence=2.0, investigation_window=None).confidence
+
+backend/tests/unit/llm/test_provider_contract.py:254: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; anyio
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; langsmith
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[groq] - AssertionError: assert 2.0 == 0.7
+ +  where 2.0 = IncidentReport(summary='Checkout logged dependency timeouts.', likely_causes=[{'title': 'Slow inventory dependency', 'rationale': 'Checkout logs name inventory timeouts; verify the dependency.', 'confidence': 2.0, 'supporting_evidence': [{'source': 'logs', 'detail': 'checkout: timeout calling inventory'}]}], next_steps=['Inspect inventory latency.'], confidence=2.0, investigation_window=None).confidence
+======================== 1 failed, 2 warnings in 0.13s =========================
+Mutation structured: pytest exit=1; call failures=1

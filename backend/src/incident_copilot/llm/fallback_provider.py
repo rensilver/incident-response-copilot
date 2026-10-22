@@ -23,6 +23,10 @@ class FallbackProvider(LLMProvider):
         self.primary = primary
         self.fallback = fallback
 
+    async def _probe_health(self) -> bool:
+        """Preserve legacy availability checks within the shared health deadline."""
+        return await self.primary.health_check() or await self.fallback.health_check()
+
     async def _run[T](
         self, primary: Callable[[], Awaitable[T]], fallback: Callable[[], Awaitable[T]]
     ) -> T:

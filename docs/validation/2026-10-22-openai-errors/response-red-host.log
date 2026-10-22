@@ -1,0 +1,111 @@
+FFFF....                                                                 [100%]
+=================================== FAILURES ===================================
+__________________ test_structured_repairs_share_one_deadline __________________
+
+respx_mock = <respx.router.MockRouter object at 0x716fea2097f0>
+
+    async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRouter) -> None:
+        exchange = Wire(outputs=[text_output("invalid"), text_output(json.dumps(REPORT))])
+        cancelled = asyncio.Event()
+        calls = 0
+
+        async def delayed(request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            try:
+                await asyncio.sleep(0.08)
+            except asyncio.CancelledError:
+                cancelled.set()
+                raise
+            return exchange.respond(request)
+
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.12)
+        )
+        try:
+            with pytest.raises(LLMProviderError, match="timeout") as caught:
+                await asyncio.wait_for(
+                    provider.complete_structured(MESSAGES, IncidentReport), timeout=1
+                )
+            assert getattr(caught.value, "kind", None) == "timeout"
+>           assert calls == 2  # First invalid response was repaired, second request was cancelled.
+            ^^^^^^^^^^^^^^^^^
+E           assert 1 == 2
+
+backend/tests/unit/llm/test_openai_provider.py:758: AssertionError
+_________ test_response_error_payload_is_a_safe_service_failure[text] __________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x716fe5c63c50>, Wire(outputs=[], bodies=[{'input': [{...x_output_tokens': 4096, 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False}], response_fields=[]))
+operation = 'text'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_response_error_payload_is_a_safe_service_failure(
+        wire: tuple[OpenAIProvider, Wire], operation: Operation
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": "failed", "error": {
+            "code": "server_error", "message": "private-response-error-canary"
+        }}]
+        with pytest.raises(LLMProviderError) as caught:
+            await invoke_operation(provider, operation)
+>       assert getattr(caught.value, "kind", None) == "service"
+E       AssertionError: assert <LLMFailureKi...alid_request'> == 'service'
+E
+E         - service
+E         + invalid_request
+
+backend/tests/unit/llm/test_openai_provider.py:884: AssertionError
+______ test_response_error_payload_is_a_safe_service_failure[structured] _______
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x716fe596f610>, Wire(outputs=[], bodies=[{'input': [{..., 'reasoning': {'effort': 'none'}, 'stream': False, 'text': {'format': {'type': 'json_object'}}}], response_fields=[]))
+operation = 'structured'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_response_error_payload_is_a_safe_service_failure(
+        wire: tuple[OpenAIProvider, Wire], operation: Operation
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": "failed", "error": {
+            "code": "server_error", "message": "private-response-error-canary"
+        }}]
+        with pytest.raises(LLMProviderError) as caught:
+            await invoke_operation(provider, operation)
+>       assert getattr(caught.value, "kind", None) == "service"
+E       AssertionError: assert <LLMFailureKi...alid_request'> == 'service'
+E
+E         - service
+E         + invalid_request
+
+backend/tests/unit/llm/test_openai_provider.py:884: AssertionError
+_________ test_response_error_payload_is_a_safe_service_failure[tools] _________
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x716fe4e876f0>, Wire(outputs=[], bodies=[{'input': [{...x_output_tokens': 4096, 'model': 'gpt-6-luna', 'reasoning': {'effort': 'none'}, 'stream': False}], response_fields=[]))
+operation = 'tools'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    async def test_response_error_payload_is_a_safe_service_failure(
+        wire: tuple[OpenAIProvider, Wire], operation: Operation
+    ) -> None:
+        provider, exchange = wire
+        exchange.outputs = [text_output(json.dumps(REPORT))]
+        exchange.response_fields = [{"status": "failed", "error": {
+            "code": "server_error", "message": "private-response-error-canary"
+        }}]
+        with pytest.raises(LLMProviderError) as caught:
+            await invoke_operation(provider, operation)
+>       assert getattr(caught.value, "kind", None) == "service"
+E       AssertionError: assert <LLMFailureKi...alid_request'> == 'service'
+E
+E         - service
+E         + invalid_request
+
+backend/tests/unit/llm/test_openai_provider.py:884: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_repairs_share_one_deadline
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_response_error_payload_is_a_safe_service_failure[text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_response_error_payload_is_a_safe_service_failure[structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_response_error_payload_is_a_safe_service_failure[tools]
+4 failed, 4 passed, 93 deselected in 2.03s

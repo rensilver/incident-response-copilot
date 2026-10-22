@@ -1,0 +1,252 @@
+........................................................................ [ 39%]
+........................................................................ [ 79%]
+.......FFF............................                                   [100%]
+=================================== FAILURES ===================================
+_______ test_provider_failure_reaches_api_as_safe_503_then_recovers[401] _______
+
+respx_mock = <respx.router.MockRouter object at 0x78bdf40f57f0>, status = 401
+capsys = <_pytest.capture.CaptureFixture object at 0x78bdcce0ed50>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x78bdcce0edf0>
+
+    @pytest.mark.parametrize("status", [401, 429, 503])
+    async def test_provider_failure_reaches_api_as_safe_503_then_recovers(
+        respx_mock: respx.MockRouter,
+        status: int,
+        capsys: pytest.CaptureFixture[str],
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        configure_logging("DEBUG")
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status, json={"error": {"message": "private-graph-error-canary"}}
+        )
+        settings = Settings(_env_file=None)
+        provider = OpenAIProvider.from_settings(settings)
+        graph = build_graph(provider, [], [], settings)
+        app = FastAPI()
+        app.include_router(build_router(IncidentService(graph), {}))
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.post(
+                    "/api/v1/investigations", json={"query": "initial-only question"}
+                )
+                assert response.status_code == 503
+                assert response.json() == {
+                    "detail": "Investigation unavailable; no usable report was produced."
+                }
+                # Four distinct graph operations: supervisor, two specialists, correlation.
+                # No validation repairs, transport retries, or other provider requests.
+                assert route.call_count == len(respx_mock.calls) == 4
+
+                exchange = Wire(
+                    outputs=[
+                        text_output(json.dumps({"agents": ["metrics"]})),
+                        text_output("No metric evidence retrieved."),
+                        text_output(json.dumps(REPORT)),
+                    ]
+                )
+                route.mock(side_effect=exchange.respond)
+                recovered = await client.post(
+                    "/api/v1/investigations",
+                    json={"query": "recovery-only question", "minutes_back": 17},
+                )
+>               assert recovered.status_code == 200
+E               assert 503 == 200
+E                +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+backend/tests/unit/llm/test_openai_provider.py:1033: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"query": "initial-only question", "service": null, "event": "investigation_started", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "info", "timestamp": "2026-10-22T13:25:06.501875Z"}
+{"error": "Model provider operation failed (authentication)", "event": "supervisor_route_unparsable", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "warning", "timestamp": "2026-10-22T13:25:06.506472Z"}
+{"round": 1, "error": "Model provider operation failed (authentication)", "event": "tool_round_llm_failed", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "warning", "timestamp": "2026-10-22T13:25:06.512171Z"}
+{"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "info", "timestamp": "2026-10-22T13:25:06.512231Z"}
+{"round": 1, "error": "Model provider operation failed (authentication)", "event": "tool_round_llm_failed", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "warning", "timestamp": "2026-10-22T13:25:06.512267Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "info", "timestamp": "2026-10-22T13:25:06.512288Z"}
+{"error": "Model provider operation failed (authentication)", "event": "correlation_failed", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "warning", "timestamp": "2026-10-22T13:25:06.516250Z"}
+{"errors": "routing fallback: Model provider operation failed (authentication); model call failed: Model provider operation failed (authentication); model call failed: Model provider operation failed (authentication); correlation failed: Model provider operation failed (authentication)", "event": "investigation_failed", "correlation_id": "ed599bac-502f-4515-97c5-e1cf9cd1cf21", "level": "error", "timestamp": "2026-10-22T13:25:06.516593Z"}
+{"query": "recovery-only question", "service": null, "event": "investigation_started", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "info", "timestamp": "2026-10-22T13:25:06.517273Z"}
+{"error": "could not obtain valid RouteDecision after 2 attempts", "event": "supervisor_route_unparsable", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "warning", "timestamp": "2026-10-22T13:25:06.526138Z"}
+{"round": 1, "error": "Model provider operation failed (connection)", "event": "tool_round_llm_failed", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "warning", "timestamp": "2026-10-22T13:25:06.532247Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "info", "timestamp": "2026-10-22T13:25:06.532306Z"}
+{"findings": 0, "errors": 0, "event": "logs_agent_complete", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "info", "timestamp": "2026-10-22T13:25:06.532420Z"}
+{"error": "Model provider operation failed (connection)", "event": "correlation_failed", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "warning", "timestamp": "2026-10-22T13:25:06.535599Z"}
+{"errors": "routing fallback: could not obtain valid RouteDecision after 2 attempts; model call failed: Model provider operation failed (connection); correlation failed: Model provider operation failed (connection)", "event": "investigation_failed", "correlation_id": "c0197fdc-62b4-4930-9d81-19e8bb45a8b8", "level": "error", "timestamp": "2026-10-22T13:25:06.535945Z"}
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 401 Unauthorized"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 401 Unauthorized"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 401 Unauthorized"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 401 Unauthorized"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+_______ test_provider_failure_reaches_api_as_safe_503_then_recovers[429] _______
+
+respx_mock = <respx.router.MockRouter object at 0x78bdf40f57f0>, status = 429
+capsys = <_pytest.capture.CaptureFixture object at 0x78bdccc576b0>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x78bdccc56ad0>
+
+    @pytest.mark.parametrize("status", [401, 429, 503])
+    async def test_provider_failure_reaches_api_as_safe_503_then_recovers(
+        respx_mock: respx.MockRouter,
+        status: int,
+        capsys: pytest.CaptureFixture[str],
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        configure_logging("DEBUG")
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status, json={"error": {"message": "private-graph-error-canary"}}
+        )
+        settings = Settings(_env_file=None)
+        provider = OpenAIProvider.from_settings(settings)
+        graph = build_graph(provider, [], [], settings)
+        app = FastAPI()
+        app.include_router(build_router(IncidentService(graph), {}))
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.post(
+                    "/api/v1/investigations", json={"query": "initial-only question"}
+                )
+                assert response.status_code == 503
+                assert response.json() == {
+                    "detail": "Investigation unavailable; no usable report was produced."
+                }
+                # Four distinct graph operations: supervisor, two specialists, correlation.
+                # No validation repairs, transport retries, or other provider requests.
+                assert route.call_count == len(respx_mock.calls) == 4
+
+                exchange = Wire(
+                    outputs=[
+                        text_output(json.dumps({"agents": ["metrics"]})),
+                        text_output("No metric evidence retrieved."),
+                        text_output(json.dumps(REPORT)),
+                    ]
+                )
+                route.mock(side_effect=exchange.respond)
+                recovered = await client.post(
+                    "/api/v1/investigations",
+                    json={"query": "recovery-only question", "minutes_back": 17},
+                )
+>               assert recovered.status_code == 200
+E               assert 503 == 200
+E                +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+backend/tests/unit/llm/test_openai_provider.py:1033: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"query": "initial-only question", "service": null, "event": "investigation_started", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "info", "timestamp": "2026-10-22T13:25:06.715066Z"}
+{"error": "Model provider operation failed (rate_limit)", "event": "supervisor_route_unparsable", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "warning", "timestamp": "2026-10-22T13:25:06.719214Z"}
+{"round": 1, "error": "Model provider operation failed (rate_limit)", "event": "tool_round_llm_failed", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "warning", "timestamp": "2026-10-22T13:25:06.725274Z"}
+{"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "info", "timestamp": "2026-10-22T13:25:06.725322Z"}
+{"round": 1, "error": "Model provider operation failed (rate_limit)", "event": "tool_round_llm_failed", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "warning", "timestamp": "2026-10-22T13:25:06.725349Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "info", "timestamp": "2026-10-22T13:25:06.725368Z"}
+{"error": "Model provider operation failed (rate_limit)", "event": "correlation_failed", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "warning", "timestamp": "2026-10-22T13:25:06.729009Z"}
+{"errors": "routing fallback: Model provider operation failed (rate_limit); model call failed: Model provider operation failed (rate_limit); model call failed: Model provider operation failed (rate_limit); correlation failed: Model provider operation failed (rate_limit)", "event": "investigation_failed", "correlation_id": "9a4241c6-c82e-434e-a51e-ff6e508fce5b", "level": "error", "timestamp": "2026-10-22T13:25:06.729353Z"}
+{"query": "recovery-only question", "service": null, "event": "investigation_started", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "info", "timestamp": "2026-10-22T13:25:06.729973Z"}
+{"error": "could not obtain valid RouteDecision after 2 attempts", "event": "supervisor_route_unparsable", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "warning", "timestamp": "2026-10-22T13:25:06.738540Z"}
+{"round": 1, "error": "Model provider operation failed (connection)", "event": "tool_round_llm_failed", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "warning", "timestamp": "2026-10-22T13:25:06.744358Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "info", "timestamp": "2026-10-22T13:25:06.744423Z"}
+{"findings": 0, "errors": 0, "event": "logs_agent_complete", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "info", "timestamp": "2026-10-22T13:25:06.744520Z"}
+{"error": "Model provider operation failed (connection)", "event": "correlation_failed", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "warning", "timestamp": "2026-10-22T13:25:06.747651Z"}
+{"errors": "routing fallback: could not obtain valid RouteDecision after 2 attempts; model call failed: Model provider operation failed (connection); correlation failed: Model provider operation failed (connection)", "event": "investigation_failed", "correlation_id": "c7ea5493-8c9f-4723-82cb-43047a8a4f1e", "level": "error", "timestamp": "2026-10-22T13:25:06.748004Z"}
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 429 Too Many Requests"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+_______ test_provider_failure_reaches_api_as_safe_503_then_recovers[503] _______
+
+respx_mock = <respx.router.MockRouter object at 0x78bdf40f57f0>, status = 503
+capsys = <_pytest.capture.CaptureFixture object at 0x78bdcccf9640>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x78bdcccfb530>
+
+    @pytest.mark.parametrize("status", [401, 429, 503])
+    async def test_provider_failure_reaches_api_as_safe_503_then_recovers(
+        respx_mock: respx.MockRouter,
+        status: int,
+        capsys: pytest.CaptureFixture[str],
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        configure_logging("DEBUG")
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status, json={"error": {"message": "private-graph-error-canary"}}
+        )
+        settings = Settings(_env_file=None)
+        provider = OpenAIProvider.from_settings(settings)
+        graph = build_graph(provider, [], [], settings)
+        app = FastAPI()
+        app.include_router(build_router(IncidentService(graph), {}))
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                response = await client.post(
+                    "/api/v1/investigations", json={"query": "initial-only question"}
+                )
+                assert response.status_code == 503
+                assert response.json() == {
+                    "detail": "Investigation unavailable; no usable report was produced."
+                }
+                # Four distinct graph operations: supervisor, two specialists, correlation.
+                # No validation repairs, transport retries, or other provider requests.
+                assert route.call_count == len(respx_mock.calls) == 4
+
+                exchange = Wire(
+                    outputs=[
+                        text_output(json.dumps({"agents": ["metrics"]})),
+                        text_output("No metric evidence retrieved."),
+                        text_output(json.dumps(REPORT)),
+                    ]
+                )
+                route.mock(side_effect=exchange.respond)
+                recovered = await client.post(
+                    "/api/v1/investigations",
+                    json={"query": "recovery-only question", "minutes_back": 17},
+                )
+>               assert recovered.status_code == 200
+E               assert 503 == 200
+E                +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+backend/tests/unit/llm/test_openai_provider.py:1033: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"query": "initial-only question", "service": null, "event": "investigation_started", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "info", "timestamp": "2026-10-22T13:25:06.788659Z"}
+{"error": "Model provider operation failed (service)", "event": "supervisor_route_unparsable", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "warning", "timestamp": "2026-10-22T13:25:06.793477Z"}
+{"round": 1, "error": "Model provider operation failed (service)", "event": "tool_round_llm_failed", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "warning", "timestamp": "2026-10-22T13:25:06.809697Z"}
+{"findings": 0, "errors": 1, "event": "logs_agent_complete", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "info", "timestamp": "2026-10-22T13:25:06.809759Z"}
+{"round": 1, "error": "Model provider operation failed (service)", "event": "tool_round_llm_failed", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "warning", "timestamp": "2026-10-22T13:25:06.809789Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "info", "timestamp": "2026-10-22T13:25:06.809808Z"}
+{"error": "Model provider operation failed (service)", "event": "correlation_failed", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "warning", "timestamp": "2026-10-22T13:25:06.813601Z"}
+{"errors": "routing fallback: Model provider operation failed (service); model call failed: Model provider operation failed (service); model call failed: Model provider operation failed (service); correlation failed: Model provider operation failed (service)", "event": "investigation_failed", "correlation_id": "7839eb59-b820-48c4-ba7c-dc92f0a3a852", "level": "error", "timestamp": "2026-10-22T13:25:06.813932Z"}
+{"query": "recovery-only question", "service": null, "event": "investigation_started", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "info", "timestamp": "2026-10-22T13:25:06.814621Z"}
+{"error": "could not obtain valid RouteDecision after 2 attempts", "event": "supervisor_route_unparsable", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "warning", "timestamp": "2026-10-22T13:25:06.823848Z"}
+{"round": 1, "error": "Model provider operation failed (connection)", "event": "tool_round_llm_failed", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "warning", "timestamp": "2026-10-22T13:25:06.834069Z"}
+{"findings": 0, "errors": 1, "event": "metrics_agent_complete", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "info", "timestamp": "2026-10-22T13:25:06.834165Z"}
+{"findings": 0, "errors": 0, "event": "logs_agent_complete", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "info", "timestamp": "2026-10-22T13:25:06.834319Z"}
+{"error": "Model provider operation failed (connection)", "event": "correlation_failed", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "warning", "timestamp": "2026-10-22T13:25:06.839668Z"}
+{"errors": "routing fallback: could not obtain valid RouteDecision after 2 attempts; model call failed: Model provider operation failed (connection); correlation failed: Model provider operation failed (connection)", "event": "investigation_failed", "correlation_id": "638cd72d-3647-425b-b622-6f4a5d25ee81", "level": "error", "timestamp": "2026-10-22T13:25:06.840239Z"}
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/investigations "HTTP/1.1 503 Service Unavailable"
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_provider_failure_reaches_api_as_safe_503_then_recovers[401]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_provider_failure_reaches_api_as_safe_503_then_recovers[429]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_provider_failure_reaches_api_as_safe_503_then_recovers[503]
+3 failed, 179 passed in 6.88s

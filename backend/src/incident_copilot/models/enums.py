@@ -56,6 +56,19 @@ class EvidenceSource(StrEnum):
 class LLMProviderName(StrEnum):
     """Selectable LLM provider implementations."""
 
+    OPENAI = "openai"
     OLLAMA = "ollama"
     GROQ = "groq"
     FAKE = "fake"
+
+
+class LLMFailureKind(StrEnum):
+    """Provider-neutral reasons an upstream model operation failed."""
+
+    CONNECTION = "connection"
+    AUTHENTICATION = "authentication"
+    QUOTA = "quota"
+    RATE_LIMIT = "rate_limit"
+    TIMEOUT = "timeout"
+    SERVICE = "service"
+    INVALID_REQUEST = "invalid_request"

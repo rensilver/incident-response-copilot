@@ -1,0 +1,101 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] FAILED [100%]
+
+=================================== FAILURES ===================================
+__ test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] ___
+
+provider_factory = <function provider_factory.<locals>.<lambda> at 0x7dccbe9c8e00>
+tools = [StructuredTool(name='lookup_logs', description='Retrieve lookup_logs for a service.', args_schema=<class 'langchain_c...=<class 'langchain_core.utils.pydantic.lookup_metrics'>, coroutine=<function tools.<locals>.lookup at 0x7dccbe9c8cc0>)]
+
+    async def test_tool_continuation_preserves_call_ids_arguments_and_all_results(
+        provider_factory: ProviderFactory, tools: list[BaseTool]
+    ) -> None:
+        chat = ScriptedChat(
+            [
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        {"name": "lookup_logs", "args": {"service": "checkout"}, "id": "logs-1"},
+                        {"name": "lookup_metrics", "args": {"service": "inventory"}, "id": "metrics-2"},
+                    ],
+                ),
+                AIMessage(content="Inspect inventory after checkout's dependency timeout."),
+            ]
+        )
+        runnable = provider_factory(chat).bind_tools(tools)
+        opening: list[BaseMessage] = [HumanMessage(content="Inspect checkout and inventory")]
+
+        reply = await runnable.ainvoke(opening)
+        assert isinstance(reply, AIMessage)
+        assert reply.tool_calls == [
+            {
+                "name": "lookup_logs",
+                "args": {"service": "checkout"},
+                "id": "logs-1",
+                "type": "tool_call",
+            },
+            {
+                "name": "lookup_metrics",
+                "args": {"service": "inventory"},
+                "id": "metrics-2",
+                "type": "tool_call",
+            },
+        ]
+        history = [
+            *opening,
+            reply,
+            ToolMessage(content="checkout: timeout calling inventory", tool_call_id="logs-1"),
+            ToolMessage(content="inventory: latency 950 ms", tool_call_id="metrics-2"),
+        ]
+        final = await runnable.ainvoke(history)
+
+        assert final.text == "Inspect inventory after checkout's dependency timeout."
+        assert isinstance(final, AIMessage)
+        assert final.tool_calls == []
+        assert len(chat._calls) == 2
+>       assert chat._calls[1].messages == history
+E       AssertionError: assert [HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}), AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[])] == [HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}), AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[]), ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1'), ToolMessage(content='inventory: latency 950 ms', tool_call_id='metrics-2')]
+E
+E         Right contains 2 more items, first extra item: ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1')
+E
+E         Full diff:
+E           [
+E               HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}),
+E               AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[]),
+E         -     ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1'),
+E         -     ToolMessage(content='inventory: latency 950 ms', tool_call_id='metrics-2'),
+E           ]
+
+backend/tests/unit/llm/test_provider_contract.py:340: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; anyio
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345
+  /home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py:1345: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; langsmith
+    self._mark_plugins_for_rewrite(hook, disable_autoload)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] - AssertionError: assert [HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}), AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[])] == [HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}), AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[]), ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1'), ToolMessage(content='inventory: latency 950 ms', tool_call_id='metrics-2')]
+
+  Right contains 2 more items, first extra item: ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1')
+
+  Full diff:
+    [
+        HumanMessage(content='Inspect checkout and inventory', additional_kwargs={}, response_metadata={}),
+        AIMessage(content='', additional_kwargs={}, response_metadata={}, id='lc_run--01a160d2-28a9-7911-ae17-9ba9ec054f3c-0', tool_calls=[{'name': 'lookup_logs', 'args': {'service': 'checkout'}, 'id': 'logs-1', 'type': 'tool_call'}, {'name': 'lookup_metrics', 'args': {'service': 'inventory'}, 'id': 'metrics-2', 'type': 'tool_call'}], invalid_tool_calls=[]),
+  -     ToolMessage(content='checkout: timeout calling inventory', tool_call_id='logs-1'),
+  -     ToolMessage(content='inventory: latency 950 ms', tool_call_id='metrics-2'),
+    ]
+======================== 1 failed, 2 warnings in 0.13s =========================
+Mutation continuation: pytest exit=1; call failures=1

@@ -47,6 +47,7 @@ the next task. A request to commit includes authorization for that task's commit
   and provider selection in `llm.factory`. FastAPI and evaluation share this
   wiring. `IncidentService` owns investigation orchestration and correlation IDs;
   it does not construct HTTP or model clients. Keep the fake provider test-only.
+  Follow the [adapter extension and client ownership rules](docs/provider-adapters.md).
 - Preserve the supervisor → selected metrics/logs specialists → correlation
   graph. Use typed state and partial node updates, with reducers for parallel
   findings/errors. Bound tool rounds and structured-output repair centrally.

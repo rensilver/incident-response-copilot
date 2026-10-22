@@ -1,0 +1,28 @@
+PASS: staged files are restricted to the authorized structured-output task.
+ backend/src/incident_copilot/llm/base.py           |  10 +-
+ .../src/incident_copilot/llm/openai_provider.py    |  24 +-
+ backend/tests/unit/llm/test_openai_provider.py     | 147 ++++++++-
+ docs/provider-adapters.md                          |  32 +-
+ .../2026-10-22-openai-structured/README.md         | 127 ++++++++
+ .../2026-10-22-openai-structured/checks.jsonl      |  10 +
+ .../2026-10-22-openai-structured/focused-green.log |  92 ++++++
+ .../2026-10-22-openai-structured/format.log        |   3 +
+ .../2026-10-22-openai-structured/lint.log          |   4 +
+ .../2026-10-22-openai-structured/probe-host.log    |   2 +
+ .../2026-10-22-openai-structured/probe-sandbox.log |  11 +
+ .../2026-10-22-openai-structured/run_check.py      |  50 +++
+ .../structured-red-host.log                        | 357 +++++++++++++++++++++
+ .../structured-red-sandbox.log                     |  54 ++++
+ .../2026-10-22-openai-structured/test-host.log     |  67 ++++
+ .../2026-10-22-openai-structured/types.log         |   1 +
+ .../2026-10-22-openai-structured/versions.log      |   2 +
+ 17 files changed, 982 insertions(+), 11 deletions(-)
+PASS: git diff --cached --check.
+PASS: staged credential-pattern scan; synthetic test credentials only.
+PASS: .env and local plan remain ignored and unstaged; private values were not read.
+PASS: all 10 bounded check records agree with expected outcomes and have retained logs.
+PASS: regression, focused, and full-suite counts agree with documentation.
+PASS: 28 local documentation targets exist; baseline anchor inspected in checks.md.
+PASS: recorder Ruff and Black checks passed in the final review command.
+Initial sandbox git add failed: .git/index.lock could not be created on the read-only filesystem. Identical explicit-path staging succeeded with elevated access.
+Reviewed production/test/documentation diffs. No settings, factory, dependency, graph, API, UI, live-service, or subsequent-task changes are staged.

@@ -1,0 +1,177 @@
+.....F
+=================================== FAILURES ===================================
+____ test_health_failure_is_redacted_and_recovers_on_later_poll[connection] ____
+
+failure = ConnectError('synthetic-health-payload-secret')
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7840e0aba7b0>
+capsys = <_pytest.capture.CaptureFixture object at 0x7840de823e30>
+
+    @pytest.mark.parametrize(
+        "failure",
+        [
+            pytest.param(httpx.Response(status, json={"error": {"message": HEALTH_CANARY}}),
+                         id=f"http-{status}")
+            for status in (401, 403, 404, 429, 500)
+        ]
+        + [
+            pytest.param(httpx.ConnectError(HEALTH_CANARY), id="connection"),
+            pytest.param(httpx.ReadTimeout(HEALTH_CANARY), id="timeout"),
+            pytest.param(httpx.Response(200, json={}), id="empty-object"),
+            pytest.param(httpx.Response(200, content="null", headers={"content-type": "application/json"}), id="null"),
+            pytest.param(httpx.Response(200, json=[]), id="array"),
+            pytest.param(httpx.Response(200, json=HEALTH_CANARY), id="string"),
+            pytest.param(httpx.Response(200, json={"object": "model"}), id="missing-id"),
+            pytest.param(httpx.Response(200, json={"id": "gpt-6-luna"}), id="missing-object"),
+            pytest.param(httpx.Response(200, json={**MODEL, "id": "other-model"}), id="wrong-model"),
+            pytest.param(httpx.Response(200, json={**MODEL, "id": ["gpt-6-luna"]}), id="invalid-id-type"),
+            pytest.param(httpx.Response(200, json={**MODEL, "object": "list"}), id="wrong-object"),
+            pytest.param(httpx.Response(200, json={**MODEL, "object": None}), id="null-object"),
+            pytest.param(httpx.Response(200, content=HEALTH_CANARY, headers={"content-type": "application/json"}), id="invalid-json"),
+            pytest.param(httpx.Response(200, text=f"<html>{HEALTH_CANARY}</html>"), id="html"),
+        ],
+    )
+    @respx.mock
+    async def test_health_failure_is_redacted_and_recovers_on_later_poll(
+        failure: httpx.Response | httpx.HTTPError,
+        caplog: pytest.LogCaptureFixture,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Use the same provider/router through failure, recovery, and another poll."""
+        caplog.set_level(logging.DEBUG)
+        key = "synthetic-health-auth-secret"
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(
+            side_effect=[failure, httpx.Response(200, json=MODEL), httpx.Response(200, json=MODEL)]
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr(key))
+        settings = Settings(_env_file=None)
+        app = FastAPI()
+        app.include_router(build_router(
+            IncidentService(build_graph(provider, [], [], settings)), {"llm": provider.health_check}
+        ))
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                for count, healthy in enumerate((False, True, True), start=1):
+                    response = await client.get("/health")
+                    assert response.status_code == 200
+                    assert response.json() == {
+                        "status": "ok" if healthy else "degraded",
+                        "dependencies": {"llm": healthy},
+                    }
+                    assert route.call_count == len(respx.calls) == count
+            captured = capsys.readouterr()
+            surfaces = caplog.text + captured.out + captured.err + repr(provider)
+>           assert HEALTH_CANARY not in surfaces
+E           assert 'synthetic-h...yload-secret' not in 'DEBUG    op...840bbde5150>'
+E
+E             'synthetic-health-payload-secret' is contained here:
+E               ectError: synthetic-health-payload-secret
+E               DEBUG    openai._base_client:_base_client.py:1743 Raising connection error
+E               INFO     httpx:_client.py:1740 HTTP Request: GET http://test/health "HTTP/1.1 200 OK"
+E               DEBUG    openai._base_client:_base_client.py:519 Request options: {'method': 'get', 'url': '/models/gpt-6-luna', 'timeout': 3.0, 'security': {'bearer_auth': True}}
+E               DEBUG    openai._base_client:_base_client.py:1705 Sending HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna...
+E
+E             ...Full output truncated (11 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_provider_health.py:86: AssertionError
+------------------------------ Captured log call -------------------------------
+DEBUG    openai._base_client:_base_client.py:519 Request options: {'method': 'get', 'url': '/models/gpt-6-luna', 'timeout': 3.0, 'security': {'bearer_auth': True}}
+DEBUG    openai._base_client:_base_client.py:1705 Sending HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna
+DEBUG    openai._base_client:_base_client.py:1732 Encountered Exception
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/router.py", line 245, in resolver
+    yield resolved
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/router.py", line 293, in aresolve
+    prospect: RouteResultTypes = route.match(request)
+                                 ~~~~~~~~~~~^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/models.py", line 427, in match
+    result = self.resolve(request, **context)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/models.py", line 392, in resolve
+    result = self._resolve_side_effect(request, **kwargs)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/models.py", line 366, in _resolve_side_effect
+    raise SideEffectError(self, origin=effect)
+respx.models.SideEffectError: <Route <Scheme eq 'https'> AND <Host eq 'api.openai.com'> AND <Path eq '/v1/models/gpt-6-luna'> AND <Method eq 'GET'>>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1709, in request
+    response = await self._send_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/openai/_client.py", line 1097, in _send_request
+    response = await self._send_with_auth_retry(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/openai/_client.py", line 1075, in _send_with_auth_retry
+    response = await super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1628, in _send_request
+    return await self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/httpx/_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/httpx/_transports/default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/mocks.py", line 190, in amock
+    response = await cls._send_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        request, target_spec=spec, instance=self, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/mocks.py", line 224, in _send_async_request
+    httpx_response = await cls.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/mocks.py", line 129, in async_handler
+    httpx_response = await router.async_handler(httpx_request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/router.py", line 318, in async_handler
+    resolved = await self.aresolve(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/router.py", line 291, in aresolve
+    with self.resolver(request) as resolved:
+         ~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/rensilver/miniconda3/lib/python3.13/contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/respx/router.py", line 269, in resolver
+    raise error.origin from error
+httpx.ConnectError: synthetic-health-payload-secret
+DEBUG    openai._base_client:_base_client.py:1743 Raising connection error
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/health "HTTP/1.1 200 OK"
+DEBUG    openai._base_client:_base_client.py:519 Request options: {'method': 'get', 'url': '/models/gpt-6-luna', 'timeout': 3.0, 'security': {'bearer_auth': True}}
+DEBUG    openai._base_client:_base_client.py:1705 Sending HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna
+INFO     httpx:_client.py:1740 HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna "HTTP/1.1 200 OK"
+DEBUG    openai._base_client:_base_client.py:1746 HTTP Response: GET https://api.openai.com/v1/models/gpt-6-luna "200 OK" Headers({'content-length': '68', 'content-type': 'application/json'})
+DEBUG    openai._base_client:_base_client.py:1754 request_id: None
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/health "HTTP/1.1 200 OK"
+DEBUG    openai._base_client:_base_client.py:519 Request options: {'method': 'get', 'url': '/models/gpt-6-luna', 'timeout': 3.0, 'security': {'bearer_auth': True}}
+DEBUG    openai._base_client:_base_client.py:1705 Sending HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna
+INFO     httpx:_client.py:1740 HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna "HTTP/1.1 200 OK"
+DEBUG    openai._base_client:_base_client.py:1746 HTTP Response: GET https://api.openai.com/v1/models/gpt-6-luna "200 OK" Headers({'content-length': '68', 'content-type': 'application/json'})
+DEBUG    openai._base_client:_base_client.py:1754 request_id: None
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/health "HTTP/1.1 200 OK"
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_health.py::test_health_failure_is_redacted_and_recovers_on_later_poll[connection]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 5 passed in 2.11s

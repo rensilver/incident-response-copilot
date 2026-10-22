@@ -1,0 +1,8 @@
+PASS: 33 staged files restricted to authorized provider errors, API, tests, and documentation/evidence.
+PASS: no dependency, lock, private environment, graph implementation, or local plan staged.
+PASS: staged diff whitespace and private-file ignores.
+PASS: 19 bounded command records match retained logs; final full/static/tracing checks succeeded.
+PASS: 34 local Markdown links/anchors resolve.
+PASS: staged common credential/private-key patterns absent; all intentional error canaries are synthetic.
+REVIEWED: staged source/tests, new translation module, documented API response, and retained failures.
+LIMITS: no live inference or account/model validation; initial synthetic tracing upload was rejected and is retained.

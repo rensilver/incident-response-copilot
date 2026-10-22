@@ -14,6 +14,7 @@ from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
 from incident_copilot.connectors.prometheus_connector import PrometheusConnector
+from incident_copilot.llm.base import LLMProvider
 from incident_copilot.llm.factory import build_llm_provider
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
@@ -28,11 +29,13 @@ class Collaborators:
         graph: The compiled investigation graph, ready for ``ainvoke``.
         metrics_source: The metrics connector, held so a caller can close it on shutdown.
         log_source: The log connector, held so a caller can close it on shutdown.
+        provider: The same provider used by the graph, retained for health probing.
     """
 
     graph: CompiledStateGraph  # type: ignore[type-arg]  # langgraph's generics vary by version
     metrics_source: MetricsSource
     log_source: LogSource
+    provider: LLMProvider
 
 
 def build_collaborators(settings: Settings) -> Collaborators:
@@ -51,4 +54,6 @@ def build_collaborators(settings: Settings) -> Collaborators:
     graph = build_graph(
         provider, build_metrics_tools(metrics_source), build_log_tools(log_source), settings
     )
-    return Collaborators(graph=graph, metrics_source=metrics_source, log_source=log_source)
+    return Collaborators(
+        graph=graph, metrics_source=metrics_source, log_source=log_source, provider=provider
+    )

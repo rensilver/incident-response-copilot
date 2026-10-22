@@ -1,0 +1,2800 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....                     [100%]
+=================================== FAILURES ===================================
+_ test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 400, upstream_code = 'invalid_request'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_request', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 400, upstream_code = 'invalid_request'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_request', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 400, upstream_code = 'invalid_request'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_request', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 401, upstream_code = 'invalid_api_key'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_api_key', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 401, upstream_code = 'invalid_api_key'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_api_key', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 401, upstream_code = 'invalid_api_key'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_api_key', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 403, upstream_code = 'access_denied'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'access_denied', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 403, upstream_code = 'access_denied'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'access_denied', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 403, upstream_code = 'access_denied'
+kind = 'authentication'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ntication)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'access_denied', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 404, upstream_code = 'model_not_found'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'model_not_found', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 404, upstream_code = 'model_not_found'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'model_not_found', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 404, upstream_code = 'model_not_found'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'model_not_found', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 408, upstream_code = 'request_timeout'
+kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (timeout)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'request_timeout', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 408, upstream_code = 'request_timeout'
+kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (timeout)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'request_timeout', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 408, upstream_code = 'request_timeout'
+kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (timeout)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'request_timeout', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 409, upstream_code = 'conflict', kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'conflict', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 409, upstream_code = 'conflict'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'conflict', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 409, upstream_code = 'conflict', kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'conflict', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 422, upstream_code = 'invalid_schema'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_schema', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 422, upstream_code = 'invalid_schema'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_schema', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 422, upstream_code = 'invalid_schema'
+kind = 'invalid_request'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...d_request)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'invalid_schema', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 429, upstream_code = 'rate_limit_exceeded'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'rate_limit_exceeded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 429, upstream_code = 'rate_limit_exceeded'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'rate_limit_exceeded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 429, upstream_code = 'rate_limit_exceeded'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'rate_limit_exceeded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 429, upstream_code = 'insufficient_quota'
+kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'insufficient_quota', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 429, upstream_code = 'insufficient_quota'
+kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'insufficient_quota', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 429, upstream_code = 'insufficient_quota'
+kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'insufficient_quota', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 429, upstream_code = 'billing_hard_limit_reached'
+kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'billing_hard_limit_reached', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 429
+upstream_code = 'billing_hard_limit_reached', kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'billing_hard_limit_reached', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 429, upstream_code = 'billing_hard_limit_reached'
+kind = 'quota'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ed (quota)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'billing_hard_limit_reached', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 429, upstream_code = 'unknown_future_code'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'unknown_future_code', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 429, upstream_code = 'unknown_future_code'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'unknown_future_code', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 429, upstream_code = 'unknown_future_code'
+kind = 'rate_limit'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (...ate_limit)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'unknown_future_code', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 500, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 500, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 500, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 502, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 502, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 502, upstream_code = 'server_error'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_error', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-text] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', status = 503, upstream_code = 'server_is_overloaded'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_is_overloaded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (58 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-structured] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', status = 503, upstream_code = 'server_is_overloaded'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_is_overloaded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (74 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+_ test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-tools] _
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', status = 503, upstream_code = 'server_is_overloaded'
+kind = 'service'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "status, upstream_code, kind",
+        [
+            (400, "invalid_request", "invalid_request"),
+            (401, "invalid_api_key", "authentication"),
+            (403, "access_denied", "authentication"),
+            (404, "model_not_found", "invalid_request"),
+            (408, "request_timeout", "timeout"),
+            (409, "conflict", "service"),
+            (422, "invalid_schema", "invalid_request"),
+            (429, "rate_limit_exceeded", "rate_limit"),
+            (429, "insufficient_quota", "quota"),
+            (429, "billing_hard_limit_reached", "quota"),
+            (429, "unknown_future_code", "rate_limit"),
+            (500, "server_error", "service"),
+            (502, "server_error", "service"),
+            (503, "server_is_overloaded", "service"),
+        ],
+    )
+    async def test_http_failures_never_retry_even_with_server_retry_headers(
+        respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+            status,
+            json={
+                "error": {
+                    "message": "private-upstream-canary",
+                    "code": upstream_code,
+                    "type": "invalid_request_error",
+                }
+            },
+            headers={"Retry-After": "0", "x-should-retry": "true"},
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+            assert "private-upstream-canary" not in str(caught.value)
+            assert "private-upstream-canary" not in repr(caught.value)
+>           assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+E           AssertionError: assert 'private-upstream-canary' not in 'Traceback (... (service)\n'
+E
+E             'private-upstream-canary' is contained here:
+E               essage': 'private-upstream-canary', 'code': 'server_is_overloaded', 'type': 'invalid_request_error'}}
+E             ?           +++++++++++++++++++++++
+E
+E               During handling of the above exception, another exception occurred:
+E               ...
+E
+E             ...Full output truncated (61 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:834: AssertionError
+______ test_transport_failures_never_retry[ConnectError-connection-text] _______
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', failure = <class 'httpx.ConnectError'>, kind = 'connection'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (...onnection)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               ectError: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (88 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+___ test_transport_failures_never_retry[ConnectError-connection-structured] ____
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', failure = <class 'httpx.ConnectError'>
+kind = 'connection'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (...onnection)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               ectError: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (104 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+______ test_transport_failures_never_retry[ConnectError-connection-tools] ______
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', failure = <class 'httpx.ConnectError'>, kind = 'connection'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (...onnection)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               ectError: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (91 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+________ test_transport_failures_never_retry[ReadTimeout-timeout-text] _________
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'text', failure = <class 'httpx.ReadTimeout'>, kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (... (timeout)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               dTimeout: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (88 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+_____ test_transport_failures_never_retry[ReadTimeout-timeout-structured] ______
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'structured', failure = <class 'httpx.ReadTimeout'>
+kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (... (timeout)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               dTimeout: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (104 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+________ test_transport_failures_never_retry[ReadTimeout-timeout-tools] ________
+
+respx_mock = <respx.router.MockRouter object at 0x79c7048017f0>
+operation = 'tools', failure = <class 'httpx.ReadTimeout'>, kind = 'timeout'
+
+    @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+    @pytest.mark.parametrize(
+        "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+    )
+    async def test_transport_failures_never_retry(
+        respx_mock: respx.MockRouter,
+        operation: Operation,
+        failure: type[httpx.TransportError],
+        kind: str,
+    ) -> None:
+        route = respx_mock.post("https://api.openai.com/v1/responses").mock(
+            side_effect=failure("Synthetic transport failure")
+        )
+        provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+        try:
+            with pytest.raises(LLMProviderError) as caught:
+                await invoke_operation(provider, operation)
+            assert getattr(caught.value, "kind", None) == kind
+>           assert "Synthetic transport failure" not in "".join(
+                traceback.format_exception(caught.value)
+            )
+E           AssertionError: assert 'Synthetic t...port failure' not in 'Traceback (... (timeout)\n'
+E
+E             'Synthetic transport failure' is contained here:
+E               dTimeout: Synthetic transport failure
+E
+E               The above exception was the direct cause of the following exception:
+E
+E               Traceback (most recent call last):...
+E
+E             ...Full output truncated (91 lines hidden), use '-vv' to show
+
+backend/tests/unit/llm/test_openai_provider.py:860: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[400-invalid_request-invalid_request-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[401-invalid_api_key-authentication-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[403-access_denied-authentication-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[404-model_not_found-invalid_request-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[408-request_timeout-timeout-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[409-conflict-service-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[422-invalid_schema-invalid_request-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-rate_limit_exceeded-rate_limit-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-insufficient_quota-quota-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-billing_hard_limit_reached-quota-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[429-unknown_future_code-rate_limit-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[500-server_error-service-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[502-server_error-service-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_http_failures_never_retry_even_with_server_retry_headers[503-server_is_overloaded-service-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ConnectError-connection-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ConnectError-connection-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ConnectError-connection-tools]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ReadTimeout-timeout-text]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ReadTimeout-timeout-structured]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_transport_failures_never_retry[ReadTimeout-timeout-tools]
+48 failed, 4 passed, 54 deselected in 3.79s

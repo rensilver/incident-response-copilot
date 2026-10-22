@@ -3,6 +3,7 @@
 import asyncio
 from collections.abc import Sequence
 
+import httpx
 from groq import APIError
 from langchain_core.language_models import BaseChatModel, LanguageModelInput
 from langchain_core.messages import BaseMessage
@@ -12,24 +13,42 @@ from langchain_groq import ChatGroq
 from pydantic import SecretStr
 
 from incident_copilot.config.settings import Settings
-from incident_copilot.llm.base import ChatMessage, LLMProvider
-from incident_copilot.llm.ollama_provider import to_langchain_messages
+from incident_copilot.llm.base import ChatMessage, HealthProbe, LLMProvider
+from incident_copilot.llm.messages import to_langchain_messages
 from incident_copilot.utils.exceptions import ConfigurationError, LLMProviderError
 
 
 class GroqProvider(LLMProvider):
     """Use the same timeout/error boundary for text, JSON, and tool-bound calls."""
 
-    def __init__(self, chat: BaseChatModel, timeout_seconds: float = 30.0) -> None:
+    def __init__(
+        self,
+        chat: BaseChatModel,
+        timeout_seconds: float = 30.0,
+        *,
+        health_probe: HealthProbe | None = None,
+    ) -> None:
         """Store the injected chat model and per-request deadline."""
         self._chat = chat
         self._timeout = timeout_seconds
+        self._health_probe = health_probe
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "GroqProvider":
         """Build the Groq client without making a request."""
         if not settings.groq_api_key:
             raise ConfigurationError("GROQ_API_KEY is required for the groq provider")
+
+        async def model_access() -> bool:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                response = await client.get(
+                    "https://api.groq.com/openai/v1/models",
+                    headers={"Authorization": f"Bearer {settings.groq_api_key}"},
+                )
+            return response.is_success and any(
+                model.get("id") == settings.groq_model for model in response.json().get("data", [])
+            )
+
         return cls(
             ChatGroq(
                 model_name=settings.groq_model,
@@ -39,7 +58,12 @@ class GroqProvider(LLMProvider):
                 max_retries=0,
             ),
             timeout_seconds=settings.groq_timeout_seconds,
+            health_probe=model_access,
         )
+
+    async def _probe_health(self) -> bool:
+        """Check configured model visibility without generation."""
+        return await self._health_probe() if self._health_probe is not None else False
 
     def _bounded(
         self, runnable: Runnable[LanguageModelInput, BaseMessage]
