@@ -5,6 +5,7 @@ import socket
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -12,11 +13,14 @@ import respx
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
-from pydantic import SecretStr
+from pydantic import SecretStr, ValidationError
 
+from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.openai_provider import OpenAIProvider
 from incident_copilot.models.report import IncidentReport
+from incident_copilot.tools.elasticsearch_tools import build_log_tools
+from incident_copilot.tools.prometheus_tools import build_metrics_tools
 
 REPORT = {
     "summary": "Checkout has dependency timeouts.",
@@ -258,3 +262,273 @@ async def test_borrowed_chat_remains_usable_after_adapter_cleanup(
     await borrowed.aclose()
     exchange.outputs = [text_output("caller retains its client")]
     assert await owner.complete(MESSAGES) == "caller retains its client"
+
+
+async def test_application_tool_schemas_preserve_optional_defaults_and_validation(
+    wire: tuple[OpenAIProvider, Wire],
+) -> None:
+    provider, exchange = wire
+    metrics = AsyncMock(spec=MetricsSource)
+    logs = AsyncMock(spec=LogSource)
+    tools = [*build_metrics_tools(metrics), *build_log_tools(logs)]
+    exchange.outputs = [text_output("No tools needed.")]
+
+    await provider.bind_tools(tools).ainvoke([HumanMessage(content="Inspect checkout")])
+
+    assert_inference_policy(exchange.bodies, 1)
+    schemas = {tool["name"]: tool for tool in exchange.bodies[0]["tools"]}
+    assert set(schemas) == {
+        "get_service_metric",
+        "raw_promql_query",
+        "list_services",
+        "search_logs",
+        "log_level_histogram",
+    }
+    for schema in schemas.values():
+        assert schema["type"] == "function"
+        assert schema["description"]
+        # Responses may normalize omitted strictness and make optional fields required.
+        assert schema.get("strict") is False
+        assert "function" not in schema
+        assert "$defs" not in schema["parameters"]
+        assert "config" not in schema["parameters"]["properties"]
+    required = {
+        "get_service_metric": ["service", "kind"],
+        "raw_promql_query": ["query"],
+        "list_services": [],
+        "search_logs": ["service"],
+        "log_level_histogram": ["service"],
+    }
+    for name, fields in required.items():
+        parameters = schemas[name]["parameters"]
+        assert parameters.get("required", []) == fields
+        if name == "list_services":
+            assert parameters["properties"] == {}
+            continue
+        window = parameters["properties"]["minutes_back"]
+        assert window["type"] == "integer"
+        assert window["default"] == 60
+        assert window["minimum"] == 1
+        assert window["maximum"] == 1440
+    assert schemas["get_service_metric"]["parameters"]["properties"]["kind"]["enum"] == [
+        "latency_p95",
+        "error_rate",
+        "memory",
+        "cpu",
+    ]
+    filters = schemas["search_logs"]["parameters"]["properties"]
+    assert filters["level"]["default"] is None
+    severity, nullable = filters["level"]["anyOf"]
+    assert severity["type"] == "string"
+    assert severity["enum"] == ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"]
+    assert nullable == {"type": "null"}
+    assert filters["keyword"]["anyOf"] == [{"type": "string"}, {"type": "null"}]
+    assert filters["keyword"]["default"] is None
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"service": "checkout", "kind": "raw"},
+        {"service": "checkout", "kind": "cpu", "minutes_back": 0},
+        {"service": "checkout", "kind": "cpu", "minutes_back": 1441},
+        {"kind": "cpu"},
+    ],
+)
+async def test_serialized_tool_arguments_still_require_local_validation(
+    wire: tuple[OpenAIProvider, Wire],
+    arguments: dict[str, Any],
+) -> None:
+    provider, exchange = wire
+    metrics = AsyncMock(spec=MetricsSource)
+    tool = build_metrics_tools(metrics)[0]
+    exchange.outputs = [[function_call("metric_bad", tool.name, arguments)]]
+
+    reply = await provider.bind_tools([tool]).ainvoke([HumanMessage(content="Inspect checkout")])
+
+    assert isinstance(reply, AIMessage)
+    assert reply.tool_calls[0]["args"] == arguments
+    with pytest.raises(ValidationError):
+        await tool.ainvoke(reply.tool_calls[0])
+    metrics.query_range.assert_not_awaited()
+
+
+def function_call(call_id: str, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "type": "function_call",
+        "id": f"fc_{call_id}",
+        "call_id": call_id,
+        "name": name,
+        "arguments": json.dumps(arguments, ensure_ascii=False),
+        "status": "completed",
+    }
+
+
+async def test_multiple_calls_and_content_blocks_survive_every_continuation(
+    wire: tuple[OpenAIProvider, Wire],
+) -> None:
+    provider, exchange = wire
+
+    async def lookup(service: str) -> str:
+        return f"{service}: timeout calling inventory"
+
+    async def histogram(service: str) -> list[dict[str, str]]:
+        return [{"type": "text", "text": f"{service}: ERROR=2"}]
+
+    lookup_tool = StructuredTool.from_function(
+        coroutine=lookup, name="lookup_logs", description="Read logs."
+    )
+    histogram_tool = StructuredTool.from_function(
+        coroutine=histogram, name="histogram", description="Count logs."
+    )
+    reasoning = {
+        "type": "reasoning",
+        "id": "rs_offline",
+        "summary": [
+            {"type": "summary_text", "text": "Inspect both services."},
+        ],
+    }
+    first_text = text_output("Checking checkout and café.")
+    first_calls = [
+        function_call("logs_1", "lookup_logs", {"service": "checkout"}),
+        function_call("logs_2", "lookup_logs", {"service": "café"}),
+    ]
+    second_call = function_call("hist_1", "histogram", {"service": "inventory"})
+    exchange.outputs = [
+        [reasoning, *first_text, *first_calls],
+        [second_call],
+        text_output("Inventory needs investigation."),
+    ]
+    runnable = provider.bind_tools([lookup_tool, histogram_tool])
+    history: list[BaseMessage] = [HumanMessage(content="Inspect checkout and café")]
+
+    reply = await runnable.ainvoke(history)
+    assert isinstance(reply, AIMessage)
+    assert reply.text == "Checking checkout and café."
+    assert reply.tool_calls == [
+        {
+            "type": "tool_call",
+            "id": "logs_1",
+            "name": "lookup_logs",
+            "args": {"service": "checkout"},
+        },
+        {"type": "tool_call", "id": "logs_2", "name": "lookup_logs", "args": {"service": "café"}},
+    ]
+    assert isinstance(reply.content, list)
+    assert reply.content[0] == reasoning
+    # Return same-name calls in reverse order: results must correlate by ID.
+    history.extend(
+        [
+            reply,
+            await lookup_tool.ainvoke(reply.tool_calls[1]),
+            await lookup_tool.ainvoke(reply.tool_calls[0]),
+        ]
+    )
+    second = await runnable.ainvoke(history)
+    assert isinstance(second, AIMessage)
+    assert second.text == ""
+    assert second.tool_calls == [
+        {
+            "type": "tool_call",
+            "id": "hist_1",
+            "name": "histogram",
+            "args": {"service": "inventory"},
+        },
+    ]
+    history.extend([second, await histogram_tool.ainvoke(second.tool_calls[0])])
+    final = await runnable.ainvoke(history)
+    assert final.text == "Inventory needs investigation."
+    assert_inference_policy(exchange.bodies, 3)
+    continuation = exchange.bodies[1]["input"]
+    assert continuation == [
+        {"type": "message", "role": "user", "content": "Inspect checkout and café"},
+        reasoning,
+        {
+            "type": "message",
+            "role": "assistant",
+            "id": "msg_offline",
+            "content": first_text[0]["content"],
+        },
+        *first_calls,
+        {
+            "type": "function_call_output",
+            "call_id": "logs_2",
+            "output": "café: timeout calling inventory",
+        },
+        {
+            "type": "function_call_output",
+            "call_id": "logs_1",
+            "output": "checkout: timeout calling inventory",
+        },
+    ]
+    assert exchange.bodies[2]["input"] == [
+        *continuation,
+        second_call,
+        {
+            "type": "function_call_output",
+            "call_id": "hist_1",
+            "output": [{"type": "input_text", "text": "inventory: ERROR=2"}],
+        },
+    ]
+    for body in exchange.bodies:
+        assert [tool["name"] for tool in body["tools"]] == ["lookup_logs", "histogram"]
+
+
+async def test_text_completion_normalizes_multiple_blocks_without_reasoning(
+    wire: tuple[OpenAIProvider, Wire],
+) -> None:
+    provider, exchange = wire
+    output = text_output("Checkout: ")
+    output[0]["content"].append(
+        {"type": "output_text", "text": "café → inventory.", "annotations": []}
+    )
+    exchange.outputs = [
+        [
+            {
+                "type": "reasoning",
+                "id": "rs_text",
+                "summary": [
+                    {"type": "summary_text", "text": "Internal summary."},
+                ],
+            },
+            *output,
+        ]
+    ]
+
+    assert await provider.complete(MESSAGES) == "Checkout: café → inventory."
+
+
+async def test_malformed_tool_json_retains_its_call_id_and_raw_arguments(
+    wire: tuple[OpenAIProvider, Wire],
+) -> None:
+    provider, exchange = wire
+    tool = build_metrics_tools(AsyncMock(spec=MetricsSource))[0]
+    invalid = function_call("bad_json", tool.name, {})
+    invalid["arguments"] = '{"service":'
+    exchange.outputs = [
+        [
+            invalid,
+            function_call("valid_json", tool.name, {"service": "checkout", "kind": "cpu"}),
+        ]
+    ]
+
+    reply = await provider.bind_tools([tool]).ainvoke([HumanMessage(content="Inspect checkout")])
+
+    assert isinstance(reply, AIMessage)
+    assert reply.tool_calls == [
+        {
+            "type": "tool_call",
+            "id": "valid_json",
+            "name": "get_service_metric",
+            "args": {"service": "checkout", "kind": "cpu"},
+        }
+    ]
+    assert len(reply.invalid_tool_calls) == 1
+    rejected = reply.invalid_tool_calls[0]
+    assert rejected["id"] == "bad_json"
+    assert rejected["name"] == "get_service_metric"
+    assert rejected["args"] == '{"service":'
+    assert rejected["error"]
+    assert isinstance(reply.content, list)
+    assert reply.content[0] == invalid
+    assert len(exchange.bodies) == 1  # No silent repair request or discarded call.

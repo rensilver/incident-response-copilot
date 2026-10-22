@@ -68,6 +68,30 @@ below the real LangChain/OpenAI serializers. They verify inference settings on t
 JSON generation and repair, and tool continuation, plus client ownership. The
 adapter also runs the shared contracts with an injected async chat stub.
 
+Tool binding explicitly sends `strict: false` so Responses does not normalize
+optional fields into required strict-schema fields. The existing Pydantic tool
+schemas retain their defaults, nullable log filters, enum vocabulary, and window
+bounds; every tool validates its arguments before connector I/O. This differs from
+strict report generation, which remains a separate implementation task.
+
+The [tool compatibility evidence](validation/2026-10-22-openai-tools/README.md)
+covers all five application tool schemas and three consecutive Responses requests.
+Keep the complete returned `AIMessage` in history: its content blocks carry the
+Responses item IDs, reasoning items, and function calls. `tool_calls[*].id` is the
+Responses `call_id`, distinct from the function item's `id`. Return every result
+with that call ID, including when the same tool is called twice and results arrive
+in a different order. The locked serializer preserves all earlier items/results
+and converts text tool-result blocks into Responses `input_text` blocks without
+duplicating calls. Extract `.text` only for text consumers; it joins text blocks
+and excludes reasoning/function blocks.
+
+Malformed function-argument JSON is exposed in `AIMessage.invalid_tool_calls`,
+including the raw arguments and call ID, while valid sibling calls remain usable.
+The current specialist loop consumes only `tool_calls`; graph-level handling of
+invalid calls and missing results for unknown tools remains part of the planned
+tool-loop review. These wire checks establish adapter compatibility, not live
+model access or complete malformed-call recovery.
+
 Settings and factory registration, schema/refusal/incomplete-output validation,
 operation budgets and error normalization, provider health, abstract lifecycle
 wiring, and live account validation remain planned work. This implementation is

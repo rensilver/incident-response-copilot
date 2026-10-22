@@ -1,0 +1,170 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 49 items
+
+backend/tests/unit/llm/test_openai_provider.py::test_text_uses_responses_and_the_explicit_inference_policy PASSED [  2%]
+backend/tests/unit/llm/test_openai_provider.py::test_structured_generation_and_repairs_keep_json_mode_and_policy PASSED [  4%]
+backend/tests/unit/llm/test_openai_provider.py::test_tool_round_and_continuation_keep_policy_and_call_results PASSED [  6%]
+backend/tests/unit/llm/test_openai_provider.py::test_owned_clients_close_without_closing_another_provider PASSED [  8%]
+backend/tests/unit/llm/test_openai_provider.py::test_cleanup_closes_both_owned_sdk_clients PASSED [ 10%]
+backend/tests/unit/llm/test_openai_provider.py::test_borrowed_chat_remains_usable_after_adapter_cleanup PASSED [ 12%]
+backend/tests/unit/llm/test_openai_provider.py::test_application_tool_schemas_preserve_optional_defaults_and_validation FAILED [ 14%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments0] PASSED [ 16%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments1] PASSED [ 18%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments2] PASSED [ 20%]
+backend/tests/unit/llm/test_openai_provider.py::test_serialized_tool_arguments_still_require_local_validation[arguments3] PASSED [ 22%]
+backend/tests/unit/llm/test_openai_provider.py::test_multiple_calls_and_content_blocks_survive_every_continuation PASSED [ 24%]
+backend/tests/unit/llm/test_openai_provider.py::test_text_completion_normalizes_multiple_blocks_without_reasoning PASSED [ 26%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[groq] PASSED [ 28%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[ollama] PASSED [ 30%]
+backend/tests/unit/llm/test_provider_contract.py::test_text_preserves_role_content_order_and_input[openai] PASSED [ 32%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[groq] PASSED [ 34%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[ollama] PASSED [ 36%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_returns_a_validated_incident_report[openai] PASSED [ 38%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[groq] PASSED [ 40%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[ollama] PASSED [ 42%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_repair_preserves_history_and_validates_report_fields[openai] PASSED [ 44%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[groq] PASSED [ 46%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[ollama] PASSED [ 48%]
+backend/tests/unit/llm/test_provider_contract.py::test_structured_exhaustion_is_a_failure_with_no_extra_call[openai] PASSED [ 51%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[groq] PASSED [ 53%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[ollama] PASSED [ 55%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_bindings_remain_independent_on_one_provider[openai] PASSED [ 57%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[groq] PASSED [ 59%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[ollama] PASSED [ 61%]
+backend/tests/unit/llm/test_provider_contract.py::test_tool_continuation_preserves_call_ids_arguments_and_all_results[openai] PASSED [ 63%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-text] PASSED [ 65%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-structured] PASSED [ 67%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[groq-tools] PASSED [ 69%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-text] PASSED [ 71%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-structured] PASSED [ 73%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[ollama-tools] PASSED [ 75%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-text] PASSED [ 77%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-structured] PASSED [ 79%]
+backend/tests/unit/llm/test_provider_contract.py::test_inherited_callbacks_tags_and_metadata_reach_every_model_call[openai-tools] PASSED [ 81%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-text] PASSED [ 83%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-structured] PASSED [ 85%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[groq-tools] PASSED [ 87%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-text] PASSED [ 89%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-structured] PASSED [ 91%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[ollama-tools] PASSED [ 93%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-text] PASSED [ 95%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-structured] PASSED [ 97%]
+backend/tests/unit/llm/test_provider_contract.py::test_cancellation_reaches_model_without_repair_or_wrapping[openai-tools] PASSED [100%]
+
+=================================== FAILURES ===================================
+___ test_application_tool_schemas_preserve_optional_defaults_and_validation ____
+
+wire = (<incident_copilot.llm.openai_provider.OpenAIProvider object at 0x73da431cd750>, Wire(outputs=[], bodies=[{'input': [{..., 'maximum': 1440, 'minimum': 1, 'type': 'integer'}}, 'required': ['service'], 'type': 'object'}, 'strict': False}]}]))
+
+    async def test_application_tool_schemas_preserve_optional_defaults_and_validation(
+        wire: tuple[OpenAIProvider, Wire],
+    ) -> None:
+        provider, exchange = wire
+        metrics = AsyncMock(spec=MetricsSource)
+        logs = AsyncMock(spec=LogSource)
+        tools = [*build_metrics_tools(metrics), *build_log_tools(logs)]
+        exchange.outputs = [text_output("No tools needed.")]
+
+        await provider.bind_tools(tools).ainvoke([HumanMessage(content="Inspect checkout")])
+
+        assert_inference_policy(exchange.bodies, 1)
+        schemas = {tool["name"]: tool for tool in exchange.bodies[0]["tools"]}
+        assert set(schemas) == {
+            "get_service_metric",
+            "raw_promql_query",
+            "list_services",
+            "search_logs",
+            "log_level_histogram",
+        }
+        for schema in schemas.values():
+            assert schema["type"] == "function"
+            assert schema["description"]
+            # Responses may normalize omitted strictness and make optional fields required.
+            assert schema.get("strict") is False
+            assert "function" not in schema
+            assert "$defs" not in schema["parameters"]
+            assert "config" not in schema["parameters"]["properties"]
+        required = {
+            "get_service_metric": ["service", "kind"],
+            "raw_promql_query": ["query"],
+            "list_services": [],
+            "search_logs": ["service"],
+            "log_level_histogram": ["service"],
+        }
+        for name, fields in required.items():
+            parameters = schemas[name]["parameters"]
+            assert parameters.get("required", []) == fields
+            if name == "list_services":
+                assert parameters["properties"] == {}
+                continue
+            window = parameters["properties"]["minutes_back"]
+            assert window["type"] == "integer"
+            assert window["default"] == 60
+            assert window["minimum"] == 1
+            assert window["maximum"] == 1440
+        assert schemas["get_service_metric"]["parameters"]["properties"]["kind"]["enum"] == [
+            "latency_p95",
+            "error_rate",
+            "memory",
+            "cpu",
+        ]
+        filters = schemas["search_logs"]["parameters"]["properties"]
+        assert filters["level"]["default"] is None
+>       assert filters["level"]["anyOf"] == [
+            {"enum": ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"], "type": "string"},
+            {"type": "null"},
+        ]
+E       AssertionError: assert [{'description': 'Log severity levels.', 'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'title': 'LogLevel', 'type': 'string'}, {'type': 'null'}] == [{'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'type': 'string'}, {'type': 'null'}]
+E
+E         At index 0 diff: {'description': 'Log severity levels.', 'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'title': 'LogLevel', 'type': 'string'} != {'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'type': 'string'}
+E
+E         Full diff:
+E           [
+E               {
+E         +         'description': 'Log severity levels.',
+E                   'enum': [
+E                       'DEBUG',
+E                       'INFO',
+E                       'WARN',
+E                       'ERROR',
+E                       'FATAL',
+E                   ],
+E         +         'title': 'LogLevel',
+E                   'type': 'string',
+E               },
+E               {
+E                   'type': 'null',
+E               },
+E           ]
+
+backend/tests/unit/llm/test_openai_provider.py:321: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_application_tool_schemas_preserve_optional_defaults_and_validation - AssertionError: assert [{'description': 'Log severity levels.', 'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'title': 'LogLevel', 'type': 'string'}, {'type': 'null'}] == [{'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'type': 'string'}, {'type': 'null'}]
+
+  At index 0 diff: {'description': 'Log severity levels.', 'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'title': 'LogLevel', 'type': 'string'} != {'enum': ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'], 'type': 'string'}
+
+  Full diff:
+    [
+        {
+  +         'description': 'Log severity levels.',
+            'enum': [
+                'DEBUG',
+                'INFO',
+                'WARN',
+                'ERROR',
+                'FATAL',
+            ],
+  +         'title': 'LogLevel',
+            'type': 'string',
+        },
+        {
+            'type': 'null',
+        },
+    ]
+========================= 1 failed, 48 passed in 2.05s =========================

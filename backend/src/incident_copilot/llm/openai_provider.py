@@ -74,4 +74,6 @@ class OpenAIProvider(LLMProvider):
 
     def bind_tools(self, tools: Sequence[BaseTool]) -> Runnable[LanguageModelInput, BaseMessage]:
         """Bind tools for an async conversation."""
-        return self._chat.bind_tools(list(tools))
+        # Keep optional arguments/defaults intact rather than letting Responses
+        # normalize them into required strict-schema fields. Tools validate locally.
+        return self._chat.bind_tools(list(tools), strict=False)
