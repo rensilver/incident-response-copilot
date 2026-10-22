@@ -137,8 +137,10 @@ available; use the classified domain failures for provider diagnostics. The
 [failure validation evidence](validation/2026-10-22-openai-failure-validation/README.md)
 covers malformed health payloads, later-request recovery, and log redaction.
 
-OpenAI health uses the provider-owned metadata probe described below. Application
-lifecycle cleanup wiring and live account validation remain pending.
+OpenAI health uses the provider-owned metadata probe described below. The
+[retained live smoke](validation/2026-10-22-openai-live-smoke/README.md) validates
+small text, JSON-object, and tool-continuation requests with the exact model and
+reasoning setting. Application lifecycle cleanup wiring remains pending.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
 
 ### Provider health
@@ -166,8 +168,10 @@ A healthy result establishes connectivity and permission to retrieve the selecte
 model's metadata. It does **not** establish inference permission, available quota,
 Responses compatibility, or support for `reasoning={"effort": "none"}`. A key
 restricted from reading model metadata can report degraded health even if it can
-generate responses. Successful inference requires the separately authorized live
-smoke check. Official OpenAI documentation describes the
+generate responses. The
+[live smoke evidence](validation/2026-10-22-openai-live-smoke/README.md) records
+successful inference separately; routine health polling still establishes only
+metadata access. Official OpenAI documentation describes the
 [model retrieval endpoint](https://developers.openai.com/api/reference/python/resources/models/methods/retrieve)
 as returning model metadata; the health interpretation is application policy.
 
