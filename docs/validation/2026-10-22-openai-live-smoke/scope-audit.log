@@ -1,0 +1,5 @@
+PASS: live request policy, model, JSON mode, tool IDs, usage, step results and log agreement
+PASS: retained sandbox failures, command metadata, offline suite count and local links
+PASS: credential-pattern and configured-key absence checks; no values printed
+PASS: staged scope, diff whitespace, private-file ignores and unchanged application
+Files inspected: 18
