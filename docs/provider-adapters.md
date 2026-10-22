@@ -3,7 +3,8 @@
 Services, graph nodes, and routes depend on
 [`LLMProvider`](../backend/src/incident_copilot/llm/base.py). The abstraction exposes
 async text completion, validated structured completion with a shared bounded repair
-loop, and a LangChain runnable for tool conversations. Keep concrete SDK imports
+loop, a LangChain runnable for tool conversations, and a bounded metadata health
+probe. Keep concrete SDK imports
 inside adapters and provider selection inside
 [`llm.factory`](../backend/src/incident_copilot/llm/factory.py).
 [`composition.build_collaborators`](../backend/src/incident_copilot/composition.py)
@@ -38,8 +39,9 @@ owning entrypoint exits with an error.
 
 **Current lifecycle limitation:** the existing `LLMProvider` ABC has no cleanup
 method. Groq/Ollama settings constructors create SDK chat clients without explicit
-cleanup; `Collaborators` retains no provider handle, and FastAPI/evaluation shutdown
-explicitly closes only the metrics/log connectors. The new OpenAI adapter exposes
+cleanup; `Collaborators` now retains the provider for health probing, but
+FastAPI/evaluation shutdown explicitly closes only the metrics/log connectors.
+The OpenAI adapter exposes
 `aclose()` for its owned clients. Application lifecycle integration must retain the
 provider through the abstraction, call cleanup from both entrypoints, and cover
 shutdown and partial-construction failures. That integration remains pending; SDK
@@ -128,10 +130,46 @@ Settings redaction alone does not sanitize upstream error messages. The OpenAI
 adapter additionally normalizes failures before application and tracing callbacks,
 as described below.
 
-Until the provider-owned health probe task, OpenAI health reports unavailable without
-HTTP or inference instead of contacting Groq/Ollama. Application lifecycle wiring
-and live account validation remain pending.
+OpenAI health uses the provider-owned metadata probe described below. Application
+lifecycle cleanup wiring and live account validation remain pending.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
+
+### Provider health
+
+`Collaborators.provider` is the same `LLMProvider` instance passed into the graph.
+FastAPI injects its `health_check` into the existing concurrent `/health` checks;
+there is no provider selection or SDK construction in the health route. The
+response retains `status` and boolean `dependencies`, including `llm`.
+
+`LLMProvider.health_check()` wraps the adapter's `_probe_health()` in a shared
+three-second cooperative deadline. It returns true only for a literal boolean
+true. A missing probe, failure, or deadline expiration reports unavailable without
+logging upstream payloads; caller cancellation propagates. Adapters must use async
+metadata I/O with transport timeouts and no generation, repair, or retry requests.
+
+The OpenAI settings constructor injects a probe backed by its existing owned
+async SDK client with retries disabled. Each poll performs only
+`GET /v1/models/gpt-6-luna`, with a three-second transport timeout, and requires
+the matching model ID and `object: model`. It does not call Responses or Chat
+Completions. The direct constructor accepts an optional async boolean
+`health_probe`; without one it reports unavailable and never consults the borrowed
+chat model. Injection owners retain ownership of their probe's resources.
+
+A healthy result establishes connectivity and permission to retrieve the selected
+model's metadata. It does **not** establish inference permission, available quota,
+Responses compatibility, or support for `reasoning={"effort": "none"}`. A key
+restricted from reading model metadata can report degraded health even if it can
+generate responses. Successful inference requires the separately authorized live
+smoke check. Official OpenAI documentation describes the
+[model retrieval endpoint](https://developers.openai.com/api/reference/python/resources/models/methods/retrieve)
+as returning model metadata; the health interpretation is application policy.
+
+The legacy adapters retain their existing model inventory checks internally until
+retirement. The legacy fallback wrapper checks primary then fallback within one
+total health deadline; a stalled primary can consume that budget. The selected
+OpenAI provider has no health fallback. Health polling does not load Ollama models.
+The [health evidence](validation/2026-10-22-provider-health/README.md) records the
+wire requests, deadline/cancellation regressions, injection, and checks.
 
 ### Operation budgets and retry policy
 

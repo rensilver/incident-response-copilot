@@ -6,6 +6,7 @@ import socket
 from typing import Any
 from unittest.mock import MagicMock
 
+import httpx
 import pytest
 import respx
 from langchain_core.callbacks import BaseCallbackHandler
@@ -16,7 +17,6 @@ from langsmith import Client, tracing_context
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.factory import build_llm_provider
 from incident_copilot.llm.openai_provider import OpenAIProvider
-from incident_copilot.main import _llm_health
 from incident_copilot.utils.exceptions import LLMProviderError
 
 
@@ -100,5 +100,12 @@ async def test_factory_uses_configured_key_without_inference_or_fallback(
 
 @respx.mock
 async def test_openai_health_does_not_probe_legacy_services() -> None:
-    assert await _llm_health(Settings(_env_file=None))() is False
-    assert not respx.calls
+    route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(
+        return_value=httpx.Response(401, json={"error": {"message": "offline"}})
+    )
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    try:
+        assert await provider.health_check() is False
+        assert route.call_count == len(respx.calls) == 1
+    finally:
+        await provider.aclose()

@@ -60,6 +60,17 @@ class OllamaProvider(LLMProvider):
 
         return cls(chat=chat(False), json_chat=chat(True), settings=settings)
 
+    async def _probe_health(self) -> bool:
+        """Check the configured model inventory without loading a model."""
+        if self._settings is None:
+            return False
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            response = await client.get(f"{self._settings.ollama_base_url}/api/tags")
+        return response.is_success and any(
+            model.get("name") == self._settings.ollama_model
+            for model in response.json().get("models", [])
+        )
+
     async def _check_memory(self) -> None:
         """Conservatively guard a co-located Ollama server before loading a model.
 

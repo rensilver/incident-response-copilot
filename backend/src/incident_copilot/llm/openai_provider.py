@@ -15,7 +15,12 @@ from openai import AsyncOpenAI, OpenAI
 from pydantic import BaseModel, SecretStr
 
 from incident_copilot.config.settings import Settings
-from incident_copilot.llm.base import ChatMessage, LLMProvider
+from incident_copilot.llm.base import (
+    PROVIDER_HEALTH_TIMEOUT_SECONDS,
+    ChatMessage,
+    HealthProbe,
+    LLMProvider,
+)
 from incident_copilot.llm.messages import to_langchain_messages
 from incident_copilot.llm.openai_errors import invoke_openai
 from incident_copilot.models.enums import LLMFailureKind
@@ -53,11 +58,13 @@ class OpenAIProvider(LLMProvider):
         *,
         timeout_seconds: float = 60.0,
         max_structured_attempts: int = 3,
+        health_probe: HealthProbe | None = None,
     ) -> None:
         """Borrow an injected chat model with operation and repair limits."""
         self._chat = chat
         self._timeout_seconds = timeout_seconds
         self._max_structured_attempts = max_structured_attempts
+        self._health_probe = health_probe
         self._owned_clients: tuple[OpenAI, AsyncOpenAI] | None = None
 
     @classmethod
@@ -109,11 +116,26 @@ class OpenAIProvider(LLMProvider):
             root_async_client=async_client,
             async_client=async_client.chat.completions,
         )
+
+        async def model_access() -> bool:
+            # Metadata access is deliberately independent of inference/quota.
+            model = await async_client.models.retrieve(
+                "gpt-6-luna", timeout=PROVIDER_HEALTH_TIMEOUT_SECONDS
+            )
+            return model.id == "gpt-6-luna" and model.object == "model"
+
         provider = cls(
-            chat, timeout_seconds=timeout_seconds, max_structured_attempts=max_structured_attempts
+            chat,
+            timeout_seconds=timeout_seconds,
+            max_structured_attempts=max_structured_attempts,
+            health_probe=model_access,
         )
         provider._owned_clients = (sync_client, async_client)
         return provider
+
+    async def _probe_health(self) -> bool:
+        """Use the injected metadata probe, sharing owned clients in production."""
+        return await self._health_probe() if self._health_probe is not None else False
 
     async def aclose(self) -> None:
         """Close both owned SDK clients; leave injected collaborators open.

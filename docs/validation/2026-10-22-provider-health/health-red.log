@@ -1,0 +1,241 @@
+FFFFFFFFFFFF...                                                          [100%]
+=================================== FAILURES ===================================
+__________ test_openai_health_reads_model_metadata_without_inference ___________
+
+    @respx.mock
+    async def test_openai_health_reads_model_metadata_without_inference() -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(200, json=MODEL)
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+            assert not respx.calls
+>           assert await provider.health_check() is True
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:35: AttributeError
+__________ test_openai_health_failure_does_not_retry_or_generate[401] __________
+
+status = 401
+
+    @pytest.mark.parametrize("status", [401, 403, 404, 429, 500])
+    @respx.mock
+    async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
+            status, json={"error": {"message": "offline failure", "type": "api_error"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is False
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:53: AttributeError
+__________ test_openai_health_failure_does_not_retry_or_generate[403] __________
+
+status = 403
+
+    @pytest.mark.parametrize("status", [401, 403, 404, 429, 500])
+    @respx.mock
+    async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
+            status, json={"error": {"message": "offline failure", "type": "api_error"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is False
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:53: AttributeError
+__________ test_openai_health_failure_does_not_retry_or_generate[404] __________
+
+status = 404
+
+    @pytest.mark.parametrize("status", [401, 403, 404, 429, 500])
+    @respx.mock
+    async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
+            status, json={"error": {"message": "offline failure", "type": "api_error"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is False
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:53: AttributeError
+__________ test_openai_health_failure_does_not_retry_or_generate[429] __________
+
+status = 429
+
+    @pytest.mark.parametrize("status", [401, 403, 404, 429, 500])
+    @respx.mock
+    async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
+            status, json={"error": {"message": "offline failure", "type": "api_error"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is False
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:53: AttributeError
+__________ test_openai_health_failure_does_not_retry_or_generate[500] __________
+
+status = 500
+
+    @pytest.mark.parametrize("status", [401, 403, 404, 429, 500])
+    @respx.mock
+    async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> None:
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
+            status, json={"error": {"message": "offline failure", "type": "api_error"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is False
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:53: AttributeError
+___________ test_metadata_access_does_not_claim_successful_inference ___________
+
+    @respx.mock
+    async def test_metadata_access_does_not_claim_successful_inference() -> None:
+        respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(200, json=MODEL)
+        inference = respx.post("https://api.openai.com/v1/responses").respond(
+            429, json={"error": {"message": "quota", "code": "insufficient_quota"}}
+        )
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        try:
+>           assert await provider.health_check() is True
+                         ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:68: AttributeError
+________ test_provider_without_probe_is_unavailable_without_generating _________
+
+    async def test_provider_without_probe_is_unavailable_without_generating() -> None:
+        provider = FakeLLMProvider(["unused"])
+>       assert await provider.health_check() is False
+                     ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'FakeLLMProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:76: AttributeError
+__________________ test_probe_deadline_cancels_inflight_work ___________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f6d1c6670>
+
+    async def test_probe_deadline_cancels_inflight_work(monkeypatch: pytest.MonkeyPatch) -> None:
+        cancelled = asyncio.Event()
+
+        class StalledProvider(FakeLLMProvider):
+            async def _probe_health(self) -> bool:
+                try:
+                    await asyncio.Event().wait()
+                finally:
+                    cancelled.set()
+                return True
+
+        monkeypatch.setattr(base, "PROVIDER_HEALTH_TIMEOUT_SECONDS", 0.02, raising=False)
+        provider = StalledProvider(["unused"])
+>       assert await asyncio.wait_for(provider.health_check(), timeout=1.0) is False
+                                      ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'StalledProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:93: AttributeError
+_________________ test_external_probe_cancellation_propagates __________________
+
+    async def test_external_probe_cancellation_propagates() -> None:
+        entered = asyncio.Event()
+        cancelled = asyncio.Event()
+
+        class StalledProvider(FakeLLMProvider):
+            async def _probe_health(self) -> bool:
+                entered.set()
+                try:
+                    await asyncio.Event().wait()
+                finally:
+                    cancelled.set()
+                return True
+
+>       task = asyncio.create_task(StalledProvider(["unused"]).health_check())
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'StalledProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:110: AttributeError
+______________ test_deadline_bounds_real_openai_metadata_request _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f6d1722e0>
+
+    @respx.mock
+    async def test_deadline_bounds_real_openai_metadata_request(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        cancelled = asyncio.Event()
+
+        async def stalled(request: httpx.Request) -> httpx.Response:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cancelled.set()
+            return httpx.Response(200, json=MODEL)
+
+        route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(side_effect=stalled)
+        provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+        monkeypatch.setattr(base, "PROVIDER_HEALTH_TIMEOUT_SECONDS", 0.02, raising=False)
+        try:
+>           assert await asyncio.wait_for(provider.health_check(), timeout=1.0) is False
+                                          ^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'OpenAIProvider' object has no attribute 'health_check'
+
+backend/tests/unit/llm/test_provider_health.py:135: AttributeError
+______________ test_health_uses_the_provider_built_for_the_graph _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6f6d1724a0>
+
+    @respx.mock
+    async def test_health_uses_the_provider_built_for_the_graph(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        class HealthyProvider(FakeLLMProvider):
+            async def health_check(self) -> bool:
+                return True
+
+        provider = HealthyProvider(["unused"])
+        monkeypatch.setattr("incident_copilot.composition.build_llm_provider", lambda _: provider)
+        app = create_app(Settings(_env_file=None))
+        respx.get("http://localhost:9090/-/ready").respond(200)
+        respx.get("http://localhost:9200/_cluster/health").respond(200)
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.get("/health")
+>       assert response.json() == {
+            "status": "ok",
+            "dependencies": {"prometheus": True, "elasticsearch": True, "llm": True},
+        }
+E       AssertionError: assert {'status': 'd...'llm': False}} == {'status': 'o... 'llm': True}}
+E
+E         Differing items:
+E         {'dependencies': {'prometheus': True, 'elasticsearch': True, 'llm': False}} != {'dependencies': {'prometheus': True, 'elasticsearch': True, 'llm': True}}
+E         {'status': 'degraded'} != {'status': 'ok'}
+E         Use -v to get more diff
+
+backend/tests/unit/test_main.py:27: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"provider": "openai", "event": "app_created", "level": "info", "timestamp": "2026-10-22T13:06:43.965098Z"}
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_reads_model_metadata_without_inference
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[401]
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[403]
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[404]
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[429]
+FAILED backend/tests/unit/llm/test_provider_health.py::test_openai_health_failure_does_not_retry_or_generate[500]
+FAILED backend/tests/unit/llm/test_provider_health.py::test_metadata_access_does_not_claim_successful_inference
+FAILED backend/tests/unit/llm/test_provider_health.py::test_provider_without_probe_is_unavailable_without_generating
+FAILED backend/tests/unit/llm/test_provider_health.py::test_probe_deadline_cancels_inflight_work
+FAILED backend/tests/unit/llm/test_provider_health.py::test_external_probe_cancellation_propagates
+FAILED backend/tests/unit/llm/test_provider_health.py::test_deadline_bounds_real_openai_metadata_request
+FAILED backend/tests/unit/test_main.py::test_health_uses_the_provider_built_for_the_graph
+12 failed, 3 passed in 2.53s

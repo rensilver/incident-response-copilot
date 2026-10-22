@@ -1,9 +1,10 @@
 """Provider-agnostic LLM interface."""
 
+import asyncio
 import json
 import re
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from typing import Literal
 
 from langchain_core.language_models import LanguageModelInput
@@ -15,6 +16,8 @@ from pydantic import BaseModel, ValidationError
 from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
 
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
+PROVIDER_HEALTH_TIMEOUT_SECONDS = 3.0
+HealthProbe = Callable[[], Awaitable[bool]]
 
 
 class ChatMessage(BaseModel):
@@ -30,6 +33,23 @@ class LLMProvider(ABC):
     Implementations are fully interchangeable: nothing above this layer may depend on
     which concrete provider it received.
     """
+
+    async def health_check(self) -> bool:
+        """Check metadata access within one deadline, without generating tokens.
+
+        A true result establishes connectivity/model visibility only, not usable
+        inference or quota. Failures are unavailable without exposing upstream
+        payloads; external cancellation propagates unchanged.
+        """
+        try:
+            async with asyncio.timeout(PROVIDER_HEALTH_TIMEOUT_SECONDS):
+                return await self._probe_health() is True
+        except Exception:  # noqa: BLE001 - health failures must not expose upstream details
+            return False
+
+    async def _probe_health(self) -> bool:
+        """Probe provider metadata; adapters without a probe report unavailable."""
+        return False
 
     @abstractmethod
     async def complete(self, messages: Sequence[ChatMessage]) -> str:

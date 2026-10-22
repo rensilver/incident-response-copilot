@@ -1,8 +1,34 @@
 import httpx
+import pytest
 import respx
 
 from incident_copilot.config.settings import Settings
+from incident_copilot.llm.fake_provider import FakeLLMProvider
 from incident_copilot.main import create_app
+
+
+@respx.mock
+async def test_health_uses_the_provider_built_for_the_graph(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class HealthyProvider(FakeLLMProvider):
+        async def _probe_health(self) -> bool:
+            return True
+
+    provider = HealthyProvider(["unused"])
+    monkeypatch.setattr("incident_copilot.composition.build_llm_provider", lambda _: provider)
+    app = create_app(Settings(_env_file=None))
+    respx.get("http://localhost:9090/-/ready").respond(200)
+    respx.get("http://localhost:9200/_cluster/health").respond(200)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        response = await client.get("/health")
+    assert response.json() == {
+        "status": "ok",
+        "dependencies": {"prometheus": True, "elasticsearch": True, "llm": True},
+    }
+    assert len(respx.calls) == 2
 
 
 def test_app_exposes_both_routes() -> None:
