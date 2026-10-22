@@ -43,6 +43,14 @@ class LLMProvider(ABC):
     def bind_tools(self, tools: Sequence[BaseTool]) -> Runnable[LanguageModelInput, BaseMessage]:
         """Return a runnable with the given tools bound."""
 
+    def _validate_json_output[T: BaseModel](self, raw: str, schema: type[T]) -> T:
+        """Validate structured text, allowing legacy prose and Markdown wrappers.
+
+        Adapters with a JSON-only wire contract override this to validate the
+        complete response. Validation failures enter the same shared repair loop.
+        """
+        return schema.model_validate_json(_extract_json(raw))
+
     async def complete_structured[T: BaseModel](
         self,
         messages: Sequence[ChatMessage],
@@ -81,7 +89,7 @@ class LLMProvider(ABC):
             except Exception as exc:  # noqa: BLE001 - deliberate third-party translation
                 raise LLMProviderError(f"LLM call failed: {exc}") from exc
             try:
-                return schema.model_validate_json(_extract_json(raw))
+                return self._validate_json_output(raw, schema)
             except (ValidationError, ValueError) as exc:
                 conversation = [
                     *conversation,

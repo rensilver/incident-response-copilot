@@ -57,8 +57,26 @@ local history; automatic previous-response-ID history trimming is disabled.
 
 Structured completion uses Responses JSON-object mode with an explicit JSON
 instruction and the existing Pydantic validation/repair loop. This is not native
-strict JSON-schema enforcement. Text extraction uses LangChain's message text
-accessor; tool runnables retain the full `AIMessage` and its call IDs/content blocks.
+strict JSON-schema enforcement. Both `RouteDecision` and `IncidentReport` are
+validated locally, including nested evidence, enums, required fields, and bounds.
+OpenAI validates the entire response as JSON: arrays, Markdown fences, surrounding
+prose, trailing garbage, and multiple objects enter the shared bounded repair loop
+instead of being salvaged into reports. Exhaustion raises `StructuredOutputError`
+with the last raw output retained as a debugging attribute, not in the error message.
+The shared `_validate_json_output` hook preserves legacy wrapper handling for other
+adapters without duplicating repair orchestration.
+
+Before parsing, the adapter checks Responses status and refusal content blocks.
+Refusals, incomplete responses (including token truncation and content filtering),
+and other noncompleted statuses raise `StructuredOutputError` immediately, even
+when their text happens to match the report schema. These failures receive no
+repair request; their fixed error messages and empty debugging output exclude
+provider refusal text. Injected chat models may omit Responses status metadata.
+The [structured-output evidence](validation/2026-10-22-openai-structured/README.md)
+records wire-level regressions and schema/repair coverage.
+
+Text extraction uses LangChain's message text accessor; tool runnables retain the
+full `AIMessage` and its call IDs/content blocks.
 SDK retries are disabled. Owned SDK clients bypass LangChain's HTTP-client cache,
 so cleanup cannot close a different provider's transport. Calling `aclose()` on an
 adapter with an injected chat model leaves that borrowed model open.
@@ -71,8 +89,8 @@ adapter also runs the shared contracts with an injected async chat stub.
 Tool binding explicitly sends `strict: false` so Responses does not normalize
 optional fields into required strict-schema fields. The existing Pydantic tool
 schemas retain their defaults, nullable log filters, enum vocabulary, and window
-bounds; every tool validates its arguments before connector I/O. This differs from
-strict report generation, which remains a separate implementation task.
+bounds; every tool validates its arguments before connector I/O. Report generation
+uses JSON-object mode and local schema validation as described above.
 
 The [tool compatibility evidence](validation/2026-10-22-openai-tools/README.md)
 covers all five application tool schemas and three consecutive Responses requests.
@@ -92,9 +110,9 @@ invalid calls and missing results for unknown tools remains part of the planned
 tool-loop review. These wire checks establish adapter compatibility, not live
 model access or complete malformed-call recovery.
 
-Settings and factory registration, schema/refusal/incomplete-output validation,
-operation budgets and error normalization, provider health, abstract lifecycle
-wiring, and live account validation remain planned work. This implementation is
+Settings and factory registration, operation budgets and error normalization,
+provider health, abstract lifecycle wiring, and live account validation remain
+planned work. This implementation is
 not yet selectable in the application. Official references:
 [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
 [JSON mode](https://developers.openai.com/api/docs/guides/structured-outputs#json-mode),

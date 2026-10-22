@@ -8,10 +8,11 @@ from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from openai import AsyncOpenAI, OpenAI
-from pydantic import SecretStr
+from pydantic import BaseModel, SecretStr
 
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.llm.messages import to_langchain_messages
+from incident_copilot.utils.exceptions import StructuredOutputError
 
 
 class OpenAIProvider(LLMProvider):
@@ -70,7 +71,26 @@ class OpenAIProvider(LLMProvider):
             SystemMessage(content="Return a JSON object."),
             *to_langchain_messages(messages),
         ]
-        return (await chat.ainvoke(conversation)).text
+        response = await chat.ainvoke(conversation)
+        # Inspect metadata before extracting text: a refusal or truncated response
+        # may also contain JSON that would otherwise validate as a report.
+        if isinstance(response.content, list) and any(
+            isinstance(block, dict) and block.get("type") == "refusal" for block in response.content
+        ):
+            raise StructuredOutputError("OpenAI refused structured output", raw_output="")
+        if response.response_metadata.get("status") == "incomplete":
+            raise StructuredOutputError("OpenAI structured response was incomplete", raw_output="")
+        # Injected chat models need not have Responses metadata. Real Responses
+        # expose status; pending, failed, and cancelled responses are never reports.
+        if response.response_metadata.get("status") not in (None, "completed"):
+            raise StructuredOutputError(
+                "OpenAI structured response was not completed", raw_output=""
+            )
+        return response.text
+
+    def _validate_json_output[T: BaseModel](self, raw: str, schema: type[T]) -> T:
+        """Validate the entire JSON-mode response without salvaging substrings."""
+        return schema.model_validate_json(raw)
 
     def bind_tools(self, tools: Sequence[BaseTool]) -> Runnable[LanguageModelInput, BaseMessage]:
         """Bind tools for an async conversation."""

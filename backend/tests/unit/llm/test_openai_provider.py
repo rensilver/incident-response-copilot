@@ -18,9 +18,11 @@ from pydantic import SecretStr, ValidationError
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.openai_provider import OpenAIProvider
-from incident_copilot.models.report import IncidentReport
+from incident_copilot.models.enums import AgentName, EvidenceSource
+from incident_copilot.models.report import IncidentReport, RouteDecision
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
+from incident_copilot.utils.exceptions import StructuredOutputError
 
 REPORT = {
     "summary": "Checkout has dependency timeouts.",
@@ -47,6 +49,7 @@ def text_output(text: str) -> list[dict[str, Any]]:
 class Wire:
     outputs: list[list[dict[str, Any]]] = field(default_factory=list)
     bodies: list[dict[str, Any]] = field(default_factory=list)
+    response_fields: list[dict[str, Any]] = field(default_factory=list)
 
     def respond(self, request: httpx.Request) -> httpx.Response:
         assert request.method == "POST"
@@ -74,6 +77,7 @@ class Wire:
                     "output_tokens_details": {"reasoning_tokens": 0},
                     "total_tokens": 25,
                 },
+                **(self.response_fields.pop(0) if self.response_fields else {}),
             },
         )
 
@@ -153,6 +157,147 @@ async def test_structured_generation_and_repairs_keep_json_mode_and_policy(
     assert repaired[-1]["role"] == "user"
     assert "confidence" in repaired[-1]["content"]
     assert "IncidentReport" in repaired[-1]["content"]
+
+
+@pytest.mark.parametrize("with_text", [False, True])
+async def test_structured_refusal_is_terminal_even_with_a_valid_report(
+    wire: tuple[OpenAIProvider, Wire], with_text: bool
+) -> None:
+    provider, exchange = wire
+    refusal = text_output(json.dumps(REPORT) if with_text else "")
+    refusal[0]["content"].append({"type": "refusal", "refusal": "Synthetic refusal text"})
+    exchange.outputs = [refusal, text_output(json.dumps(REPORT))]
+
+    with pytest.raises(StructuredOutputError, match="refus") as caught:
+        await provider.complete_structured(MESSAGES, IncidentReport)
+
+    assert "Synthetic refusal text" not in str(caught.value)
+    assert_inference_policy(exchange.bodies, 1)  # Never repair a refusal into a report.
+
+
+@pytest.mark.parametrize("reason", ["max_output_tokens", "content_filter"])
+@pytest.mark.parametrize("with_text", [False, True])
+async def test_incomplete_response_is_terminal_even_if_its_json_validates(
+    wire: tuple[OpenAIProvider, Wire], reason: str, with_text: bool
+) -> None:
+    provider, exchange = wire
+    exchange.outputs = [
+        text_output(json.dumps(REPORT) if with_text else '{"summary":'),
+        text_output(json.dumps(REPORT)),
+    ]
+    exchange.response_fields = [{"status": "incomplete", "incomplete_details": {"reason": reason}}]
+
+    with pytest.raises(StructuredOutputError, match="incomplete"):
+        await provider.complete_structured(MESSAGES, IncidentReport)
+
+    assert_inference_policy(exchange.bodies, 1)
+
+
+@pytest.mark.parametrize("status", ["failed", "cancelled", "queued", "in_progress"])
+async def test_noncompleted_response_cannot_become_a_report(
+    wire: tuple[OpenAIProvider, Wire], status: str
+) -> None:
+    provider, exchange = wire
+    exchange.outputs = [text_output(json.dumps(REPORT))]
+    exchange.response_fields = [{"status": status}]
+
+    with pytest.raises(StructuredOutputError, match="not completed"):
+        await provider.complete_structured(MESSAGES, IncidentReport)
+
+    assert_inference_policy(exchange.bodies, 1)
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        "not json",
+        '{"summary":',
+        "[" + json.dumps(REPORT) + "]",
+        "```json\n" + json.dumps(REPORT) + "\n```",
+        json.dumps(REPORT) + " trailing garbage",
+        json.dumps(REPORT) + "\n" + json.dumps(REPORT),
+        "{}",
+        json.dumps({**REPORT, "confidence": -0.1}),
+        json.dumps({**REPORT, "likely_causes": [{"title": "Missing rationale/evidence"}]}),
+        json.dumps({**REPORT, "investigation_window": {"start": "bad", "end": "bad"}}),
+    ],
+    ids=[
+        "not-json",
+        "truncated-json",
+        "array-root",
+        "fenced-json",
+        "trailing-garbage",
+        "multiple-objects",
+        "missing-fields",
+        "confidence-bound",
+        "nested-cause",
+        "window",
+    ],
+)
+async def test_invalid_report_exhausts_repairs_without_returning_a_report(
+    wire: tuple[OpenAIProvider, Wire], invalid: str
+) -> None:
+    provider, exchange = wire
+    exchange.outputs = [text_output(invalid), text_output(invalid)]
+
+    with pytest.raises(StructuredOutputError, match="after 2 attempts") as caught:
+        await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+    assert caught.value.raw_output == invalid
+    assert_inference_policy(exchange.bodies, 2)
+    assert "required schema" in exchange.bodies[1]["input"][-1]["content"]
+
+
+async def test_malformed_json_repairs_to_a_report_with_validated_nested_evidence(
+    wire: tuple[OpenAIProvider, Wire],
+) -> None:
+    provider, exchange = wire
+    report = {
+        **REPORT,
+        "likely_causes": [
+            {
+                "title": "Inventory latency",
+                "rationale": "Candidate supported by retrieved dependency timeouts.",
+                "confidence": 0.8,
+                "supporting_evidence": [{"source": "logs", "detail": "café → inventory timeout"}],
+            }
+        ],
+    }
+    exchange.outputs = [text_output('{"summary":'), text_output(json.dumps(report))]
+
+    result = await provider.complete_structured(MESSAGES, IncidentReport, max_attempts=2)
+
+    assert result.investigation_window is None  # The service supplies the authoritative window.
+    cause = result.likely_causes[0]
+    assert cause.confidence == 0.8
+    assert cause.supporting_evidence[0].source == EvidenceSource.LOGS
+    assert cause.supporting_evidence[0].detail == "café → inventory timeout"
+    assert_inference_policy(exchange.bodies, 2)
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        {"agents": [], "reasoning": "No specialist"},
+        {"agents": ["unknown"], "reasoning": "Invalid vocabulary"},
+        {"agents": ["logs_agent"]},
+    ],
+)
+async def test_route_schema_is_validated_and_repaired(
+    wire: tuple[OpenAIProvider, Wire], invalid: dict[str, Any]
+) -> None:
+    provider, exchange = wire
+    exchange.outputs = [
+        text_output(json.dumps(invalid)),
+        text_output('{"agents":["logs_agent","metrics_agent"],"reasoning":"Inspect both"}'),
+    ]
+
+    result = await provider.complete_structured(MESSAGES, RouteDecision, max_attempts=2)
+
+    assert result.agents == (AgentName.LOGS, AgentName.METRICS)
+    assert result.reasoning == "Inspect both"
+    assert_inference_policy(exchange.bodies, 2)
+    assert "RouteDecision" in exchange.bodies[1]["input"][-1]["content"]
 
 
 async def test_tool_round_and_continuation_keep_policy_and_call_results(
