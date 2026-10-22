@@ -29,6 +29,7 @@ from pydantic import PrivateAttr
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.llm.groq_provider import GroqProvider
 from incident_copilot.llm.ollama_provider import OllamaProvider
+from incident_copilot.llm.openai_provider import OpenAIProvider
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.utils.exceptions import StructuredOutputError
 
@@ -172,11 +173,13 @@ def forbid_network(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(socket, "getaddrinfo", denied)
 
 
-@pytest.fixture(params=["groq", "ollama"])
+@pytest.fixture(params=["groq", "ollama", "openai"])
 def provider_factory(request: pytest.FixtureRequest) -> ProviderFactory:
     # Construct no SDK clients and read no Settings or private dotenv file.
     if request.param == "groq":
         return lambda chat: GroqProvider(chat)
+    if request.param == "openai":
+        return lambda chat: OpenAIProvider(chat)
     return lambda chat: OllamaProvider(chat=chat, json_chat=chat)
 
 

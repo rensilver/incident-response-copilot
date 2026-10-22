@@ -37,15 +37,44 @@ Cancellation must propagate through model calls; cleanup must also run when the
 owning entrypoint exits with an error.
 
 **Current lifecycle limitation:** the existing `LLMProvider` ABC has no cleanup
-method. Existing settings constructors create SDK chat clients, but adapters expose
-no explicit close operation, `Collaborators` retains no provider handle, and the
-FastAPI/evaluation shutdown paths explicitly close only the metrics/log connectors.
-This extraction preserves that behavior and does not claim SDK clients are closed.
-The new production adapter must provide cleanup for its owned clients; lifecycle
-integration must retain the provider through the abstraction, call cleanup from both
-entrypoints, and cover shutdown and partial-construction failures. That work is
-part of the adapter implementation and application lifecycle review, not a reason
-for services or routes to inspect concrete SDK internals.
+method. Groq/Ollama settings constructors create SDK chat clients without explicit
+cleanup; `Collaborators` retains no provider handle, and FastAPI/evaluation shutdown
+explicitly closes only the metrics/log connectors. The new OpenAI adapter exposes
+`aclose()` for its owned clients. Application lifecycle integration must retain the
+provider through the abstraction, call cleanup from both entrypoints, and cover
+shutdown and partial-construction failures. That integration remains pending; SDK
+internals belong inside the adapter.
+
+## OpenAI adapter implementation
+
+[`OpenAIProvider`](../backend/src/incident_copilot/llm/openai_provider.py) uses
+`langchain-openai` 1.1.x (locked to 1.1.16 with OpenAI SDK 2.54.0) to preserve the
+existing LangChain core and LangSmith versions. `from_api_key(SecretStr(...))`
+constructs independent synchronous and asynchronous SDK clients without inference.
+All inference is async and uses Responses with `gpt-6-luna` and
+`reasoning={"effort": "none"}`. Tool bindings share these clients and send complete
+local history; automatic previous-response-ID history trimming is disabled.
+
+Structured completion uses Responses JSON-object mode with an explicit JSON
+instruction and the existing Pydantic validation/repair loop. This is not native
+strict JSON-schema enforcement. Text extraction uses LangChain's message text
+accessor; tool runnables retain the full `AIMessage` and its call IDs/content blocks.
+SDK retries are disabled. Owned SDK clients bypass LangChain's HTTP-client cache,
+so cleanup cannot close a different provider's transport. Calling `aclose()` on an
+adapter with an injected chat model leaves that borrowed model open.
+
+The [wire tests](../backend/tests/unit/llm/test_openai_provider.py) intercept HTTP
+below the real LangChain/OpenAI serializers. They verify inference settings on text,
+JSON generation and repair, and tool continuation, plus client ownership. The
+adapter also runs the shared contracts with an injected async chat stub.
+
+Settings and factory registration, schema/refusal/incomplete-output validation,
+operation budgets and error normalization, provider health, abstract lifecycle
+wiring, and live account validation remain planned work. This implementation is
+not yet selectable in the application. Official references:
+[GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
+[JSON mode](https://developers.openai.com/api/docs/guides/structured-outputs#json-mode),
+and [ChatOpenAI](https://reference.langchain.com/python/langchain-openai/chat_models/base/ChatOpenAI).
 
 ## Registering a future adapter
 
