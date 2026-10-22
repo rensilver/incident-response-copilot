@@ -10,10 +10,10 @@ from collections.abc import Awaitable, Callable, Mapping
 
 from fastapi import APIRouter, HTTPException, status
 
-from incident_copilot.api.schemas import HealthResponse
+from incident_copilot.api.schemas import HealthResponse, InvestigationErrorResponse
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
-from incident_copilot.utils.exceptions import InvestigationError
+from incident_copilot.utils.exceptions import InvestigationError, LLMProviderError
 from incident_copilot.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -50,14 +50,24 @@ def build_router(service: IncidentService, health_checks: Mapping[str, HealthChe
     """
     router = APIRouter()
 
-    @router.post("/api/v1/investigations", response_model=IncidentReport)
+    @router.post(
+        "/api/v1/investigations",
+        response_model=IncidentReport,
+        responses={
+            503: {
+                "model": InvestigationErrorResponse,
+                "description": "Investigation unavailable: no usable report was produced.",
+            }
+        },
+    )
     async def create_investigation(request: InvestigationRequest) -> IncidentReport:
         """Run an investigation and return the structured report."""
         try:
             return await service.investigate(request)
-        except InvestigationError as exc:
+        except (InvestigationError, LLMProviderError) as exc:
             raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Investigation unavailable; no usable report was produced.",
             ) from exc
 
     @router.get("/health", response_model=HealthResponse)

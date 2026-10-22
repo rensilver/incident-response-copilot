@@ -124,12 +124,13 @@ the complete settings input mapping. LangChain serialization uses a secret refer
 and offline callback/log/error tests use synthetic keys. Do not export raw settings
 inputs, explicitly reveal `SecretStr`, or log Pydantic `errors()`/`json()` with their
 default input inclusion; use `include_input=False` for structured validation errors.
-Provider response bodies and arbitrary upstream error messages are not sanitized by
-these settings controls; transport error normalization remains separately planned.
+Settings redaction alone does not sanitize upstream error messages. The OpenAI
+adapter additionally normalizes failures before application and tracing callbacks,
+as described below.
 
 Until the provider-owned health probe task, OpenAI health reports unavailable without
-HTTP or inference instead of contacting Groq/Ollama. Application lifecycle wiring,
-error normalization, and live account validation remain pending.
+HTTP or inference instead of contacting Groq/Ollama. Application lifecycle wiring
+and live account validation remain pending.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
 
 ### Operation budgets and retry policy
@@ -150,7 +151,7 @@ already validated their configuration; injected test chat models retain ownershi
 of their transport settings.
 
 An `asyncio.timeout` boundary cancels in-flight model I/O when the operation budget
-expires and raises `LLMProviderError("OpenAI operation deadline exceeded")`.
+expires and raises `LLMUpstreamError(LLMFailureKind.TIMEOUT)`, a `LLMProviderError`.
 Structured completion wraps the shared repair loop in one deadline: each repair
 uses the remaining time, rather than receiving another complete operation budget.
 The SDK clients and LangChain chat model also receive the configured transport
@@ -185,9 +186,73 @@ exhausts their limits without assuming parallel arrival order.
 
 The [budget evidence](validation/2026-10-22-openai-budgets/README.md) records serialized
 caps, shared-deadline cancellation, no-retry HTTP/transport failures, graph counts,
-and full offline verification. General upstream error normalization and its API
-mapping remain the next task; only application deadline expiry gains a fixed domain
-error here.
+and full offline verification. The failure taxonomy below applies to application
+deadlines and upstream failures alike.
+
+### Provider failures and HTTP responses
+
+OpenAI text calls, structured generation (including repairs), and bound-tool
+invocations raise `LLMUpstreamError`, a subclass of `LLMProviderError`, for SDK
+failures. Its `kind` is a provider-neutral `LLMFailureKind`; its message is fixed:
+`Model provider operation failed (<kind>)`. Classification uses SDK types, status
+codes, and exact known quota codes, never arbitrary message text.
+
+| Upstream failure | Domain kind |
+|---|---|
+| SDK connection failure | `connection` |
+| HTTP 401 or 403 (credentials or permission denied) | `authentication` |
+| HTTP 429 with `insufficient_quota` or `billing_hard_limit_reached` | `quota` |
+| Other HTTP 429, including unknown/missing codes | `rate_limit` |
+| SDK timeout, HTTP 408, or application operation deadline | `timeout` |
+| HTTP 400, 404, or 422 (including invalid schema/model request) | `invalid_request` |
+| Other SDK failures/statuses, including 409 and 5xx; LangChain `ValueError` from an unusable Responses payload | `service` |
+
+No retry, repair request, automatic fallback, or model/effort substitution follows
+these failures within the operation. A new application request may succeed later.
+Only local JSON/schema validation failures enter the existing bounded repair loop.
+Refusal, incomplete output, and exhausted local validation remain
+`StructuredOutputError`; they do not become upstream failures. External
+`CancelledError` propagates unchanged.
+
+The error translation coroutine raises outside its SDK exception handler, so the
+domain error retains no raw SDK cause/context, request, headers, body, or upstream
+message. Owned chat clients use a narrow async `ChatOpenAI._agenerate` override to
+translate **before** LangChain calls `on_llm_error`; wrapping `ainvoke` alone is too
+late for tracing redaction. The ordinary provider wrapper also translates failures
+from injected collaborators. Injection owners remain responsible for callbacks
+inside their own chat implementation. Keep wire/callback tests when upgrading the
+locked integration: the override depends on its async generation hook. Streaming
+and synchronous invocation are not part of this adapter's public contract.
+
+The graph still records safe provider messages and can continue other distinct
+operations after a failed routing or specialist call. This routing fan-out does
+not change providers or retry the failed call. A correlation failure leaves no
+report and `IncidentService` raises `InvestigationError`. The existing graph stores
+errors as strings, so it does not preserve the typed reason across its state.
+This task does not change graph recovery or introduce per-reason HTTP statuses.
+
+`POST /api/v1/investigations` returns HTTP **503** for a missing usable report or
+an escaped `LLMProviderError`, with this fixed response:
+
+```json
+{"detail": "Investigation unavailable; no usable report was produced."}
+```
+
+The OpenAPI response declares `InvestigationErrorResponse`. This keeps the existing
+string-valued `detail` envelope while replacing variable graph/provider diagnostic
+text. Provider authentication/quota failures describe this application's dependency,
+so they are not exposed as caller 401/429 responses. No upstream status, body,
+credential, `Retry-After`, or error code is forwarded. Valid requests still return
+the existing 200 report schema; invalid request bodies still return 422. A report
+can still succeed after a recoverable earlier graph operation fails.
+
+The [error-normalization evidence](validation/2026-10-22-openai-errors/README.md)
+records the red/green matrix, real graph/API checks, callback and local LangSmith
+client capture with tracing enabled/disabled, retained failures, and full checks.
+Official OpenAI documentation distinguishes
+[SDK error types and HTTP failures](https://developers.openai.com/api/reference/python)
+and [rate limits versus exhausted quota](https://developers.openai.com/api/docs/guides/error-codes).
+The domain taxonomy and uniform 503 response are application policy.
 
 Official references:
 [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),

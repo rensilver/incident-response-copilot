@@ -1,0 +1,39 @@
+...F....................................................                 [100%]
+=================================== FAILURES ===================================
+__________________ test_structured_repairs_share_one_deadline __________________
+
+respx_mock = <respx.router.MockRouter object at 0x79c389ef57f0>
+
+    async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRouter) -> None:
+        exchange = Wire(outputs=[text_output("invalid"), text_output(json.dumps(REPORT))])
+        cancelled = asyncio.Event()
+        calls = 0
+
+        async def delayed(request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            try:
+                await asyncio.sleep(0.08)
+            except asyncio.CancelledError:
+                cancelled.set()
+                raise
+            return exchange.respond(request)
+
+        respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
+        provider = OpenAIProvider.from_settings(
+            Settings(_env_file=None, llm_operation_timeout_seconds=0.12)
+        )
+        try:
+            with pytest.raises(LLMProviderError, match="timeout") as caught:
+                await asyncio.wait_for(
+                    provider.complete_structured(MESSAGES, IncidentReport), timeout=1
+                )
+            assert getattr(caught.value, "kind", None) == "timeout"
+>           assert calls == 2  # First invalid response was repaired, second request was cancelled.
+            ^^^^^^^^^^^^^^^^^
+E           assert 1 == 2
+
+backend/tests/unit/llm/test_openai_provider.py:755: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_structured_repairs_share_one_deadline
+1 failed, 55 passed, 50 deselected in 3.43s

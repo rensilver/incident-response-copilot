@@ -2,9 +2,12 @@
 
 import asyncio
 from collections.abc import Sequence
+from typing import Any
 
+from langchain_core.callbacks import AsyncCallbackManagerForLLMRun
 from langchain_core.language_models import BaseChatModel, LanguageModelInput
 from langchain_core.messages import BaseMessage, SystemMessage
+from langchain_core.outputs import ChatResult
 from langchain_core.runnables import Runnable, RunnableConfig, RunnableLambda
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
@@ -14,11 +17,31 @@ from pydantic import BaseModel, SecretStr
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.llm.messages import to_langchain_messages
+from incident_copilot.llm.openai_errors import invoke_openai
+from incident_copilot.models.enums import LLMFailureKind
 from incident_copilot.utils.exceptions import (
     ConfigurationError,
-    LLMProviderError,
+    LLMUpstreamError,
     StructuredOutputError,
 )
+
+
+class _SanitizedChatOpenAI(ChatOpenAI):
+    """Normalize before BaseChatModel reports errors to tracing callbacks.
+
+    A wrapper around ainvoke alone runs after the chat model's error callbacks.
+    This async generation hook keeps the real serializer and tracing integration.
+    """
+
+    async def _agenerate(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        """Generate asynchronously with a sanitized failure boundary."""
+        return await invoke_openai(super()._agenerate(messages, stop, run_manager, **kwargs))
 
 
 class OpenAIProvider(LLMProvider):
@@ -71,7 +94,7 @@ class OpenAIProvider(LLMProvider):
         async_client = AsyncOpenAI(
             api_key=api_key.get_secret_value(), max_retries=0, timeout=timeout_seconds
         )
-        chat = ChatOpenAI(
+        chat = _SanitizedChatOpenAI(
             model="gpt-6-luna",
             api_key=api_key,
             use_responses_api=True,
@@ -121,8 +144,9 @@ class OpenAIProvider(LLMProvider):
                 return await super().complete_structured(
                     messages, schema, max_attempts=min(max_attempts, self._max_structured_attempts)
                 )
-        except TimeoutError as exc:
-            raise LLMProviderError("OpenAI operation deadline exceeded") from exc
+        except TimeoutError:
+            pass
+        raise LLMUpstreamError(LLMFailureKind.TIMEOUT)
 
     def _bounded(
         self, runnable: Runnable[LanguageModelInput, BaseMessage]
@@ -132,9 +156,10 @@ class OpenAIProvider(LLMProvider):
         async def invoke(messages: LanguageModelInput, config: RunnableConfig) -> BaseMessage:
             try:
                 async with asyncio.timeout(self._timeout_seconds):
-                    return await runnable.ainvoke(messages, config=config)
-            except TimeoutError as exc:
-                raise LLMProviderError("OpenAI operation deadline exceeded") from exc
+                    return await invoke_openai(runnable.ainvoke(messages, config=config))
+            except TimeoutError:
+                pass
+            raise LLMUpstreamError(LLMFailureKind.TIMEOUT)
 
         return RunnableLambda(invoke)
 

@@ -3,6 +3,7 @@
 import asyncio
 import json
 import socket
+import traceback
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any, Literal
@@ -11,14 +12,15 @@ from unittest.mock import AsyncMock
 import httpx
 import pytest
 import respx
+from fastapi import FastAPI
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
-from openai import APIError
 from pydantic import SecretStr, ValidationError
 
 from incident_copilot.agents.graph import build_graph
 from incident_copilot.agents.state import initial_state
+from incident_copilot.api.routes import build_router
 from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.llm.base import ChatMessage
@@ -26,6 +28,7 @@ from incident_copilot.llm.openai_provider import OpenAIProvider
 from incident_copilot.models.enums import AgentName, EvidenceSource
 from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.models.report import IncidentReport, RouteDecision
+from incident_copilot.services.incident_service import IncidentService
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
 from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
@@ -718,8 +721,9 @@ async def test_deadline_cancels_inflight_http_without_retry(
         Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
     )
     try:
-        with pytest.raises(LLMProviderError, match="deadline"):
+        with pytest.raises(LLMProviderError, match="timeout") as caught:
             await asyncio.wait_for(invoke_operation(provider, operation), timeout=1)
+        assert getattr(caught.value, "kind", None) == "timeout"
         assert cancelled.is_set()
         assert calls == 1
     finally:
@@ -735,7 +739,7 @@ async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRoute
         nonlocal calls
         calls += 1
         try:
-            await asyncio.sleep(0.08)
+            await asyncio.sleep(0.4)
         except asyncio.CancelledError:
             cancelled.set()
             raise
@@ -743,13 +747,14 @@ async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRoute
 
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
     provider = OpenAIProvider.from_settings(
-        Settings(_env_file=None, llm_operation_timeout_seconds=0.12)
+        Settings(_env_file=None, llm_operation_timeout_seconds=0.6)
     )
     try:
-        with pytest.raises(LLMProviderError, match="deadline"):
+        with pytest.raises(LLMProviderError, match="timeout") as caught:
             await asyncio.wait_for(
-                provider.complete_structured(MESSAGES, IncidentReport), timeout=1
+                provider.complete_structured(MESSAGES, IncidentReport), timeout=2
             )
+        assert getattr(caught.value, "kind", None) == "timeout"
         assert calls == 2  # First invalid response was repaired, second request was cancelled.
         assert cancelled.is_set()
     finally:
@@ -791,38 +796,148 @@ async def test_cancellation_during_repair_reaches_http(respx_mock: respx.MockRou
 
 
 @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
-@pytest.mark.parametrize("status", [400, 401, 403, 422, 429, 500, 503])
+@pytest.mark.parametrize(
+    "status, upstream_code, kind",
+    [
+        (400, "invalid_request", "invalid_request"),
+        (401, "invalid_api_key", "authentication"),
+        (403, "access_denied", "authentication"),
+        (404, "model_not_found", "invalid_request"),
+        (408, "request_timeout", "timeout"),
+        (409, "conflict", "service"),
+        (422, "invalid_schema", "invalid_request"),
+        (429, "rate_limit_exceeded", "rate_limit"),
+        (429, "insufficient_quota", "quota"),
+        (429, "billing_hard_limit_reached", "quota"),
+        (429, "unknown_future_code", "rate_limit"),
+        (500, "server_error", "service"),
+        (502, "server_error", "service"),
+        (503, "server_is_overloaded", "service"),
+    ],
+)
 async def test_http_failures_never_retry_even_with_server_retry_headers(
-    respx_mock: respx.MockRouter, operation: Operation, status: int
+    respx_mock: respx.MockRouter, operation: Operation, status: int, upstream_code: str, kind: str
 ) -> None:
     route = respx_mock.post("https://api.openai.com/v1/responses").respond(
         status,
-        json={"error": {"message": "Synthetic upstream failure", "type": "invalid_request_error"}},
+        json={
+            "error": {
+                "message": "private-upstream-canary",
+                "code": upstream_code,
+                "type": "invalid_request_error",
+            }
+        },
         headers={"Retry-After": "0", "x-should-retry": "true"},
     )
     provider = OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
-        # Normalizing all upstream exceptions is the next task. Here only count I/O.
-        with pytest.raises((APIError, LLMProviderError), match="Synthetic upstream failure"):
+        with pytest.raises(LLMProviderError) as caught:
             await invoke_operation(provider, operation)
+        assert getattr(caught.value, "kind", None) == kind
+        assert "private-upstream-canary" not in str(caught.value)
+        assert "private-upstream-canary" not in repr(caught.value)
+        assert "private-upstream-canary" not in "".join(traceback.format_exception(caught.value))
+        assert caught.value.__context__ is None
+        assert caught.value.__cause__ is None
         assert route.call_count == 1
     finally:
         await provider.aclose()
 
 
 @pytest.mark.parametrize("operation", ["text", "structured", "tools"])
-@pytest.mark.parametrize("failure", [httpx.ConnectError, httpx.ReadTimeout])
+@pytest.mark.parametrize(
+    "failure, kind", [(httpx.ConnectError, "connection"), (httpx.ReadTimeout, "timeout")]
+)
 async def test_transport_failures_never_retry(
-    respx_mock: respx.MockRouter, operation: Operation, failure: type[httpx.TransportError]
+    respx_mock: respx.MockRouter,
+    operation: Operation,
+    failure: type[httpx.TransportError],
+    kind: str,
 ) -> None:
     route = respx_mock.post("https://api.openai.com/v1/responses").mock(
         side_effect=failure("Synthetic transport failure")
     )
     provider = OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
-        with pytest.raises((APIError, LLMProviderError)):
+        with pytest.raises(LLMProviderError) as caught:
             await invoke_operation(provider, operation)
+        assert getattr(caught.value, "kind", None) == kind
+        assert "Synthetic transport failure" not in "".join(
+            traceback.format_exception(caught.value)
+        )
         assert route.call_count == 1
+    finally:
+        await provider.aclose()
+
+
+@pytest.mark.parametrize("operation", ["text", "structured", "tools"])
+async def test_response_error_payload_is_a_safe_service_failure(
+    wire: tuple[OpenAIProvider, Wire], operation: Operation
+) -> None:
+    provider, exchange = wire
+    exchange.outputs = [text_output(json.dumps(REPORT))]
+    exchange.response_fields = [
+        {
+            "status": "failed",
+            "error": {"code": "server_error", "message": "private-response-error-canary"},
+        }
+    ]
+    with pytest.raises(LLMProviderError) as caught:
+        await invoke_operation(provider, operation)
+    assert getattr(caught.value, "kind", None) == "service"
+    assert "private-response-error-canary" not in "".join(traceback.format_exception(caught.value))
+    assert len(exchange.bodies) == 1
+
+
+async def test_http_failure_during_repair_stops_without_another_attempt(
+    respx_mock: respx.MockRouter,
+) -> None:
+    exchange = Wire(outputs=[text_output("invalid")])
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        if not exchange.bodies:
+            return exchange.respond(request)
+        return httpx.Response(503, json={"error": {"message": "private-repair-canary"}})
+
+    route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    try:
+        with pytest.raises(LLMProviderError) as caught:
+            await provider.complete_structured(MESSAGES, IncidentReport)
+        assert getattr(caught.value, "kind", None) == "service"
+        assert "private-repair-canary" not in "".join(traceback.format_exception(caught.value))
+        assert route.call_count == 2
+    finally:
+        await provider.aclose()
+
+
+@pytest.mark.parametrize("status", [401, 429, 503])
+async def test_persistent_provider_failure_reaches_api_as_safe_503(
+    respx_mock: respx.MockRouter, status: int, capsys: pytest.CaptureFixture[str]
+) -> None:
+    route = respx_mock.post("https://api.openai.com/v1/responses").respond(
+        status, json={"error": {"message": "private-graph-error-canary"}}
+    )
+    settings = Settings(_env_file=None)
+    provider = OpenAIProvider.from_settings(settings)
+    graph = build_graph(provider, [], [], settings)
+    app = FastAPI()
+    app.include_router(build_router(IncidentService(graph), {}))
+    try:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            response = await client.post("/api/v1/investigations", json={"query": "q"})
+        assert response.status_code == 503
+        assert response.json() == {
+            "detail": "Investigation unavailable; no usable report was produced."
+        }
+        # Four distinct graph operations: supervisor, two specialists, correlation.
+        # No validation repairs, transport retries, or other provider requests.
+        assert route.call_count == 4
+        assert len(respx_mock.calls) == 4
+        captured = capsys.readouterr()
+        assert "private-graph-error-canary" not in captured.out + captured.err
     finally:
         await provider.aclose()
 
