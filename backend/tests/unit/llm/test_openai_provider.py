@@ -16,25 +16,33 @@ import respx
 from fastapi import FastAPI
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
+from langchain_core.tracers.langchain import wait_for_all_tracers
 from langchain_openai import ChatOpenAI
+from langsmith import Client
+from langsmith.utils import get_env_var, get_tracer_project
 from pydantic import SecretStr, ValidationError
+from pydantic_core import to_jsonable_python
+from pytest_mock import MockerFixture
 
 from incident_copilot.agents.graph import build_graph
 from incident_copilot.agents.state import initial_state
 from incident_copilot.agents.tool_loop import run_tool_rounds
 from incident_copilot.api.routes import build_router
+from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.openai_provider import OpenAIProvider
 from incident_copilot.models.enums import AgentName, EvidenceSource
+from incident_copilot.models.logs import LogFinding
 from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.models.report import IncidentReport, RouteDecision
-from incident_copilot.services.incident_service import IncidentService
+from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
 from incident_copilot.utils.exceptions import LLMProviderError, StructuredOutputError
 from incident_copilot.utils.logging import configure_logging, get_logger
+from incident_copilot.utils.tracing import configure_tracing
 
 REPORT = {
     "summary": "Checkout has dependency timeouts.",
@@ -1176,3 +1184,196 @@ async def test_graph_call_budget_has_no_node_retry_multiplier(respx_mock: respx.
         assert all(body["max_output_tokens"] == 4096 for body in bodies)
     finally:
         await provider.aclose()
+
+
+@pytest.fixture
+async def automatic_trace_sink(
+    monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+) -> AsyncIterator[tuple[list[dict[str, Any]], list[dict[str, Any]]]]:
+    """Capture automatic SDK writes while keeping callback selection and nesting real."""
+    for namespace in ("LANGSMITH", "LANGCHAIN"):
+        for suffix in ("TRACING", "TRACING_V2", "API_KEY", "PROJECT"):
+            # Register every variable configure_tracing mutates for pytest restoration.
+            monkeypatch.setenv(f"{namespace}_{suffix}", "")
+    created: list[dict[str, Any]] = []
+    updated: list[dict[str, Any]] = []
+    client = Client(
+        api_url="https://tracing.invalid", api_key="offline-trace-key", auto_batch_tracing=False
+    )
+    mocker.patch.object(Client, "create_run", side_effect=lambda **kw: created.append(kw))
+    mocker.patch.object(Client, "update_run", side_effect=lambda **kw: updated.append(kw))
+    mocker.patch("langchain_core.tracers.langchain.get_client", return_value=client)
+    try:
+        yield created, updated
+    finally:
+        await asyncio.to_thread(wait_for_all_tracers)
+        client.close()
+        for lookup in (get_env_var, get_tracer_project):
+            clear_cache = getattr(lookup, "cache_clear", None)
+            if clear_cache is not None:
+                clear_cache()
+
+
+@pytest.mark.parametrize(
+    "modes",
+    [(True,), (False,), (True, False, True)],
+    ids=["enabled", "disabled-inherited-enabled", "enabled-disabled-enabled"],
+)
+async def test_automatic_graph_tracing_and_credential_free_disable(
+    modes: tuple[bool, ...],
+    automatic_trace_sink: tuple[list[dict[str, Any]], list[dict[str, Any]]],
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
+    respx_mock: respx.MockRouter,
+) -> None:
+    """Catch lost automatic callbacks, detached child spans, or cached enabled tracing."""
+    created, updated = automatic_trace_sink
+    metrics = AsyncMock(spec=MetricsSource)
+    metrics.query_range.return_value = []
+    logs = AsyncMock(spec=LogSource)
+    logs.search.return_value = LogFinding(
+        query="offline dependency timeout", matched_count=1, level_breakdown={}, samples=()
+    )
+    mocker.patch(
+        "incident_copilot.composition.PrometheusConnector.from_settings", return_value=metrics
+    )
+    mocker.patch(
+        "incident_copilot.composition.ElasticsearchConnector.from_settings", return_value=logs
+    )
+    exchange = Wire()
+    structured_calls = 0
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        nonlocal structured_calls
+        body = json.loads(request.content)
+        if body.get("tools"):
+            names = {tool["name"] for tool in body["tools"]}
+            if any(item.get("type") == "function_call_output" for item in body["input"]):
+                output = text_output("Evidence retrieved.")
+            else:
+                name = "get_service_metric" if "get_service_metric" in names else "search_logs"
+                arguments = {"service": "checkout-service", "minutes_back": 999}
+                if name == "get_service_metric":
+                    arguments["kind"] = "error_rate"
+                output = [
+                    {
+                        "type": "function_call",
+                        "id": f"fc_{name}",
+                        "call_id": f"call_{name}",
+                        "name": name,
+                        "arguments": json.dumps(arguments),
+                        "status": "completed",
+                    }
+                ]
+        else:
+            structured_calls += 1
+            output = text_output(
+                json.dumps(
+                    {"agents": ["metrics_agent", "logs_agent"], "reasoning": "Inspect both."}
+                    if structured_calls % 2
+                    else REPORT
+                )
+            )
+        exchange.outputs.append(output)
+        return exchange.respond(request)
+
+    respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
+    # Every inherited spelling disagrees with the first application setting.
+    for namespace in ("LANGSMITH", "LANGCHAIN"):
+        for suffix in ("TRACING", "TRACING_V2"):
+            monkeypatch.setenv(f"{namespace}_{suffix}", str(not modes[0]).lower())
+    settings = Settings(
+        _env_file=None,
+        langsmith_tracing=modes[0],
+        langsmith_api_key="offline-trace-key" if modes[0] else None,
+        langsmith_project="offline-graph-review",
+    )
+    collaborators = build_collaborators(settings)
+    assert isinstance(collaborators.provider, OpenAIProvider)
+    service = IncidentService(collaborators.graph)
+    try:
+        for index, enabled in enumerate(modes):
+            if index:
+                settings = settings.model_copy(
+                    update={
+                        "langsmith_tracing": enabled,
+                        "langsmith_api_key": "offline-trace-key" if enabled else None,
+                        "langsmith_project": f"offline-graph-review-{index}",
+                    }
+                )
+                configure_tracing(settings)
+            if not enabled:
+                for namespace in ("LANGSMITH", "LANGCHAIN"):
+                    monkeypatch.delenv(f"{namespace}_API_KEY", raising=False)
+            created.clear()
+            updated.clear()
+            report = await service.investigate(
+                InvestigationRequest(
+                    query=f"offline tracing investigation {index}",
+                    minutes_back=17,
+                    service="checkout-service",
+                )
+            )
+            await asyncio.to_thread(wait_for_all_tracers)
+            assert report.summary == REPORT["summary"]
+            assert report.investigation_window is not None
+            assert metrics.query_range.call_args.args[1] == report.investigation_window
+            assert logs.search.call_args.args[0].window == report.investigation_window
+            if not enabled:
+                assert created == updated == []
+                continue
+            spans = {str(span["id"]): to_jsonable_python(span) for span in created}
+            endings = {str(span["run_id"]): to_jsonable_python(span) for span in updated}
+            roots = [span for span in spans.values() if span.get("parent_run_id") is None]
+            assert len(roots) == 1
+            root = roots[0]
+            root_id = root["id"]
+            assert root["inputs"]["query"] == f"offline tracing investigation {index}"
+            assert root["inputs"]["time_window"] == report.investigation_window.model_dump(
+                mode="json"
+            )
+            assert endings[root_id]["outputs"]["report"]["summary"] == report.summary
+            nodes = {
+                span["name"]: span
+                for span in spans.values()
+                if span.get("parent_run_id") == root_id
+            }
+            assert {
+                "supervisor",
+                "metrics_agent",
+                "logs_agent",
+                "correlation_agent",
+            } <= nodes.keys()
+            assert sum(span["name"] == "correlation_agent" for span in spans.values()) == 1
+            assert {span["name"] for span in spans.values() if span["run_type"] == "tool"} == {
+                "get_service_metric",
+                "search_logs",
+            }
+            assert sum(span["run_type"] == "llm" for span in spans.values()) == 6
+            for span_id, span in spans.items():
+                assert span["trace_id"] == root_id
+                assert span["session_name"] == settings.langsmith_project
+                assert endings[span_id]["end_time"] is not None
+                assert endings[span_id]["error"] is None
+                if span_id != root_id:
+                    assert span["parent_run_id"] in spans
+                if span["run_type"] == "llm":
+                    ancestor = span
+                    while ancestor.get("parent_run_id") != root_id:
+                        ancestor = spans[ancestor["parent_run_id"]]
+                    assert ancestor["name"] in nodes
+            for name, count in (
+                ("supervisor", 1),
+                ("metrics_agent", 2),
+                ("logs_agent", 2),
+                ("correlation_agent", 1),
+            ):
+                descendants = [
+                    span
+                    for span in spans.values()
+                    if span["run_type"] == "llm"
+                    and span["dotted_order"].startswith(nodes[name]["dotted_order"] + ".")
+                ]
+                assert len(descendants) == count
+    finally:
+        await collaborators.provider.aclose()
