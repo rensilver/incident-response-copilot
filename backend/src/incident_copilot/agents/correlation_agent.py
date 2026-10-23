@@ -1,13 +1,11 @@
 """Correlation node: turns gathered findings into a structured incident report."""
 
-from collections.abc import Awaitable, Callable
-
 from incident_copilot.agents.prompts import (
     CORRELATION_SYSTEM,
     render_evidence,
     render_investigation_window,
 )
-from incident_copilot.agents.state import CorrelationUpdate, InvestigationState
+from incident_copilot.agents.state import CorrelationUpdate, InvestigationNode, InvestigationState
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.utils.exceptions import LLMProviderError
@@ -18,7 +16,7 @@ logger = get_logger(__name__)
 
 def build_correlation_agent(
     provider: LLMProvider,
-) -> Callable[[InvestigationState], Awaitable[CorrelationUpdate]]:
+) -> InvestigationNode[CorrelationUpdate]:
     """Build the correlation node bound to a provider.
 
     Args:
@@ -45,10 +43,9 @@ def build_correlation_agent(
         ]
 
         try:
-            # Small local models sometimes echo the JSON Schema (with its $defs block)
-            # instead of a plain instance on the first attempt or two; observed runs
-            # converge by attempt 3 but occasionally need one more, so this gets extra
-            # headroom over the default.
+            # This is a caller ceiling for schema repair, not a transport retry.
+            # The production provider also applies its configured attempt cap and
+            # shares one operation deadline across all generation/repair attempts.
             report = await provider.complete_structured(messages, IncidentReport, max_attempts=5)
         except LLMProviderError as exc:
             logger.warning("correlation_failed", error=str(exc))

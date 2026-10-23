@@ -8,7 +8,8 @@ still needs its reducer to retain findings collected before that specialist runs
 """
 
 import operator
-from typing import Annotated, TypedDict
+from collections.abc import Awaitable
+from typing import Annotated, Protocol, TypedDict
 
 from incident_copilot.models.enums import AgentName
 from incident_copilot.models.findings import MetricFinding
@@ -30,6 +31,19 @@ class InvestigationState(TypedDict):
     log_findings: Annotated[list[LogFinding], operator.add]
     report: IncidentReport | None
     errors: Annotated[list[str], operator.add]
+
+
+class InvestigationNode[UpdateT](Protocol):
+    """An async node preserving its partial update type.
+
+    Naming the ``state`` argument matches LangGraph's callable protocol. A plain
+    ``Callable[[InvestigationState], Awaitable[UpdateT]]`` loses that parameter
+    name and fails its node-registration overloads in strict mypy.
+    """
+
+    def __call__(self, state: InvestigationState) -> Awaitable[UpdateT]:
+        """Read one investigation state and return a partial update."""
+        ...
 
 
 def initial_state(

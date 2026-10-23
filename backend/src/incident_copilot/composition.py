@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from langgraph.graph.state import CompiledStateGraph
 
 from incident_copilot.agents.graph import build_graph
+from incident_copilot.agents.state import InvestigationState
 from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
 from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
@@ -32,7 +33,7 @@ class Collaborators:
         provider: The same provider used by the graph, retained for health probing.
     """
 
-    graph: CompiledStateGraph  # type: ignore[type-arg]  # langgraph's generics vary by version
+    graph: CompiledStateGraph[InvestigationState, None, InvestigationState, InvestigationState]
     metrics_source: MetricsSource
     log_source: LogSource
     provider: LLMProvider

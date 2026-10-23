@@ -1,11 +1,11 @@
 """Metrics specialist node."""
 
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import Sequence
 
 from langchain_core.tools import BaseTool
 
 from incident_copilot.agents.prompts import METRICS_SYSTEM
-from incident_copilot.agents.state import InvestigationState, MetricsUpdate
+from incident_copilot.agents.state import InvestigationNode, InvestigationState, MetricsUpdate
 from incident_copilot.agents.tool_loop import run_tool_rounds
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 
 def build_metrics_agent(
     provider: LLMProvider, tools: Sequence[BaseTool], settings: Settings
-) -> Callable[[InvestigationState], Awaitable[MetricsUpdate]]:
+) -> InvestigationNode[MetricsUpdate]:
     """Build the metrics specialist node.
 
     Args:

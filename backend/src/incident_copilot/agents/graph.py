@@ -12,8 +12,7 @@ trigger correlation in different steps. A list-source edge would instead wait fo
 specialists even when the supervisor selected only one.
 """
 
-from collections.abc import Awaitable, Callable, Mapping, Sequence
-from typing import Any
+from collections.abc import Sequence
 
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
@@ -28,32 +27,13 @@ from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import LLMProvider
 from incident_copilot.models.enums import AgentName
 
-GraphNode = Callable[[InvestigationState], Awaitable[Mapping[str, Any]]]
-
-
-def _add_node(builder: StateGraph[Any, Any, Any, Any], name: str, node: GraphNode) -> None:
-    """Attach one node to the builder.
-
-    LangGraph 1.2's ``add_node`` overloads do not admit a ``Callable`` produced by a
-    factory — they expect a directly declared coroutine function — so every node this
-    package builds trips the overload resolver. The runtime contract is satisfied
-    (verified by the graph tests), so the mismatch is suppressed once here rather than
-    at all four call sites.
-
-    Args:
-        builder: The graph under construction.
-        name: Node name.
-        node: The async node function.
-    """
-    builder.add_node(name, node)  # type: ignore[call-overload]  # see docstring
-
 
 def build_graph(
     provider: LLMProvider,
     metrics_tools: Sequence[BaseTool],
     log_tools: Sequence[BaseTool],
     settings: Settings,
-) -> CompiledStateGraph:  # type: ignore[type-arg]  # langgraph's generics vary by version
+) -> CompiledStateGraph[InvestigationState, None, InvestigationState, InvestigationState]:
     """Assemble and compile the investigation graph.
 
     Args:
@@ -65,14 +45,15 @@ def build_graph(
     Returns:
         The compiled graph, ready for ``ainvoke``.
     """
-    builder: StateGraph[Any, Any, Any, Any] = StateGraph(InvestigationState)
+    builder: StateGraph[InvestigationState, None, InvestigationState, InvestigationState]
+    builder = StateGraph(InvestigationState)
 
-    _add_node(builder, AgentName.SUPERVISOR.value, build_supervisor(provider, settings))
-    _add_node(
-        builder, AgentName.METRICS.value, build_metrics_agent(provider, metrics_tools, settings)
+    builder.add_node(AgentName.SUPERVISOR.value, build_supervisor(provider, settings))
+    builder.add_node(
+        AgentName.METRICS.value, build_metrics_agent(provider, metrics_tools, settings)
     )
-    _add_node(builder, AgentName.LOGS.value, build_logs_agent(provider, log_tools, settings))
-    _add_node(builder, AgentName.CORRELATION.value, build_correlation_agent(provider))
+    builder.add_node(AgentName.LOGS.value, build_logs_agent(provider, log_tools, settings))
+    builder.add_node(AgentName.CORRELATION.value, build_correlation_agent(provider))
 
     builder.add_edge(START, AgentName.SUPERVISOR.value)
     builder.add_conditional_edges(
