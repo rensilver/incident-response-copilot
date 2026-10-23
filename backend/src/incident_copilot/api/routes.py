@@ -11,10 +11,19 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from incident_copilot.api.schemas import HealthResponse, InvestigationErrorResponse
+from incident_copilot.api.schemas import (
+    HealthResponse,
+    InvestigationErrorResponse,
+    RequestErrorResponse,
+)
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
-from incident_copilot.utils.exceptions import InvestigationError, LLMProviderError
+from incident_copilot.utils.exceptions import (
+    ConnectorError,
+    InvestigationError,
+    InvestigationTimeoutError,
+    LLMProviderError,
+)
 from incident_copilot.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -69,10 +78,16 @@ def build_router(
         "/api/v1/investigations",
         summary="Investigate an incident",
         responses={
+            422: {"model": RequestErrorResponse, "description": "Invalid request."},
+            500: {"model": InvestigationErrorResponse, "description": "Internal server error."},
+            504: {
+                "model": InvestigationErrorResponse,
+                "description": "Total investigation deadline exceeded.",
+            },
             503: {
                 "model": InvestigationErrorResponse,
                 "description": "Investigation unavailable: no usable report was produced.",
-            }
+            },
         },
     )
     async def create_investigation(
@@ -82,13 +97,22 @@ def build_router(
         """Run an investigation and return the structured report."""
         try:
             return await investigator.investigate(request)
-        except (InvestigationError, LLMProviderError) as exc:
+        except InvestigationTimeoutError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+                detail="Investigation deadline exceeded.",
+            ) from exc
+        except (InvestigationError, LLMProviderError, ConnectorError) as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Investigation unavailable; no usable report was produced.",
             ) from exc
 
-    @router.get("/health", summary="Check application and dependency health")
+    @router.get(
+        "/health",
+        summary="Check application and dependency health",
+        responses={500: {"model": InvestigationErrorResponse}},
+    )
     async def health(
         checks: Annotated[Mapping[str, HealthCheck], Depends(resolve_checks)],
     ) -> HealthResponse:

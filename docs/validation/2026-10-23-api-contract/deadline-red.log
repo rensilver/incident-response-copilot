@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_total_deadline_has_a_distinct_status ___________________
+
+    async def test_total_deadline_has_a_distinct_status() -> None:
+        async with client_for(InvestigationTimeoutError("private-canary")) as client:
+            response = await client.post("/api/v1/investigations", json={"query": "q"})
+>       assert response.status_code == 504
+E       assert 503 == 504
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+
+backend/tests/unit/api/test_contract.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/api/test_contract.py::test_total_deadline_has_a_distinct_status
+1 failed in 0.93s

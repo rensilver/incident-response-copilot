@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 import httpx
 from fastapi import FastAPI
 
+from incident_copilot.api.errors import install_error_handlers
 from incident_copilot.api.routes import HealthCheck, build_router
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import Settings, get_settings
@@ -85,6 +86,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logger.info("collaborators_closed")
 
     app = FastAPI(title="incident-response-copilot", version="0.1.0", lifespan=lifespan)
+    install_error_handlers(app)
     app.include_router(build_router())
     return app
 

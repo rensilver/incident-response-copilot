@@ -1,0 +1,168 @@
+FFF.FFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_server_bugs_and_invalid_outputs_are_sanitized_json[error0] ________
+
+error = RuntimeError('private-canary')
+
+    @pytest.mark.parametrize("error", [RuntimeError("private-canary"), None])
+    async def test_server_bugs_and_invalid_outputs_are_sanitized_json(error: Exception | None) -> None:
+        async with client_for(error) as client:
+            response = await client.post("/api/v1/investigations", json={"query": "q"})
+        assert response.status_code == 500
+>       assert response.json() == {"detail": "Internal server error."}
+               ^^^^^^^^^^^^^^^
+
+backend/tests/unit/api/test_contract.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.13/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.13/json/__init__.py:352: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.13/json/decoder.py:345: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x7858f4ec06e0>
+s = 'Internal Server Error', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../miniconda3/lib/python3.13/json/decoder.py:363: JSONDecodeError
+________ test_server_bugs_and_invalid_outputs_are_sanitized_json[None] _________
+
+error = None
+
+    @pytest.mark.parametrize("error", [RuntimeError("private-canary"), None])
+    async def test_server_bugs_and_invalid_outputs_are_sanitized_json(error: Exception | None) -> None:
+        async with client_for(error) as client:
+            response = await client.post("/api/v1/investigations", json={"query": "q"})
+        assert response.status_code == 500
+>       assert response.json() == {"detail": "Internal server error."}
+               ^^^^^^^^^^^^^^^
+
+backend/tests/unit/api/test_contract.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.13/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.13/json/__init__.py:352: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.13/json/decoder.py:345: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x7858f4ec06e0>
+s = 'Internal Server Error', idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+../../miniconda3/lib/python3.13/json/decoder.py:363: JSONDecodeError
+_________ test_unavailable_dependencies_have_a_stable_response[error0] _________
+
+error = ConnectorError('private-canary')
+
+    @pytest.mark.parametrize("error", [ConnectorError("private-canary"), LLMProviderError("private-canary")])
+    async def test_unavailable_dependencies_have_a_stable_response(error: Exception) -> None:
+        async with client_for(error) as client:
+            response = await client.post("/api/v1/investigations", json={"query": "q"})
+>       assert response.status_code == 503
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/unit/api/test_contract.py:48: AssertionError
+_____________ test_invalid_input_does_not_echo_the_rejected_value ______________
+
+    async def test_invalid_input_does_not_echo_the_rejected_value() -> None:
+        async with client_for() as client:
+            response = await client.post(
+                "/api/v1/investigations", json={"query": "q", "minutes_back": "private-canary"}
+            )
+        assert response.status_code == 422
+>       assert response.json() == {
+            "detail": [{"loc": ["body", "minutes_back"], "msg": "Invalid request value.", "type": "int_parsing"}]
+        }
+E       AssertionError: assert {'detail': [{...ate-canary'}]} == {'detail': [{...nt_parsing'}]}
+E
+E         Differing items:
+E         {'detail': [{'type': 'int_parsing', 'loc': ['body', 'minutes_back'], 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'private-canary'}]} != {'detail': [{'loc': ['body', 'minutes_back'], 'msg': 'Invalid request value.', 'type': 'int_parsing'}]}
+E         Use -v to get more diff
+
+backend/tests/unit/api/test_contract.py:58: AssertionError
+______________ test_malformed_json_uses_the_same_validation_shape ______________
+
+    async def test_malformed_json_uses_the_same_validation_shape() -> None:
+        async with client_for() as client:
+            response = await client.post(
+                "/api/v1/investigations", content='{"query": private-canary}',
+                headers={"content-type": "application/json"},
+            )
+        assert response.status_code == 422
+        assert response.json()["detail"][0]["type"] == "json_invalid"
+>       assert set(response.json()["detail"][0]) == {"loc", "msg", "type"}
+E       AssertionError: assert {'ctx', 'inpu...'msg', 'type'} == {'loc', 'msg', 'type'}
+E
+E         Extra items in the left set:
+E         'ctx'
+E         'input'
+E         Use -v to get more diff
+
+backend/tests/unit/api/test_contract.py:72: AssertionError
+__________________ test_health_status_has_a_closed_vocabulary __________________
+
+    def test_health_status_has_a_closed_vocabulary() -> None:
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+backend/tests/unit/api/test_contract.py:77: Failed
+________ test_openapi_documents_application_error_and_health_contracts _________
+
+    def test_openapi_documents_application_error_and_health_contracts() -> None:
+        schema = create_app().openapi()
+        responses = schema["paths"]["/api/v1/investigations"]["post"]["responses"]
+        for status in ("422", "500", "503", "504"):
+>           assert "application/json" in responses[status]["content"]
+                                         ^^^^^^^^^^^^^^^^^
+E           KeyError: '500'
+
+backend/tests/unit/api/test_contract.py:85: KeyError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/api/test_contract.py::test_server_bugs_and_invalid_outputs_are_sanitized_json[error0]
+FAILED backend/tests/unit/api/test_contract.py::test_server_bugs_and_invalid_outputs_are_sanitized_json[None]
+FAILED backend/tests/unit/api/test_contract.py::test_unavailable_dependencies_have_a_stable_response[error0]
+FAILED backend/tests/unit/api/test_contract.py::test_invalid_input_does_not_echo_the_rejected_value
+FAILED backend/tests/unit/api/test_contract.py::test_malformed_json_uses_the_same_validation_shape
+FAILED backend/tests/unit/api/test_contract.py::test_health_status_has_a_closed_vocabulary
+FAILED backend/tests/unit/api/test_contract.py::test_openapi_documents_application_error_and_health_contracts
+7 failed, 1 passed in 1.24s
