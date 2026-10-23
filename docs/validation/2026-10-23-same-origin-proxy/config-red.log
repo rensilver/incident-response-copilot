@@ -1,0 +1,15 @@
+✖ frontend/tests/proxy-config.test.mjs (150.657494ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 164.926128
+
+✖ failing tests:
+
+test at frontend/tests/proxy-config.test.mjs:1:1
+✖ frontend/tests/proxy-config.test.mjs (150.657494ms)
+  'test failed'

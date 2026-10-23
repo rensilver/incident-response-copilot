@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-same-origin-proxy/probe_proxy.py", line 160, in <module>
+    main()
+    ~~~~^^
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-same-origin-proxy/probe_proxy.py", line 44, in main
+    backend_port, frontend_port = free_port(), free_port()
+                                  ~~~~~~~~~^^
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-same-origin-proxy/probe_proxy.py", line 21, in free_port
+    with socket.socket() as sock:
+         ~~~~~~~~~~~~~^^
+  File "/home/rensilver/miniconda3/lib/python3.13/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted

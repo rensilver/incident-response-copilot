@@ -13,14 +13,15 @@ event loop's monotonic clock; the requested telemetry interval is independent.
 | Total graph execution | `INVESTIGATION_TIMEOUT_SECONDS`: default 240 s, finite, greater than zero and at most 240 s. Read through backend settings and injected into the service. |
 | Individual model operation | `LLM_OPERATION_TIMEOUT_SECONDS`: default 60 s, configurable up to 180 s. One operation budget includes structured-output repair attempts. The total graph budget can expire first. |
 | Current Streamlit HTTP client | 300 s network inactivity per operation; this is **not** a total wall-clock deadline. |
-| Future frontend proxy | Required upstream response budget: 270 s, allowing 30 s beyond the maximum graph budget for cancellation/response delivery. Configuration belongs to the next proxy task. |
+| Next.js proxy configuration | Explicit upstream socket inactivity timeout: 270 s, allowing 30 s beyond the maximum graph budget for cancellation/response delivery. See the [proxy contract](proxy-contract.md). |
 | Future browser transport | Required total request budget: 300 s, allowing another 30 s beyond the proxy budget. Implementation belongs to the frontend task. |
 | Health caller | Current UI uses 5 s network inactivity. `/health` probes concurrently; it does not run an investigation. |
 
 The 240/270/300 coordination is a default delivery budget, not a strict completion
-guarantee. There is no frontend proxy or browser transport implemented yet. When
-those components are introduced, their configured behavior must be tested with an
-actual backend deadline and must allow the 504 JSON response to arrive first.
+guarantee. Next.js rewrite configuration is present, but the frontend application
+and browser transport are not implemented yet. A temporary socket harness verifies
+delivery of a real shortened backend deadline through Next.js; the deployed browser
+path must also be tested when introduced, allowing the 504 JSON response to arrive first.
 Do not rely on a framework's unspecified proxy default. If introducing different
 budgets, preserve the ordering: backend execution < proxy response < browser request.
 Shorter client timeouts can still be appropriate for connection establishment.

@@ -97,4 +97,5 @@ The application follows FastAPI's
 [custom exception handler guidance](https://fastapi.tiangolo.com/tutorial/handling-errors/).
 Offline contract coverage and the deliberately failing pre-fix runs are retained
 under [API contract validation](validation/2026-10-23-api-contract/README.md).
-Proxy configuration and generated frontend types remain separate tasks.
+The [same-origin proxy contract](proxy-contract.md) maps browser health requests
+explicitly to `/health`. Generated frontend types remain a separate task.
