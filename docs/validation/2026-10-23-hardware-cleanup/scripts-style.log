@@ -1,0 +1,106 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/measure_evaluation.py:25:1
+   |
+23 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+24 |
+25 | / import httpx
+26 | | from incident_copilot.composition import build_collaborators
+27 | | from incident_copilot.config.settings import get_settings
+28 | | from incident_copilot.evaluation.eval_runner import REPEATS, RunResult, _print_results, run_scenario
+29 | | from incident_copilot.evaluation.scenarios import SCENARIOS
+30 | | from incident_copilot.models.report import IncidentReport
+31 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+32 | | from incident_copilot.utils.logging import configure_logging
+33 | | from langchain_core.callbacks import BaseCallbackHandler
+34 | | from langgraph.graph.state import CompiledStateGraph
+35 | | from pydantic_core import to_jsonable_python
+   | |____________________________________________^
+36 |
+37 |   REPO_ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+25 | import httpx
+26 + from langchain_core.callbacks import BaseCallbackHandler
+27 + from langgraph.graph.state import CompiledStateGraph
+28 + from pydantic_core import to_jsonable_python
+29 +
+30 | from incident_copilot.composition import build_collaborators
+--------------------------------------------------------------------------------
+36 | from incident_copilot.utils.logging import configure_logging
+   - from langchain_core.callbacks import BaseCallbackHandler
+   - from langgraph.graph.state import CompiledStateGraph
+   - from pydantic_core import to_jsonable_python
+37 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/validate_langsmith.py:29:1
+   |
+27 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+28 |
+29 | / import requests
+30 | | from dotenv import dotenv_values
+31 | | from incident_copilot.composition import build_collaborators
+32 | | from incident_copilot.config.settings import Settings
+33 | | from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+34 | | from incident_copilot.utils.logging import configure_logging
+35 | | from langchain_core.tracers.langchain import get_client
+36 | | from langgraph.graph.state import CompiledStateGraph
+37 | | from langsmith.schemas import Run
+38 | | from langsmith.utils import LangSmithNotFoundError, tracing_is_enabled
+39 | | from pydantic_core import to_jsonable_python
+   | |____________________________________________^
+40 |
+41 |   REPO_ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+30 | from dotenv import dotenv_values
+   - from incident_copilot.composition import build_collaborators
+   - from incident_copilot.config.settings import Settings
+   - from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+   - from incident_copilot.utils.logging import configure_logging
+31 | from langchain_core.tracers.langchain import get_client
+--------------------------------------------------------------------------------
+36 |
+37 + from incident_copilot.composition import build_collaborators
+38 + from incident_copilot.config.settings import Settings
+39 + from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+40 + from incident_copilot.utils.logging import configure_logging
+41 +
+42 | REPO_ROOT = Path(__file__).resolve().parents[2]
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/unit/test_validation_metadata.py:3:1
+   |
+ 1 |   """Recorders must describe the configured provider without retired SDKs or secrets."""
+ 2 |
+ 3 | / import builtins
+ 4 | | import importlib.util
+ 5 | | import json
+ 6 | | import sys
+ 7 | | from importlib.metadata import version
+ 8 | | from pathlib import Path
+ 9 | | from types import ModuleType, SimpleNamespace
+10 | | from typing import Any
+11 | | from unittest.mock import AsyncMock
+12 | |
+13 | | import pytest
+14 | | import respx
+15 | | from incident_copilot.models.report import IncidentReport
+16 | | from incident_copilot.utils.exceptions import InvestigationError
+   | |________________________________________________________________^
+17 |
+18 |   HOST_FIELDS = {
+   |
+help: Organize imports
+   |
+14 | import respx
+15 +
+16 | from incident_copilot.models.report import IncidentReport
+   |
+
+Found 3 errors.
+[*] 3 fixable with the `--fix` option.

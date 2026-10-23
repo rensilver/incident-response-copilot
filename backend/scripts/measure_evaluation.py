@@ -10,7 +10,6 @@ import json
 import platform
 import subprocess
 import sys
-import threading
 import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -24,7 +23,10 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import httpx
-import psutil
+from langchain_core.callbacks import BaseCallbackHandler
+from langgraph.graph.state import CompiledStateGraph
+from pydantic_core import to_jsonable_python
+
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import get_settings
 from incident_copilot.evaluation.eval_runner import REPEATS, RunResult, _print_results, run_scenario
@@ -32,9 +34,6 @@ from incident_copilot.evaluation.scenarios import SCENARIOS
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.logging import configure_logging
-from langchain_core.callbacks import BaseCallbackHandler
-from langgraph.graph.state import CompiledStateGraph
-from pydantic_core import to_jsonable_python
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -55,40 +54,6 @@ def command(*args: str) -> str:
 def write_json(path: Path, value: Any) -> None:
     """Persist reviewable JSON without credentials from settings."""
     path.write_text(json.dumps(value, indent=2) + "\n")
-
-
-def sample_memory(output: Path, stop: threading.Event) -> None:
-    """Sample host, harness RSS, and project containers about every ten seconds."""
-    with (output / "memory.jsonl").open("w") as stream:
-        while not stop.is_set():
-            vm, swap = psutil.virtual_memory(), psutil.swap_memory()
-            sample: dict[str, Any] = {
-                "timestamp": timestamp(),
-                "host_available_mib": vm.available / 1024**2,
-                "swap_used_mib": swap.used / 1024**2,
-                "harness_rss_mib": psutil.Process().memory_info().rss / 1024**2,
-            }
-            try:
-                sample["containers"] = [
-                    json.loads(line)
-                    for line in command(
-                        "docker",
-                        "stats",
-                        "--no-stream",
-                        "--format",
-                        "{{json .}}",
-                        "ic-app",
-                        "ic-prometheus",
-                        "ic-elasticsearch",
-                        "ic-grafana",
-                        "ic-ollama",
-                    ).splitlines()
-                ]
-            except (subprocess.SubprocessError, OSError) as exc:
-                sample["sampling_error"] = str(exc)
-            stream.write(json.dumps(sample) + "\n")
-            stream.flush()
-            stop.wait(10)
 
 
 class ToolEvidenceRecorder(BaseCallbackHandler):
@@ -200,11 +165,6 @@ async def measure(output: Path, delay: float) -> None:
         "delay_between_attempts_seconds": delay,
         "python": platform.python_version(),
         "platform": platform.platform(),
-        "cpu": command("lscpu"),
-        "physical_cores": psutil.cpu_count(logical=False),
-        "logical_cpus": psutil.cpu_count(),
-        "ram_total_mib": psutil.virtual_memory().total / 1024**2,
-        "swap_total_mib": psutil.swap_memory().total / 1024**2,
         "packages": {
             name: version(name)
             for name in (
@@ -216,7 +176,6 @@ async def measure(output: Path, delay: float) -> None:
                 "pydantic",
                 "httpx",
                 "elasticsearch",
-                "psutil",
             )
         },
         "docker_version": command("docker", "version", "--format", "{{json .}}"),
@@ -228,15 +187,12 @@ async def measure(output: Path, delay: float) -> None:
             response.raise_for_status()
             metadata[label] = response.json()
     write_json(output / "runtime.json", metadata)
-    stop = threading.Event()
-    sampler = threading.Thread(target=sample_memory, args=(output, stop), daemon=True)
     collaborators = build_collaborators(settings)
     graph = RecordingGraph(collaborators.graph)
     service = RecordingService(IncidentService(graph), graph)
     results: list[RunResult] = []
     records = []
     started = time.perf_counter()
-    sampler.start()
     try:
         for scenario in SCENARIOS:
             for repeat in range(1, REPEATS + 1):
@@ -279,8 +235,6 @@ async def measure(output: Path, delay: float) -> None:
         )
         await collaborators.metrics_source.aclose()
         await collaborators.log_source.aclose()
-        stop.set()
-        await asyncio.to_thread(sampler.join, 35)
     with httpx.Client(timeout=15) as client:
         write_json(
             output / "after.json",

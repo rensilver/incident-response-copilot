@@ -124,8 +124,9 @@ cannot enable fallback. The private dotenv and Compose provider cleanup are
 complete. `backend/scripts/validate_provider_failures.py` runs the offline OpenAI
 failure matrix and rejects installed retired SDKs/adapters before starting tests.
 The [validator evidence](validation/2026-10-22-openai-only-failure-validator/README.md)
-records a fresh locked install and endpoint/fallback isolation. `psutil` is still
-required by measurement/validation scripts pending resource-sampling cleanup.
+records a fresh locked install and endpoint/fallback isolation. Evaluation and
+validation recorders retain runtime/library versions, reports, and timings without
+host-capacity sampling or a profiling dependency.
 
 Settings reprs/JSON and normal validation exception text redact OpenAI credentials;
 `hide_input_in_errors` also prevents a model-level validation error from displaying

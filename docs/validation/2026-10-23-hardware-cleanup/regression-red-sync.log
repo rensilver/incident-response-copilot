@@ -1,0 +1,274 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+___ test_evaluation_recorder_reports_openai_metadata[measure_evaluation.py] ____
+
+recorder = <module 'measure_evaluation' from '/home/rensilver/workspaces/incident-response-copilot/backend/scripts/measure_evaluation.py'>
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-1/test_evaluation_recorder_repor0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x701e2c799cd0>
+
+    @pytest.mark.parametrize("recorder", ["measure_evaluation.py"], indirect=True)
+    @respx.mock
+    async def test_evaluation_recorder_reports_openai_metadata(
+        recorder: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        class BeforeInvestigationError(Exception):
+            pass
+
+        def stop(settings: Any) -> None:
+            raise BeforeInvestigationError
+
+        monkeypatch.setenv("OPENAI_API_KEY", "synthetic-recorder-secret")
+        monkeypatch.setattr(recorder, "version", current_package_version)
+        monkeypatch.setattr(
+            recorder, "command", lambda *args: "[]" if args[0] == "docker" else "offline"
+        )
+        monkeypatch.setattr(recorder, "build_collaborators", stop)
+        respx.get("http://localhost:8000/health").respond(200, json={"status": "ok"})
+        output = tmp_path / "evaluation"
+        with pytest.raises(BeforeInvestigationError):
+            await recorder.measure(output, 0)
+        runtime_text = (output / "runtime.json").read_text()
+        runtime = json.loads(runtime_text)
+        assert runtime["settings"]["llm_provider"] == "openai"
+        assert runtime["settings"]["openai_model"] == "gpt-6-luna"
+        assert runtime["packages"]["langchain-openai"] == version("langchain-openai")
+>       assert not HOST_FIELDS.intersection(runtime)
+E       AssertionError: assert not {'cpu', 'logical_cpus', 'physical_cores', 'ram_total_mib', 'swap_total_mib'}
+E        +  where {'cpu', 'logical_cpus', 'physical_cores', 'ram_total_mib', 'swap_total_mib'} = <built-in method intersection of set object at 0x701e2c593ae0>({'started_at': '2026-10-23T11:51:41.967348+00:00', 'source_commit': 'offline', 'source_status': 'offline', 'settings':...openai', 'openai_model': 'gpt-6-luna', 'llm_operation_timeout_seconds': 60.0, 'llm_max_output_tokens': 4096, ...}, ...})
+E        +    where <built-in method intersection of set object at 0x701e2c593ae0> = {'cpu', 'logical_cpus', 'physical_cores', 'ram_available_before_mib', 'ram_total_mib', 'swap_total_mib'}.intersection
+
+backend/tests/unit/test_validation_metadata.py:121: AssertionError
+_ test_recorders_import_without_host_profiling_dependency[backend/scripts/measure_evaluation.py] _
+
+script = 'backend/scripts/measure_evaluation.py'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x701e0a545480>
+
+    @pytest.mark.parametrize(
+        "script",
+        [
+            "backend/scripts/measure_evaluation.py",
+            "backend/scripts/validate_langsmith.py",
+            "scripts/validate_streamlit.py",
+        ],
+    )
+    def test_recorders_import_without_host_profiling_dependency(
+        script: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        original_import = builtins.__import__
+
+        def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+            if name == "psutil":
+                raise AssertionError("Recorder still requires host profiling")
+            return original_import(name, *args, **kwargs)
+
+        # Playwright is optional; importing the recorder should not need a browser.
+        import sys
+
+        playwright = ModuleType("playwright.sync_api")
+        monkeypatch.setattr(playwright, "sync_playwright", None, raising=False)
+        monkeypatch.setitem(sys.modules, "playwright.sync_api", playwright)
+        monkeypatch.setattr(builtins, "__import__", without_psutil)
+        path = Path(__file__).resolve().parents[3] / script
+        spec = importlib.util.spec_from_file_location("recorder_without_profiling", path)
+        assert spec is not None and spec.loader is not None
+>       spec.loader.exec_module(importlib.util.module_from_spec(spec))
+
+backend/tests/unit/test_validation_metadata.py:155:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<frozen importlib._bootstrap_external>:1023: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+backend/scripts/measure_evaluation.py:27: in <module>
+    import psutil
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'psutil'
+args = ({'__name__': 'recorder_without_profiling', '__doc__': 'Retain measurements from the existing nine-run evaluation harn...'__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x701e0a5437d0>, ...}, None, 0)
+kwargs = {}
+
+    def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+        if name == "psutil":
+>           raise AssertionError("Recorder still requires host profiling")
+E           AssertionError: Recorder still requires host profiling
+
+backend/tests/unit/test_validation_metadata.py:142: AssertionError
+_ test_recorders_import_without_host_profiling_dependency[backend/scripts/validate_langsmith.py] _
+
+script = 'backend/scripts/validate_langsmith.py'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x701e0a546030>
+
+    @pytest.mark.parametrize(
+        "script",
+        [
+            "backend/scripts/measure_evaluation.py",
+            "backend/scripts/validate_langsmith.py",
+            "scripts/validate_streamlit.py",
+        ],
+    )
+    def test_recorders_import_without_host_profiling_dependency(
+        script: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        original_import = builtins.__import__
+
+        def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+            if name == "psutil":
+                raise AssertionError("Recorder still requires host profiling")
+            return original_import(name, *args, **kwargs)
+
+        # Playwright is optional; importing the recorder should not need a browser.
+        import sys
+
+        playwright = ModuleType("playwright.sync_api")
+        monkeypatch.setattr(playwright, "sync_playwright", None, raising=False)
+        monkeypatch.setitem(sys.modules, "playwright.sync_api", playwright)
+        monkeypatch.setattr(builtins, "__import__", without_psutil)
+        path = Path(__file__).resolve().parents[3] / script
+        spec = importlib.util.spec_from_file_location("recorder_without_profiling", path)
+        assert spec is not None and spec.loader is not None
+>       spec.loader.exec_module(importlib.util.module_from_spec(spec))
+
+backend/tests/unit/test_validation_metadata.py:155:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<frozen importlib._bootstrap_external>:1023: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+backend/scripts/validate_langsmith.py:29: in <module>
+    import psutil
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'psutil'
+args = ({'__name__': 'recorder_without_profiling', '__doc__': 'Validate automatic LangSmith delivery or credential-free, trac...'__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x701e0a593410>, ...}, None, 0)
+kwargs = {}
+
+    def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+        if name == "psutil":
+>           raise AssertionError("Recorder still requires host profiling")
+E           AssertionError: Recorder still requires host profiling
+
+backend/tests/unit/test_validation_metadata.py:142: AssertionError
+_ test_recorders_import_without_host_profiling_dependency[scripts/validate_streamlit.py] _
+
+script = 'scripts/validate_streamlit.py'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x701e1e15b250>
+
+    @pytest.mark.parametrize(
+        "script",
+        [
+            "backend/scripts/measure_evaluation.py",
+            "backend/scripts/validate_langsmith.py",
+            "scripts/validate_streamlit.py",
+        ],
+    )
+    def test_recorders_import_without_host_profiling_dependency(
+        script: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        original_import = builtins.__import__
+
+        def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+            if name == "psutil":
+                raise AssertionError("Recorder still requires host profiling")
+            return original_import(name, *args, **kwargs)
+
+        # Playwright is optional; importing the recorder should not need a browser.
+        import sys
+
+        playwright = ModuleType("playwright.sync_api")
+        monkeypatch.setattr(playwright, "sync_playwright", None, raising=False)
+        monkeypatch.setitem(sys.modules, "playwright.sync_api", playwright)
+        monkeypatch.setattr(builtins, "__import__", without_psutil)
+        path = Path(__file__).resolve().parents[3] / script
+        spec = importlib.util.spec_from_file_location("recorder_without_profiling", path)
+        assert spec is not None and spec.loader is not None
+>       spec.loader.exec_module(importlib.util.module_from_spec(spec))
+
+backend/tests/unit/test_validation_metadata.py:155:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<frozen importlib._bootstrap_external>:1023: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+scripts/validate_streamlit.py:22: in <module>
+    import psutil
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'psutil'
+args = ({'__name__': 'recorder_without_profiling', '__doc__': 'Record real browser scenarios and controlled UI failure cases,...'__package__': '', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x701e0a542810>, ...}, None, 0)
+kwargs = {}
+
+    def without_psutil(name: str, *args: Any, **kwargs: Any) -> Any:
+        if name == "psutil":
+>           raise AssertionError("Recorder still requires host profiling")
+E           AssertionError: Recorder still requires host profiling
+
+backend/tests/unit/test_validation_metadata.py:142: AssertionError
+_ test_evaluation_retains_all_attempts_and_timing_without_host_sampling[measure_evaluation.py] _
+
+recorder = <module 'measure_evaluation' from '/home/rensilver/workspaces/incident-response-copilot/backend/scripts/measure_evaluation.py'>
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-1/test_evaluation_retains_all_at0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x701e1e15b450>
+
+    @pytest.mark.parametrize("recorder", ["measure_evaluation.py"], indirect=True)
+    @respx.mock
+    async def test_evaluation_retains_all_attempts_and_timing_without_host_sampling(
+        recorder: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        class ReportGraph:
+            calls = 0
+
+            async def ainvoke(self, state: Any, /, **kwargs: Any) -> dict[str, IncidentReport]:
+                self.calls += 1
+                if self.calls == 2:
+                    raise InvestigationError("Offline investigation failure")
+                return {
+                    "report": IncidentReport(
+                        summary="Offline report", likely_causes=(), next_steps=(), confidence=0
+                    )
+                }
+
+        commands: list[tuple[str, ...]] = []
+
+        def command(*args: str) -> str:
+            commands.append(args)
+            assert args[0] in {"git", "docker"}, "Unexpected host assessment command"
+            assert args[:2] != ("docker", "stats"), "Unexpected container sampling"
+            return "[]" if args[0] == "docker" else "offline"
+
+        graph = ReportGraph()
+        metrics, logs = AsyncMock(), AsyncMock()
+        monkeypatch.setenv("OPENAI_API_KEY", "synthetic-recorder-secret")
+        monkeypatch.setattr(recorder, "command", command)
+        monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
+        monkeypatch.setattr(
+            recorder,
+            "build_collaborators",
+            lambda settings: SimpleNamespace(graph=graph, metrics_source=metrics, log_source=logs),
+        )
+        respx.get("http://localhost:8000/health").respond(200, json={"status": "ok"})
+        output = tmp_path / "evaluation"
+>       await recorder.measure(output, 0)
+
+backend/tests/unit/test_validation_metadata.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/scripts/measure_evaluation.py:203: in measure
+    "cpu": command("lscpu"),
+           ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = ('lscpu',)
+
+    def command(*args: str) -> str:
+        commands.append(args)
+>       assert args[0] in {"git", "docker"}, "Unexpected host assessment command"
+E       AssertionError: Unexpected host assessment command
+E       assert 'lscpu' in {'docker', 'git'}
+
+backend/tests/unit/test_validation_metadata.py:180: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/test_validation_metadata.py::test_evaluation_recorder_reports_openai_metadata[measure_evaluation.py]
+FAILED backend/tests/unit/test_validation_metadata.py::test_recorders_import_without_host_profiling_dependency[backend/scripts/measure_evaluation.py]
+FAILED backend/tests/unit/test_validation_metadata.py::test_recorders_import_without_host_profiling_dependency[backend/scripts/validate_langsmith.py]
+FAILED backend/tests/unit/test_validation_metadata.py::test_recorders_import_without_host_profiling_dependency[scripts/validate_streamlit.py]
+FAILED backend/tests/unit/test_validation_metadata.py::test_evaluation_retains_all_attempts_and_timing_without_host_sampling[measure_evaluation.py]
+5 failed, 2 deselected in 0.99s

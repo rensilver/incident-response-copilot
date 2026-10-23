@@ -26,18 +26,18 @@ from uuid import uuid4
 if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-import psutil
 import requests
 from dotenv import dotenv_values
-from incident_copilot.composition import build_collaborators
-from incident_copilot.config.settings import Settings
-from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
-from incident_copilot.utils.logging import configure_logging
 from langchain_core.tracers.langchain import get_client
 from langgraph.graph.state import CompiledStateGraph
 from langsmith.schemas import Run
 from langsmith.utils import LangSmithNotFoundError, tracing_is_enabled
 from pydantic_core import to_jsonable_python
+
+from incident_copilot.composition import build_collaborators
+from incident_copilot.config.settings import Settings
+from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+from incident_copilot.utils.logging import configure_logging
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -181,8 +181,6 @@ async def validate(output: Path, enabled: bool) -> bool:
         "packages": {
             p: version(p) for p in ("langsmith", "langchain-core", "langgraph", "langchain-openai")
         },
-        "ram_total_mib": psutil.virtual_memory().total / 1024**2,
-        "ram_available_before_mib": psutil.virtual_memory().available / 1024**2,
         "execution": "host IncidentService with real OpenAI and Docker data services; no HTTP/UI",
     }
     network: list[dict[str, Any]] = []

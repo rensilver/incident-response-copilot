@@ -19,8 +19,7 @@ use the previous Groq/Ollama configuration and do not validate the new default.
 ## Build and run
 
 Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
-Compose, and an OpenAI API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
-container memory measurements below.
+Compose, and an OpenAI API key. Commands below run from the repository root.
 
 ```bash
 cp .env.example .env
@@ -62,7 +61,7 @@ candidate rank, not measured incident severity. Confidence is not calibrated.
 
 Allow roughly 65 seconds between live demo investigations to reduce quota pressure;
 this does not guarantee quota availability. Health checks establish connectivity
-and model availability, not sufficient inference memory or remaining cloud quota.
+and model availability; they do not establish remaining cloud quota.
 
 Seed shortly before a demo: investigations query a window ending **now**, while
 seeded history stays fixed. `make seed` replaces the synthetic log index and adds
@@ -272,8 +271,8 @@ not verified causality or RCA accuracy.**
 Eight reports returned. Median latency was **5.586 s**, range **4.063–7.785 s**;
 means include the failed attempt. Total pass time was **570.147 s**, including
 pacing. These are service-call measurements, not HTTP or UI timings. The final
-attempt hit Groq 429 during correlation; fallback refused cold loading at 2,243 MiB
-available RAM versus the 4,096 MiB guard. No failed attempt was replaced.
+attempt hit Groq 429 during correlation and its fallback failed. No failed attempt
+was replaced; the linked historical record retains the original failure details.
 
 The preceding retained pass scored **5/9 (55.6%)**: bad deploy 2/3, memory leak 3/3,
 slow dependency 0/3, with no investigation errors and 5.063 s mean latency. The two
@@ -284,24 +283,6 @@ in `checkout‑service` and service names appearing only in summaries.
 
 [Latest results, full evidence, and reproduction commands](docs/validation/2026-09-23-evaluation/README.md)
 · [Earlier baseline](docs/validation/2026-09-22-evaluation/README.md)
-
-### Hardware and resource observations
-
-| Item | Measured environment/results |
-|---|---|
-| Demo laptop | AMD Ryzen 5 7520U; 4 cores / 8 threads |
-| Memory | 6,694.6 MiB usable RAM; 4,096 MiB swap capacity |
-| Runtime | Linux x86_64; Python 3.13.13 host, 3.12.14 Docker |
-| Latest evaluation, 47 samples | Five containers: 1,356.25–1,522.63 MiB; available host RAM: 2,156.07–2,410.78 MiB; harness RSS: 137.65–143.53 MiB |
-| UI pass, 29 samples | Five containers: 809.75–1,437.80 MiB; Streamlit RSS up to 76.33 MiB; available host RAM: 1,750.32–2,735.26 MiB |
-| Recording overhead | Recorder and child-process RSS up to 980.30 MiB, including Streamlit, Chromium, and video capture |
-| Local model inference | No model loaded; successful fallback and combined stack/model memory remain unverified |
-
-Samples can miss peaks, RSS sums can double-count shared pages, and unrelated laptop
-processes affect available memory and swap. UI sampling includes startup and some
-concurrent validation activity; it is not an isolated capacity benchmark. See the
-[hardware assessment](docs/hardware-assessment.md) and
-[UI resource evidence](docs/validation/2026-09-24-streamlit/resource-summary.json).
 
 ### Functional checks and UI demo: 2026-09-24
 
@@ -325,7 +306,7 @@ after the timeout.
 | Docker and API | Rebuilt and seeded; 12 live integration tests passed in 210.60 s, with full reports retained |
 | LangSmith | 28 completed remote spans: all four agents, seven LLM calls, four tool calls; inputs/report matched local capture |
 | Tracing disabled | Two successful investigations; no observed SDK HTTP calls or remote run IDs |
-| Provider failures | Real Groq failures plus RAM refusal/unreachable fallback returned 503; successful local inference remains blocked |
+| Provider failures | Historical Groq/fallback failures returned 503; see the retained failure record |
 
 [UI validation and commands](docs/validation/2026-09-24-streamlit/README.md)
 · [LangSmith evidence](docs/validation/2026-09-23-langsmith/README.md)
@@ -349,9 +330,9 @@ although the seeded previous version is `v1.4.2`. Dependency timeout evidence do
 not prove which service degraded first. Schema validation and evidence entries do
 not establish factual grounding; model confidence is not an accuracy estimate.
 
-Successful local fallback, local-model latency/memory, mobile/browser compatibility
-beyond desktop Chromium, tracing outages, and server cancellation after UI timeout
-are unverified. Python dependencies are locked in `backend/uv.lock`; several
+Mobile/browser compatibility beyond desktop Chromium, tracing outages, and server
+cancellation after UI timeout are unverified. Python dependencies are locked in
+`backend/uv.lock`; several
 container tags remain unpinned. Retained version/image records identify historical
 tested environments. Model output and cloud quotas
 can vary between runs.
@@ -388,7 +369,7 @@ make format-check         # Black for backend, tests, and existing UI
 # Requires a running API, freshly seeded data, and a configured Groq key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 
-# Retains all nine attempts, evidence, timings, and resource samples.
+# Retains all nine attempts, evidence, and timings.
 # The output directory must not already exist.
 LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65

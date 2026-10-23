@@ -1,0 +1,4 @@
+Using CPython 3.12.14
+Resolved 103 packages in 60ms
+Removed psutil v7.2.2
+Removed types-psutil v7.2.2.20260906
