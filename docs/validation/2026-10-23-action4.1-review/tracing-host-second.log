@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 126 items / 123 deselected / 3 selected
+
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[modes0] PASSED [ 33%]
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[modes1] PASSED [ 66%]
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[modes2] PASSED [100%]
+
+====================== 3 passed, 123 deselected in 2.60s =======================

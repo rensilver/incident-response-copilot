@@ -6,10 +6,8 @@ falls back to running both. A small model that emits junk therefore degrades to 
 fan-out rather than dead-ending the investigation (spec §2).
 """
 
-from collections.abc import Awaitable, Callable
-
 from incident_copilot.agents.prompts import SUPERVISOR_SYSTEM
-from incident_copilot.agents.state import InvestigationState, SupervisorUpdate
+from incident_copilot.agents.state import InvestigationNode, InvestigationState, SupervisorUpdate
 from incident_copilot.config.settings import Settings
 from incident_copilot.llm.base import ChatMessage, LLMProvider
 from incident_copilot.models.enums import AgentName
@@ -24,7 +22,7 @@ SPECIALISTS: tuple[AgentName, ...] = (AgentName.METRICS, AgentName.LOGS)
 
 def build_supervisor(
     provider: LLMProvider, settings: Settings
-) -> Callable[[InvestigationState], Awaitable[SupervisorUpdate]]:
+) -> InvestigationNode[SupervisorUpdate]:
     """Build the supervisor node bound to a provider.
 
     Args:

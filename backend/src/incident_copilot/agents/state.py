@@ -1,12 +1,15 @@
 """Shared state passed between graph nodes.
 
 ``metrics_findings``, ``log_findings`` and ``errors`` carry ``operator.add`` reducers
-because the specialists run in parallel branches: without a reducer the second branch to
-finish would overwrite the first one's findings instead of adding to them.
+so partial updates append to existing evidence. The specialists both write ``errors``
+in one parallel step; without a reducer those simultaneous writes would raise an
+``InvalidUpdateError``. Each findings list currently has one specialist writer, but
+still needs its reducer to retain findings collected before that specialist runs.
 """
 
 import operator
-from typing import Annotated, TypedDict
+from collections.abc import Awaitable
+from typing import Annotated, Protocol, TypedDict
 
 from incident_copilot.models.enums import AgentName
 from incident_copilot.models.findings import MetricFinding
@@ -28,6 +31,19 @@ class InvestigationState(TypedDict):
     log_findings: Annotated[list[LogFinding], operator.add]
     report: IncidentReport | None
     errors: Annotated[list[str], operator.add]
+
+
+class InvestigationNode[UpdateT](Protocol):
+    """An async node preserving its partial update type.
+
+    Naming the ``state`` argument matches LangGraph's callable protocol. A plain
+    ``Callable[[InvestigationState], Awaitable[UpdateT]]`` loses that parameter
+    name and fails its node-registration overloads in strict mypy.
+    """
+
+    def __call__(self, state: InvestigationState) -> Awaitable[UpdateT]:
+        """Read one investigation state and return a partial update."""
+        ...
 
 
 def initial_state(

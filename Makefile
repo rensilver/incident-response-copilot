@@ -20,7 +20,7 @@ install-ui:
 
 lint:
 	$(VENV)/bin/ruff check backend/src backend/tests
-	$(VENV)/bin/mypy --config-file $(PYPROJECT) --strict backend/src
+	$(VENV)/bin/mypy --config-file $(PYPROJECT) --strict backend/src backend/tests/typing
 
 format:
 	$(VENV)/bin/black --config $(PYPROJECT) backend/src backend/tests

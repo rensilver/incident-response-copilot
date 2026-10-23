@@ -1,7 +1,7 @@
 """Bounded tool-calling loop shared by the specialist agents.
 
-The cap matters: a small local model will happily keep requesting tools forever. Two
-rounds is enough to fetch a metric and follow up on it, and guarantees the node terminates.
+The round cap bounds model invocations even when replies keep requesting tools.
+Each reply may contain multiple calls; I/O deadlines belong to the collaborators.
 """
 
 from collections.abc import Sequence
@@ -52,6 +52,9 @@ async def run_tool_rounds(
     A tool that raises :class:`IncidentCopilotError`, or whose call args fail schema
     validation, is recorded and the loop continues: one unreachable backend or one
     hallucinated argument should degrade the report, not abort the investigation.
+    Unknown tools and malformed JSON arguments also receive matching error replies,
+    so a later round can recover without leaving unanswered calls in the history.
+    External cancellation propagates; unexpected tool implementation errors escape.
 
     Args:
         provider: Supplies the tool-bound runnable.
@@ -86,15 +89,36 @@ async def run_tool_rounds(
             break
 
         calls = list(getattr(reply, "tool_calls", []) or [])
-        if not calls:
+        invalid_calls = list(getattr(reply, "invalid_tool_calls", []) or [])
+        if not calls and not invalid_calls:
             break
 
         conversation.append(reply)
+        for invalid_call in invalid_calls:
+            # The adapter retains malformed JSON separately from executable calls.
+            # Do not execute it or echo raw arguments/parser diagnostics into errors.
+            error = f"model supplied malformed arguments for tool: {invalid_call.get('name')!r}"
+            outcome.errors.append(error)
+            conversation.append(
+                ToolMessage(
+                    content=error,
+                    tool_call_id=str(invalid_call.get("id") or ""),
+                    status="error",
+                )
+            )
         for call in calls:
             name = str(call.get("name", ""))
             tool = by_name.get(name)
             if tool is None:
-                outcome.errors.append(f"model requested unknown tool: {name!r}")
+                error = f"model requested unknown tool: {name!r}"
+                outcome.errors.append(error)
+                conversation.append(
+                    ToolMessage(
+                        content=error,
+                        tool_call_id=str(call.get("id", "")),
+                        status="error",
+                    )
+                )
                 continue
             try:
                 result = await tool.ainvoke(call.get("args", {}), config=tool_config)

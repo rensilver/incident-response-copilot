@@ -1,0 +1,545 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items / 12 deselected / 6 selected
+
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1] FAILED [ 16%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-17] FAILED [ 33%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1440] FAILED [ 50%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1] FAILED [ 66%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-17] FAILED [ 83%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1440] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1] _
+
+minutes = 1, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7063561e7cb0>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792765827.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792765827.123456 = <built-in method timestamp of datetime.datetime object at 0x70635607d0e0>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x70635607d0e0> = datetime.datetime(2026, 10, 23, 14, 30, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=33daa7e0-ebc2-471e-9c33-2ee5fa7ba39b
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-17] _
+
+minutes = 17, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7063560eac10>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792764867.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792764867.123456 = <built-in method timestamp of datetime.datetime object at 0x706354e170c0>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x706354e170c0> = datetime.datetime(2026, 10, 23, 14, 14, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1 errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=54582abc-d8a9-42bb-b43c-34198c8696e1
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1440] _
+
+minutes = 1440, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7063560ebb10>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792679487.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792679487.123456 = <built-in method timestamp of datetime.datetime object at 0x7063561a4870>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x7063561a4870> = datetime.datetime(2026, 10, 22, 14, 31, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62 errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=edff489d-3d3d-4221-ac94-6cc646f39f62
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1] _
+
+minutes = 1
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x706355f1b950>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792765827.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792765827.123456 = <built-in method timestamp of datetime.datetime object at 0x70637006dd40>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x70637006dd40> = datetime.datetime(2026, 10, 23, 14, 30, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5 errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=db6eb392-d728-4a93-bf94-86e59357cde5
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-17] _
+
+minutes = 17
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x706355f1b490>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792764867.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792764867.123456 = <built-in method timestamp of datetime.datetime object at 0x706354e17840>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x706354e17840> = datetime.datetime(2026, 10, 23, 14, 14, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4 errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=a807bdf3-653b-4856-9398-c0b7dce7b1c4
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1440] _
+
+minutes = 1440
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x706355fe27b0>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+>           assert float(request.url.params["start"]) == start.timestamp()
+E           AssertionError: assert 1792765887.123456 == 1792679487.123456
+E            +  where 1792765887.123456 = float('1792765887.123456')
+E            +  and   1792679487.123456 = <built-in method timestamp of datetime.datetime object at 0x706355f02520>()
+E            +    where <built-in method timestamp of datetime.datetime object at 0x706355f02520> = datetime.datetime(2026, 10, 22, 14, 31, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+
+backend/tests/unit/agents/test_temporal_boundaries.py:116: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:49 [info     ] investigation_started          correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 query='cart errors' service=None
+2026-10-23 15:10:49 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 results=2 round=1
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 results=2 round=1
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:49 [debug    ] promql_executed                correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 query=up series_count=0
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 results=4 round=2
+2026-10-23 15:10:49 [info     ] metrics_agent_complete         correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 errors=0 findings=4
+2026-10-23 15:10:49 [debug    ] log_search_executed            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 hits=0 service=cart-service
+2026-10-23 15:10:49 [debug    ] tool_round_complete            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 results=4 round=2
+2026-10-23 15:10:49 [info     ] logs_agent_complete            correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074 errors=0 findings=2
+2026-10-23 15:10:49 [info     ] correlation_complete           causes=0 correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074
+2026-10-23 15:10:49 [info     ] investigation_complete         causes=0 correlation_id=197e510e-bcbd-48dc-8db9-eb30e47b8074
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1] - AssertionError: assert 1792765887.123456 == 1792765827.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792765827.123456 = <built-in method timestamp of datetime.datetime object at 0x70635607d0e0>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x70635607d0e0> = datetime.datetime(2026, 10, 23, 14, 30, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-17] - AssertionError: assert 1792765887.123456 == 1792764867.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792764867.123456 = <built-in method timestamp of datetime.datetime object at 0x706354e170c0>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x706354e170c0> = datetime.datetime(2026, 10, 23, 14, 14, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1440] - AssertionError: assert 1792765887.123456 == 1792679487.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792679487.123456 = <built-in method timestamp of datetime.datetime object at 0x7063561a4870>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x7063561a4870> = datetime.datetime(2026, 10, 22, 14, 31, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1] - AssertionError: assert 1792765887.123456 == 1792765827.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792765827.123456 = <built-in method timestamp of datetime.datetime object at 0x70637006dd40>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x70637006dd40> = datetime.datetime(2026, 10, 23, 14, 30, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-17] - AssertionError: assert 1792765887.123456 == 1792764867.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792764867.123456 = <built-in method timestamp of datetime.datetime object at 0x706354e17840>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x706354e17840> = datetime.datetime(2026, 10, 23, 14, 14, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1440] - AssertionError: assert 1792765887.123456 == 1792679487.123456
+ +  where 1792765887.123456 = float('1792765887.123456')
+ +  and   1792679487.123456 = <built-in method timestamp of datetime.datetime object at 0x706355f02520>()
+ +    where <built-in method timestamp of datetime.datetime object at 0x706355f02520> = datetime.datetime(2026, 10, 22, 14, 31, 27, 123456, tzinfo=datetime.timezone.utc).timestamp
+======================= 6 failed, 12 deselected in 1.03s =======================
+Expected regression failures observed; original source restored exactly.

@@ -1,0 +1,53 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+______ test_automatic_graph_tracing_and_credential_free_disable[enabled] _______
+backend/tests/unit/llm/test_openai_provider.py:1328: in test_automatic_graph_tracing_and_credential_free_disable
+    assert len(roots) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 16:38:42 [info     ] investigation_started          correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01 query='offline tracing investigation 0' service=checkout-service
+2026-10-23 16:38:43 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01 results=1 round=1
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01 results=1 round=1
+2026-10-23 16:38:43 [info     ] logs_agent_complete            correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] metrics_agent_complete         correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] correlation_complete           causes=0 correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01
+2026-10-23 16:38:43 [info     ] investigation_complete         causes=0 correlation_id=9423cf2d-89b2-4978-8c3a-eddab5af1c01
+_ test_automatic_graph_tracing_and_credential_free_disable[disabled-inherited-enabled] _
+backend/tests/unit/llm/test_openai_provider.py:1323: in test_automatic_graph_tracing_and_credential_free_disable
+    assert created == updated == []
+E   AssertionError: assert [{'id': UUID(...n', ...}, ...] == [{'name': '_S...c), ...}, ...]
+E
+E     At index 0 diff: {'id': UUID('01a16a45-d323-7e22-b99f-43a6098490d4'), 'name': 'LangGraph', 'start_time': datetime.datetime(2026, 10, 23, 19, 38, 43, 363307, tzinfo=datetime.timezone.utc), 'run_type': 'chain', 'extra': {'metadata': {'ls_integration': 'langgraph'}, 'runtime': {'library_version': '1.5.6', 'library': 'langchain-core', 'platform': 'Linux-7.0.0-38-generic-x86_64-with-glibc2.43', 'runtime': 'python', 'runtime_version': '3.13.13'}}, 'events': [{'name': 'start', 'time': datetime.datetime(2026, 10, 23, 19, 38, 43, 363307, tzinfo=datetime.timezone.utc)}], 'tags': ...
+E
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 16:38:43 [info     ] investigation_started          correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467 query='offline tracing investigation 0' service=checkout-service
+2026-10-23 16:38:43 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467 results=1 round=1
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467 results=1 round=1
+2026-10-23 16:38:43 [info     ] logs_agent_complete            correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] metrics_agent_complete         correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] correlation_complete           causes=0 correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467
+2026-10-23 16:38:43 [info     ] investigation_complete         causes=0 correlation_id=dc0ab9e6-53c7-4d97-b2cd-0ff007c24467
+_ test_automatic_graph_tracing_and_credential_free_disable[enabled-disabled-enabled] _
+backend/tests/unit/llm/test_openai_provider.py:1328: in test_automatic_graph_tracing_and_credential_free_disable
+    assert len(roots) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 16:38:43 [info     ] investigation_started          correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72 query='offline tracing investigation 0' service=checkout-service
+2026-10-23 16:38:43 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72 results=1 round=1
+2026-10-23 16:38:43 [debug    ] tool_round_complete            correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72 results=1 round=1
+2026-10-23 16:38:43 [info     ] logs_agent_complete            correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] metrics_agent_complete         correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72 errors=0 findings=1
+2026-10-23 16:38:43 [info     ] correlation_complete           causes=0 correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72
+2026-10-23 16:38:43 [info     ] investigation_complete         causes=0 correlation_id=4d76c65b-801b-46c1-a18e-a303d5349c72
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[enabled]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[disabled-inherited-enabled]
+FAILED backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[enabled-disabled-enabled]
+3 failed, 123 deselected in 2.49s
+Expected failing assertions observed for no-configuration; source restored.
