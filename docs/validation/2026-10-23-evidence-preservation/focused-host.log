@@ -1,0 +1,117 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items
+
+backend/tests/unit/agents/test_evidence_preservation.py::test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block PASSED [ 10%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_severity_insertion_order_does_not_change_the_evidence_block PASSED [ 20%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[service] PASSED [ 30%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[level] PASSED [ 40%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[message] PASSED [ 50%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[version] PASSED [ 60%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[False-False] PASSED [ 70%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[False-True] PASSED [ 80%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[True-False] FAILED [ 90%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[True-True] FAILED [100%]
+
+=================================== FAILURES ===================================
+____ test_late_dependency_clue_reaches_followup_and_correlation[True-False] ____
+
+reverse = False, fail_followup = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("fail_followup", [False, True])
+    async def test_late_dependency_clue_reaches_followup_and_correlation(
+        reverse: bool, fail_followup: bool
+    ) -> None:
+        """Truncation, reducer replacement, or discarded findings would lose the clue."""
+        provider = EvidenceProvider()
+        logs = EvidenceLogs(reverse, fail_followup)
+        graph = build_graph(
+            provider, [], build_log_tools(logs), Settings(_env_file=None, max_tool_rounds=3)
+        )
+        window = TimeWindow(start=END - timedelta(minutes=17), end=END)
+        state = initial_state(
+            correlation_id="evidence-case",
+            query="Why is payment-service slow?",
+            time_window=window,
+            target_service="payment-service",
+        )
+        final = await graph.ainvoke(state)
+
+        followup = provider.followups[0][0].content
+        assert isinstance(followup, str)
+        assert DEPENDENCY_MESSAGE in followup and ERROR_MESSAGE in followup
+        assert "sampled occurrences=19" in followup
+        assert "20 samples retrieved" in followup
+        assert "1000 documents matched" in followup
+        prompt = provider.calls[-1][-1].content
+        assert followup in prompt
+        assert "Service of interest: payment-service" in prompt
+        assert "2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes)" in prompt
+        assert len(final["log_findings"]) == (1 if fail_followup else 2)
+        assert ("dependency logs unavailable" in prompt) is fail_followup
+>       assert ("0 documents matched" in prompt) is (not fail_followup)
+E       assert ('0 documents matched' in "Incident question: Why is payment-service slow?\nService of interest: payment-service\nInvestigation window: 2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes). This is the requested query interval, not the PromQL rate interval or proven incident duration.\nCollection errors: ['search_logs failed: dependency logs unavailable']\n\nMETRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 1000 documents matched `service:payment-service` (sample severity counts: ERROR=19, WARN=1); 20 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=19; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)") is not True
+
+backend/tests/unit/agents/test_evidence_preservation.py:190: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:21:09 [info     ] supervisor_routed              agents=['logs_agent']
+2026-10-23 15:21:09 [debug    ] tool_round_complete            results=1 round=1
+2026-10-23 15:21:09 [debug    ] tool_round_complete            results=1 round=2
+2026-10-23 15:21:09 [info     ] logs_agent_complete            errors=1 findings=1
+2026-10-23 15:21:09 [info     ] correlation_complete           causes=0
+____ test_late_dependency_clue_reaches_followup_and_correlation[True-True] _____
+
+reverse = True, fail_followup = True
+
+    @pytest.mark.parametrize("reverse", [False, True])
+    @pytest.mark.parametrize("fail_followup", [False, True])
+    async def test_late_dependency_clue_reaches_followup_and_correlation(
+        reverse: bool, fail_followup: bool
+    ) -> None:
+        """Truncation, reducer replacement, or discarded findings would lose the clue."""
+        provider = EvidenceProvider()
+        logs = EvidenceLogs(reverse, fail_followup)
+        graph = build_graph(
+            provider, [], build_log_tools(logs), Settings(_env_file=None, max_tool_rounds=3)
+        )
+        window = TimeWindow(start=END - timedelta(minutes=17), end=END)
+        state = initial_state(
+            correlation_id="evidence-case",
+            query="Why is payment-service slow?",
+            time_window=window,
+            target_service="payment-service",
+        )
+        final = await graph.ainvoke(state)
+
+        followup = provider.followups[0][0].content
+        assert isinstance(followup, str)
+        assert DEPENDENCY_MESSAGE in followup and ERROR_MESSAGE in followup
+        assert "sampled occurrences=19" in followup
+        assert "20 samples retrieved" in followup
+        assert "1000 documents matched" in followup
+        prompt = provider.calls[-1][-1].content
+        assert followup in prompt
+        assert "Service of interest: payment-service" in prompt
+        assert "2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes)" in prompt
+        assert len(final["log_findings"]) == (1 if fail_followup else 2)
+        assert ("dependency logs unavailable" in prompt) is fail_followup
+>       assert ("0 documents matched" in prompt) is (not fail_followup)
+E       assert ('0 documents matched' in "Incident question: Why is payment-service slow?\nService of interest: payment-service\nInvestigation window: 2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes). This is the requested query interval, not the PromQL rate interval or proven incident duration.\nCollection errors: ['search_logs failed: dependency logs unavailable']\n\nMETRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 1000 documents matched `service:payment-service` (sample severity counts: ERROR=19, WARN=1); 20 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=19; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)") is not True
+
+backend/tests/unit/agents/test_evidence_preservation.py:190: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:21:09 [info     ] supervisor_routed              agents=['logs_agent']
+2026-10-23 15:21:09 [debug    ] tool_round_complete            results=1 round=1
+2026-10-23 15:21:09 [debug    ] tool_round_complete            results=1 round=2
+2026-10-23 15:21:09 [info     ] logs_agent_complete            errors=1 findings=1
+2026-10-23 15:21:09 [info     ] correlation_complete           causes=0
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[True-False] - assert ('0 documents matched' in "Incident question: Why is payment-service slow?\nService of interest: payment-service\nInvestigation window: 2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes). This is the requested query interval, not the PromQL rate interval or proven incident duration.\nCollection errors: ['search_logs failed: dependency logs unavailable']\n\nMETRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 1000 documents matched `service:payment-service` (sample severity counts: ERROR=19, WARN=1); 20 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=19; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)") is not True
+FAILED backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[True-True] - assert ('0 documents matched' in "Incident question: Why is payment-service slow?\nService of interest: payment-service\nInvestigation window: 2026-10-23T11:43:00+00:00 to 2026-10-23T12:00:00+00:00 (17 minutes). This is the requested query interval, not the PromQL rate interval or proven incident duration.\nCollection errors: ['search_logs failed: dependency logs unavailable']\n\nMETRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 1000 documents matched `service:payment-service` (sample severity counts: ERROR=19, WARN=1); 20 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=19; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)") is not True
+========================= 2 failed, 8 passed in 0.40s ==========================

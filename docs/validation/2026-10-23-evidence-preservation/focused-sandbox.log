@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items
+
+backend/tests/unit/agents/test_evidence_preservation.py::test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block PASSED [ 10%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_severity_insertion_order_does_not_change_the_evidence_block PASSED [ 20%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[service] PASSED [ 30%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[level] PASSED [ 40%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[message] PASSED [ 50%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_log_grouping_keeps_observations_that_differ_in_one_dimension[version] PASSED [ 60%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_late_dependency_clue_reaches_followup_and_correlation[False-False] PASSED [ 70%]Timeout (0:00:10)!
+Thread 0x00007cea17233780 (most recent call first):
+  File "/home/rensilver/miniconda3/lib/python3.13/selectors.py", line 452 in select
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 2023 in _run_once
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 683 in run_forever
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/base_events.py", line 712 in run_until_complete
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 72 in close
+  File "/home/rensilver/miniconda3/lib/python3.13/asyncio/runners.py", line 62 in __exit__
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py", line 1052 in _scoped_runner
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/fixtures.py", line 1014 in _teardown_yield_fixture
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/fixtures.py", line 1156 in finish
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 568 in teardown_exact
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 199 in pytest_runtest_teardown
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 250 in <lambda>
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 361 in from_call
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 249 in call_and_report
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 144 in runtestprotocol
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/runner.py", line 118 in pytest_runtest_protocol
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/main.py", line 408 in pytest_runtestloop
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/main.py", line 384 in _main
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/main.py", line 330 in wrap_session
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/main.py", line 377 in pytest_cmdline_main
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_callers.py", line 121 in _multicall
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_manager.py", line 120 in _hookexec
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/pluggy/_hooks.py", line 512 in __call__
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 229 in _main
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/_pytest/config/__init__.py", line 253 in _console_main
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/bin/pytest", line 10 in <module>

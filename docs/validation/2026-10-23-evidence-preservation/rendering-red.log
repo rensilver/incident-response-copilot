@@ -1,0 +1,102 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items / 8 deselected / 2 selected
+
+backend/tests/unit/agents/test_evidence_preservation.py::test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block FAILED [ 50%]
+backend/tests/unit/agents/test_evidence_preservation.py::test_severity_insertion_order_does_not_change_the_evidence_block FAILED [100%]
+
+=================================== FAILURES ===================================
+___ test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block ____
+
+    def test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block() -> None:
+        """Equal query/count searches must retain late clues without arrival-order bias."""
+        first = LogFinding(
+            query="service:payment-service",
+            matched_count=100,
+            level_breakdown={LogLevel.WARN: 1},
+            samples=(_entry("request timed out calling inventory-api"),),
+        )
+        second = first.model_copy(update={"samples": (_entry(DEPENDENCY_MESSAGE),)})
+        text = render_evidence([], [first, second])
+        assert "inventory-api" in text and DEPENDENCY_MESSAGE in text
+        assert text.count("100 documents matched") == 2
+>       assert render_evidence([], [second, first]) == text
+E       AssertionError: assert 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)' == 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)'
+E
+E           METRIC FINDINGS:
+E           (no metric findings were gathered)
+E
+E           LOG FINDINGS:
+E           - 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved
+E         -     WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+E         ?                             ^^^^^     --            ^^^^^^^ ^
+E         +     WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+E         ?                           ++++  ^^                 ^ ^^^    +++++++++++++
+E           - 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved
+E         -     WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+E         ?                            ^  ----                 ^ ^^^    -------------
+E         +     WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+E         ?                           +++ ^       ++            ^^^^^^^ ^
+
+backend/tests/unit/agents/test_evidence_preservation.py:53: AssertionError
+_______ test_severity_insertion_order_does_not_change_the_evidence_block _______
+
+    def test_severity_insertion_order_does_not_change_the_evidence_block() -> None:
+        """Equivalent sample histograms must not reorder an otherwise identical prompt."""
+        first = LogFinding(
+            query="service:payment-service",
+            matched_count=100,
+            level_breakdown={LogLevel.WARN: 1, LogLevel.ERROR: 2},
+            samples=(_entry(DEPENDENCY_MESSAGE), _entry(ERROR_MESSAGE, LogLevel.ERROR)),
+        )
+        second = first.model_copy(update={"level_breakdown": {LogLevel.ERROR: 2, LogLevel.WARN: 1}})
+>       assert render_evidence([], [first]) == render_evidence([], [second])
+E       AssertionError: assert 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1, ERROR=2); 2 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)' == 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: ERROR=2, WARN=1); 2 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)'
+E
+E           METRIC FINDINGS:
+E           (no metric findings were gathered)
+E
+E           LOG FINDINGS:
+E         - - 100 documents matched `service:payment-service` (sample severity counts: ERROR=2, WARN=1); 2 samples retrieved
+E         ?                                                                                   --------
+E         + - 100 documents matched `service:payment-service` (sample severity counts: WARN=1, ERROR=2); 2 samples retrieved
+E         ?                                                                            ++++++++
+E               ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+E               WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+
+backend/tests/unit/agents/test_evidence_preservation.py:65: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_evidence_preservation.py::test_repeated_searches_keep_distinct_samples_in_a_stable_evidence_block - AssertionError: assert 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)' == 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)'
+
+    METRIC FINDINGS:
+    (no metric findings were gathered)
+
+    LOG FINDINGS:
+    - 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved
+  -     WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+  ?                             ^^^^^     --            ^^^^^^^ ^
+  +     WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+  ?                           ++++  ^^                 ^ ^^^    +++++++++++++
+    - 100 documents matched `service:payment-service` (sample severity counts: WARN=1); 1 samples retrieved
+  -     WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+  ?                            ^  ----                 ^ ^^^    -------------
+  +     WARN payment-service: request timed out calling inventory-api (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+  ?                           +++ ^       ++            ^^^^^^^ ^
+FAILED backend/tests/unit/agents/test_evidence_preservation.py::test_severity_insertion_order_does_not_change_the_evidence_block - AssertionError: assert 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: WARN=1, ERROR=2); 2 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)' == 'METRIC FINDINGS:\n(no metric findings were gathered)\n\nLOG FINDINGS:\n- 100 documents matched `service:payment-service` (sample severity counts: ERROR=2, WARN=1); 2 samples retrieved\n    ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)\n    WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)'
+
+    METRIC FINDINGS:
+    (no metric findings were gathered)
+
+    LOG FINDINGS:
+  - - 100 documents matched `service:payment-service` (sample severity counts: ERROR=2, WARN=1); 2 samples retrieved
+  ?                                                                                   --------
+  + - 100 documents matched `service:payment-service` (sample severity counts: WARN=1, ERROR=2); 2 samples retrieved
+  ?                                                                            ++++++++
+        ERROR payment-service: PaymentAuthorizationException: fraud check unavailable (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+        WARN payment-service: upstream timeout calling fraud-api after 2000ms (version=v1.4.2; sampled occurrences=1; sample timestamps=2026-10-23T11:59:00+00:00 to 2026-10-23T11:59:00+00:00)
+======================= 2 failed, 8 deselected in 0.37s ========================
