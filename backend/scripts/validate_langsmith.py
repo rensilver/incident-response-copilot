@@ -28,16 +28,15 @@ if __name__ == "__main__":
 
 import requests
 from dotenv import dotenv_values
+from incident_copilot.composition import build_collaborators
+from incident_copilot.config.settings import Settings
+from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
+from incident_copilot.utils.logging import configure_logging
 from langchain_core.tracers.langchain import get_client
 from langgraph.graph.state import CompiledStateGraph
 from langsmith.schemas import Run
 from langsmith.utils import LangSmithNotFoundError, tracing_is_enabled
 from pydantic_core import to_jsonable_python
-
-from incident_copilot.composition import build_collaborators
-from incident_copilot.config.settings import Settings
-from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
-from incident_copilot.utils.logging import configure_logging
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -196,60 +195,62 @@ async def validate(output: Path, enabled: bool) -> bool:
         event["status_code"] = response.status_code
         return response
 
-    collaborators = build_collaborators(settings)
-    graph = IdentifiedGraph(collaborators.graph, enabled)
-    evidence["root_run_id"] = str(graph.run_id)
-    evidence["sdk_tracing_enabled"] = tracing_is_enabled()
-    request = InvestigationRequest(
-        query="checkout-service memory keeps climbing; investigate metrics and logs",
-        service="checkout-service",
-        minutes_back=180,
-    )
-    evidence["request"] = request.model_dump()
-    passed = False
-    try:
-        with patch.object(requests.Session, "request", observe_request):
-            started = time.perf_counter()
-            try:
-                report = await asyncio.wait_for(
-                    IncidentService(graph).investigate(request), timeout=180
-                )
-                evidence["report"] = report.model_dump(mode="json")
-                evidence["investigation_error"] = None
-            except Exception as exc:
-                evidence["investigation_error"] = {"type": type(exc).__name__, "message": str(exc)}
-            finally:
-                evidence["service_seconds"] = time.perf_counter() - started
-                write_json(
-                    output / "local-graph.json", {"initial": graph.initial, "final": graph.final}
-                )
-            if enabled:
-                evidence["delivery"] = await asyncio.to_thread(remote_evidence, graph, output)
-                delivery = evidence["delivery"]
-                passed = all(
-                    delivery[k]
-                    for k in (
-                        "complete_tree_received",
-                        "root_input_matches_local",
-                        "root_report_matches_local",
+    async with build_collaborators(settings) as collaborators:
+        graph = IdentifiedGraph(collaborators.graph, enabled)
+        evidence["root_run_id"] = str(graph.run_id)
+        evidence["sdk_tracing_enabled"] = tracing_is_enabled()
+        request = InvestigationRequest(
+            query="checkout-service memory keeps climbing; investigate metrics and logs",
+            service="checkout-service",
+            minutes_back=180,
+        )
+        evidence["request"] = request.model_dump()
+        passed = False
+        try:
+            with patch.object(requests.Session, "request", observe_request):
+                started = time.perf_counter()
+                try:
+                    report = await asyncio.wait_for(
+                        IncidentService(graph).investigate(request), timeout=180
                     )
-                )
-            else:
-                # Allow background SDK work a chance to surface. No client is manually
-                # created in this branch, and no tracer/context override is injected.
-                await asyncio.sleep(2)
-                evidence["requests_transport_calls"] = network.copy()
-                passed = not network and tracing_is_enabled() is False
-            passed = passed and evidence["investigation_error"] is None
-    except Exception as exc:
-        evidence["validation_error"] = {"type": type(exc).__name__, "message": str(exc)}
-    finally:
-        await collaborators.metrics_source.aclose()
-        await collaborators.log_source.aclose()
-        evidence["requests_transport_calls"] = network
-        evidence["finished_at"] = datetime.now(UTC)
-        evidence["passed"] = passed
-        write_json(output / "result.json", evidence)
+                    evidence["report"] = report.model_dump(mode="json")
+                    evidence["investigation_error"] = None
+                except Exception as exc:
+                    evidence["investigation_error"] = {
+                        "type": type(exc).__name__,
+                        "message": str(exc),
+                    }
+                finally:
+                    evidence["service_seconds"] = time.perf_counter() - started
+                    write_json(
+                        output / "local-graph.json",
+                        {"initial": graph.initial, "final": graph.final},
+                    )
+                if enabled:
+                    evidence["delivery"] = await asyncio.to_thread(remote_evidence, graph, output)
+                    delivery = evidence["delivery"]
+                    passed = all(
+                        delivery[k]
+                        for k in (
+                            "complete_tree_received",
+                            "root_input_matches_local",
+                            "root_report_matches_local",
+                        )
+                    )
+                else:
+                    # Allow background SDK work a chance to surface. No client is manually
+                    # created in this branch, and no tracer/context override is injected.
+                    await asyncio.sleep(2)
+                    evidence["requests_transport_calls"] = network.copy()
+                    passed = not network and tracing_is_enabled() is False
+                passed = passed and evidence["investigation_error"] is None
+        except Exception as exc:
+            evidence["validation_error"] = {"type": type(exc).__name__, "message": str(exc)}
+        finally:
+            evidence["requests_transport_calls"] = network
+            evidence["finished_at"] = datetime.now(UTC)
+            evidence["passed"] = passed
+            write_json(output / "result.json", evidence)
     print(
         json.dumps(
             {

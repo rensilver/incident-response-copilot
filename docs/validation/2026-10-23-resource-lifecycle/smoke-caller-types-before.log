@@ -1,0 +1,8 @@
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:143: error: Incompatible types in assignment (expression has type "Coroutine[Any, Any, OpenAIProvider]", variable has type "OpenAIProvider | None")  [assignment]
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:143: note: Maybe you forgot to use "await"?
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:146: error: Item "None" of "OpenAIProvider | None" has no attribute "_owned_clients"  [union-attr]
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:147: error: Item "None" of "OpenAIProvider | None" has no attribute "_owned_clients"  [union-attr]
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:153: error: Item "None" of "OpenAIProvider | None" has no attribute "complete"  [union-attr]
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:159: error: Item "None" of "OpenAIProvider | None" has no attribute "complete_structured"  [union-attr]
+docs/validation/2026-10-22-openai-live-smoke/smoke.py:168: error: Item "None" of "OpenAIProvider | None" has no attribute "bind_tools"  [union-attr]
+Found 6 errors in 1 file (checked 1 source file)

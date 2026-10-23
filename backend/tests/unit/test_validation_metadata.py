@@ -6,7 +6,7 @@ import json
 import sys
 from importlib.metadata import version
 from pathlib import Path
-from types import ModuleType, SimpleNamespace
+from types import ModuleType
 from typing import Any
 from unittest.mock import AsyncMock
 
@@ -63,11 +63,8 @@ async def test_tracing_recorder_reports_openai_metadata(
     monkeypatch.setattr(recorder.subprocess, "check_output", lambda *a, **kw: "offline-commit")
     monkeypatch.setattr(recorder, "version", current_package_version)
     monkeypatch.setattr(
-        recorder,
-        "build_collaborators",
-        lambda settings: SimpleNamespace(
-            graph=ReportGraph(), metrics_source=AsyncMock(), log_source=AsyncMock()
-        ),
+        "incident_copilot.composition.build_graph",
+        lambda *args: ReportGraph(),
     )
     monkeypatch.setattr(recorder, "tracing_is_enabled", lambda: enabled)
     monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
@@ -182,13 +179,18 @@ async def test_evaluation_retains_all_attempts_and_timing_without_host_sampling(
 
     graph = ReportGraph()
     metrics, logs = AsyncMock(), AsyncMock()
+    monkeypatch.setattr(
+        "incident_copilot.composition.PrometheusConnector.from_settings", lambda _: metrics
+    )
+    monkeypatch.setattr(
+        "incident_copilot.composition.ElasticsearchConnector.from_settings", lambda _: logs
+    )
     monkeypatch.setenv("OPENAI_API_KEY", "synthetic-recorder-secret")
     monkeypatch.setattr(recorder, "command", command)
     monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
     monkeypatch.setattr(
-        recorder,
-        "build_collaborators",
-        lambda settings: SimpleNamespace(graph=graph, metrics_source=metrics, log_source=logs),
+        "incident_copilot.composition.build_graph",
+        lambda *args: graph,
     )
     respx.get("http://localhost:8000/health").respond(200, json={"status": "ok"})
     output = tmp_path / "evaluation"

@@ -28,7 +28,7 @@ The ownership rule for adapters is:
 |---|---|
 | Chat model or transport injected through an adapter constructor | The injecting caller retains ownership and closes it after all users finish. The adapter borrows it and must not close it. |
 | SDK/HTTP client created by an adapter's settings constructor | The adapter owns it and must expose explicit async cleanup for its owned resources. Close every owned synchronous and asynchronous transport; do not rely on garbage collection. |
-| Provider returned by the factory | The entrypoint that requested the composed collaborators owns its lifetime. Cleanup belongs in application lifespan or the evaluation runner's `finally` block, after in-flight graph work finishes. Services and graph nodes borrow the provider. |
+| Provider returned by the async factory | The requesting caller owns its lifetime. `build_collaborators` manages this ownership for FastAPI, evaluation, and recorders through an async context, after in-flight graph work finishes. Services and graph nodes borrow the provider. |
 | Providers wrapped by another provider | The composition that transfers ownership must make that explicit; cleanup must reach each owned child even if another child's cleanup fails. Borrowed children remain caller-owned. |
 
 Construction must perform no model requests. A bound tool runnable borrows its
@@ -37,21 +37,44 @@ clients across bindings must preserve independent toolsets and request config.
 Cancellation must propagate through model calls; cleanup must also run when the
 owning entrypoint exits with an error.
 
-**Current lifecycle limitation:** the existing `LLMProvider` ABC has no cleanup
-method. `Collaborators` retains the provider for health probing, but
-FastAPI/evaluation shutdown explicitly closes only the metrics/log connectors.
-The OpenAI adapter exposes
-`aclose()` for its owned clients. Application lifecycle integration must retain the
-provider through the abstraction, call cleanup from both entrypoints, and cover
-shutdown and partial-construction failures. That integration remains pending; SDK
-internals belong inside the adapter.
+`LLMProvider.aclose()` is the lifecycle contract. Its default is a no-op for
+resource-free providers; adapters that acquire clients override it. The async
+`build_llm_provider(settings)` factory awaits adapter construction so an adapter
+can close acquired async transports if a later construction step fails.
+
+Use `async with build_collaborators(settings) as collaborators:` in entrypoints.
+The context registers each connector/provider immediately after acquisition and
+attempts every close in reverse order (provider, logs, metrics) on normal exit,
+exceptions, cancellation, or partial construction failure. A failing close does
+not skip other resources; cleanup errors propagate with exception context. Finish
+all graph work before exiting. Callers must not separately close the borrowed
+collaborators. SDK details and cleanup during adapter construction stay inside
+the adapter.
+
+`create_app()` and importing `incident_copilot.main:app` construct routes only.
+Settings validation, logging configuration, connectors, provider, and graph are
+initialized at lifespan startup. API dependencies resolve the active app's
+service and health checks; explicitly injected `build_router(service, checks)`
+collaborators remain supported for isolated route tests. HTTP tests of the full
+application must drive lifespan explicitly: `httpx.ASGITransport` does not do so.
+Shutdown removes serving references from app state, and a later serving lifetime
+acquires a new collaborator set without registering duplicate routes.
+
+The [lifecycle validation](validation/2026-10-23-resource-lifecycle/README.md)
+records offline shutdown, failure, cancellation, and ownership checks. Cleanup
+attempts cannot guarantee successful release by a broken or stalled external
+close implementation, or after process termination. Total shutdown/deadline and
+browser-disconnect policy remain separate tasks.
 
 ## OpenAI adapter implementation
 
 [`OpenAIProvider`](../backend/src/incident_copilot/llm/openai_provider.py) uses
 `langchain-openai` 1.1.x (locked to 1.1.16 with OpenAI SDK 2.54.0) to preserve the
-existing LangChain core and LangSmith versions. `from_api_key(SecretStr(...))`
+existing LangChain core and LangSmith versions. `await from_api_key(SecretStr(...))`
 constructs independent synchronous and asynchronous SDK clients without inference.
+`await from_settings(settings)` uses the same async constructor. An internal
+exit stack closes acquired clients if SDK/model/adapter construction fails;
+successful construction transfers ownership to the returned provider.
 All inference is async and uses Responses with `gpt-6-luna` and
 `reasoning={"effort": "none"}`. Tool bindings share these clients and send complete
 local history; automatic previous-response-ID history trimming is disabled.
@@ -148,7 +171,7 @@ covers malformed health payloads, later-request recovery, and log redaction.
 OpenAI health uses the provider-owned metadata probe described below. The
 [retained live smoke](validation/2026-10-22-openai-live-smoke/README.md) validates
 small text, JSON-object, and tool-continuation requests with the exact model and
-reasoning setting. Application lifecycle cleanup wiring remains pending.
+reasoning setting. Current lifecycle wiring is described above.
 See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
 
 ### Provider health

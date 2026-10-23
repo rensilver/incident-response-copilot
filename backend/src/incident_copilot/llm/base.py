@@ -34,6 +34,14 @@ class LLMProvider(ABC):
     which concrete provider it received.
     """
 
+    async def aclose(self) -> None:
+        """Release owned resources after all borrowers finish.
+
+        Resource-free implementations need no cleanup. Adapters that acquire
+        clients override this method; injected clients remain caller-owned.
+        """
+        return
+
     async def health_check(self) -> bool:
         """Check metadata access within one deadline, without generating tokens.
 

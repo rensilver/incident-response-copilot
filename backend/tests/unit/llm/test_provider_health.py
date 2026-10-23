@@ -76,7 +76,7 @@ async def test_health_failure_is_redacted_and_recovers_on_later_poll(
     route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(
         side_effect=[failure, httpx.Response(200, json=MODEL), httpx.Response(200, json=MODEL)]
     )
-    provider = OpenAIProvider.from_api_key(SecretStr(key))
+    provider = await OpenAIProvider.from_api_key(SecretStr(key))
     settings = Settings(_env_file=None)
     app = FastAPI()
     app.include_router(
@@ -118,7 +118,7 @@ def forbid_network(monkeypatch: pytest.MonkeyPatch) -> None:
 @respx.mock
 async def test_openai_health_reads_model_metadata_without_inference() -> None:
     route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(200, json=MODEL)
-    provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+    provider = await OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
     try:
         assert not respx.calls
         assert await provider.health_check() is True
@@ -143,7 +143,7 @@ async def test_openai_health_failure_does_not_retry_or_generate(status: int) -> 
     route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").respond(
         status, json={"error": {"message": "offline failure", "type": "api_error"}}
     )
-    provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+    provider = await OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
     try:
         assert await provider.health_check() is False
         assert route.call_count == 1
@@ -158,7 +158,7 @@ async def test_metadata_access_does_not_claim_successful_inference() -> None:
     inference = respx.post("https://api.openai.com/v1/responses").respond(
         429, json={"error": {"message": "quota", "code": "insufficient_quota"}}
     )
-    provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+    provider = await OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
     try:
         assert await provider.health_check() is True
         assert not inference.called
@@ -242,7 +242,7 @@ async def test_deadline_bounds_real_openai_metadata_request(
         return httpx.Response(200, json=MODEL)
 
     respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(side_effect=stalled)
-    provider = OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
+    provider = await OpenAIProvider.from_api_key(SecretStr("offline-health-key"))
     monkeypatch.setattr(base, "PROVIDER_HEALTH_TIMEOUT_SECONDS", 0.02)
     try:
         assert await asyncio.wait_for(provider.health_check(), timeout=1.0) is False

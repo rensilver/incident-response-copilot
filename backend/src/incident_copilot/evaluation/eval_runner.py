@@ -110,19 +110,13 @@ def _print_results(results: list[RunResult]) -> None:
 async def main() -> None:
     """Run every scenario ``REPEATS`` times against the live stack and print the score."""
     settings = get_settings()
-    collaborators = build_collaborators(settings)
-    service = IncidentService(collaborators.graph)
-
-    try:
+    async with build_collaborators(settings) as collaborators:
+        service = IncidentService(collaborators.graph)
         results: list[RunResult] = []
         for scenario in SCENARIOS:
             for _ in range(REPEATS):
                 results.append(await run_scenario(service, scenario))
-
         _print_results(results)
-    finally:
-        await collaborators.metrics_source.aclose()
-        await collaborators.log_source.aclose()
 
 
 if __name__ == "__main__":

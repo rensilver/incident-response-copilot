@@ -116,7 +116,7 @@ def forbid_network(monkeypatch: pytest.MonkeyPatch) -> None:
 async def wire(respx_mock: respx.MockRouter) -> AsyncIterator[tuple[OpenAIProvider, Wire]]:
     exchange = Wire()
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
-    provider = OpenAIProvider.from_api_key(SecretStr("offline-key"))
+    provider = await OpenAIProvider.from_api_key(SecretStr("offline-key"))
     assert exchange.bodies == []  # Construction must not make a model request.
     try:
         yield provider, exchange
@@ -392,8 +392,8 @@ async def test_owned_clients_close_without_closing_another_provider(
 ) -> None:
     exchange = Wire(outputs=[text_output("second provider remains usable")])
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
-    first = OpenAIProvider.from_api_key(SecretStr("offline-key"))
-    second = OpenAIProvider.from_api_key(SecretStr("offline-key"))
+    first = await OpenAIProvider.from_api_key(SecretStr("offline-key"))
+    second = await OpenAIProvider.from_api_key(SecretStr("offline-key"))
     try:
         await first.aclose()
         await first.aclose()
@@ -776,7 +776,7 @@ async def test_deadline_cancels_inflight_http_without_retry(
         raise AssertionError("Unreachable")
 
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=blocked)
-    provider = OpenAIProvider.from_settings(
+    provider = await OpenAIProvider.from_settings(
         Settings(_env_file=None, llm_operation_timeout_seconds=0.1)
     )
     try:
@@ -805,7 +805,7 @@ async def test_structured_repairs_share_one_deadline(respx_mock: respx.MockRoute
         return exchange.respond(request)
 
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=delayed)
-    provider = OpenAIProvider.from_settings(
+    provider = await OpenAIProvider.from_settings(
         Settings(_env_file=None, llm_operation_timeout_seconds=0.6)
     )
     try:
@@ -839,7 +839,7 @@ async def test_cancellation_during_repair_reaches_http(respx_mock: respx.MockRou
         raise AssertionError("Unreachable")
 
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     task = asyncio.create_task(provider.complete_structured(MESSAGES, IncidentReport))
     try:
         await asyncio.wait_for(repair_started.wait(), timeout=1)
@@ -888,7 +888,7 @@ async def test_http_failures_never_retry_even_with_server_retry_headers(
         },
         headers={"Retry-After": "0", "x-should-retry": "true"},
     )
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
         with pytest.raises(LLMProviderError) as caught:
             await invoke_operation(provider, operation)
@@ -916,7 +916,7 @@ async def test_transport_failures_never_retry(
     route = respx_mock.post("https://api.openai.com/v1/responses").mock(
         side_effect=failure("Synthetic transport failure")
     )
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
         with pytest.raises(LLMProviderError) as caught:
             await invoke_operation(provider, operation)
@@ -998,7 +998,7 @@ async def test_failed_operation_recovers_on_same_provider_without_hidden_retry(
         route.mock(return_value=failure)
     else:
         route.mock(side_effect=failure)
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
         with pytest.raises(LLMProviderError) as caught:
             await invoke_operation(provider, operation)
@@ -1035,7 +1035,7 @@ async def test_http_failure_during_repair_stops_without_another_attempt(
         return httpx.Response(503, json={"error": {"message": "private-repair-canary"}})
 
     route = respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
         with pytest.raises(LLMProviderError) as caught:
             await provider.complete_structured(MESSAGES, IncidentReport)
@@ -1059,7 +1059,7 @@ async def test_provider_failure_reaches_api_as_safe_503_then_recovers(
         status, json={"error": {"message": "private-graph-error-canary"}}
     )
     settings = Settings(_env_file=None)
-    provider = OpenAIProvider.from_settings(settings)
+    provider = await OpenAIProvider.from_settings(settings)
     graph = build_graph(provider, [], [], settings)
     app = FastAPI()
     app.include_router(build_router(IncidentService(graph), {}))
@@ -1118,7 +1118,7 @@ async def test_repair_attempts_respect_provider_and_caller_caps(
 ) -> None:
     exchange = Wire(outputs=[text_output("invalid")] * 100)
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=exchange.respond)
-    provider = OpenAIProvider.from_settings(
+    provider = await OpenAIProvider.from_settings(
         Settings(_env_file=None, llm_max_structured_attempts=ceiling, llm_max_output_tokens=1234)
     )
     count = min(ceiling, requested)
@@ -1160,7 +1160,7 @@ async def test_graph_call_budget_has_no_node_retry_multiplier(respx_mock: respx.
 
     respx_mock.post("https://api.openai.com/v1/responses").mock(side_effect=respond)
     settings = Settings(_env_file=None)
-    provider = OpenAIProvider.from_settings(settings)
+    provider = await OpenAIProvider.from_settings(settings)
 
     async def unused() -> str:
         """Return an offline placeholder."""
@@ -1288,10 +1288,9 @@ async def test_automatic_graph_tracing_and_credential_free_disable(
         langsmith_api_key="offline-trace-key" if modes[0] else None,
         langsmith_project="offline-graph-review",
     )
-    collaborators = build_collaborators(settings)
-    assert isinstance(collaborators.provider, OpenAIProvider)
-    service = IncidentService(collaborators.graph)
-    try:
+    async with build_collaborators(settings) as collaborators:
+        assert isinstance(collaborators.provider, OpenAIProvider)
+        service = IncidentService(collaborators.graph)
         for index, enabled in enumerate(modes):
             if index:
                 settings = settings.model_copy(
@@ -1375,5 +1374,3 @@ async def test_automatic_graph_tracing_and_credential_free_disable(
                     and span["dotted_order"].startswith(nodes[name]["dotted_order"] + ".")
                 ]
                 assert len(descendants) == count
-    finally:
-        await collaborators.provider.aclose()

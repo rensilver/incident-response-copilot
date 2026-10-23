@@ -1,0 +1,12 @@
+E501 Line too long (103 > 100)
+   --> docs/validation/2026-10-23-resource-lifecycle/review_audit.py:98:101
+    |
+ 96 | subprocess.run(["git", "diff", "--cached", "--check"], cwd=root, check=True)
+ 97 | print(
+ 98 |     f"Reviewed {len(staged)} staged files: authorized scope, credential patterns, and diff whitespace."
+    |                                                                                                     ^^^
+ 99 | )
+100 | print("Private dotenv and local plan remain ignored.")
+    |
+
+Found 1 error.

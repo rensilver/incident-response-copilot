@@ -6,12 +6,14 @@ import respx
 from pydantic import ValidationError
 
 from incident_copilot.config.settings import Settings
+from incident_copilot.connectors.elasticsearch_connector import ElasticsearchConnector
+from incident_copilot.connectors.prometheus_connector import PrometheusConnector
 from incident_copilot.llm.fake_provider import FakeLLMProvider
 from incident_copilot.main import create_app
 
 
 @pytest.mark.parametrize("key", [None, "", " \t\n"])
-def test_missing_configuration_fails_before_collaborator_construction(
+async def test_missing_configuration_fails_before_collaborator_construction(
     monkeypatch: pytest.MonkeyPatch, key: str | None
 ) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
@@ -19,8 +21,10 @@ def test_missing_configuration_fails_before_collaborator_construction(
         monkeypatch.setenv("OPENAI_API_KEY", key)
     construct = Mock(side_effect=AssertionError("Invalid startup must not construct clients"))
     monkeypatch.setattr("incident_copilot.main.build_collaborators", construct)
+    app = create_app()
     with pytest.raises(ValidationError, match="OPENAI_API_KEY"):
-        create_app()
+        async with app.router.lifespan_context(app):
+            pytest.fail("Invalid settings must prevent startup")
     construct.assert_not_called()
 
 
@@ -33,13 +37,18 @@ async def test_health_uses_the_provider_built_for_the_graph(
             return True
 
     provider = HealthyProvider(["unused"])
-    monkeypatch.setattr("incident_copilot.composition.build_llm_provider", lambda _: provider)
+
+    async def build_provider(_: Settings) -> FakeLLMProvider:
+        return provider
+
+    monkeypatch.setattr("incident_copilot.composition.build_llm_provider", build_provider)
     app = create_app(Settings(_env_file=None))
     respx.get("http://localhost:9090/-/ready").respond(200)
     respx.get("http://localhost:9200/_cluster/health").respond(200)
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client,
+    ):
         response = await client.get("/health")
     assert response.json() == {
         "status": "ok",
@@ -64,7 +73,10 @@ async def test_health_endpoint_answers_without_any_backend_running() -> None:
     app = create_app(Settings(_env_file=None))
     respx.route().mock(side_effect=httpx.ConnectError("offline"))
     transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=transport, base_url="http://test") as client,
+    ):
         response = await client.get("/health")
 
     assert response.status_code == 200
@@ -73,19 +85,26 @@ async def test_health_endpoint_answers_without_any_backend_running() -> None:
     assert set(body["dependencies"]) == {"prometheus", "elasticsearch", "llm"}
 
 
-async def test_shutdown_closes_both_connectors() -> None:
+async def test_shutdown_closes_both_connectors(monkeypatch: pytest.MonkeyPatch) -> None:
     """The connectors are built once at startup and hold long-lived clients; the
     lifespan has to hand them back or the app leaks a socket per reload."""
-    app = create_app(Settings(_env_file=None))
     closed: list[str] = []
 
-    for name in ("prometheus", "elasticsearch"):
-        connector = getattr(app.state, f"{name}_connector")
+    # Install before acquisition: composition registers bound cleanup callbacks.
+    metrics_close = PrometheusConnector.aclose
+    logs_close = ElasticsearchConnector.aclose
 
-        async def record(_name: str = name) -> None:
-            closed.append(_name)
+    async def close_metrics(connector: PrometheusConnector) -> None:
+        await metrics_close(connector)
+        closed.append("prometheus")
 
-        connector.aclose = record
+    async def close_logs(connector: ElasticsearchConnector) -> None:
+        await logs_close(connector)
+        closed.append("elasticsearch")
+
+    monkeypatch.setattr(PrometheusConnector, "aclose", close_metrics)
+    monkeypatch.setattr(ElasticsearchConnector, "aclose", close_logs)
+    app = create_app(Settings(_env_file=None))
 
     # Driven directly: ASGITransport never emits lifespan events, so going through an
     # HTTP client here would assert nothing.

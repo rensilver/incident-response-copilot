@@ -58,7 +58,7 @@ async def test_factory_uses_configured_key_without_inference_or_fallback(
     route = respx.post("https://api.openai.com/v1/responses").respond(
         401, json={"error": {"message": sentinel, "type": "invalid_api_key"}}
     )
-    provider = build_llm_provider(Settings(_env_file=None))
+    provider = await build_llm_provider(Settings(_env_file=None))
     assert isinstance(provider, OpenAIProvider)
     assert not route.called
     trace = TraceCapture()
@@ -107,7 +107,7 @@ async def test_openai_health_does_not_probe_legacy_services() -> None:
     route = respx.get("https://api.openai.com/v1/models/gpt-6-luna").mock(
         return_value=httpx.Response(401, json={"error": {"message": "offline"}})
     )
-    provider = OpenAIProvider.from_settings(Settings(_env_file=None))
+    provider = await OpenAIProvider.from_settings(Settings(_env_file=None))
     try:
         assert await provider.health_check() is False
         assert route.call_count == len(respx.calls) == 1

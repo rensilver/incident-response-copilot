@@ -140,7 +140,7 @@ async def run(output: Path) -> bool:
             llm_max_output_tokens=256,
             llm_max_structured_attempts=1,
         )
-        provider = OpenAIProvider.from_settings(settings)
+        provider = await OpenAIProvider.from_settings(settings)
         # Evidence-only inspection of the owned SDK transport, without replacing
         # clients, serializer, adapter methods, HTTP responses, or error handling.
         assert provider._owned_clients is not None

@@ -7,8 +7,9 @@ objects are built.
 
 import asyncio
 from collections.abc import Awaitable, Callable, Mapping
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from incident_copilot.api.schemas import HealthResponse, InvestigationErrorResponse
 from incident_copilot.models.report import IncidentReport
@@ -38,18 +39,31 @@ async def _probe(name: str, check: HealthCheck) -> bool:
         return False
 
 
-def build_router(service: IncidentService, health_checks: Mapping[str, HealthCheck]) -> APIRouter:
+def build_router(
+    service: IncidentService | None = None,
+    health_checks: Mapping[str, HealthCheck] | None = None,
+) -> APIRouter:
     """Build the API router.
 
     Args:
-        service: Use-case orchestrator.
-        health_checks: Named reachability probes for downstream systems.
+        service: Injected use-case orchestrator; otherwise resolve lifespan state.
+        health_checks: Injected dependency probes; otherwise resolve lifespan state.
 
     Returns:
         A router exposing the investigation and health endpoints.
     """
     # The health endpoint intentionally stays outside the versioned API prefix.
     router = APIRouter(tags=["incident-copilot"])
+
+    async def resolve_service(request: Request) -> IncidentService:
+        resolved: IncidentService = service if service is not None else request.app.state.service
+        return resolved
+
+    async def resolve_checks(request: Request) -> Mapping[str, HealthCheck]:
+        resolved: Mapping[str, HealthCheck] = (
+            health_checks if health_checks is not None else request.app.state.health_checks
+        )
+        return resolved
 
     @router.post(
         "/api/v1/investigations",
@@ -61,10 +75,13 @@ def build_router(service: IncidentService, health_checks: Mapping[str, HealthChe
             }
         },
     )
-    async def create_investigation(request: InvestigationRequest) -> IncidentReport:
+    async def create_investigation(
+        request: InvestigationRequest,
+        investigator: Annotated[IncidentService, Depends(resolve_service)],
+    ) -> IncidentReport:
         """Run an investigation and return the structured report."""
         try:
-            return await service.investigate(request)
+            return await investigator.investigate(request)
         except (InvestigationError, LLMProviderError) as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -72,14 +89,16 @@ def build_router(service: IncidentService, health_checks: Mapping[str, HealthChe
             ) from exc
 
     @router.get("/health", summary="Check application and dependency health")
-    async def health() -> HealthResponse:
+    async def health(
+        checks: Annotated[Mapping[str, HealthCheck], Depends(resolve_checks)],
+    ) -> HealthResponse:
         """Report liveness and downstream reachability.
 
         Probes run concurrently: each carries its own timeout, so awaiting them one
         after another would let ``/health`` outlast the timeout of whatever polls it.
         """
-        names = list(health_checks)
-        results = await asyncio.gather(*(_probe(n, health_checks[n]) for n in names))
+        names = list(checks)
+        results = await asyncio.gather(*(_probe(n, checks[n]) for n in names))
         dependencies = dict(zip(names, results, strict=True))
         healthy = all(dependencies.values())
         return HealthResponse(status="ok" if healthy else "degraded", dependencies=dependencies)

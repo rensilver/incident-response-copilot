@@ -1,0 +1,81 @@
+.venv/bin/ruff check backend/src backend/tests
+B027 `LLMProvider.aclose` is an empty method in an abstract base class, but has no abstract decorator
+  --> backend/src/incident_copilot/llm/base.py:37:5
+   |
+35 |       """
+36 |
+37 | /     async def aclose(self) -> None:
+38 | |         """Release owned resources after all borrowers finish.
+39 | |
+40 | |         Resource-free implementations need no cleanup. Adapters that acquire
+41 | |         clients override this method; injected clients remain caller-owned.
+42 | |         """
+   | |___________^
+43 |
+44 |       async def health_check(self) -> bool:
+   |
+
+E501 Line too long (103 > 100)
+   --> backend/tests/unit/test_main.py:99:101
+    |
+ 97 |             close = connector.aclose
+ 98 |
+ 99 |             async def record(_name: str = name, _close: Callable[[], Awaitable[None]] = close) -> None:
+    |                                                                                                     ^^^
+100 |                 await _close()
+101 |                 closed.append(_name)
+    |
+
+F401 [*] `httpx` imported but unused
+  --> backend/tests/unit/test_resource_lifecycle.py:11:8
+   |
+ 9 | from typing import Any
+10 |
+11 | import httpx
+   |        ^^^^^
+12 | import pytest
+13 | from openai import AsyncOpenAI, OpenAI
+   |
+help: Remove unused import: `httpx`
+   |
+10 |
+   - import httpx
+11 | import pytest
+   |
+
+E501 Line too long (101 > 100)
+  --> backend/tests/unit/test_resource_lifecycle.py:34:101
+   |
+32 | with (
+33 |     patch('incident_copilot.config.settings.get_settings', side_effect=AssertionError('settings')),
+34 |     patch('incident_copilot.composition.build_collaborators', side_effect=AssertionError('clients')),
+   |                                                                                                     ^
+35 | ):
+36 |     from incident_copilot.main import app, create_app
+   |
+
+E501 Line too long (106 > 100)
+   --> backend/tests/unit/test_resource_lifecycle.py:110:101
+    |
+108 |     events, provider = resources
+109 |     error = RuntimeError("close failed")
+110 |     targets = {"provider": type(provider), "logs": ElasticsearchConnector, "metrics": PrometheusConnector}
+    |                                                                                                     ^^^^^^
+111 |     target = targets[failed]
+112 |     original = target.aclose
+    |
+
+E501 Line too long (153 > 100)
+   --> backend/tests/unit/test_resource_lifecycle.py:129:101
+    |
+127 | …
+128 | …
+129 | …, ("graph", ["provider", "logs", "metrics"]), ("service", ["provider", "logs", "metrics"])],
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+130 | …
+131 | …esources(
+    |
+
+Found 6 errors.
+[*] 1 fixable with the `--fix` option.
+make: *** [Makefile:22: lint] Error 1

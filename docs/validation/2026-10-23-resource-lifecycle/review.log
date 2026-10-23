@@ -1,0 +1,6 @@
+Full OpenAPI schema matches pre-task revision 9727014 exactly; no credentials/clients used.
+Checked 24 local references in docs/validation/2026-10-23-resource-lifecycle/README.md.
+Checked 19 local references in docs/provider-adapters.md.
+Checked 25 retained command records and logs, including failures.
+Reviewed 47 staged files: scope, credential patterns, and diff whitespace.
+Private dotenv and local plan remain ignored.
