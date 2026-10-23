@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 28 items
+
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[supervisor] PASSED [  3%]
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[metrics_model] PASSED [  7%]
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[logs_model] PASSED [ 10%]
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[metrics_tool] PASSED [ 14%]
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[logs_tool] PASSED [ 17%]
+backend/tests/unit/agents/test_execution.py::test_graph_failures_degrade_collection_or_raise_when_no_report[correlation] PASSED [ 21%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[supervisor] PASSED [ 25%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[metrics_model] PASSED [ 28%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[logs_model] PASSED [ 32%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[metrics_tool] PASSED [ 35%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[logs_tool] PASSED [ 39%]
+backend/tests/unit/agents/test_execution.py::test_cancellation_reaches_inflight_work_without_becoming_a_report[correlation] PASSED [ 42%]
+backend/tests/unit/agents/test_execution.py::test_cancelling_fan_out_cancels_both_pending_connectors PASSED [ 46%]
+backend/tests/unit/agents/test_execution.py::test_shared_graph_isolates_overlapping_investigations[False] PASSED [ 50%]
+backend/tests/unit/agents/test_execution.py::test_shared_graph_isolates_overlapping_investigations[True] PASSED [ 53%]
+backend/tests/unit/agents/test_tool_loop.py::test_results_are_collected_from_every_round PASSED [ 57%]
+backend/tests/unit/agents/test_tool_loop.py::test_loop_is_bounded_even_when_the_model_keeps_asking PASSED [ 60%]
+backend/tests/unit/agents/test_tool_loop.py::test_loop_stops_early_when_the_model_asks_for_nothing PASSED [ 64%]
+backend/tests/unit/agents/test_tool_loop.py::test_connector_failure_is_recorded_not_raised PASSED [ 67%]
+backend/tests/unit/agents/test_tool_loop.py::test_unknown_tool_name_is_recorded PASSED [ 71%]
+backend/tests/unit/agents/test_tool_loop.py::test_invalid_tool_call_args_are_recorded_not_raised PASSED [ 75%]
+backend/tests/unit/agents/test_tool_loop.py::test_an_unreachable_model_is_recorded_not_raised PASSED [ 78%]
+backend/tests/unit/agents/test_tool_loop.py::test_followup_round_sees_dependency_and_sample_scope PASSED [ 82%]
+backend/tests/unit/agents/test_tool_loop.py::test_round_limit_counts_model_replies_and_preserves_all_calls_in_each[0] PASSED [ 85%]
+backend/tests/unit/agents/test_tool_loop.py::test_round_limit_counts_model_replies_and_preserves_all_calls_in_each[1] PASSED [ 89%]
+backend/tests/unit/agents/test_tool_loop.py::test_round_limit_counts_model_replies_and_preserves_all_calls_in_each[3] PASSED [ 92%]
+backend/tests/unit/agents/test_tool_loop.py::test_provider_failure_after_success_preserves_evidence_and_stops_rounds PASSED [ 96%]
+backend/tests/unit/agents/test_tool_loop.py::test_unexpected_tool_bug_propagates_instead_of_becoming_collection_error PASSED [100%]
+
+============================== 28 passed in 0.84s ==============================

@@ -1,10 +1,13 @@
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
 import httpx
-from langchain_core.messages import AIMessage, ToolMessage
-from langchain_core.runnables import RunnableLambda
+import pytest
+from langchain_core.language_models import LanguageModelInput
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage, convert_to_messages
+from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_core.tools import BaseTool, StructuredTool
 from pydantic import BaseModel
 
@@ -13,7 +16,7 @@ from incident_copilot.llm.base import ChatMessage
 from incident_copilot.llm.fake_provider import FakeLLMProvider
 from incident_copilot.models.enums import LogLevel
 from incident_copilot.models.logs import LogEntry, LogFinding
-from incident_copilot.utils.exceptions import MetricsSourceError
+from incident_copilot.utils.exceptions import LLMProviderError, MetricsSourceError
 
 
 class EchoArgs(BaseModel):
@@ -187,3 +190,74 @@ async def test_followup_round_sees_dependency_and_sample_scope() -> None:
     assert "fraud-api" in feedback.content
     assert "100 documents matched" in feedback.content
     assert "1 samples retrieved" in feedback.content
+
+
+@pytest.mark.parametrize("round_limit", [0, 1, 3])
+async def test_round_limit_counts_model_replies_and_preserves_all_calls_in_each(
+    round_limit: int,
+) -> None:
+    """An extra model request or treating each tool call as a round breaks the budget."""
+    conversations: list[list[BaseMessage]] = []
+
+    class RepeatingProvider(FakeLLMProvider):
+        def bind_tools(
+            self, tools: Sequence[BaseTool]
+        ) -> Runnable[LanguageModelInput, BaseMessage]:
+            async def respond(messages: LanguageModelInput) -> BaseMessage:
+                conversations.append(convert_to_messages(messages))
+                return AIMessage(content="", tool_calls=[_call("a"), _call("b")])
+
+            return RunnableLambda(respond)
+
+    seen: list[str] = []
+    outcome = await run_tool_rounds(
+        RepeatingProvider(["unused"]), _tools(seen), MESSAGES, max_rounds=round_limit
+    )
+    assert len(conversations) == round_limit
+    assert seen == ["a", "b"] * round_limit
+    assert outcome.results == ["echoed:a", "echoed:b"] * round_limit
+    assert outcome.errors == []
+    if round_limit > 1:
+        feedback = [m for m in conversations[1] if isinstance(m, ToolMessage)]
+        assert [(m.tool_call_id, m.content) for m in feedback] == [
+            ("c-a", "echoed:a"),
+            ("c-b", "echoed:b"),
+        ]
+
+
+async def test_provider_failure_after_success_preserves_evidence_and_stops_rounds() -> None:
+    attempts = 0
+
+    class FailingProvider(FakeLLMProvider):
+        def bind_tools(
+            self, tools: Sequence[BaseTool]
+        ) -> Runnable[LanguageModelInput, BaseMessage]:
+            async def respond(messages: LanguageModelInput) -> BaseMessage:
+                nonlocal attempts
+                attempts += 1
+                if attempts == 1:
+                    return AIMessage(content="", tool_calls=[_call("a")])
+                raise LLMProviderError("model unavailable after collection")
+
+            return RunnableLambda(respond)
+
+    seen: list[str] = []
+    outcome = await run_tool_rounds(
+        FailingProvider(["unused"]), _tools(seen), MESSAGES, max_rounds=4
+    )
+    assert outcome.results == ["echoed:a"]
+    assert outcome.errors == ["model call failed: model unavailable after collection"]
+    assert attempts == 2
+    assert seen == ["a"]
+
+
+async def test_unexpected_tool_bug_propagates_instead_of_becoming_collection_error() -> None:
+    async def broken(value: str) -> str:
+        raise RuntimeError("unexpected implementation defect")
+
+    tool = StructuredTool.from_function(
+        coroutine=broken, name="echo", description="broken tool", args_schema=EchoArgs
+    )
+    provider = FakeLLMProvider(["unused"], tool_rounds=[[_call("a")]])
+    with pytest.raises(RuntimeError, match="unexpected implementation defect"):
+        await run_tool_rounds(provider, [tool], MESSAGES, max_rounds=2)

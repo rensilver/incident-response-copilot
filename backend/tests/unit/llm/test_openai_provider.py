@@ -21,6 +21,7 @@ from pydantic import SecretStr, ValidationError
 
 from incident_copilot.agents.graph import build_graph
 from incident_copilot.agents.state import initial_state
+from incident_copilot.agents.tool_loop import run_tool_rounds
 from incident_copilot.api.routes import build_router
 from incident_copilot.config.settings import Settings
 from incident_copilot.connectors.base import LogSource, MetricsSource
@@ -689,6 +690,54 @@ async def test_malformed_tool_json_retains_its_call_id_and_raw_arguments(
     assert isinstance(reply.content, list)
     assert reply.content[0] == invalid
     assert len(exchange.bodies) == 1  # No silent repair request or discarded call.
+
+
+@pytest.mark.parametrize("rejection", ["unknown", "malformed-only", "malformed-mixed", "schema"])
+async def test_tool_loop_answers_rejected_calls_and_recovers_with_complete_history(
+    wire: tuple[OpenAIProvider, Wire], rejection: str
+) -> None:
+    """Rejected calls need outputs too; otherwise the next Responses request is invalid."""
+    provider, exchange = wire
+    metrics = AsyncMock(spec=MetricsSource)
+    metrics.query_range.return_value = []
+    tools = build_metrics_tools(metrics)
+    args = {"service": "checkout", "kind": "error_rate"}
+    rejected = function_call("rejected", "get_service_metric", args)
+    if rejection == "unknown":
+        rejected["name"] = "unavailable_tool"
+    elif rejection.startswith("malformed"):
+        rejected["arguments"] = '{"service":'
+    else:
+        rejected["arguments"] = json.dumps({**args, "kind": "bogus"})
+    first_round = [rejected]
+    if rejection != "malformed-only":
+        first_round.append(function_call("valid", "get_service_metric", args))
+    exchange.outputs = [
+        first_round,
+        [function_call("recovered", "get_service_metric", args)],
+        text_output("must not request a third round"),
+    ]
+
+    outcome = await run_tool_rounds(provider, tools, MESSAGES, max_rounds=2)
+
+    assert len(outcome.errors) == 1
+    expected_error = (
+        "malformed"
+        if rejection.startswith("malformed")
+        else "failed" if rejection == "schema" else "unknown"
+    )
+    assert expected_error in outcome.errors[0]
+    expected_results = 1 if rejection == "malformed-only" else 2
+    assert len(outcome.results) == expected_results
+    assert metrics.query_range.await_count == expected_results
+    assert_inference_policy(exchange.bodies, 2)
+    history = exchange.bodies[1]["input"]
+    requests = [item for item in history if item["type"] == "function_call"]
+    outputs = [item for item in history if item["type"] == "function_call_output"]
+    assert {item["call_id"] for item in requests} == {item["call_id"] for item in outputs}
+    assert len(outputs) == len(first_round)
+    feedback = next(item["output"] for item in outputs if item["call_id"] == "rejected")
+    assert ("validation error" if rejection == "schema" else expected_error) in feedback
 
 
 type Operation = Literal["text", "structured", "tools"]
