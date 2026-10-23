@@ -8,6 +8,7 @@ genuine rather than coincidental.
 """
 
 from datetime import UTC, datetime
+from math import ceil
 
 from incident_copilot.demo.curves import time_grid
 from incident_copilot.demo.scenarios import Scenario
@@ -60,7 +61,10 @@ def render_log_documents(scenario: Scenario, hours: int = 3) -> list[dict[str, s
                 if progress < template.phase_start:
                     continue
                 every = max(1, len(grid) // max(1, template.per_hour * hours))
-                if index % every:
+                # Emit at phase onset even when the remaining phase is shorter
+                # than the cadence; otherwise late restart evidence can vanish.
+                phase_index = ceil(template.phase_start * last)
+                if index % every and index != phase_index:
                     continue
                 documents.append(
                     {

@@ -1,0 +1,8 @@
+All tracked files outside guidance/log rendering retain their starting bytes.
+Private dotenv and local plan remain ignored and untracked; values not read.
+All 23 changed-document local link targets exist.
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-memory-scenario/audit.py", line 50, in <module>
+    assert "-----BEGIN PRIVATE KEY-----" not in contents, artifact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: /home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-memory-scenario/audit.py

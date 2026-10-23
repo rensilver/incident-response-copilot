@@ -1,0 +1,6 @@
+.venv/bin/black --config backend/pyproject.toml --check backend/src backend/tests streamlit_app
+would reformat /home/rensilver/workspaces/incident-response-copilot/backend/tests/unit/demo/test_memory_evidence.py
+
+Oh no! 💥 💔 💥
+1 file would be reformatted, 120 files would be left unchanged.
+make: *** [Makefile:30: format-check] Error 1

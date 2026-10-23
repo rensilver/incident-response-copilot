@@ -81,6 +81,8 @@ the next task. A request to commit includes authorization for that task's commit
   Match seeded metric names/labels to connector queries and map Elasticsearch
   service/level/version fields as keywords. Preserve dependency ordering in the
   slow-dependency scenario: the symptom service differs from the expected culprit.
+  Preserve memory-leak application evidence (resident-memory growth/resets, GC,
+  OOM, and restart logs) independently of removed host-capacity assessments.
   Generated `docker/prometheus/data/` is not source; use the seeding commands rather
   than editing TSDB blocks. Inspect reset commands before running them: they remove data.
 
