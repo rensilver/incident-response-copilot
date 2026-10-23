@@ -111,7 +111,9 @@ async def main() -> None:
     """Run every scenario ``REPEATS`` times against the live stack and print the score."""
     settings = get_settings()
     async with build_collaborators(settings) as collaborators:
-        service = IncidentService(collaborators.graph)
+        service = IncidentService(
+            collaborators.graph, timeout_seconds=settings.investigation_timeout_seconds
+        )
         results: list[RunResult] = []
         for scenario in SCENARIOS:
             for _ in range(REPEATS):

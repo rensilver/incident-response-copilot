@@ -9,6 +9,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from incident_copilot.models.enums import LLMProviderName
 
+DEFAULT_INVESTIGATION_TIMEOUT_SECONDS = 240.0
+
 
 def _default_env_file() -> Path | None:
     """Select dotenv at import time without searching the caller's directory."""
@@ -50,6 +52,12 @@ class Settings(BaseSettings):
     llm_operation_timeout_seconds: float = Field(default=60.0, gt=0, le=180, allow_inf_nan=False)
     llm_max_output_tokens: int = Field(default=4096, ge=16, le=16384)
     llm_max_structured_attempts: int = Field(default=3, ge=1, le=5)
+    investigation_timeout_seconds: float = Field(
+        default=DEFAULT_INVESTIGATION_TIMEOUT_SECONDS,
+        gt=0,
+        le=DEFAULT_INVESTIGATION_TIMEOUT_SECONDS,
+        allow_inf_nan=False,
+    )
 
     prometheus_url: str = "http://localhost:9090"
     grafana_url: str = "http://localhost:3000"

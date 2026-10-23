@@ -62,7 +62,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         async with build_collaborators(active_settings) as collaborators:
             # Register routes once; their dependencies borrow these serving instances.
             try:
-                app.state.service = IncidentService(collaborators.graph)
+                app.state.service = IncidentService(
+                    collaborators.graph,
+                    timeout_seconds=active_settings.investigation_timeout_seconds,
+                )
                 app.state.health_checks = {
                     "prometheus": _reachable(f"{active_settings.prometheus_url}/-/ready"),
                     "elasticsearch": _reachable(

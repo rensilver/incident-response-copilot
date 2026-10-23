@@ -1,5 +1,6 @@
 """Recorders must describe the configured provider without retired SDKs or secrets."""
 
+import asyncio
 import builtins
 import importlib.util
 import json
@@ -214,3 +215,47 @@ async def test_evaluation_retains_all_attempts_and_timing_without_host_sampling(
     assert len(respx.calls) == 2
     metrics.aclose.assert_awaited_once()
     logs.aclose.assert_awaited_once()
+
+
+@pytest.mark.parametrize(
+    "recorder", ["measure_evaluation.py", "validate_langsmith.py"], indirect=True
+)
+@respx.mock
+async def test_recorders_apply_and_record_the_configured_total_deadline(
+    recorder: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class WaitingGraph:
+        cancelled = False
+
+        async def ainvoke(self, state: Any, /, **kwargs: Any) -> dict[str, Any]:
+            try:
+                await asyncio.Event().wait()
+            finally:
+                self.cancelled = True
+            return {}
+
+    graph = WaitingGraph()
+    monkeypatch.setenv("INVESTIGATION_TIMEOUT_SECONDS", "0.01")
+    monkeypatch.setattr("incident_copilot.composition.build_graph", lambda *args: graph)
+    monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
+    output = tmp_path / "deadline-recording"
+    if recorder.__name__ == "measure_evaluation":
+        monkeypatch.setattr(
+            recorder, "command", lambda *args: "[]" if args[0] == "docker" else "offline"
+        )
+        monkeypatch.setattr(recorder, "REPEATS", 1)
+        monkeypatch.setattr(recorder, "SCENARIOS", recorder.SCENARIOS[:1])
+        respx.get("http://localhost:8000/health").respond(200, json={"status": "ok"})
+        await asyncio.wait_for(recorder.measure(output, 0), timeout=1)
+        result = json.loads((output / "summary.json").read_text())
+        assert result["runs"][0]["error"]["type"] == "InvestigationTimeoutError"
+        assert result["completed_attempts"] == 1
+        metadata = json.loads((output / "runtime.json").read_text())["settings"]
+    else:
+        monkeypatch.setattr(recorder.subprocess, "check_output", lambda *args, **kwargs: "offline")
+        monkeypatch.setattr(recorder, "tracing_is_enabled", lambda: False)
+        await asyncio.wait_for(recorder.validate(output, False), timeout=1)
+        metadata = json.loads((output / "result.json").read_text())
+        assert metadata["investigation_error"]["type"] == "InvestigationTimeoutError"
+    assert graph.cancelled
+    assert metadata["investigation_timeout_seconds"] == 0.01

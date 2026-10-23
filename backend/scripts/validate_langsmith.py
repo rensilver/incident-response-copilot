@@ -174,6 +174,7 @@ async def validate(output: Path, enabled: bool) -> bool:
         "mode": "enabled" if enabled else "disabled",
         "provider": settings.llm_provider.value,
         "model": settings.openai_model,
+        "investigation_timeout_seconds": settings.investigation_timeout_seconds,
         "project": settings.langsmith_project,
         "langsmith_key_supplied_to_settings": bool(settings.langsmith_api_key),
         "python": platform.python_version(),
@@ -210,9 +211,9 @@ async def validate(output: Path, enabled: bool) -> bool:
             with patch.object(requests.Session, "request", observe_request):
                 started = time.perf_counter()
                 try:
-                    report = await asyncio.wait_for(
-                        IncidentService(graph).investigate(request), timeout=180
-                    )
+                    report = await IncidentService(
+                        graph, timeout_seconds=settings.investigation_timeout_seconds
+                    ).investigate(request)
                     evidence["report"] = report.model_dump(mode="json")
                     evidence["investigation_error"] = None
                 except Exception as exc:

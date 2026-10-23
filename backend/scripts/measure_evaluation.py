@@ -149,6 +149,7 @@ async def measure(output: Path, delay: float) -> None:
         "llm_operation_timeout_seconds",
         "llm_max_output_tokens",
         "llm_max_structured_attempts",
+        "investigation_timeout_seconds",
         "max_tool_rounds",
         "max_supervisor_iterations",
         "langsmith_tracing",
@@ -188,7 +189,9 @@ async def measure(output: Path, delay: float) -> None:
     write_json(output / "runtime.json", metadata)
     async with build_collaborators(settings) as collaborators:
         graph = RecordingGraph(collaborators.graph)
-        service = RecordingService(IncidentService(graph), graph)
+        service = RecordingService(
+            IncidentService(graph, timeout_seconds=settings.investigation_timeout_seconds), graph
+        )
         results: list[RunResult] = []
         records = []
         started = time.perf_counter()

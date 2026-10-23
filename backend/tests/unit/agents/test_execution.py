@@ -29,6 +29,7 @@ from incident_copilot.tools.elasticsearch_tools import build_log_tools
 from incident_copilot.tools.prometheus_tools import build_metrics_tools
 from incident_copilot.utils.exceptions import (
     InvestigationError,
+    InvestigationTimeoutError,
     LLMProviderError,
     LogSourceError,
     MetricsSourceError,
@@ -261,6 +262,46 @@ async def test_cancelling_fan_out_cancels_both_pending_connectors() -> None:
         assert execution.cancelled == blocked
         assert harness.finals == {}
         assert ("alpha", "correlation") not in harness.provider.prompts
+    finally:
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+
+@pytest.mark.parametrize("stage", STAGES)
+async def test_total_deadline_cancels_each_graph_stage(stage: Stage) -> None:
+    execution = Execution(blocked={("alpha", stage)})
+    harness = InvestigationHarness(execution)
+    service = IncidentService(harness, timeout_seconds=0.2)
+    with pytest.raises(InvestigationTimeoutError):
+        await asyncio.wait_for(service.investigate(_request("alpha")), timeout=5)
+    assert ("alpha", stage) in execution.cancelled
+    assert harness.finals == {}
+    if stage != "correlation":
+        assert ("alpha", "correlation") not in harness.provider.prompts
+
+
+async def test_expiry_cancels_fan_out_without_poisoning_shared_graph() -> None:
+    blocked: set[tuple[str, Stage]] = {("alpha", "metrics_tool"), ("alpha", "logs_tool")}
+    execution = Execution(blocked=blocked)
+    harness = InvestigationHarness(execution)
+    service = IncidentService(harness, timeout_seconds=0.3)
+    task = asyncio.create_task(service.investigate(_request("alpha")))
+    try:
+        await asyncio.wait_for(
+            asyncio.gather(*(execution.event(name, stage).wait() for name, stage in blocked)),
+            timeout=5,
+        )
+        report = await asyncio.wait_for(service.investigate(_request("beta")), timeout=5)
+        assert report.summary == "report-beta"
+        with pytest.raises(InvestigationTimeoutError):
+            await asyncio.wait_for(task, timeout=5)
+        assert execution.cancelled == blocked
+        assert "request-alpha" not in harness.finals
+        assert ("alpha", "correlation") not in harness.provider.prompts
+        # The same service and compiled graph accept a later successful request.
+        execution.blocked.clear()
+        recovered = await asyncio.wait_for(service.investigate(_request("alpha")), timeout=5)
+        assert recovered.summary == "report-alpha"
     finally:
         task.cancel()
         await asyncio.gather(task, return_exceptions=True)

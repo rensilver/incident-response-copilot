@@ -66,9 +66,9 @@ default) to retain the sanitized public response.
 
 An individual model-operation timeout is a provider failure and produces 503 if
 no report survives. Only expiry of the total investigation deadline produces 504.
-This task defines the exception/status contract. Total deadline enforcement,
-the timeout budget, and disconnect policy are the next authorized task; the
-current service does not yet impose a total deadline.
+The service enforces one cooperative total graph execution budget, defaulting
+to 240 seconds. See [timeouts and cancellation](investigation-timeouts.md) for
+configuration, browser/proxy coordination, disconnect behavior, and actual limits.
 
 These errors describe responses produced by the running FastAPI application.
 An unavailable process, network failure, or an intermediary can produce no JSON
