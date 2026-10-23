@@ -1,0 +1,19 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/validation/2026-10-23-fastapi-guidance/review_audit.py:17:1
+   |
+15 |   sys.path.insert(0, str(root / "backend/src"))
+16 |
+17 | / from fastapi import Depends, FastAPI  # noqa: E402
+18 | |
+19 | | from incident_copilot.api.routes import build_router  # noqa: E402
+20 | | from incident_copilot.services.incident_service import IncidentService  # noqa: E402
+   | |______________________________________________________________________^
+help: Organize imports
+   |
+17 | from fastapi import Depends, FastAPI  # noqa: E402
+   -
+18 | from incident_copilot.api.routes import build_router  # noqa: E402
+   |
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

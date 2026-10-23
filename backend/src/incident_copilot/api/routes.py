@@ -48,11 +48,12 @@ def build_router(service: IncidentService, health_checks: Mapping[str, HealthChe
     Returns:
         A router exposing the investigation and health endpoints.
     """
-    router = APIRouter()
+    # The health endpoint intentionally stays outside the versioned API prefix.
+    router = APIRouter(tags=["incident-copilot"])
 
     @router.post(
         "/api/v1/investigations",
-        response_model=IncidentReport,
+        summary="Investigate an incident",
         responses={
             503: {
                 "model": InvestigationErrorResponse,
@@ -70,7 +71,7 @@ def build_router(service: IncidentService, health_checks: Mapping[str, HealthChe
                 detail="Investigation unavailable; no usable report was produced.",
             ) from exc
 
-    @router.get("/health", response_model=HealthResponse)
+    @router.get("/health", summary="Check application and dependency health")
     async def health() -> HealthResponse:
         """Report liveness and downstream reachability.
 
