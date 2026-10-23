@@ -1,8 +1,10 @@
 """Shared state passed between graph nodes.
 
 ``metrics_findings``, ``log_findings`` and ``errors`` carry ``operator.add`` reducers
-because the specialists run in parallel branches: without a reducer the second branch to
-finish would overwrite the first one's findings instead of adding to them.
+so partial updates append to existing evidence. The specialists both write ``errors``
+in one parallel step; without a reducer those simultaneous writes would raise an
+``InvalidUpdateError``. Each findings list currently has one specialist writer, but
+still needs its reducer to retain findings collected before that specialist runs.
 """
 
 import operator

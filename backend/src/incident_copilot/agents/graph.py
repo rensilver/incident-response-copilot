@@ -4,6 +4,12 @@ The graph is acyclic: ``START -> supervisor -> {specialists} -> correlation -> E
 Termination therefore does not depend on model behaviour. The supervisor's conditional
 edge returns a list of node names, which LangGraph fans out to; the correlation node runs
 once the routed branches finish, even if only one was routed.
+
+Both specialist paths are one graph node long, so their updates commit in the same
+superstep before correlation starts, regardless of their internal tool-loop duration.
+If a path gains more graph nodes, revisit this join; separate incoming edges can then
+trigger correlation in different steps. A list-source edge would instead wait for both
+specialists even when the supervisor selected only one.
 """
 
 from collections.abc import Awaitable, Callable, Mapping, Sequence

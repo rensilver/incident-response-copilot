@@ -1,0 +1,31 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_both_branch_errors_are_merged_with_existing_errors_before_correlation __
+backend/tests/unit/agents/test_graph.py:371: in test_both_branch_errors_are_merged_with_existing_errors_before_correlation
+    final = await asyncio.wait_for(graph.ainvoke(_seeded_state()), timeout=5)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../miniconda3/lib/python3.13/asyncio/tasks.py:507: in wait_for
+    return await fut
+           ^^^^^^^^^
+.venv/lib/python3.13/site-packages/langgraph/pregel/main.py:4090: in ainvoke
+    async for chunk in self.astream(
+.venv/lib/python3.13/site-packages/langgraph/pregel/main.py:3458: in astream
+    loop.after_tick()
+.venv/lib/python3.13/site-packages/langgraph/pregel/_loop.py:692: in after_tick
+    self.updated_channels = apply_writes(
+.venv/lib/python3.13/site-packages/langgraph/pregel/_algo.py:319: in apply_writes
+    if channels[chan].update(vals) and next_version is not None:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.13/site-packages/langgraph/channels/last_value.py:64: in update
+    raise InvalidUpdateError(msg)
+E   langgraph.errors.InvalidUpdateError: At key 'errors': Can receive only one value per step. Use an Annotated key to handle multiple values.
+E   For troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/errors/INVALID_CONCURRENT_GRAPH_UPDATE
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 12:03:39 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent']
+2026-10-23 12:03:39 [debug    ] tool_round_complete            results=0 round=1
+2026-10-23 12:03:39 [debug    ] tool_round_complete            results=0 round=1
+2026-10-23 12:03:39 [info     ] metrics_agent_complete         errors=1 findings=0
+2026-10-23 12:03:39 [info     ] logs_agent_complete            errors=1 findings=0
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_graph.py::test_both_branch_errors_are_merged_with_existing_errors_before_correlation
+1 failed in 0.41s
