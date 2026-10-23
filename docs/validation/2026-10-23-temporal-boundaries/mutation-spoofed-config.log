@@ -1,0 +1,184 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items / 14 deselected / 4 selected
+
+backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[get_service_metric-args0] FAILED [ 25%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[raw_promql_query-args1] FAILED [ 50%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[search_logs-args2] FAILED [ 75%]
+backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[log_level_histogram-args3] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_model_cannot_create_runtime_window_for_standalone_tools[get_service_metric-args0] _
+
+name = 'get_service_metric'
+args = {'service': 'cart-service', 'kind': 'error_rate'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+        assert not outcome.errors
+        assert len(outcome.results) == 1
+        if requests:
+            start = float(requests[0].url.params["start"])
+            end = float(requests[0].url.params["end"])
+>           assert end - start == 3600
+E           assert (978393600.0 - 978307200.0) == 3600
+
+backend/tests/unit/agents/test_temporal_boundaries.py:163: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:53 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-23 15:10:53 [debug    ] tool_round_complete            results=1 round=1
+_ test_model_cannot_create_runtime_window_for_standalone_tools[raw_promql_query-args1] _
+
+name = 'raw_promql_query', args = {'query': 'up'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+        assert not outcome.errors
+        assert len(outcome.results) == 1
+        if requests:
+            start = float(requests[0].url.params["start"])
+            end = float(requests[0].url.params["end"])
+>           assert end - start == 3600
+E           assert (978393600.0 - 978307200.0) == 3600
+
+backend/tests/unit/agents/test_temporal_boundaries.py:163: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:53 [debug    ] promql_executed                query=up series_count=0
+2026-10-23 15:10:53 [debug    ] tool_round_complete            results=1 round=1
+_ test_model_cannot_create_runtime_window_for_standalone_tools[search_logs-args2] _
+
+name = 'search_logs', args = {'service': 'cart-service'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+        assert not outcome.errors
+        assert len(outcome.results) == 1
+        if requests:
+            start = float(requests[0].url.params["start"])
+            end = float(requests[0].url.params["end"])
+            assert end - start == 3600
+            assert before.timestamp() <= end <= after.timestamp()
+        else:
+            filters = logs_client.search.await_args.kwargs["body"]["query"]["bool"]["filter"]
+            interval = next(item["range"]["@timestamp"] for item in filters if "range" in item)
+            start_at = datetime.fromisoformat(interval["gte"])
+            end_at = datetime.fromisoformat(interval["lte"])
+>           assert (end_at - start_at).total_seconds() == 3600
+E           assert 86400.0 == 3600
+E            +  where 86400.0 = <built-in method total_seconds of datetime.timedelta object at 0x75cea638aa90>()
+E            +    where <built-in method total_seconds of datetime.timedelta object at 0x75cea638aa90> = (datetime.datetime(2001, 1, 2, 0, 0, tzinfo=datetime.timezone.utc) - datetime.datetime(2001, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)).total_seconds
+
+backend/tests/unit/agents/test_temporal_boundaries.py:170: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:53 [debug    ] log_search_executed            hits=0 service=cart-service
+2026-10-23 15:10:53 [debug    ] tool_round_complete            results=1 round=1
+_ test_model_cannot_create_runtime_window_for_standalone_tools[log_level_histogram-args3] _
+
+name = 'log_level_histogram', args = {'service': 'cart-service'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+        assert not outcome.errors
+        assert len(outcome.results) == 1
+        if requests:
+            start = float(requests[0].url.params["start"])
+            end = float(requests[0].url.params["end"])
+            assert end - start == 3600
+            assert before.timestamp() <= end <= after.timestamp()
+        else:
+            filters = logs_client.search.await_args.kwargs["body"]["query"]["bool"]["filter"]
+            interval = next(item["range"]["@timestamp"] for item in filters if "range" in item)
+            start_at = datetime.fromisoformat(interval["gte"])
+            end_at = datetime.fromisoformat(interval["lte"])
+>           assert (end_at - start_at).total_seconds() == 3600
+E           assert 86400.0 == 3600
+E            +  where 86400.0 = <built-in method total_seconds of datetime.timedelta object at 0x75cea638a370>()
+E            +    where <built-in method total_seconds of datetime.timedelta object at 0x75cea638a370> = (datetime.datetime(2001, 1, 2, 0, 0, tzinfo=datetime.timezone.utc) - datetime.datetime(2001, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)).total_seconds
+
+backend/tests/unit/agents/test_temporal_boundaries.py:170: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-23 15:10:53 [debug    ] tool_round_complete            results=1 round=1
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[get_service_metric-args0] - assert (978393600.0 - 978307200.0) == 3600
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[raw_promql_query-args1] - assert (978393600.0 - 978307200.0) == 3600
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[search_logs-args2] - assert 86400.0 == 3600
+ +  where 86400.0 = <built-in method total_seconds of datetime.timedelta object at 0x75cea638aa90>()
+ +    where <built-in method total_seconds of datetime.timedelta object at 0x75cea638aa90> = (datetime.datetime(2001, 1, 2, 0, 0, tzinfo=datetime.timezone.utc) - datetime.datetime(2001, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)).total_seconds
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[log_level_histogram-args3] - assert 86400.0 == 3600
+ +  where 86400.0 = <built-in method total_seconds of datetime.timedelta object at 0x75cea638a370>()
+ +    where <built-in method total_seconds of datetime.timedelta object at 0x75cea638a370> = (datetime.datetime(2001, 1, 2, 0, 0, tzinfo=datetime.timezone.utc) - datetime.datetime(2001, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)).total_seconds
+======================= 4 failed, 14 deselected in 0.61s =======================
+Expected regression failures observed; original source restored exactly.
