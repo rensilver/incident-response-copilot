@@ -1,0 +1,115 @@
+{
+  "review_date": "2026-10-23",
+  "timezone": "America/Recife",
+  "base_revision": "415ae62e5b3bd925da8b3559548475a1f2e096a4",
+  "python": "3.13.13",
+  "packages": {
+    "langgraph": "1.2.11",
+    "langgraph-prebuilt": "1.1.0",
+    "langgraph-checkpoint": "4.2.0",
+    "langgraph-sdk": "0.4.2",
+    "langchain-core": "1.5.6",
+    "langchain-openai": "1.1.16",
+    "langsmith": "0.11.0"
+  },
+  "all_selected_packages_match_lock": true,
+  "compiled_graph_type_parameters": [
+    "~StateT",
+    "~ContextT",
+    "~InputT",
+    "~OutputT"
+  ],
+  "apis": {
+    "StateGraph": {
+      "signature": "(state_schema: 'type[StateT]', context_schema: 'type[ContextT] | None' = None, *, input_schema: 'type[InputT] | None' = None, output_schema: 'type[OutputT] | None' = None, **kwargs: 'Unpack[DeprecatedKwargs]') -> 'None'",
+      "file": "lib/python3.13/site-packages/langgraph/graph/state.py",
+      "line": 131,
+      "file_sha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212"
+    },
+    "StateGraph.add_node": {
+      "signature": "(self, node: 'str | StateNode[NodeInputT, ContextT]', action: 'StateNode[NodeInputT, ContextT] | None' = None, *, defer: 'bool' = False, metadata: 'dict[str, Any] | None' = None, input_schema: 'type[NodeInputT] | None' = None, retry_policy: 'RetryPolicy | Sequence[RetryPolicy] | None' = None, cache_policy: 'CachePolicy | None' = None, error_handler: 'StateNode[Any, ContextT] | None' = None, destinations: 'dict[str, str] | tuple[str, ...] | None' = None, timeout: 'float | timedelta | TimeoutPolicy | None' = None, trace_policy: 'TracePolicy | None' = None, **kwargs: 'Unpack[DeprecatedKwargs]') -> 'Self'",
+      "file": "lib/python3.13/site-packages/langgraph/graph/state.py",
+      "line": 667,
+      "file_sha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212"
+    },
+    "StateGraph.add_edge": {
+      "signature": "(self, start_key: 'str | list[str]', end_key: 'str') -> 'Self'",
+      "file": "lib/python3.13/site-packages/langgraph/graph/state.py",
+      "line": 928,
+      "file_sha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212"
+    },
+    "StateGraph.add_conditional_edges": {
+      "signature": "(self, source: 'str', path: 'Callable[..., Hashable | Sequence[Hashable]] | Callable[..., Awaitable[Hashable | Sequence[Hashable]]] | Runnable[Any, Hashable | Sequence[Hashable]]', path_map: 'dict[Hashable, str] | list[str] | None' = None) -> 'Self'",
+      "file": "lib/python3.13/site-packages/langgraph/graph/state.py",
+      "line": 982,
+      "file_sha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212"
+    },
+    "StateGraph.compile": {
+      "signature": "(self, checkpointer: 'Checkpointer' = None, *, cache: 'BaseCache | None' = None, store: 'BaseStore | None' = None, interrupt_before: 'All | list[str] | None' = None, interrupt_after: 'All | list[str] | None' = None, debug: 'bool' = False, name: 'str | None' = None, transformers: 'Sequence[Callable[[tuple[str, ...]], Any]] | None' = None) -> 'CompiledStateGraph[StateT, ContextT, InputT, OutputT]'",
+      "file": "lib/python3.13/site-packages/langgraph/graph/state.py",
+      "line": 1177,
+      "file_sha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212"
+    },
+    "Pregel.ainvoke": {
+      "signature": "(self, input: 'InputT | Command | None', config: 'RunnableConfig | None' = None, *, context: 'ContextT | None' = None, stream_mode: 'StreamMode' = 'values', print_mode: 'StreamMode | Sequence[StreamMode]' = (), output_keys: 'str | Sequence[str] | None' = None, interrupt_before: 'All | Sequence[str] | None' = None, interrupt_after: 'All | Sequence[str] | None' = None, durability: 'Durability | None' = None, control: 'RunControl | None' = None, version: \"Literal['v1', 'v2']\" = 'v1', **kwargs: 'Any') -> 'dict[str, Any] | Any'",
+      "file": "lib/python3.13/site-packages/langgraph/pregel/main.py",
+      "line": 4013,
+      "file_sha256": "02651dc9471b88f9299d12f6d836e67ad1114ad84498b9ae26df6cd75be8592c"
+    },
+    "Runtime": {
+      "signature": "(*, context: 'ContextT' = None, store: 'BaseStore | None' = None, stream_writer: 'StreamWriter' = '_no_op_stream_writer', heartbeat: 'Callable[[], None]' = '_no_op_heartbeat', previous: 'Any' = None, execution_info: 'ExecutionInfo | None' = None, server_info: 'ServerInfo | None' = None, control: 'RunControl | None' = None) -> None",
+      "file": "lib/python3.13/site-packages/langgraph/runtime.py",
+      "line": 124,
+      "file_sha256": "5a5e3aad147f67397481ea47c67cde97938d85b5762a7aa4d4ce511dcd693c42"
+    },
+    "Command": {
+      "signature": "(*, graph: 'str | None' = None, update: 'Any | None' = None, resume: 'dict[str, Any] | Any | None' = None, goto: 'Send | Sequence[Send | N] | N' = ()) -> None",
+      "file": "lib/python3.13/site-packages/langgraph/types.py",
+      "line": 798,
+      "file_sha256": "7204b467ed7e724ec16bbd2e3e7fac1c698742b12dda27cf2086f744128b1844"
+    },
+    "Send": {
+      "signature": "(node: 'str', arg: 'Any', *, timeout: 'float | timedelta | TimeoutPolicy | None' = None) -> 'None'",
+      "file": "lib/python3.13/site-packages/langgraph/types.py",
+      "line": 704,
+      "file_sha256": "7204b467ed7e724ec16bbd2e3e7fac1c698742b12dda27cf2086f744128b1844"
+    },
+    "RetryPolicy": {
+      "signature": "(initial_interval: ForwardRef('float') = 0.5, backoff_factor: ForwardRef('float') = 2.0, max_interval: ForwardRef('float') = 128.0, max_attempts: ForwardRef('int') = 3, jitter: ForwardRef('bool') = True, retry_on: ForwardRef('type[Exception] | Sequence[type[Exception]] | Callable[[Exception], bool]') = 'default_retry_on')",
+      "file": "lib/python3.13/site-packages/langgraph/types.py",
+      "line": 418,
+      "file_sha256": "7204b467ed7e724ec16bbd2e3e7fac1c698742b12dda27cf2086f744128b1844"
+    },
+    "ToolNode": {
+      "signature": "(tools: 'Sequence[BaseTool | Callable]', *, name: 'str' = 'tools', tags: 'list[str] | None' = None, handle_tool_errors: 'bool | str | Callable[..., str] | type[Exception] | tuple[type[Exception], ...]' = '_default_handle_tool_errors', messages_key: 'str' = 'messages', wrap_tool_call: 'ToolCallWrapper | None' = None, awrap_tool_call: 'AsyncToolCallWrapper | None' = None) -> 'None'",
+      "file": "lib/python3.13/site-packages/langgraph/prebuilt/tool_node.py",
+      "line": 622,
+      "file_sha256": "af6df67779000d219b2e1799401238f3618511658b26316a70a5e432891040d3"
+    },
+    "LastValue.update": {
+      "signature": "(self, values: 'Sequence[Value]') -> 'bool'",
+      "file": "lib/python3.13/site-packages/langgraph/channels/last_value.py",
+      "line": 56,
+      "file_sha256": "36cbc586aeaac0f8c9b5a8d8b903039023a7d24294408391eb8c7f10aab3a308"
+    },
+    "BinaryOperatorAggregate.update": {
+      "signature": "(self, values: collections.abc.Sequence[~Value]) -> bool",
+      "file": "lib/python3.13/site-packages/langgraph/channels/binop.py",
+      "line": 123,
+      "file_sha256": "85dbe7cdd3cea5f2973dbf3f358ad04c61c7b8dad5dc74a579739aa328a1b54e"
+    },
+    "get_env_var": {
+      "signature": "(name: 'str', default: 'Optional[str]' = None, *, namespaces: 'tuple' = ('LANGSMITH', 'LANGCHAIN')) -> 'Optional[str]'",
+      "file": "lib/python3.13/site-packages/langsmith/utils.py",
+      "line": 418,
+      "file_sha256": "90b9cf1454ac3b06da1fc22cc1fbb7fa032861f8e1fc5d8356fca64cb2f475e1"
+    }
+  },
+  "checks": {
+    "sequential_unreduced_update_replaces": true,
+    "simultaneous_unreduced_updates_raise_InvalidUpdateError": true,
+    "operator_add_accumulates_lists": true,
+    "compile_checkpointer_default_is_None": true,
+    "langsmith_sdk_accepts_both_environment_namespaces": true
+  }
+}
