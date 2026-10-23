@@ -1,0 +1,11 @@
+E501 Line too long (103 > 100)
+  --> docs/validation/2026-10-23-action3.2-review/audit.py:71:101
+   |
+69 | assert not git("diff", "--check", BASE)
+70 | print(
+71 |     "PASS: docs/template-only scope, unchanged runtime/tests/lock/Compose, private ignores, whitespace"
+   |                                                                                                     ^^^
+72 | )
+   |
+
+Found 1 error.

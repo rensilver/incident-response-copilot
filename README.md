@@ -6,11 +6,14 @@ routes work to metrics and logs specialists; a correlation agent proposes ranked
 causes, cites observations, and suggests follow-up checks. Engineers can investigate
 through a FastAPI endpoint or a Streamlit console.
 
-**OpenAI Responses with `gpt-6-luna` is the default**, with reasoning effort
-`none` and no automatic fallback. Configuration and serialized requests have offline
-coverage; live OpenAI access, provider health, error normalization, and application
-client cleanup remain migration tasks. The recorded demo and measured results below
-use the previous Groq/Ollama configuration and do not validate the new default.
+**OpenAI Responses with `gpt-6-luna` is the only production provider**, with reasoning
+effort `none` and no automatic fallback. Configuration, serialized requests, bounded
+health probing, and normalized failures have offline coverage. A
+[live adapter smoke check](docs/validation/2026-10-22-openai-live-smoke/README.md)
+verified text, structured output, and tool continuation with this exact model and
+reasoning setting. Application provider-client cleanup remains pending. The recorded
+demo and measured results below use the previous Groq/Ollama configuration and do
+not validate the current application.
 
 [Watch/download the 55-second recorded demo](docs/media/streamlit-demo.mp4)
 
@@ -33,10 +36,11 @@ curl --fail http://localhost:8000/health
 make streamlit       # host UI on http://localhost:8501
 ```
 
-OpenAI health currently reports `llm: false` (overall `degraded`) until the planned
-provider-owned probe is implemented; it does not contact a legacy provider. Check
-Prometheus and Elasticsearch readiness separately. This status does not establish
-OpenAI connectivity or inference access; the OpenAI walkthrough awaits live validation.
+`/health` reports Prometheus, Elasticsearch, and `llm` dependency booleans, with
+overall status `ok` only when all probes succeed. The provider-owned OpenAI probe
+retrieves the configured model's metadata within a three-second deadline. A true
+`llm` result establishes metadata access, not inference permission or available
+quota. The full OpenAI walkthrough still awaits live validation.
 The UI runs on the host; FastAPI and the three supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
@@ -60,8 +64,7 @@ ranked candidates, evidence, model confidence, and next steps. P1/P2/P3 indicate
 candidate rank, not measured incident severity. Confidence is not calibrated.
 
 Allow roughly 65 seconds between live demo investigations to reduce quota pressure;
-this does not guarantee quota availability. Health checks establish connectivity
-and model availability; they do not establish remaining cloud quota.
+this does not guarantee quota availability. Health checks do not reserve cloud quota.
 
 Seed shortly before a demo: investigations query a window ending **now**, while
 seeded history stays fixed. `make seed` replaces the synthetic log index and adds
@@ -101,8 +104,9 @@ INCIDENT_COPILOT_API_URL=http://localhost:8000 make streamlit
 ## Seeded scenarios
 
 `make seed` generates three hours of aligned metrics and logs. Metrics are backfilled
-as TSDB blocks using `promtool`; Elasticsearch receives 1,231 log documents in the
-validated default seed. Grafana exposes latency, error ratio, memory, and CPU.
+as TSDB blocks using `promtool`; Elasticsearch receives synthetic application logs,
+including GC, OOM, and restart evidence for the memory-leak scenario. Grafana exposes
+latency, error ratio, application memory, and CPU.
 
 | Scenario | Investigation target | Seeded culprit | Observations |
 |---|---|---|---|
@@ -158,7 +162,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 | Language and packaging | Python 3.12/3.13, uv, Hatchling |
 | Orchestration | LangGraph, LangChain Core |
 | API and validation | FastAPI, Pydantic v2, pydantic-settings |
-| Model adapters | langchain-groq, langchain-ollama; common provider interface |
+| Model provider | langchain-openai and OpenAI Responses behind `LLMProvider` |
 | Data and dashboards | Prometheus, Elasticsearch 8.13, Grafana |
 | UI | Streamlit, HTTPX |
 | Observability | structlog, optional LangSmith |
@@ -174,7 +178,7 @@ backend/src/incident_copilot/
 ├── analysis/         # deterministic trends and evidence rendering
 ├── connectors/       # Prometheus and Elasticsearch adapters
 ├── tools/            # validated tools and fixed-window propagation
-├── llm/              # OpenAI adapter, legacy adapters, test fake, JSON repair
+├── llm/              # OpenAI adapter, test-only fake, JSON repair
 ├── agents/           # supervisor, specialists, correlation, compiled graph
 ├── services/         # investigation use case and authoritative metadata
 ├── api/              # HTTP schemas, health and investigation routes
@@ -219,18 +223,22 @@ The default configuration is:
 | `LLM_PROVIDER` | `openai` |
 | `OPENAI_API_KEY` | Required; no default |
 | `OPENAI_MODEL` | `gpt-6-luna` (only accepted value) |
-| `LLM_FALLBACK_PROVIDER` | `none` (required for OpenAI) |
+| `LLM_OPERATION_TIMEOUT_SECONDS` | `60` per text/tool call or complete structured generation including repairs |
+| `LLM_MAX_OUTPUT_TOKENS` | `4096` per request |
+| `LLM_MAX_STRUCTURED_ATTEMPTS` | `3`, including the initial generation |
 | `MAX_TOOL_ROUNDS` | `2` per specialist |
 | `LANGSMITH_TRACING` | `false` |
 
 A missing, empty, or whitespace-only OpenAI key fails configuration early.
-Model substitutions and automatic fallback are rejected. Process variables override
-the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`; existing private files are not
-rewritten. If a previous configuration explicitly selects Groq or Ollama, switch
-`LLM_PROVIDER=openai` and `LLM_FALLBACK_PROVIDER=none` to use the new adapter.
-OpenAI keys use Pydantic `SecretStr`; settings validation messages hide input values.
-SDK error normalization and operation budgets remain separate tasks; the current
-adapter's SDK retries are disabled.
+Model substitutions and retired provider selections are rejected; the fake provider
+is test-only and cannot be selected by configuration. Obsolete provider and fallback
+variables are ignored and cannot activate another provider. Process variables override
+the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`. OpenAI keys use Pydantic
+`SecretStr`; settings validation messages hide input values. SDK retries are disabled.
+Upstream authentication, quota/rate-limit, connection, timeout, invalid-request, and
+service failures become fixed domain errors without forwarding provider payloads.
+See [provider boundaries and failure behavior](docs/provider-adapters.md) for accepted
+limit ranges, request bounds, redaction, health semantics, and client ownership.
 
 OpenAI is the only production provider. The backend has no host RAM gate,
 model-loading probe, local inference lock, or local context/keep-alive setting.
@@ -249,7 +257,11 @@ configured together. Tracing configuration is process-wide, not a per-request
 switch. Disabled operation was tested without a tracing key in settings, including
 inherited enabled SDK flags.
 
-## Measured results
+## Historical measured results
+
+These records describe the retired provider configuration and earlier application
+revision. They are preserved with their original measurements and media; they do
+not measure current OpenAI performance or verify the current deployed stack.
 
 ### Repeated evaluation: 2026-09-23
 
@@ -366,7 +378,7 @@ make format-check         # Black for backend, tests, and existing UI
 .venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
 .venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
-# Requires a running API, freshly seeded data, and a configured Groq key.
+# Requires a running API, freshly seeded data, and a configured OpenAI key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 
 # Retains all nine attempts, evidence, and timings.
@@ -407,9 +419,13 @@ development install if an older environment still contains retired packages.
 See the [validation evidence](docs/validation/2026-10-22-openai-only-failure-validator/README.md).
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
-The recorder above uses that same scorer and is the route used for the published
-measurements. Browser capture additionally requires Playwright/Chromium; the
+The recorder above uses that same scorer and retains runtime/library versions,
+reports, errors, and timings without host/process/container sampling. The published
+historical measurements used the earlier recorder and provider configuration.
+Browser capture additionally requires Playwright/Chromium; the
 [UI validation record](docs/validation/2026-09-24-streamlit/README.md#reproduction)
 contains its installation, capture, and video-encoding commands. The published
-setup was checked with a fresh host environment, a rebuilt Docker app, fresh seed
-data, reachable service URLs, and the live browser walkthroughs.
+historical setup was checked with a fresh host environment, a rebuilt Docker app,
+fresh seed data, reachable service URLs, and the live browser walkthroughs. Current
+provider-retirement checks and their limits are recorded in the
+[Action 3.2 review](docs/validation/2026-10-23-action3.2-review/README.md).
