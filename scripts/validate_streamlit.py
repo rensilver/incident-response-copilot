@@ -19,7 +19,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import httpx
-import psutil
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -147,45 +146,6 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(content)
 
 
-def sample_memory(output, stop, ui):
-    """Sample the host, Streamlit, recorder/browser, and project containers."""
-    while not stop.is_set():
-        record = {
-            "at": now(),
-            "available_mib": psutil.virtual_memory().available / 2**20,
-            "swap_used_mib": psutil.swap_memory().used / 2**20,
-        }
-        try:
-            record["streamlit_rss_mib"] = psutil.Process(ui.pid).memory_info().rss / 2**20
-            children = psutil.Process().children(recursive=True)
-            record["recorder_and_children_rss_mib"] = (
-                psutil.Process().memory_info().rss + sum(p.memory_info().rss for p in children)
-            ) / 2**20
-            result = subprocess.run(
-                [
-                    "docker",
-                    "stats",
-                    "--no-stream",
-                    "--format",
-                    "{{json .}}",
-                    "ic-app",
-                    "ic-elasticsearch",
-                    "ic-prometheus",
-                    "ic-grafana",
-                    "ic-ollama",
-                ],
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            record["containers"] = [json.loads(line) for line in result.stdout.splitlines()]
-        except (psutil.Error, subprocess.SubprocessError) as exc:
-            record["error"] = str(exc)
-        with (output / "memory.jsonl").open("a") as stream:
-            stream.write(json.dumps(record) + "\n")
-        stop.wait(15)
-
-
 def main():
     """Run each browser case once; preserve failures without replacing attempts."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -224,9 +184,6 @@ def main():
         stdout=log,
         stderr=subprocess.STDOUT,
     )
-    stop = threading.Event()
-    sampler = threading.Thread(target=sample_memory, args=(args.output, stop, ui), daemon=True)
-    sampler.start()
     results = []
     runtime = {
         "started_at": now(),
@@ -376,8 +333,6 @@ def main():
             browser.close()
     finally:
         relay.release.set()
-        stop.set()
-        sampler.join(timeout=12)
         ui.terminate()
         try:
             ui.wait(timeout=10)

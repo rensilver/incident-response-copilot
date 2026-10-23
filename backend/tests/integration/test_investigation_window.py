@@ -63,7 +63,7 @@ async def test_fixed_window_reaches_live_backends(minutes: int, mocker: MockerFi
             provider,
             build_metrics_tools(metrics),
             build_log_tools(logs),
-            Settings(_env_file=None, llm_provider="ollama", max_tool_rounds=2),
+            Settings(_env_file=None, llm_provider="fake", max_tool_rounds=2),
         )
         result = await graph.ainvoke(
             initial_state("live-window", "cart errors", window, "cart-service")

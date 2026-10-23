@@ -1,0 +1,5 @@
+Retired model-pull target is unavailable; no Docker command emitted.
+Backend source has no local model probe, RAM guard, or inference lock.
+Runtime protections, incident scenarios, and later-task scope unchanged.
+Checked 29 local documentation targets.
+Private files remain ignored; no configured API key in diff or artifacts.

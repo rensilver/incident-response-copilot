@@ -1,0 +1,6 @@
+Using CPython 3.12.14
+Resolved 105 packages in 3.10s
+Removed groq v0.37.1
+Removed langchain-groq v1.1.3
+Removed langchain-ollama v1.1.0
+Removed ollama v0.6.2

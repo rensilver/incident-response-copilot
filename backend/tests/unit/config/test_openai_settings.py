@@ -10,11 +10,10 @@ from pydantic import SecretStr, ValidationError
 from incident_copilot.config.settings import Settings
 
 
-def test_defaults_select_openai_without_fallback() -> None:
+def test_defaults_select_openai() -> None:
     settings = Settings(_env_file=None)
     assert settings.llm_provider.value == "openai"
     assert settings.openai_model == "gpt-6-luna"
-    assert settings.llm_fallback_provider == "none"
 
 
 def test_default_operation_limits() -> None:
@@ -85,11 +84,6 @@ def test_dotenv_openai_values_and_process_precedence(
         Settings(_env_file=selected)
 
 
-def test_openai_rejects_automatic_fallback() -> None:
-    with pytest.raises(ValidationError, match="fallback"):
-        Settings(_env_file=None, llm_fallback_provider="ollama")
-
-
 def test_openai_key_is_redacted_from_settings_and_validation_errors() -> None:
     sentinel = "synthetic-config-secret"
     settings = Settings(_env_file=None, openai_api_key=sentinel)
@@ -108,13 +102,6 @@ def test_openai_key_is_redacted_from_settings_and_validation_errors() -> None:
     assert json.loads(settings.model_dump_json())["openai_api_key"] == "**********"
 
 
-def test_legacy_ollama_selection_does_not_require_openai_key(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    assert Settings(_env_file=None, llm_provider="ollama").llm_provider.value == "ollama"
-
-
 def test_safe_example_requires_owner_key_and_runs_after_configuration(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -125,5 +112,4 @@ def test_safe_example_requires_owner_key_and_runs_after_configuration(
     monkeypatch.setenv("OPENAI_API_KEY", "synthetic-owner-key")
     settings = Settings(_env_file=example)
     assert settings.llm_provider.value == "openai"
-    assert settings.llm_fallback_provider == "none"
     assert settings.openai_model == "gpt-6-luna"

@@ -1,0 +1,16 @@
+.venv/bin/ruff check backend/src backend/tests
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> backend/src/incident_copilot/config/settings.py:71:9
+   |
+69 |       def _validate_openai_configuration(self) -> Self:
+70 |           """Require the selected OpenAI credential."""
+71 | /         if self.llm_provider is LLMProviderName.OPENAI:
+72 | |             if self.openai_api_key is None or not self.openai_api_key.get_secret_value().strip():
+   | |_________________________________________________________________________________________________^
+73 |                   raise ValueError("OPENAI_API_KEY is required when LLM_PROVIDER=openai")
+74 |           return self
+   |
+help: Combine `if` statements using `and`
+
+Found 1 error.
+make: *** [Makefile:22: lint] Error 1

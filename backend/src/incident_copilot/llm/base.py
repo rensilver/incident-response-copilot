@@ -79,9 +79,8 @@ class LLMProvider(ABC):
     ) -> T:
         """Coerce the model into ``schema``, repairing malformed output.
 
-        Small local models emit invalid JSON a meaningful fraction of the time, so the
-        validation error is fed back as a repair instruction rather than surfacing as a
-        crash. The loop lives here so no caller reimplements it.
+        Validation errors are fed back as repair instructions within a bounded
+        attempt count. The loop lives here so no caller reimplements it.
 
         Args:
             messages: The conversation so far.
@@ -99,7 +98,7 @@ class LLMProvider(ABC):
         raw = ""
         for _ in range(max_attempts):
             # This is the adapter boundary: concrete providers fail with whatever their
-            # client library raises (httpx, groq, ollama). Callers handle
+            # client library raises. Callers handle
             # LLMProviderError, so anything else has to be translated here or it escapes
             # the graph entirely and becomes a 500.
             try:

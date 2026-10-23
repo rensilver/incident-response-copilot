@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /home/rensilver/workspaces/incident-response-copilot/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+backend/tests/unit/demo/test_memory_evidence.py::test_memory_seed_contains_growth_and_restart_drops_with_a_healthy_peer PASSED [ 25%]
+backend/tests/unit/demo/test_memory_evidence.py::test_seeded_memory_reaches_the_typed_tool_in_bytes_and_displays_mib[checkout-service-rose-True] PASSED [ 50%]
+backend/tests/unit/demo/test_memory_evidence.py::test_seeded_memory_reaches_the_typed_tool_in_bytes_and_displays_mib[inventory-service-flat-False] PASSED [ 75%]
+backend/tests/unit/demo/test_memory_evidence.py::test_memory_logs_retain_distinct_gc_oom_and_restart_evidence FAILED [100%]
+
+=================================== FAILURES ===================================
+_________ test_memory_logs_retain_distinct_gc_oom_and_restart_evidence _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7921e1bd2750>
+
+    def test_memory_logs_retain_distinct_gc_oom_and_restart_evidence(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.setattr("incident_copilot.demo.curves.time.time", lambda: 1_700_000_000)
+        documents = render_log_documents(get_scenario(ScenarioName.MEMORY_LEAK))
+        events = []
+        for fragment in ("GC overhead", "OutOfMemoryError", "restarted after OOM-kill"):
+            matching = [document for document in documents if fragment in document["message"]]
+>           assert matching, f"missing seeded memory evidence: {fragment}"
+E           AssertionError: missing seeded memory evidence: restarted after OOM-kill
+E           assert []
+
+backend/tests/unit/demo/test_memory_evidence.py:134: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/demo/test_memory_evidence.py::test_memory_logs_retain_distinct_gc_oom_and_restart_evidence
+========================= 1 failed, 3 passed in 0.36s ==========================

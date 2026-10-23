@@ -1,5 +1,5 @@
 .PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
-        docker-app-up ollama-pull seed demo-reset eval serve streamlit clean
+        docker-app-up seed demo-reset eval serve streamlit clean
 
 VENV ?= .venv
 UV ?= uv
@@ -44,7 +44,7 @@ docker-up:
 	docker compose up -d
 	@echo "waiting for elasticsearch..."
 	@until curl -sf http://localhost:9200/_cluster/health >/dev/null 2>&1; do sleep 2; done
-	@echo "stack up: prometheus :9090  elasticsearch :9200  grafana :3000  ollama :11434"
+	@echo "stack up: prometheus :9090  elasticsearch :9200  grafana :3000"
 
 docker-down:
 	docker compose down
@@ -55,9 +55,6 @@ docker-logs:
 docker-app-up:
 	docker compose --profile app up -d --build
 	@echo "app built and started: http://localhost:8000"
-
-ollama-pull:
-	docker compose exec ollama ollama pull qwen3:4b
 
 seed:
 	$(PY) backend/scripts/seed_demo_data.py

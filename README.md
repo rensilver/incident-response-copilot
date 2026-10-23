@@ -6,11 +6,14 @@ routes work to metrics and logs specialists; a correlation agent proposes ranked
 causes, cites observations, and suggests follow-up checks. Engineers can investigate
 through a FastAPI endpoint or a Streamlit console.
 
-**OpenAI Responses with `gpt-6-luna` is the default**, with reasoning effort
-`none` and no automatic fallback. Configuration and serialized requests have offline
-coverage; live OpenAI access, provider health, error normalization, and application
-client cleanup remain migration tasks. The recorded demo and measured results below
-use the previous Groq/Ollama configuration and do not validate the new default.
+**OpenAI Responses with `gpt-6-luna` is the only production provider**, with reasoning
+effort `none` and no automatic fallback. Configuration, serialized requests, bounded
+health probing, and normalized failures have offline coverage. A
+[live adapter smoke check](docs/validation/2026-10-22-openai-live-smoke/README.md)
+verified text, structured output, and tool continuation with this exact model and
+reasoning setting. Application provider-client cleanup remains pending. The recorded
+demo and measured results below use the previous Groq/Ollama configuration and do
+not validate the current application.
 
 [Watch/download the 55-second recorded demo](docs/media/streamlit-demo.mp4)
 
@@ -19,8 +22,7 @@ use the previous Groq/Ollama configuration and do not validate the new default.
 ## Build and run
 
 Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
-Compose, and an OpenAI API key. Commands below run from the repository root. Docker services plus the UI and browser need headroom beyond the
-container memory measurements below.
+Compose, and an OpenAI API key. Commands below run from the repository root.
 
 ```bash
 cp .env.example .env
@@ -28,17 +30,18 @@ cp .env.example .env
 
 make install-ui       # locked backend, development tools, and existing UI
 
-make docker-app-up   # build FastAPI and start all five services
+make docker-app-up   # build FastAPI and start all four services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
 curl --fail http://localhost:8000/health
 make streamlit       # host UI on http://localhost:8501
 ```
 
-OpenAI health currently reports `llm: false` (overall `degraded`) until the planned
-provider-owned probe is implemented; it does not contact a legacy provider. Check
-Prometheus and Elasticsearch readiness separately. This status does not establish
-OpenAI connectivity or inference access; the OpenAI walkthrough awaits live validation.
-The UI runs on the host; FastAPI and the four supporting services run in Docker.
+`/health` reports Prometheus, Elasticsearch, and `llm` dependency booleans, with
+overall status `ok` only when all probes succeed. The provider-owned OpenAI probe
+retrieves the configured model's metadata within a three-second deadline. A true
+`llm` result establishes metadata access, not inference permission or available
+quota. The full OpenAI walkthrough still awaits live validation.
+The UI runs on the host; FastAPI and the three supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
 
@@ -53,7 +56,6 @@ revalidated for this layout.
 | Prometheus | http://localhost:9090 | Seeded time series and PromQL |
 | Grafana | http://localhost:3000 | Provisioned Incident Overview dashboard |
 | Elasticsearch | http://localhost:9200 | Synthetic application logs |
-| Ollama | http://localhost:11434 | Optional local fallback server |
 
 Choose **Memory leak**, **Slow dependency**, or **Bad deploy**, then click
 **RUN INVESTIGATION**. Each example selects its target service and a 180-minute
@@ -62,8 +64,7 @@ ranked candidates, evidence, model confidence, and next steps. P1/P2/P3 indicate
 candidate rank, not measured incident severity. Confidence is not calibrated.
 
 Allow roughly 65 seconds between live demo investigations to reduce quota pressure;
-this does not guarantee quota availability. Health checks establish connectivity
-and model availability, not sufficient inference memory or remaining cloud quota.
+this does not guarantee quota availability. Health checks do not reserve cloud quota.
 
 Seed shortly before a demo: investigations query a window ending **now**, while
 seeded history stays fixed. `make seed` replaces the synthetic log index and adds
@@ -71,9 +72,8 @@ fresh metric blocks. For a clean demo reset, `make demo-reset` replaces generate
 data and starts the supporting services; follow it with `make docker-app-up` to
 restore the API. These commands affect this project's demo data.
 
-Stop the UI with Ctrl+C and the Docker stack with `make docker-down`. The Ollama
-model volume survives normal shutdown. `make ollama-pull` downloads `qwen3:4b` when
-local inference is needed; a download does not establish sufficient runtime RAM.
+Stop the UI with Ctrl+C and the Docker stack with `make docker-down`. Existing
+Docker volumes survive normal shutdown.
 The demo uses unauthenticated Elasticsearch and anonymous Grafana viewing and is
 intended for local synthetic data.
 
@@ -104,8 +104,9 @@ INCIDENT_COPILOT_API_URL=http://localhost:8000 make streamlit
 ## Seeded scenarios
 
 `make seed` generates three hours of aligned metrics and logs. Metrics are backfilled
-as TSDB blocks using `promtool`; Elasticsearch receives 1,231 log documents in the
-validated default seed. Grafana exposes latency, error ratio, memory, and CPU.
+as TSDB blocks using `promtool`; Elasticsearch receives synthetic application logs,
+including GC, OOM, and restart evidence for the memory-leak scenario. Grafana exposes
+latency, error ratio, application memory, and CPU.
 
 | Scenario | Investigation target | Seeded culprit | Observations |
 |---|---|---|---|
@@ -161,7 +162,7 @@ it does **not** verify that cited evidence proves a diagnosis.
 | Language and packaging | Python 3.12/3.13, uv, Hatchling |
 | Orchestration | LangGraph, LangChain Core |
 | API and validation | FastAPI, Pydantic v2, pydantic-settings |
-| Model adapters | langchain-groq, langchain-ollama; common provider interface |
+| Model provider | langchain-openai and OpenAI Responses behind `LLMProvider` |
 | Data and dashboards | Prometheus, Elasticsearch 8.13, Grafana |
 | UI | Streamlit, HTTPX |
 | Observability | structlog, optional LangSmith |
@@ -177,7 +178,7 @@ backend/src/incident_copilot/
 ├── analysis/         # deterministic trends and evidence rendering
 ├── connectors/       # Prometheus and Elasticsearch adapters
 ├── tools/            # validated tools and fixed-window propagation
-├── llm/              # OpenAI adapter, legacy adapters, test fake, JSON repair
+├── llm/              # OpenAI adapter, test-only fake, JSON repair
 ├── agents/           # supervisor, specialists, correlation, compiled graph
 ├── services/         # investigation use case and authoritative metadata
 ├── api/              # HTTP schemas, health and investigation routes
@@ -222,28 +223,28 @@ The default configuration is:
 | `LLM_PROVIDER` | `openai` |
 | `OPENAI_API_KEY` | Required; no default |
 | `OPENAI_MODEL` | `gpt-6-luna` (only accepted value) |
-| `LLM_FALLBACK_PROVIDER` | `none` (required for OpenAI) |
+| `LLM_OPERATION_TIMEOUT_SECONDS` | `60` per text/tool call or complete structured generation including repairs |
+| `LLM_MAX_OUTPUT_TOKENS` | `4096` per request |
+| `LLM_MAX_STRUCTURED_ATTEMPTS` | `3`, including the initial generation |
 | `MAX_TOOL_ROUNDS` | `2` per specialist |
 | `LANGSMITH_TRACING` | `false` |
 
 A missing, empty, or whitespace-only OpenAI key fails configuration early.
-Model substitutions and automatic fallback are rejected. Process variables override
-the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`; existing private files are not
-rewritten. If a previous configuration explicitly selects Groq or Ollama, switch
-`LLM_PROVIDER=openai` and `LLM_FALLBACK_PROVIDER=none` to use the new adapter.
-OpenAI keys use Pydantic `SecretStr`; settings validation messages hide input values.
-SDK error normalization and operation budgets remain separate tasks; the current
-adapter's SDK retries are disabled.
+Model substitutions and retired provider selections are rejected; the fake provider
+is test-only and cannot be selected by configuration. Obsolete provider and fallback
+variables are ignored and cannot activate another provider. Process variables override
+the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`. OpenAI keys use Pydantic
+`SecretStr`; settings validation messages hide input values. SDK retries are disabled.
+Upstream authentication, quota/rate-limit, connection, timeout, invalid-request, and
+service failures become fixed domain errors without forwarding provider payloads.
+See [provider boundaries and failure behavior](docs/provider-adapters.md) for accepted
+limit ranges, request bounds, redaction, health semantics, and client ownership.
 
-Legacy Groq/Ollama adapters and configuration remain pending their planned retirement.
-Selecting Groq explicitly still requires `GROQ_API_KEY`; its optional local fallback
-now requires explicit `LLM_FALLBACK_PROVIDER=ollama`. Legacy timeout, memory, context,
-and keep-alive settings retain their existing behavior.
-
-For a remote Ollama host, set its URL and manage memory there; the local RAM check
-can be disabled with `OLLAMA_MIN_AVAILABLE_MEMORY_MB=0` in that configuration.
-The laptop's RAM guard remains enabled. If neither provider can produce a report,
-the API returns 503 and the UI displays the error.
+OpenAI is the only production provider. The backend has no host RAM gate,
+model-loading probe, local inference lock, or local context/keep-alive setting.
+Provider operation deadlines and bounded structured-output repair remain enforced.
+If the provider cannot produce a report, the API returns 503 and the UI displays
+the error.
 
 Provider deadlines apply to individual operations. The UI has a **300-second HTTPX
 network-inactivity timeout**, not a total server deadline. A timed-out investigation
@@ -256,7 +257,11 @@ configured together. Tracing configuration is process-wide, not a per-request
 switch. Disabled operation was tested without a tracing key in settings, including
 inherited enabled SDK flags.
 
-## Measured results
+## Historical measured results
+
+These records describe the retired provider configuration and earlier application
+revision. They are preserved with their original measurements and media; they do
+not measure current OpenAI performance or verify the current deployed stack.
 
 ### Repeated evaluation: 2026-09-23
 
@@ -278,8 +283,8 @@ not verified causality or RCA accuracy.**
 Eight reports returned. Median latency was **5.586 s**, range **4.063–7.785 s**;
 means include the failed attempt. Total pass time was **570.147 s**, including
 pacing. These are service-call measurements, not HTTP or UI timings. The final
-attempt hit Groq 429 during correlation; fallback refused cold loading at 2,243 MiB
-available RAM versus the 4,096 MiB guard. No failed attempt was replaced.
+attempt hit Groq 429 during correlation and its fallback failed. No failed attempt
+was replaced; the linked historical record retains the original failure details.
 
 The preceding retained pass scored **5/9 (55.6%)**: bad deploy 2/3, memory leak 3/3,
 slow dependency 0/3, with no investigation errors and 5.063 s mean latency. The two
@@ -290,24 +295,6 @@ in `checkout‑service` and service names appearing only in summaries.
 
 [Latest results, full evidence, and reproduction commands](docs/validation/2026-09-23-evaluation/README.md)
 · [Earlier baseline](docs/validation/2026-09-22-evaluation/README.md)
-
-### Hardware and resource observations
-
-| Item | Measured environment/results |
-|---|---|
-| Demo laptop | AMD Ryzen 5 7520U; 4 cores / 8 threads |
-| Memory | 6,694.6 MiB usable RAM; 4,096 MiB swap capacity |
-| Runtime | Linux x86_64; Python 3.13.13 host, 3.12.14 Docker |
-| Latest evaluation, 47 samples | Five containers: 1,356.25–1,522.63 MiB; available host RAM: 2,156.07–2,410.78 MiB; harness RSS: 137.65–143.53 MiB |
-| UI pass, 29 samples | Five containers: 809.75–1,437.80 MiB; Streamlit RSS up to 76.33 MiB; available host RAM: 1,750.32–2,735.26 MiB |
-| Recording overhead | Recorder and child-process RSS up to 980.30 MiB, including Streamlit, Chromium, and video capture |
-| Local model inference | No model loaded; successful fallback and combined stack/model memory remain unverified |
-
-Samples can miss peaks, RSS sums can double-count shared pages, and unrelated laptop
-processes affect available memory and swap. UI sampling includes startup and some
-concurrent validation activity; it is not an isolated capacity benchmark. See the
-[hardware assessment](docs/hardware-assessment.md) and
-[UI resource evidence](docs/validation/2026-09-24-streamlit/resource-summary.json).
 
 ### Functional checks and UI demo: 2026-09-24
 
@@ -331,7 +318,7 @@ after the timeout.
 | Docker and API | Rebuilt and seeded; 12 live integration tests passed in 210.60 s, with full reports retained |
 | LangSmith | 28 completed remote spans: all four agents, seven LLM calls, four tool calls; inputs/report matched local capture |
 | Tracing disabled | Two successful investigations; no observed SDK HTTP calls or remote run IDs |
-| Provider failures | Real Groq failures plus RAM refusal/unreachable fallback returned 503; successful local inference remains blocked |
+| Provider failures | Historical Groq/fallback failures returned 503; see the retained failure record |
 
 [UI validation and commands](docs/validation/2026-09-24-streamlit/README.md)
 · [LangSmith evidence](docs/validation/2026-09-23-langsmith/README.md)
@@ -355,9 +342,9 @@ although the seeded previous version is `v1.4.2`. Dependency timeout evidence do
 not prove which service degraded first. Schema validation and evidence entries do
 not establish factual grounding; model confidence is not an accuracy estimate.
 
-Successful local fallback, local-model latency/memory, mobile/browser compatibility
-beyond desktop Chromium, tracing outages, and server cancellation after UI timeout
-are unverified. Python dependencies are locked in `backend/uv.lock`; several
+Mobile/browser compatibility beyond desktop Chromium, tracing outages, and server
+cancellation after UI timeout are unverified. Python dependencies are locked in
+`backend/uv.lock`; several
 container tags remain unpinned. Retained version/image records identify historical
 tested environments. Model output and cloud quotas
 can vary between runs.
@@ -387,13 +374,14 @@ dependencies in `uv.lock`.
 make test                 # offline unit suite; no live providers or Docker required
 make lint                 # Ruff and strict backend mypy
 make format-check         # Black for backend, tests, and existing UI
+.venv/bin/python backend/scripts/validate_provider_failures.py
 .venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
 .venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
-# Requires a running API, freshly seeded data, and a configured Groq key.
+# Requires a running API, freshly seeded data, and a configured OpenAI key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 
-# Retains all nine attempts, evidence, timings, and resource samples.
+# Retains all nine attempts, evidence, and timings.
 # The output directory must not already exist.
 LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65
@@ -401,8 +389,6 @@ LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.p
 # Optional live validators; use new directories for each tracing/browser run.
 .venv/bin/python backend/scripts/validate_langsmith.py \
   --mode disabled --output docs/validation/langsmith-repeat
-.venv/bin/python backend/scripts/validate_provider_failures.py \
-  --output docs/validation/provider-failures-repeat
 .venv/bin/python scripts/validate_streamlit.py \
   --output docs/validation/browser-repeat --delay-seconds 65
 ```
@@ -413,7 +399,7 @@ Root pytest commands select `pytest.ini`; its test paths and source path are
 relative to the repository, including when invoked from `backend/`.
 Checkout scripts import the relocated backend source directly. From `backend/`,
 use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
-For all four evaluation/validation recorders, relative `--output` paths resolve
+For all three evaluation/validation recorders, relative `--output` paths resolve
 from the repository root, including when launched elsewhere. Absolute paths such
 as `/tmp/incident-eval-repeat` are preserved. Browser screenshots and videos stay
 under the selected output directory's `media/`; documentation and published media
@@ -421,14 +407,25 @@ remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
 commands also use the repository root.
 
 The tracing validator accepts `--mode enabled` to check remote delivery with
-configured LangSmith credentials. The provider failure validator requires the
-existing Docker stack with no local model loaded; it creates disposable app
-containers. These are live commands, separate from the offline suite.
+configured LangSmith credentials. These are live commands, separate from the
+offline suite. The OpenAI failure validator runs the real adapter/factory/API
+tests with intercepted HTTP and synthetic credentials; it clears inherited
+configuration and disables dotenv and remote tracing. It checks authentication,
+quota/rate limits, timeouts, malformed output, recovery, redaction, and absence
+of fallback or local-provider requests without Docker or live credentials.
+It exits nonzero on failed cases, retired installed provider packages, or its
+90-second deadline (`--timeout` accepts 1–300 seconds). Use a fresh locked
+development install if an older environment still contains retired packages.
+See the [validation evidence](docs/validation/2026-10-22-openai-only-failure-validator/README.md).
 
 `make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
-The recorder above uses that same scorer and is the route used for the published
-measurements. Browser capture additionally requires Playwright/Chromium; the
+The recorder above uses that same scorer and retains runtime/library versions,
+reports, errors, and timings without host/process/container sampling. The published
+historical measurements used the earlier recorder and provider configuration.
+Browser capture additionally requires Playwright/Chromium; the
 [UI validation record](docs/validation/2026-09-24-streamlit/README.md#reproduction)
 contains its installation, capture, and video-encoding commands. The published
-setup was checked with a fresh host environment, a rebuilt Docker app, fresh seed
-data, reachable service URLs, and the live browser walkthroughs.
+historical setup was checked with a fresh host environment, a rebuilt Docker app,
+fresh seed data, reachable service URLs, and the live browser walkthroughs. Current
+provider-retirement checks and their limits are recorded in the
+[Action 3.2 review](docs/validation/2026-10-23-action3.2-review/README.md).

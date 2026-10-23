@@ -1,0 +1,101 @@
+........................................................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+.........FF.                                                             [100%]
+=================================== FAILURES ===================================
+__ test_tracing_recorder_reports_openai_metadata[False-validate_langsmith.py] __
+
+recorder = <module 'validate_langsmith' from '/home/rensilver/workspaces/incident-response-copilot/backend/scripts/validate_langsmith.py'>
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-21/test_tracing_recorder_reports_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bcdb9323e70>
+enabled = False
+
+    @pytest.mark.parametrize("recorder", ["validate_langsmith.py"], indirect=True)
+    @pytest.mark.parametrize("enabled", [False, True])
+    async def test_tracing_recorder_reports_openai_metadata(
+        recorder: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, enabled: bool
+    ) -> None:
+        class ReportGraph:
+            async def ainvoke(self, state: Any, /, **kwargs: Any) -> dict[str, IncidentReport]:
+                return {"report": IncidentReport(summary="Offline recorded report", likely_causes=[])}
+
+        monkeypatch.setenv("OPENAI_API_KEY", "synthetic-recorder-secret")
+        monkeypatch.setenv("LANGSMITH_API_KEY", "synthetic-tracing-key")
+        monkeypatch.setattr(recorder.subprocess, "check_output", lambda *a, **kw: "offline-commit")
+        monkeypatch.setattr(recorder, "version", current_package_version)
+        monkeypatch.setattr(
+            recorder,
+            "build_collaborators",
+            lambda settings: SimpleNamespace(
+                graph=ReportGraph(), metrics_source=AsyncMock(), log_source=AsyncMock()
+            ),
+        )
+        monkeypatch.setattr(recorder, "tracing_is_enabled", lambda: enabled)
+        monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
+        monkeypatch.setattr(
+            recorder,
+            "remote_evidence",
+            lambda *args: {
+                "complete_tree_received": True,
+                "root_input_matches_local": True,
+                "root_report_matches_local": True,
+            },
+        )
+        output = tmp_path / "tracing"
+>       assert await recorder.validate(output, enabled)
+E       assert False
+
+backend/tests/unit/test_validation_metadata.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"query": "checkout-service memory keeps climbing; investigate metrics and logs", "service": "checkout-service", "event": "investigation_started", "correlation_id": "a2341023-5d75-4027-8a0e-3917e4caa5ec", "level": "info", "timestamp": "2026-10-22T21:14:36.799563Z"}
+{"mode": "disabled", "passed": false, "root_run_id": "1a13e2ae-66a7-4007-81bc-1921d5c11c18", "service_seconds": 0.00023080699611455202}
+__ test_tracing_recorder_reports_openai_metadata[True-validate_langsmith.py] ___
+
+recorder = <module 'validate_langsmith' from '/home/rensilver/workspaces/incident-response-copilot/backend/scripts/validate_langsmith.py'>
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-21/test_tracing_recorder_reports_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bcdb89501a0>
+enabled = True
+
+    @pytest.mark.parametrize("recorder", ["validate_langsmith.py"], indirect=True)
+    @pytest.mark.parametrize("enabled", [False, True])
+    async def test_tracing_recorder_reports_openai_metadata(
+        recorder: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, enabled: bool
+    ) -> None:
+        class ReportGraph:
+            async def ainvoke(self, state: Any, /, **kwargs: Any) -> dict[str, IncidentReport]:
+                return {"report": IncidentReport(summary="Offline recorded report", likely_causes=[])}
+
+        monkeypatch.setenv("OPENAI_API_KEY", "synthetic-recorder-secret")
+        monkeypatch.setenv("LANGSMITH_API_KEY", "synthetic-tracing-key")
+        monkeypatch.setattr(recorder.subprocess, "check_output", lambda *a, **kw: "offline-commit")
+        monkeypatch.setattr(recorder, "version", current_package_version)
+        monkeypatch.setattr(
+            recorder,
+            "build_collaborators",
+            lambda settings: SimpleNamespace(
+                graph=ReportGraph(), metrics_source=AsyncMock(), log_source=AsyncMock()
+            ),
+        )
+        monkeypatch.setattr(recorder, "tracing_is_enabled", lambda: enabled)
+        monkeypatch.setattr(recorder.asyncio, "sleep", AsyncMock())
+        monkeypatch.setattr(
+            recorder,
+            "remote_evidence",
+            lambda *args: {
+                "complete_tree_received": True,
+                "root_input_matches_local": True,
+                "root_report_matches_local": True,
+            },
+        )
+        output = tmp_path / "tracing"
+>       assert await recorder.validate(output, enabled)
+E       assert False
+
+backend/tests/unit/test_validation_metadata.py:65: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"query": "checkout-service memory keeps climbing; investigate metrics and logs", "service": "checkout-service", "event": "investigation_started", "correlation_id": "5667a1d8-9844-4144-9c7a-a3124871c69d", "level": "info", "timestamp": "2026-10-22T21:14:36.955689Z"}
+{"mode": "enabled", "passed": false, "root_run_id": "32a9a11a-cfa3-4947-89c6-28ff01587150", "service_seconds": 0.00021369499881984666}
+=========================== short test summary info ============================
+FAILED backend/tests/unit/test_validation_metadata.py::test_tracing_recorder_reports_openai_metadata[False-validate_langsmith.py]
+FAILED backend/tests/unit/test_validation_metadata.py::test_tracing_recorder_reports_openai_metadata[True-validate_langsmith.py]
+2 failed, 226 passed in 11.85s

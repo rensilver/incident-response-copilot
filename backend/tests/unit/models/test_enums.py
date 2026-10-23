@@ -1,4 +1,4 @@
-from incident_copilot.models.enums import LLMProviderName, MetricKind, TrendKind
+from incident_copilot.models.enums import MetricKind, TrendKind
 
 
 def test_metric_kind_contains_only_requestable_kinds() -> None:
@@ -8,7 +8,3 @@ def test_metric_kind_contains_only_requestable_kinds() -> None:
 
 def test_trend_kind_members() -> None:
     assert {t.value for t in TrendKind} == {"rose", "dropped", "flat", "from_zero"}
-
-
-def test_provider_names() -> None:
-    assert LLMProviderName.OLLAMA.value == "ollama"

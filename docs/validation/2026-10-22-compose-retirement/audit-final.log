@@ -1,0 +1,5 @@
+PASS: Compose validates with the app profile and without reading dotenv
+PASS: only the retired service, volume, app dependency and URL were removed
+PASS: retained service configuration, mounts, ports and readiness are identical
+PASS: startup banner and current service documentation match the stack
+No daemon request, container operation, volume operation or live I/O was used

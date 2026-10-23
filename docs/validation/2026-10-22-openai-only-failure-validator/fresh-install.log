@@ -1,0 +1,9 @@
+Using CPython 3.12.14
+Creating virtual environment at: /tmp/incident-copilot-openai-only-py312
+Resolved 105 packages in 2ms
+  × Failed to download `numpy==2.5.2`
+  ╰─▶ Network connectivity is disabled, but the
+      requested data wasn't found in the cache for:
+      `https://files.pythonhosted.org/packages/3a/5f/62d28cf019460c7f1394105b4d49d9911a9c444cb77ab0bd95a204c5a6de/numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl`
+
+hint: `numpy` (v2.5.2) was included because `incident-response-copilot[ui]` (v0.1.0) depends on `streamlit` (v1.62.0) which depends on `numpy`

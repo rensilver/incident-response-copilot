@@ -38,8 +38,7 @@ Cancellation must propagate through model calls; cleanup must also run when the
 owning entrypoint exits with an error.
 
 **Current lifecycle limitation:** the existing `LLMProvider` ABC has no cleanup
-method. Groq/Ollama settings constructors create SDK chat clients without explicit
-cleanup; `Collaborators` now retains the provider for health probing, but
+method. `Collaborators` retains the provider for health probing, but
 FastAPI/evaluation shutdown explicitly closes only the metrics/log connectors.
 The OpenAI adapter exposes
 `aclose()` for its owned clients. Application lifecycle integration must retain the
@@ -65,8 +64,8 @@ OpenAI validates the entire response as JSON: arrays, Markdown fences, surroundi
 prose, trailing garbage, and multiple objects enter the shared bounded repair loop
 instead of being salvaged into reports. Exhaustion raises `StructuredOutputError`
 with the last raw output retained as a debugging attribute, not in the error message.
-The shared `_validate_json_output` hook preserves legacy wrapper handling for other
-adapters without duplicating repair orchestration.
+The shared `_validate_json_output` hook allows adapters to customize parsing
+without duplicating repair orchestration. The test fake retains wrapper handling.
 
 Before parsing, the adapter checks Responses status and refusal content blocks.
 Refusals, incomplete responses (including token truncation and content filtering),
@@ -112,13 +111,22 @@ invalid calls and missing results for unknown tools remains part of the planned
 tool-loop review. These wire checks establish adapter compatibility, not live
 model access or complete malformed-call recovery.
 
-Settings now default to `LLM_PROVIDER=openai`, `OPENAI_MODEL=gpt-6-luna`, and
-`LLM_FALLBACK_PROVIDER=none`. `OPENAI_API_KEY` is a `SecretStr` and must be nonblank
+Settings default to `LLM_PROVIDER=openai` and `OPENAI_MODEL=gpt-6-luna`.
+`OPENAI_API_KEY` is a `SecretStr` and must be nonblank
 when OpenAI is selected. The model field accepts only the exact requested model;
 there is no model or reasoning substitution. The factory uses `from_settings`,
 which passes the secret directly to the adapter without printing it. Existing
 root-file selection and process precedence also apply to both OpenAI variables.
-Legacy provider settings remain until the separately planned retirement task.
+OpenAI is the only production selection. Retired selections fail settings
+validation; the factory rejects `fake` as test-only. Retired provider/fallback
+settings are no longer fields; stale dotenv/process variables are ignored and
+cannot enable fallback. The private dotenv and Compose provider cleanup are
+complete. `backend/scripts/validate_provider_failures.py` runs the offline OpenAI
+failure matrix and rejects installed retired SDKs/adapters before starting tests.
+The [validator evidence](validation/2026-10-22-openai-only-failure-validator/README.md)
+records a fresh locked install and endpoint/fallback isolation. Evaluation and
+validation recorders retain runtime/library versions, reports, and timings without
+host-capacity sampling or a profiling dependency.
 
 Settings reprs/JSON and normal validation exception text redact OpenAI credentials;
 `hide_input_in_errors` also prevents a model-level validation error from displaying
@@ -175,10 +183,7 @@ metadata access. Official OpenAI documentation describes the
 [model retrieval endpoint](https://developers.openai.com/api/reference/python/resources/models/methods/retrieve)
 as returning model metadata; the health interpretation is application policy.
 
-The legacy adapters retain their existing model inventory checks internally until
-retirement. The legacy fallback wrapper checks primary then fallback within one
-total health deadline; a stalled primary can consume that budget. The selected
-OpenAI provider has no health fallback. Health polling does not load Ollama models.
+The OpenAI provider has no health fallback.
 The [health evidence](validation/2026-10-22-provider-health/README.md) records the
 wire requests, deadline/cancellation regressions, injection, and checks.
 
@@ -193,8 +198,7 @@ The configured OpenAI adapter reads these limits from `Settings` (also shown in
 | `LLM_MAX_OUTPUT_TOKENS` | 4096 | 16–16384 | Every Responses request, including repairs and tool continuations |
 | `LLM_MAX_STRUCTURED_ATTEMPTS` | 3 | 1–5 | Total structured requests, including the initial generation; the caller's `max_attempts` can lower this ceiling |
 
-These settings currently apply to OpenAI; legacy adapters retain their existing
-limits until retirement. Production construction uses validated settings. Direct
+Production construction uses validated settings. Direct
 `from_api_key` construction accepts the same limit arguments for callers that
 already validated their configuration; injected test chat models retain ownership
 of their transport settings.

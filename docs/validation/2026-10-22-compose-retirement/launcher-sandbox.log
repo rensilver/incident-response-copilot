@@ -1,0 +1,13 @@
+Initial command: docker compose version && docker compose config --help
+Execution: workspace sandbox; exited 46 before Compose ran.
+internal error, please report: running "docker" failed: cannot create XDG_RUNTIME_DIR folder "/run/user/1000/snap.docker": mkdir /run/user/1000/snap.docker: read-only file system
+
+Read-only host retry: docker compose version && docker compose config --help
+Exit: 0
+Docker Compose version v5.5.1
+The installed version supports --no-env-resolution and --format json.
+
+Audit metadata diagnostic (host; exit 0):
+docker compose --project-directory /home/rensilver/workspaces/incident-response-copilot --env-file /dev/null --profile app config --no-env-resolution --format json | .venv/bin/python -c 'import json,sys; print(json.load(sys.stdin)["services"]["app"]["env_file"])'
+Output: [{'path': '/home/rensilver/workspaces/incident-response-copilot/.env'}]
+The required=true default is omitted by this Compose version. No dotenv values were resolved or printed.
