@@ -1,0 +1,102 @@
+{
+  "review_date": "2026-10-24",
+  "timezone": "America/Recife",
+  "captured_at_utc": "2026-10-24T11:05:51.835610+00:00",
+  "parent_commit": "68f72bc",
+  "guidelines": {
+    "url": "https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md",
+    "sha256": "d246b026f4f29b5823a9cc857f9edf3d2507002e055e32040cadeaf3b38e0234",
+    "bytes": 8055,
+    "headers": [
+      "HTTP/2 200 ",
+      "content-type: text/plain; charset=utf-8",
+      "etag: \"c19d5d8dc01da8dae74d5a313333d62678b489dcb6c6add4e4f055fdad7f35b5\"",
+      "date: Sat, 24 Oct 2026 11:04:48 GMT"
+    ],
+    "sections": [
+      "Accessibility",
+      "Focus States",
+      "Forms",
+      "Animation",
+      "Typography",
+      "Content Handling",
+      "Images",
+      "Performance",
+      "Navigation & State",
+      "Touch & Interaction",
+      "Safe Areas & Layout",
+      "Dark Mode & Theming",
+      "Locale & i18n",
+      "Hydration Safety",
+      "Hover & Interactive States",
+      "Content & Copy",
+      "Anti-patterns (flag these)"
+    ],
+    "fetch_attempts": [
+      {
+        "method": "web open",
+        "outcome": "success; current content read"
+      },
+      {
+        "method": "curl in sandbox",
+        "exit_code": 6,
+        "outcome": "Could not resolve host: raw.githubusercontent.com"
+      },
+      {
+        "method": "curl with host network access",
+        "exit_code": 0,
+        "outcome": "HTTP 200; exact bytes hashed"
+      }
+    ]
+  },
+  "local_skill_files": [
+    {
+      "path_from_skill_root": "frontend-design/SKILL.md",
+      "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
+    },
+    {
+      "path_from_skill_root": "web-design-guidelines/SKILL.md",
+      "sha256": "f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/SKILL.md",
+      "sha256": "71ed7794962fa6e803ee83030517b5b93a9f70fbfeb431ec4535c5480a8d8355"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/async-parallel.md",
+      "sha256": "6d2f841896279e976dfcdc1ac89e70771ac188baadfd43c096b5706cb838b961"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/bundle-dynamic-imports.md",
+      "sha256": "401817a7369f315fc5a68a1095742ff7d53d0461906880dc9d64a41495ee1986"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/server-serialization.md",
+      "sha256": "f4c7d68b29c82381baad059c4a7f09e868e71ec9c3115a26ad3ae7d24c0dfe1f"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/server-no-shared-module-state.md",
+      "sha256": "4d869bf1cd2f1632e5ca4c0e64b1cf0e71c5f5a0f940bc8a22174d205e735ed7"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/client-swr-dedup.md",
+      "sha256": "644652c39c6cc00de8d1c77a7273612e868dc3f7edda30764164c12ec0f764a3"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/rerender-move-effect-to-event.md",
+      "sha256": "abc2cbf167bee056743023351e96806a411d3398da8802093620aecf0721f029"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/rerender-derived-state-no-effect.md",
+      "sha256": "cb11ec76f50aa7b6847269f02d79b120c889a30d9ecd2c1d578f75144419c77a"
+    },
+    {
+      "path_from_skill_root": "vercel-react-best-practices/rules/rendering-hydration-no-flicker.md",
+      "sha256": "dc7ab358c67c177bca6e6f360fbc935ebe4efa928c0ba3ebd3f9f3d9e2000ca3"
+    }
+  ],
+  "primary_references_read": [
+    "https://nextjs.org/docs/app/getting-started/server-and-client-components",
+    "https://react.dev/learn/you-might-not-need-an-effect"
+  ]
+}
