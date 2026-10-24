@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
+import { SiteHeader } from "../components/site-header";
 import "./globals.css";
 
 const sans = localFont({
@@ -43,10 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
-        <a className="skip-link" href="#main-content">
-          Skip to main content
-        </a>
-        <header className="site-header">Incident Response Copilot</header>
+        <SiteHeader />
         {children}
       </body>
     </html>

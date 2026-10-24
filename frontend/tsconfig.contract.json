@@ -10,6 +10,7 @@
   "include": [
     "src/lib/api/**/*.ts",
     "tests/api-contract.test.ts",
+    "tests/api-transport.test.ts",
     "tests/api-types.ts"
   ],
   "exclude": ["node_modules", ".next", ".contract-build"]

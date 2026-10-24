@@ -1,8 +1,7 @@
 # Frontend development
 
 The Next.js App Router foundation serves a static preview on port **3001**.
-Investigation controls, reports, and API transport remain separate implementation
-tasks. The existing [API contract](../docs/frontend-api-contract.md) and
+Investigation controls and reports remain separate implementation tasks. The existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 
 Use Node.js 22.18+ and npm 10+. Dependencies are pinned in `package.json` and
@@ -74,3 +73,23 @@ Mono is available as a CSS variable without preloading an unused evidence font.
 Fallback fonts cover characters outside the Latin subset. The fonts use the
 [SIL Open Font License](public/fonts/OFL.txt); the license ships in public assets.
 There is no runtime font CDN request.
+
+## Source boundaries
+
+`src/app/` composes routes, metadata, fonts, and global styles. Shared static
+navigation lives in `src/components/site-header.tsx`; `components/ui/workspace.tsx`
+owns the main landmark/skip target. `src/features/investigations/` owns incident
+framing and will host the interactive feature leaves. These components remain
+Server Components: there is no client directive, hook, or transport import in the
+static shell. Add client boundaries only where browser state is needed.
+
+`src/lib/api/client.ts` exposes `createApiClient().investigate(request, { signal })`
+and `.health({ signal })`. It uses fixed relative paths, generated request types,
+and runtime response parsers; callers never choose an upstream URL. Investigation
+requests have a 300-second total fetch/body budget; health has 10 seconds.
+HTTP failures retain only their status, while malformed JSON, invalid schema,
+network failures, expiry, and caller cancellation have safe `ApiError.kind` values.
+Response bodies and low-level exceptions are never attached to errors. There are
+no automatic retries, persistent browser storage, or requests during shell render.
+Abort stops local I/O; backend/provider work may still run. Feature views will map
+these categories to accessible feedback when those views are implemented.
