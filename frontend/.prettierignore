@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.contract-build/
+next-env.d.ts
+src/lib/api/generated/
+package-lock.json
+playwright-report/
+test-results/

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-24-frontend-scaffold/audit.py", line 84, in <module>
+    assert not credential.search(data), f"Credential-like content: {name}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Credential-like content: docs/validation/2026-10-24-frontend-scaffold/audit.py

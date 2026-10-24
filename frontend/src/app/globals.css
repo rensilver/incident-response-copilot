@@ -1,0 +1,109 @@
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --canvas: #edf2f7;
+  --ink: #172b4d;
+  --action: #214ecf;
+  --caution: #7a4b00;
+  --error: #b42318;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.2858;
+}
+
+h2 {
+  font-size: 1.375rem;
+  line-height: 1.3637;
+}
+
+a {
+  color: var(--action);
+  text-underline-offset: 0.2em;
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 3px solid var(--action);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--paper);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.site-header {
+  padding: 1.5rem max(1.5rem, calc((100% - 84rem) / 2));
+  background: var(--canvas);
+  font-weight: 500;
+}
+
+.workspace {
+  max-width: 90rem;
+  margin-inline: auto;
+  padding: 3rem;
+  scroll-margin-top: 1rem;
+}
+
+.introduction {
+  max-width: 72ch;
+  margin-top: 0.75rem;
+}
+
+.preview {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--canvas);
+}
+
+.preview p {
+  max-width: 72ch;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 42rem) {
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.3334;
+  }
+
+  .workspace {
+    padding: 2rem 1.5rem;
+  }
+}

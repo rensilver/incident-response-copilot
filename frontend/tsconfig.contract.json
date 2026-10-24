@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "incremental": false,
+    "outDir": ".contract-build",
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "include": [
+    "src/lib/api/**/*.ts",
+    "tests/api-contract.test.ts",
+    "tests/api-types.ts"
+  ],
+  "exclude": ["node_modules", ".next", ".contract-build"]
+}
