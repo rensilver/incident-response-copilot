@@ -23,10 +23,6 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import httpx
-from langchain_core.callbacks import BaseCallbackHandler
-from langgraph.graph.state import CompiledStateGraph
-from pydantic_core import to_jsonable_python
-
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import get_settings
 from incident_copilot.evaluation.eval_runner import REPEATS, RunResult, _print_results, run_scenario
@@ -34,6 +30,9 @@ from incident_copilot.evaluation.scenarios import SCENARIOS
 from incident_copilot.models.report import IncidentReport
 from incident_copilot.services.incident_service import IncidentService, InvestigationRequest
 from incident_copilot.utils.logging import configure_logging
+from langchain_core.callbacks import BaseCallbackHandler
+from langgraph.graph.state import CompiledStateGraph
+from pydantic_core import to_jsonable_python
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -150,6 +149,7 @@ async def measure(output: Path, delay: float) -> None:
         "llm_operation_timeout_seconds",
         "llm_max_output_tokens",
         "llm_max_structured_attempts",
+        "investigation_timeout_seconds",
         "max_tool_rounds",
         "max_supervisor_iterations",
         "langsmith_tracing",
@@ -187,54 +187,54 @@ async def measure(output: Path, delay: float) -> None:
             response.raise_for_status()
             metadata[label] = response.json()
     write_json(output / "runtime.json", metadata)
-    collaborators = build_collaborators(settings)
-    graph = RecordingGraph(collaborators.graph)
-    service = RecordingService(IncidentService(graph), graph)
-    results: list[RunResult] = []
-    records = []
-    started = time.perf_counter()
-    try:
-        for scenario in SCENARIOS:
-            for repeat in range(1, REPEATS + 1):
-                if results:
-                    await asyncio.sleep(delay)
-                try:
-                    result = await run_scenario(service, scenario)
-                finally:
-                    # Unexpected exceptions abort, but the attempt remains reviewable.
-                    write_json(output / f"{scenario.name.value}-{repeat}.json", service.record)
-                results.append(result)
-                record = {
-                    **service.record,
-                    "scenario": scenario.name.value,
-                    "repeat": repeat,
-                    "expected_culprit": scenario.expected_culprit,
-                    "correct": result.correct,
-                    "detail": result.detail,
-                }
-                records.append(record)
-                write_json(output / f"{scenario.name.value}-{repeat}.json", record)
-                print(
-                    f"MEASUREMENT {scenario.name.value} {repeat}/{REPEATS}: "
-                    f"mention_match={result.correct} elapsed={record['elapsed_seconds']:.3f}s",
-                    flush=True,
-                )
-        _print_results(results)
-    finally:
-        write_json(
-            output / "summary.json",
-            {
-                "finished_at": timestamp(),
-                "wall_seconds_including_pacing": time.perf_counter() - started,
-                "planned_attempts": len(SCENARIOS) * REPEATS,
-                "completed_attempts": len(records),
-                "mention_matches": sum(r.correct for r in results),
-                "investigation_errors": sum(r["error"] is not None for r in records),
-                "runs": records,
-            },
+    async with build_collaborators(settings) as collaborators:
+        graph = RecordingGraph(collaborators.graph)
+        service = RecordingService(
+            IncidentService(graph, timeout_seconds=settings.investigation_timeout_seconds), graph
         )
-        await collaborators.metrics_source.aclose()
-        await collaborators.log_source.aclose()
+        results: list[RunResult] = []
+        records = []
+        started = time.perf_counter()
+        try:
+            for scenario in SCENARIOS:
+                for repeat in range(1, REPEATS + 1):
+                    if results:
+                        await asyncio.sleep(delay)
+                    try:
+                        result = await run_scenario(service, scenario)
+                    finally:
+                        # Unexpected exceptions abort, but the attempt remains reviewable.
+                        write_json(output / f"{scenario.name.value}-{repeat}.json", service.record)
+                    results.append(result)
+                    record = {
+                        **service.record,
+                        "scenario": scenario.name.value,
+                        "repeat": repeat,
+                        "expected_culprit": scenario.expected_culprit,
+                        "correct": result.correct,
+                        "detail": result.detail,
+                    }
+                    records.append(record)
+                    write_json(output / f"{scenario.name.value}-{repeat}.json", record)
+                    print(
+                        f"MEASUREMENT {scenario.name.value} {repeat}/{REPEATS}: "
+                        f"mention_match={result.correct} elapsed={record['elapsed_seconds']:.3f}s",
+                        flush=True,
+                    )
+            _print_results(results)
+        finally:
+            write_json(
+                output / "summary.json",
+                {
+                    "finished_at": timestamp(),
+                    "wall_seconds_including_pacing": time.perf_counter() - started,
+                    "planned_attempts": len(SCENARIOS) * REPEATS,
+                    "completed_attempts": len(records),
+                    "mention_matches": sum(r.correct for r in results),
+                    "investigation_errors": sum(r["error"] is not None for r in records),
+                    "runs": records,
+                },
+            )
     with httpx.Client(timeout=15) as client:
         write_json(
             output / "after.json",

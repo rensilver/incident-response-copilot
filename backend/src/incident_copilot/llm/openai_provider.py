@@ -2,6 +2,7 @@
 
 import asyncio
 from collections.abc import Sequence
+from contextlib import AsyncExitStack
 from typing import Any
 
 from langchain_core.callbacks import AsyncCallbackManagerForLLMRun
@@ -68,7 +69,7 @@ class OpenAIProvider(LLMProvider):
         self._owned_clients: tuple[OpenAI, AsyncOpenAI] | None = None
 
     @classmethod
-    def from_settings(cls, settings: Settings) -> "OpenAIProvider":
+    async def from_settings(cls, settings: Settings) -> "OpenAIProvider":
         """Build from validated settings without inference or credential logging."""
         if (
             settings.openai_api_key is None
@@ -76,7 +77,7 @@ class OpenAIProvider(LLMProvider):
         ):
             raise ConfigurationError("OPENAI_API_KEY is required for the openai provider")
         # Settings accepts exactly gpt-6-luna; every operation shares that policy.
-        return cls.from_api_key(
+        return await cls.from_api_key(
             settings.openai_api_key,
             timeout_seconds=settings.llm_operation_timeout_seconds,
             max_output_tokens=settings.llm_max_output_tokens,
@@ -84,7 +85,7 @@ class OpenAIProvider(LLMProvider):
         )
 
     @classmethod
-    def from_api_key(
+    async def from_api_key(
         cls,
         api_key: SecretStr,
         *,
@@ -95,43 +96,47 @@ class OpenAIProvider(LLMProvider):
         """Construct owned clients with settings-supplied limits, without inference."""
         # Explicit SDK clients avoid LangChain's shared HTTP-client cache: closing
         # one provider must not close another provider's transport.
-        sync_client = OpenAI(
-            api_key=api_key.get_secret_value(), max_retries=0, timeout=timeout_seconds
-        )
-        async_client = AsyncOpenAI(
-            api_key=api_key.get_secret_value(), max_retries=0, timeout=timeout_seconds
-        )
-        chat = _SanitizedChatOpenAI(
-            model="gpt-6-luna",
-            api_key=api_key,
-            use_responses_api=True,
-            use_previous_response_id=False,
-            output_version="responses/v1",
-            reasoning={"effort": "none"},
-            max_tokens=max_output_tokens,
-            timeout=timeout_seconds,
-            max_retries=0,
-            root_client=sync_client,
-            client=sync_client.chat.completions,
-            root_async_client=async_client,
-            async_client=async_client.chat.completions,
-        )
-
-        async def model_access() -> bool:
-            # Metadata access is deliberately independent of inference/quota.
-            model = await async_client.models.retrieve(
-                "gpt-6-luna", timeout=PROVIDER_HEALTH_TIMEOUT_SECONDS
+        async with AsyncExitStack() as cleanup:
+            sync_client = OpenAI(
+                api_key=api_key.get_secret_value(), max_retries=0, timeout=timeout_seconds
             )
-            return model.id == "gpt-6-luna" and model.object == "model"
+            cleanup.callback(sync_client.close)
+            async_client = AsyncOpenAI(
+                api_key=api_key.get_secret_value(), max_retries=0, timeout=timeout_seconds
+            )
+            cleanup.push_async_callback(async_client.close)
+            chat = _SanitizedChatOpenAI(
+                model="gpt-6-luna",
+                api_key=api_key,
+                use_responses_api=True,
+                use_previous_response_id=False,
+                output_version="responses/v1",
+                reasoning={"effort": "none"},
+                max_tokens=max_output_tokens,
+                timeout=timeout_seconds,
+                max_retries=0,
+                root_client=sync_client,
+                client=sync_client.chat.completions,
+                root_async_client=async_client,
+                async_client=async_client.chat.completions,
+            )
 
-        provider = cls(
-            chat,
-            timeout_seconds=timeout_seconds,
-            max_structured_attempts=max_structured_attempts,
-            health_probe=model_access,
-        )
-        provider._owned_clients = (sync_client, async_client)
-        return provider
+            async def model_access() -> bool:
+                # Metadata access is deliberately independent of inference/quota.
+                model = await async_client.models.retrieve(
+                    "gpt-6-luna", timeout=PROVIDER_HEALTH_TIMEOUT_SECONDS
+                )
+                return model.id == "gpt-6-luna" and model.object == "model"
+
+            provider = cls(
+                chat,
+                timeout_seconds=timeout_seconds,
+                max_structured_attempts=max_structured_attempts,
+                health_probe=model_access,
+            )
+            provider._owned_clients = (sync_client, async_client)
+            cleanup.pop_all()  # Ownership transfers to the successfully constructed provider.
+            return provider
 
     async def _probe_health(self) -> bool:
         """Use the injected metadata probe, sharing owned clients in production."""

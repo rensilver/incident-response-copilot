@@ -1,0 +1,3 @@
+backend/tests/unit/test_resource_lifecycle.py:120: error: "object" has no attribute "aclose"  [attr-defined]
+backend/tests/unit/test_resource_lifecycle.py:204: error: "object" has no attribute "is_closed"  [attr-defined]
+Found 2 errors in 1 file (checked 1 source file)

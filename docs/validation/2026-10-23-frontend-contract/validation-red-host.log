@@ -1,0 +1,78 @@
+
+> incident-copilot-frontend@0.1.0 test
+> tsc && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✖ accepts actual report shapes, preserves text and never coerces or mutates (2.250672ms)
+✔ rejects null before treating a response as a report (0.463016ms)
+✔ rejects array before treating a response as a report (0.141722ms)
+✔ rejects HTML before treating a response as a report (0.10294ms)
+✔ rejects missing required summary before treating a response as a report (0.100355ms)
+✔ rejects coerced confidence before treating a response as a report (0.09761ms)
+✔ rejects low confidence before treating a response as a report (0.11907ms)
+✔ rejects high confidence before treating a response as a report (0.100886ms)
+✔ rejects non-finite confidence before treating a response as a report (0.134589ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.186745ms)
+✔ rejects missing evidence detail before treating a response as a report (0.145399ms)
+✔ rejects unknown evidence source before treating a response as a report (0.093583ms)
+✔ rejects invalid steps before treating a response as a report (0.106847ms)
+✔ rejects invalid date before treating a response as a report (0.071302ms)
+✔ rejects missing window end before treating a response as a report (0.065641ms)
+✖ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.228082ms)
+✖ validates both public error shapes without rendering raw rejected payloads (0.24878ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (3348.129382ms)
+✔ browser paths map only investigations and health to the local backend (3.051973ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.6111ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.43776ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.387877ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.000801ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.67586ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.50851ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.37352ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.977568ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.632109ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.365215ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.307148ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 27
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3418.406903
+
+✖ failing tests:
+
+test at .contract-build/tests/api-contract.test.js:16:1
+✖ accepts actual report shapes, preserves text and never coerces or mutates (2.250672ms)
+  Error [InvalidApiResponseError]: Invalid API response.
+      at parseReport (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/src/lib/api/validation.js:8:44)
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/tests/api-contract.test.js:18:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at .contract-build/tests/api-contract.test.js:43:1
+✖ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.228082ms)
+  Error [InvalidApiResponseError]: Invalid API response.
+      at parseHealth (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/src/lib/api/validation.js:9:44)
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/tests/api-contract.test.js:45:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at .contract-build/tests/api-contract.test.js:54:1
+✖ validates both public error shapes without rendering raw rejected payloads (0.24878ms)
+  Error [InvalidApiResponseError]: Invalid API response.
+      at parseInvestigationError (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/src/lib/api/validation.js:10:56)
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/tests/api-contract.test.js:55:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

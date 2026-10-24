@@ -1,0 +1,27 @@
+▲ Next.js 16.3.1 (webpack)
+- Local:         http://127.0.0.1:53361
+- Network:       http://127.0.0.1:53361
+✓ Ready in 375ms
+✓ Running next.config.mjs took 16ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+ GET /health 404 in 2.0s (next.js: 2.0s, application-code: 34ms)
+ GET /api/openapi.json 404 in 10ms (next.js: 1.5ms, application-code: 9ms)
+Failed to proxy http://127.0.0.1:49125/health Error: connect ECONNREFUSED 127.0.0.1:49125
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:49125) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 49125
+}
+Error: connect ECONNREFUSED 127.0.0.1:49125
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:49125) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 49125
+}
+[?25h

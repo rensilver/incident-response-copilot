@@ -6,7 +6,7 @@ from incident_copilot.models.enums import LLMProviderName
 from incident_copilot.utils.exceptions import ConfigurationError
 
 
-def build_llm_provider(settings: Settings) -> LLMProvider:
+async def build_llm_provider(settings: Settings) -> LLMProvider:
     """Build the provider named in settings.
 
     This is the only place a provider name maps to a class.
@@ -24,7 +24,7 @@ def build_llm_provider(settings: Settings) -> LLMProvider:
         case LLMProviderName.OPENAI:
             from incident_copilot.llm.openai_provider import OpenAIProvider
 
-            return OpenAIProvider.from_settings(settings)
+            return await OpenAIProvider.from_settings(settings)
         case LLMProviderName.FAKE:
             raise ConfigurationError(
                 "the fake provider is test-only and cannot be selected by configuration"

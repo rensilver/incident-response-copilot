@@ -1,8 +1,7 @@
 """Application composition root.
 
 Builds the FastAPI application around the collaborators from composition.py, and owns
-what is HTTP-specific: routes, health-check probes, and the lifespan that closes the
-connectors on shutdown.
+what is HTTP-specific: routes, health-check probes, and the resource lifespan.
 """
 
 from collections.abc import AsyncGenerator
@@ -11,6 +10,7 @@ from contextlib import asynccontextmanager
 import httpx
 from fastapi import FastAPI
 
+from incident_copilot.api.errors import install_error_handlers
 from incident_copilot.api.routes import HealthCheck, build_router
 from incident_copilot.composition import build_collaborators
 from incident_copilot.config.settings import Settings, get_settings
@@ -41,44 +41,56 @@ def _reachable(url: str) -> HealthCheck:
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
-    """Build the FastAPI application with every collaborator wired in.
+    """Build routes without reading settings or acquiring external resources.
 
-    Connectors, the LLM provider and the graph are built once here, not per request:
-    both connectors hold pooled clients, and rebuilding them per request would discard
-    every connection. The lifespan below releases them on shutdown.
+    Lifespan startup validates settings and builds one collaborator set per serving
+    lifetime. Import and OpenAPI inspection need no credentials. The composition
+    context releases owned resources on shutdown or failed startup.
 
     Args:
-        settings: Application settings; read from the environment when omitted.
+        settings: Application settings; read at startup when omitted.
 
     Returns:
         The configured application.
     """
-    settings = settings or get_settings()
-    configure_logging(settings.log_level)
-
-    collaborators = build_collaborators(settings)
-    service = IncidentService(collaborators.graph)
-
-    health_checks: dict[str, HealthCheck] = {
-        "prometheus": _reachable(f"{settings.prometheus_url}/-/ready"),
-        "elasticsearch": _reachable(f"{settings.elasticsearch_url}/_cluster/health"),
-        "llm": collaborators.provider.health_check,
-    }
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-        """Release the pooled clients when the application stops."""
-        yield
-        await app.state.prometheus_connector.aclose()
-        await app.state.elasticsearch_connector.aclose()
-        logger.info("connectors_closed")
+        """Acquire serving resources and always release them through composition."""
+        active_settings = settings if settings is not None else get_settings()
+        configure_logging(active_settings.log_level)
+        async with build_collaborators(active_settings) as collaborators:
+            # Register routes once; their dependencies borrow these serving instances.
+            try:
+                app.state.service = IncidentService(
+                    collaborators.graph,
+                    timeout_seconds=active_settings.investigation_timeout_seconds,
+                )
+                app.state.health_checks = {
+                    "prometheus": _reachable(f"{active_settings.prometheus_url}/-/ready"),
+                    "elasticsearch": _reachable(
+                        f"{active_settings.elasticsearch_url}/_cluster/health"
+                    ),
+                    "llm": collaborators.provider.health_check,
+                }
+                app.state.prometheus_connector = collaborators.metrics_source
+                app.state.elasticsearch_connector = collaborators.log_source
+                logger.info("app_started", provider=active_settings.llm_provider.value)
+                yield
+            finally:
+                for name in (
+                    "service",
+                    "health_checks",
+                    "prometheus_connector",
+                    "elasticsearch_connector",
+                ):
+                    if hasattr(app.state, name):
+                        delattr(app.state, name)
+        logger.info("collaborators_closed")
 
     app = FastAPI(title="incident-response-copilot", version="0.1.0", lifespan=lifespan)
-    # Held on app.state so the lifespan closes the same instances the graph is using.
-    app.state.prometheus_connector = collaborators.metrics_source
-    app.state.elasticsearch_connector = collaborators.log_source
-    app.include_router(build_router(service, health_checks))
-    logger.info("app_created", provider=settings.llm_provider.value)
+    install_error_handlers(app)
+    app.include_router(build_router())
     return app
 
 

@@ -4,6 +4,7 @@ Owns the correlation ID and the mapping from graph output to domain errors. Cont
 HTTP and no LLM code: it invokes the compiled graph and interprets the result.
 """
 
+import asyncio
 import uuid
 from collections.abc import Mapping
 from typing import Any, Protocol
@@ -11,9 +12,10 @@ from typing import Any, Protocol
 from pydantic import BaseModel, Field
 
 from incident_copilot.agents.state import initial_state
+from incident_copilot.config.settings import DEFAULT_INVESTIGATION_TIMEOUT_SECONDS
 from incident_copilot.models.metrics import TimeWindow
 from incident_copilot.models.report import IncidentReport
-from incident_copilot.utils.exceptions import InvestigationError
+from incident_copilot.utils.exceptions import InvestigationError, InvestigationTimeoutError
 from incident_copilot.utils.logging import bind_correlation_id, get_logger
 
 logger = get_logger(__name__)
@@ -42,15 +44,20 @@ class IncidentService:
 
     Args:
         graph: The compiled investigation graph.
+        timeout_seconds: Total cooperative graph execution budget, shared by all nodes.
     """
 
-    def __init__(self, graph: _Graph) -> None:
+    def __init__(
+        self, graph: _Graph, *, timeout_seconds: float = DEFAULT_INVESTIGATION_TIMEOUT_SECONDS
+    ) -> None:
         """Store the compiled graph.
 
         Args:
             graph: The compiled investigation graph.
+            timeout_seconds: Total execution budget; serving callers inject validated settings.
         """
         self._graph = graph
+        self._timeout_seconds = timeout_seconds
 
     async def investigate(self, request: InvestigationRequest) -> IncidentReport:
         """Run one investigation.
@@ -63,6 +70,7 @@ class IncidentService:
 
         Raises:
             InvestigationError: If the graph produced no report.
+            InvestigationTimeoutError: If the total execution deadline expired.
         """
         correlation_id = str(uuid.uuid4())
         bind_correlation_id(correlation_id)
@@ -74,7 +82,20 @@ class IncidentService:
             time_window=TimeWindow.from_minutes_back(request.minutes_back),
             target_service=request.service,
         )
-        final = await self._graph.ainvoke(state)
+        deadline = asyncio.timeout(self._timeout_seconds)
+        try:
+            async with deadline:
+                final = await self._graph.ainvoke(state)
+        except TimeoutError as exc:
+            if not deadline.expired():
+                # An unclassified collaborator TimeoutError is not our total deadline.
+                raise
+            logger.warning("investigation_deadline_exceeded", seconds=self._timeout_seconds)
+            raise InvestigationTimeoutError("Investigation deadline exceeded.") from exc
+        if deadline.expired():
+            # A collaborator may swallow cancellation and return late. Never publish it.
+            logger.warning("investigation_deadline_exceeded", seconds=self._timeout_seconds)
+            raise InvestigationTimeoutError("Investigation deadline exceeded.")
 
         # isinstance rather than `is None`: the graph hands back an untyped mapping, so
         # this is the boundary where the report stops being Any. A wrong-typed value in

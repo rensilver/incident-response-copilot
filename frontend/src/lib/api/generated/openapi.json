@@ -1,0 +1,374 @@
+{
+  "components": {
+    "schemas": {
+      "EvidenceRef": {
+        "description": "A pointer to the observation that supports a claim.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EvidenceSource"
+          }
+        },
+        "required": [
+          "source",
+          "detail"
+        ],
+        "title": "EvidenceRef",
+        "type": "object"
+      },
+      "EvidenceSource": {
+        "description": "Which subsystem a piece of evidence came from.",
+        "enum": [
+          "metrics",
+          "logs"
+        ],
+        "title": "EvidenceSource",
+        "type": "string"
+      },
+      "HealthResponse": {
+        "description": "Liveness plus reachability of each downstream dependency.",
+        "properties": {
+          "dependencies": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Dependencies",
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "dependencies"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "IncidentReport": {
+        "description": "The structured output of an investigation.",
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "investigation_window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TimeWindow"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Authoritative query interval, populated by the service after generation"
+          },
+          "likely_causes": {
+            "items": {
+              "$ref": "#/components/schemas/LikelyCause"
+            },
+            "title": "Likely Causes",
+            "type": "array"
+          },
+          "next_steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Next Steps",
+            "type": "array"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "summary",
+          "likely_causes",
+          "next_steps",
+          "confidence"
+        ],
+        "title": "IncidentReport",
+        "type": "object"
+      },
+      "InvestigationErrorResponse": {
+        "description": "Sanitized response when an investigation cannot produce a usable report.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "InvestigationErrorResponse",
+        "type": "object"
+      },
+      "InvestigationRequest": {
+        "description": "What an engineer asks the copilot to look into.",
+        "properties": {
+          "minutes_back": {
+            "default": 60,
+            "description": "Window length",
+            "maximum": 1440.0,
+            "minimum": 1.0,
+            "title": "Minutes Back",
+            "type": "integer"
+          },
+          "query": {
+            "description": "The incident question",
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "service": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Service to focus on",
+            "title": "Service"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "InvestigationRequest",
+        "type": "object"
+      },
+      "LikelyCause": {
+        "description": "One candidate root cause.",
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "supporting_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRef"
+            },
+            "title": "Supporting Evidence",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "rationale",
+          "confidence",
+          "supporting_evidence"
+        ],
+        "title": "LikelyCause",
+        "type": "object"
+      },
+      "RequestErrorResponse": {
+        "description": "Sanitized validation errors using FastAPI's field-location convention.",
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "RequestErrorResponse",
+        "type": "object"
+      },
+      "TimeWindow": {
+        "description": "A closed time interval to investigate.",
+        "properties": {
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "TimeWindow",
+        "type": "object"
+      },
+      "ValidationIssue": {
+        "description": "A rejected field without its input, context, or parser diagnostics.",
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Loc",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Msg",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationIssue",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "incident-response-copilot",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/investigations": {
+      "post": {
+        "description": "Run an investigation and return the structured report.",
+        "operationId": "create_investigation_api_v1_investigations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationErrorResponse"
+                }
+              }
+            },
+            "description": "Investigation unavailable: no usable report was produced."
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationErrorResponse"
+                }
+              }
+            },
+            "description": "Total investigation deadline exceeded."
+          }
+        },
+        "summary": "Investigate an incident",
+        "tags": [
+          "incident-copilot"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Report liveness and downstream reachability.\n\nProbes run concurrently: each carries its own timeout, so awaiting them one\nafter another would let ``/health`` outlast the timeout of whatever polls it.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Check application and dependency health",
+        "tags": [
+          "incident-copilot"
+        ]
+      }
+    }
+  }
+}

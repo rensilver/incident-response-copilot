@@ -1,0 +1,20 @@
+✔ browser paths map only investigations and health to the local backend (7.052346ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.642649ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.626699ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.505505ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.316255ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.710625ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.932605ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (1.308711ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.605329ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.758093ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.558473ms)
+✔ invalid backend origin is rejected without echoing its value: http (1.757852ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41.481031

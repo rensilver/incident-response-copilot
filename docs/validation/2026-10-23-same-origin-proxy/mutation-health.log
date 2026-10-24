@@ -1,0 +1,138 @@
+✖ browser paths map only investigations and health to the local backend (7.30912ms)
+✖ server configuration selects http://app:8000 without changing browser paths (1.19976ms)
+✖ server configuration selects http://localhost:8000/ without changing browser paths (0.945829ms)
+✖ server configuration selects https://backend.example.test:8443 without changing browser paths (0.922286ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.502339ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.771678ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.568572ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.635325ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.558352ms)
+✔ invalid backend origin is rejected without echoing its value: http (6.088503ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.482482ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.493854ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 8
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.729921
+
+✖ failing tests:
+
+test at frontend/tests/proxy-config.test.mjs:24:1
+✖ browser paths map only investigations and health to the local backend (7.30912ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    {
+      afterFiles: [],
+      beforeFiles: [
+        {
+          destination: 'http://127.0.0.1:8000/api/v1/investigations',
+  ...
+        {
+  +       destination: 'http://127.0.0.1:8000/api/health',
+  -       destination: 'http://127.0.0.1:8000/health',
+          source: '/api/health'
+        }
+      ],
+      fallback: []
+    }
+
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/tests/proxy-config.test.mjs:26:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at frontend/tests/proxy-config.test.mjs:47:3
+✖ server configuration selects http://app:8000 without changing browser paths (1.19976ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+        destination: 'http://app:8000/api/v1/investigations',
+        source: '/api/v1/investigations'
+      },
+      {
+  +     destination: 'http://app:8000/api/health',
+  -     destination: 'http://app:8000/health',
+        source: '/api/health'
+      }
+    ]
+
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/tests/proxy-config.test.mjs:50:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at frontend/tests/proxy-config.test.mjs:47:3
+✖ server configuration selects http://localhost:8000/ without changing browser paths (0.945829ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+        destination: 'http://localhost:8000/api/v1/investigations',
+        source: '/api/v1/investigations'
+      },
+      {
+  +     destination: 'http://localhost:8000/api/health',
+  -     destination: 'http://localhost:8000/health',
+        source: '/api/health'
+      }
+    ]
+
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/tests/proxy-config.test.mjs:50:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at frontend/tests/proxy-config.test.mjs:47:3
+✖ server configuration selects https://backend.example.test:8443 without changing browser paths (0.922286ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+        destination: 'https://backend.example.test:8443/api/v1/investigations',
+        source: '/api/v1/investigations'
+      },
+      {
+  +     destination: 'https://backend.example.test:8443/api/health',
+  -     destination: 'https://backend.example.test:8443/health',
+        source: '/api/health'
+      }
+    ]
+
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/tests/proxy-config.test.mjs:50:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

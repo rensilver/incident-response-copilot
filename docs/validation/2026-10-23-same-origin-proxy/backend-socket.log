@@ -1,0 +1,87 @@
+INFO:     Started server process [319624]
+INFO:     Uvicorn running on http://127.0.0.1:49125 (Press CTRL+C to quit)
+INFO:     127.0.0.1:32798 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32810 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32810 - "GET /health HTTP/1.1" 200 OK
+2026-10-23 19:49:06 [info     ] investigation_started          correlation_id=c180d0e5-13fa-4605-aaec-2f132695ce0e query=question service=cart-service
+2026-10-23 19:49:06 [info     ] investigation_complete         causes=0 correlation_id=c180d0e5-13fa-4605-aaec-2f132695ce0e
+INFO:     127.0.0.1:32810 - "POST /api/v1/investigations?check=1 HTTP/1.1" 200 OK
+2026-10-23 19:49:06 [info     ] investigation_started          correlation_id=f4a41b97-c59e-444d-80f6-a80bfaca37e3 query=unavailable service=None
+INFO:     127.0.0.1:32810 - "POST /api/v1/investigations HTTP/1.1" 503 Service Unavailable
+2026-10-23 19:49:06 [info     ] investigation_started          correlation_id=2a266a78-51a8-4e50-b7ce-46c61f4bff4f query=deadline service=None
+2026-10-23 19:49:06 [warning  ] investigation_deadline_exceeded correlation_id=2a266a78-51a8-4e50-b7ce-46c61f4bff4f seconds=0.05
+INFO:     127.0.0.1:32810 - "POST /api/v1/investigations HTTP/1.1" 504 Gateway Timeout
+2026-10-23 19:49:06 [info     ] investigation_started          correlation_id=021e37a6-e6e0-4563-9acc-4149a3dad426 query=bug service=None
+2026-10-23 19:49:06 [error    ] api_server_error               correlation_id=021e37a6-e6e0-4563-9acc-4149a3dad426 error_type=RuntimeError
+INFO:     127.0.0.1:32810 - "POST /api/v1/investigations HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/routing.py", line 670, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 2734, in app
+    await route.handle(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 1780, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 2789, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 1800, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 1279, in handle
+    await app(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 158, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 144, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 706, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/fastapi/routing.py", line 352, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/api/routes.py", line 99, in create_investigation
+    return await investigator.investigate(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/services/incident_service.py", line 88, in investigate
+    final = await self._graph.ainvoke(state)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-same-origin-proxy/probe_backend.py", line 23, in ainvoke
+    raise RuntimeError("private-canary")
+RuntimeError: private-canary
+INFO:     127.0.0.1:32816 - "POST /api/v1/investigations HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:32816 - "GET /api/v1/investigations HTTP/1.1" 405 Method Not Allowed
+INFO:     Shutting down
+INFO:     Finished server process [319624]

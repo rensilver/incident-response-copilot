@@ -21,3 +21,7 @@ seed-*/
 
 # local implementation plan
 /REFACTORING_PLAN.md
+
+# frontend dependencies and contract test output
+/frontend/node_modules/
+/frontend/.contract-build/

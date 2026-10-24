@@ -1,0 +1,61 @@
+
+> incident-copilot-frontend@0.1.0 test
+> tsc && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (2.629101ms)
+✔ rejects null before treating a response as a report (0.406902ms)
+✔ rejects array before treating a response as a report (0.10793ms)
+✔ rejects HTML before treating a response as a report (0.092832ms)
+✔ rejects missing required summary before treating a response as a report (0.134098ms)
+✔ rejects coerced confidence before treating a response as a report (0.126654ms)
+✔ rejects low confidence before treating a response as a report (0.184831ms)
+✖ rejects high confidence before treating a response as a report (0.936933ms)
+✔ rejects non-finite confidence before treating a response as a report (0.236868ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.397264ms)
+✔ rejects missing evidence detail before treating a response as a report (0.207634ms)
+✔ rejects unknown evidence source before treating a response as a report (0.125062ms)
+✔ rejects invalid steps before treating a response as a report (0.129259ms)
+✔ rejects invalid date before treating a response as a report (0.124811ms)
+✔ rejects missing window end before treating a response as a report (0.123167ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.64883ms)
+✔ validates both public error shapes without rendering raw rejected payloads (0.749466ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (3287.607367ms)
+✔ browser paths map only investigations and health to the local backend (2.698489ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.72998ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.325001ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.306476ms)
+✔ invalid backend origin is rejected without echoing its value:  (0.705836ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.290277ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.391715ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.589741ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.66555ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.600841ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.47051ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.322035ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 29
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3357.212926
+
+✖ failing tests:
+
+test at .contract-build/tests/api-contract.test.js:39:5
+✖ rejects high confidence before treating a response as a report (0.936933ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (InvalidApiResponseError).
+      at TestContext.<anonymous> (file:///home/rensilver/workspaces/incident-response-copilot/frontend/.contract-build/tests/api-contract.test.js:40:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }

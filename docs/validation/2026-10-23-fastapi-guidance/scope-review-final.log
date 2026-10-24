@@ -1,0 +1,6 @@
+OpenAPI unchanged except the two summaries and shared router tag.
+{"path": "/api/v1/investigations", "method": "post", "tags": ["incident-copilot"]}
+{"path": "/health", "method": "get", "tags": ["incident-copilot"]}
+{"dependency_scope_parameter": true, "frontend_method": true, "native_telemetry_parameter": false, "packages": {"fastapi": "0.141.1", "httpx": "0.28.1", "pydantic": "2.13.4", "starlette": "1.6.0", "uvicorn": "0.52.4"}, "python": "3.13.13"}
+Checked 27 local links, 22 command records, and staged scope.
+Staged bytes match working files; credential-pattern scan passes; private files are ignored.

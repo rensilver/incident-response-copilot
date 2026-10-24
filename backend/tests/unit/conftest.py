@@ -16,7 +16,7 @@ def _set_test_environment(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def pytest_configure(config: pytest.Config) -> None:
-    # Runs before collection imports main.py and builds its module-level app.
+    # Runs before collection; lifespan startup and explicit Settings stay isolated.
     patch = pytest.MonkeyPatch()
     patch.setitem(Settings.model_config, "env_file", None)
     _set_test_environment(patch)

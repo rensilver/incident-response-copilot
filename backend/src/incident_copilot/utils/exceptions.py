@@ -52,3 +52,7 @@ class StructuredOutputError(LLMProviderError):
 
 class InvestigationError(IncidentCopilotError):
     """The investigation graph did not produce a usable report."""
+
+
+class InvestigationTimeoutError(InvestigationError):
+    """The total investigation deadline expired before a report was produced."""
