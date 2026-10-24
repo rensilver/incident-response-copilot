@@ -1,0 +1,42 @@
+
+> incident-copilot-frontend@0.1.0 test
+> tsc && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (2.630824ms)
+✔ rejects null before treating a response as a report (0.437348ms)
+✔ rejects array before treating a response as a report (0.110053ms)
+✔ rejects HTML before treating a response as a report (0.095186ms)
+✔ rejects missing required summary before treating a response as a report (0.116185ms)
+✔ rejects coerced confidence before treating a response as a report (0.090477ms)
+✔ rejects low confidence before treating a response as a report (0.135992ms)
+✔ rejects high confidence before treating a response as a report (0.133998ms)
+✔ rejects non-finite confidence before treating a response as a report (0.117307ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.213816ms)
+✔ rejects missing evidence detail before treating a response as a report (0.130101ms)
+✔ rejects unknown evidence source before treating a response as a report (0.122697ms)
+✔ rejects invalid steps before treating a response as a report (0.095186ms)
+✔ rejects invalid date before treating a response as a report (0.096138ms)
+✔ rejects missing window end before treating a response as a report (0.080519ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.481991ms)
+✔ validates both public error shapes without rendering raw rejected payloads (0.679266ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (4017.647765ms)
+✔ browser paths map only investigations and health to the local backend (4.313896ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.945939ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.467354ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.348254ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.121795ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.431949ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.45404ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.661443ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.869688ms)
+✔ invalid backend origin is rejected without echoing its value: http (4.081808ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.721955ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.511936ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4099.311128

@@ -98,4 +98,5 @@ The application follows FastAPI's
 Offline contract coverage and the deliberately failing pre-fix runs are retained
 under [API contract validation](validation/2026-10-23-api-contract/README.md).
 The [same-origin proxy contract](proxy-contract.md) maps browser health requests
-explicitly to `/health`. Generated frontend types remain a separate task.
+explicitly to `/health`. The [frontend contract guide](frontend-api-contract.md)
+documents reproducible OpenAPI types, runtime parsing, and schema/type drift checks.

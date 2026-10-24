@@ -110,6 +110,12 @@ the next task. A request to commit includes authorization for that task's commit
   when syncing. Regenerate with `uv lock --project backend` only for intentional
   dependency changes and commit the lock with the manifest.
   Documentation-only changes require diff, reference, and scope checks.
+- After API schema changes, run `make api-contract` and commit both generated
+  artifacts in `frontend/src/lib/api/generated/`. Run `make api-contract-check`
+  and `npm --prefix frontend test` with the locked frontend dependencies installed.
+  Browser consumers validate unknown JSON using `frontend/src/lib/api/validation.ts`;
+  generated TypeScript types alone do not validate network responses. See the
+  [frontend contract guide](docs/frontend-api-contract.md).
 - Bound potentially stalled checks and retain failures. If the asyncio/thread stall
   recurs, distinguish the execution environment from application defects using the
   [baseline diagnostic](docs/validation/2026-10-21-baseline/checks.md#conditional-asyncio-investigation)

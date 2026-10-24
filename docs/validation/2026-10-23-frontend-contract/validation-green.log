@@ -1,0 +1,21 @@
+
+> incident-copilot-frontend@0.1.0 test
+> tsc && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ .contract-build/tests/api-contract.test.js (172.089109ms)
+✖ tests/generation.test.mjs (1938.484702ms)
+✔ tests/proxy-config.test.mjs (70.83394ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1951.576899
+
+✖ failing tests:
+
+test at tests/generation.test.mjs:1:1
+✖ tests/generation.test.mjs (1938.484702ms)
+  'test failed'

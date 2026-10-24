@@ -1,5 +1,5 @@
 .PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
-        docker-app-up seed demo-reset eval serve streamlit clean
+        docker-app-up seed demo-reset eval serve streamlit clean api-contract api-contract-check
 
 VENV ?= .venv
 UV ?= uv
@@ -76,3 +76,13 @@ streamlit:
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache backend/.mypy_cache \
 		backend/.ruff_cache backend/.pytest_cache
+
+# Export and verify the API boundary without starting serving resources.
+api-contract:
+	$(PY) backend/scripts/export_openapi.py
+	npm --prefix frontend run api:generate
+
+api-contract-check:
+	$(PY) backend/scripts/export_openapi.py --check
+	npm --prefix frontend run api:check
+	npm --prefix frontend run typecheck
