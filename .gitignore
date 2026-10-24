@@ -30,3 +30,7 @@ seed-*/
 /frontend/*.tsbuildinfo
 /frontend/playwright-report/
 /frontend/test-results/
+
+# Next.js automatically loads frontend dotenv variants; keep them private.
+/frontend/.env*
+!/frontend/.env.example

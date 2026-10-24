@@ -1,7 +1,8 @@
 # Frontend development
 
 The Next.js App Router foundation serves a static preview on port **3001**.
-Investigation controls and reports remain separate implementation tasks. The existing [API contract](../docs/frontend-api-contract.md) and
+Investigation controls and reports remain separate implementation tasks. The
+existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 
 Use Node.js 22.18+ and npm 10+. Dependencies are pinned in `package.json` and
@@ -93,3 +94,29 @@ Response bodies and low-level exceptions are never attached to errors. There are
 no automatic retries, persistent browser storage, or requests during shell render.
 Abort stops local I/O; backend/provider work may still run. Feature views will map
 these categories to accessible feedback when those views are implemented.
+
+## Host and container configuration
+
+The only frontend setting is the server-only `INCIDENT_COPILOT_BACKEND_ORIGIN`.
+Host development defaults to `http://127.0.0.1:8000`. Optionally copy
+`.env.example` to `frontend/.env.local`; Next loads dotenv files from `frontend/`,
+and shell variables override them. Frontend dotenv variants are ignored. Never
+copy the backend's root `.env` into the frontend or its image.
+
+Use the internal `http://app:8000` origin for a frontend on the Compose network:
+
+```bash
+INCIDENT_COPILOT_BACKEND_ORIGIN=http://app:8000 npm --prefix frontend run build
+```
+
+Production rewrites capture this value **at build time**. Rebuild when changing
+between host and container origins; setting it only for `npm start` cannot change
+a built destination. The image and Compose service are separate deployment work;
+this command prepares the routing configuration, not a container deployment.
+
+Browsers always call `/api/v1/investigations` and `/api/health`; neither the upstream
+origin nor model/tracing configuration belongs in browser code. Configuration
+rejects every `NEXT_PUBLIC_*` setting, including arbitrary credential aliases.
+Do not add keys through Next's `env` object or import server configuration into
+client modules. The frontend needs no provider/tracing credentials at build or
+runtime. The root backend configuration remains private and backend-owned.
