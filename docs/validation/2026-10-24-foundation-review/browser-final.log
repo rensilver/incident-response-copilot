@@ -1,0 +1,19 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+
+Running 10 tests using 1 worker
+
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (523ms)
+  ✓   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (353ms)
+  ✓   3 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (515ms)
+  ✓   4 [mobile-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (515ms)
+  ✓   5 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (388ms)
+  ✓   6 [tablet-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (349ms)
+  ✓   7 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (356ms)
+  ✓   8 [narrow-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (348ms)
+  ✓   9 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (329ms)
+  ✓  10 [desktop-no-js] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (280ms)
+
+  10 passed (7.9s)

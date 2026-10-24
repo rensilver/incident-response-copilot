@@ -28,10 +28,10 @@ snapshot, the snapshot against generated types, and strict TypeScript contracts.
 It requires no running backend, Docker, network, paid calls, or real credentials
 after dependencies are installed. CI integration belongs to deployment work.
 
-The minimal contract package uses Node >=22.18 and npm >=10; validation used Node
+The frontend package uses Node >=22.18 and npm >=10; validation used Node
 24.19.0/npm 11.17.0. It pins TypeScript 5.9.3, openapi-typescript 7.13.0, Ajv 8.20.0,
-and ajv-formats 3.0.1 in `frontend/package-lock.json`. This package provides API
-contract tooling; the Next.js application and its build/UI tooling are separate.
+and ajv-formats 3.0.1 in `frontend/package-lock.json`. The package also contains the
+[Next.js foundation and its checks](../frontend/README.md).
 
 ## Browser boundary
 
@@ -66,9 +66,12 @@ confidence, or repeat Pydantic's domain filtering/ranking logic.
 
 Response parsing covers malformed shapes, nested evidence, bounded confidence,
 health states/dependency booleans, both error bodies, and timestamp formats.
-Transport failures, JSON decoding failures, intermediary HTML, HTTP status
-handling, request aborts, retries, and screen rendering belong to the frontend
-transport/UI implementation. This change adds no browser fetch or UI.
+The [typed transport](../frontend/src/lib/api/client.ts) now owns JSON decoding,
+intermediary HTML rejection, HTTP status classification, sanitized network errors,
+and bounded/cancellable requests. Successful JSON is always parsed at runtime;
+HTTP error bodies are discarded rather than exposed. Transport never retries.
+The static shell does not invoke it. Form/report state and safe text rendering
+remain feature-view work; generated types do not replace runtime validation.
 
 ## Sources and evidence
 

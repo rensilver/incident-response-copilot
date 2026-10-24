@@ -97,13 +97,27 @@ a {
   margin-top: 0.5rem;
 }
 
-@media (max-width: 42rem) {
+@media (min-width: 40rem) and (max-width: 68.75rem) {
+  .workspace {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 39.999rem) {
   h1 {
     font-size: 1.5rem;
     line-height: 1.3334;
   }
 
   .workspace {
-    padding: 2rem 1.5rem;
+    padding: 2rem min(1rem, 5vw);
+  }
+
+  .site-header {
+    padding-inline: min(1rem, 5vw);
+  }
+
+  .preview {
+    padding: min(1.5rem, 5vw);
   }
 }

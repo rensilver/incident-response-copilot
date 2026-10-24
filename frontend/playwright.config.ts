@@ -17,6 +17,15 @@ export default defineConfig({
       name: "mobile-chromium",
       use: { ...devices["Pixel 7"] },
     },
+    {
+      name: "tablet-chromium",
+      use: { viewport: { width: 768, height: 1024 } },
+    },
+    { name: "narrow-chromium", use: { viewport: { width: 320, height: 740 } } },
+    {
+      name: "desktop-no-js",
+      use: { ...devices["Desktop Chrome"], javaScriptEnabled: false },
+    },
   ],
   webServer: {
     command: "npm run start -- --hostname 127.0.0.1",

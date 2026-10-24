@@ -55,10 +55,16 @@ npm run build
 npm run test:e2e
 ```
 
-The desktop and mobile smoke checks cover the real root route, keyboard skip
-navigation, horizontal overflow, JavaScript errors, and absence of external/API
-requests. Screenshots and failure traces go into ignored `test-results/`.
-These smoke checks do not validate investigation behavior or broad accessibility.
+Ten foundation browser checks cover desktop (1280px), tablet (768px), mobile
+(393px), narrow (320px), and desktop with page JavaScript disabled. They check
+keyboard skip navigation, horizontal overflow, JavaScript errors, absence of
+external/API requests, 200% text sizing, and reduced motion. Narrow spacing keeps
+ordinary heading words intact at enlarged text sizes. The 320px viewport checks
+reflow; text-size injection is not browser UI zoom emulation. Screenshots and
+failure traces go into ignored `test-results/`. These checks do not validate
+investigation behavior, actual browser zoom, screen readers, or broad accessibility.
+The [foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
+records inspected screenshots, design decisions, and feature-view boundaries.
 
 Use `npm --prefix frontend run format` to format authored frontend files. ESLint
 uses Next.js's Core Web Vitals and TypeScript configurations, with Prettier handling

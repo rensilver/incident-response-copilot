@@ -1,0 +1,12 @@
+.env
+REFACTORING_PLAN.md
+Review passed: 37 staged files; 28 local references; whitespace, credential patterns, scope, private files checked.
+2f518fc2dc5b786936cca092a20de7dfcd23832eb7e79ed35047266dca90857a docs/validation/2026-10-24-foundation-review/desktop-chromium-enlarged.png
+4c669d6f47fd95f4beaff35dcb34e59485c92e936f50c82d3c110c9c3c33cd4d docs/validation/2026-10-24-foundation-review/desktop-chromium.png
+4c669d6f47fd95f4beaff35dcb34e59485c92e936f50c82d3c110c9c3c33cd4d docs/validation/2026-10-24-foundation-review/desktop-no-js.png
+ba027f6989ca7fe00ca34c1ef650168afb19ca6faf8033c671345742430d919b docs/validation/2026-10-24-foundation-review/mobile-chromium.png
+49e9105cbb50622b636f16b2a8eb47d6dce94e6a4282429f249827b4d00b46a8 docs/validation/2026-10-24-foundation-review/narrow-chromium-enlarged.png
+0d901fd3ec2479df8fde3002b20f15e19611dee6a0547faaf2cf71ab422c2402 docs/validation/2026-10-24-foundation-review/narrow-chromium.png
+8f12536b54c0e907bd7734300c4c8d658e14c59c263864352596713e0487ba63 docs/validation/2026-10-24-foundation-review/tablet-chromium.png
+5ca3cf6cb606176ea7513b7d53049632d94c264f7d7012baa8d04d3f81e0da2d frontend/src/app/globals.css
+Preserved all 87 earlier action evidence files; commits are ancestors; locks/schema/backend/retained UI/Compose unchanged.
