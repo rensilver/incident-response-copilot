@@ -1,0 +1,149 @@
+npm --prefix frontend test
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (3.98553ms)
+✔ rejects null before treating a response as a report (0.779091ms)
+✔ rejects array before treating a response as a report (0.198988ms)
+✔ rejects HTML before treating a response as a report (0.153574ms)
+✔ rejects missing required summary before treating a response as a report (0.190503ms)
+✔ rejects coerced confidence before treating a response as a report (0.146291ms)
+✔ rejects low confidence before treating a response as a report (0.186104ms)
+✔ rejects high confidence before treating a response as a report (0.166718ms)
+✔ rejects non-finite confidence before treating a response as a report (0.186014ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.322196ms)
+✔ rejects missing evidence detail before treating a response as a report (0.301748ms)
+✔ rejects unknown evidence source before treating a response as a report (0.214527ms)
+✔ rejects invalid steps before treating a response as a report (0.178109ms)
+✔ rejects invalid date before treating a response as a report (0.143195ms)
+✔ rejects missing window end before treating a response as a report (0.173721ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.713679ms)
+✔ validates both public error shapes without rendering raw rejected payloads (1.118869ms)
+✔ investigations send JSON only to the same-origin API and validate the report (46.331197ms)
+✔ health uses the proxy path and retains degraded dependency results (1.207012ms)
+✔ HTTP 422 is classified without retrying or exposing response text (1.404367ms)
+✔ HTTP 503 is classified without retrying or exposing response text (0.663187ms)
+✔ HTTP 504 is classified without retrying or exposing response text (0.717056ms)
+✔ HTTP 500 is classified without retrying or exposing response text (0.604719ms)
+✔ malformed successful responses are rejected without exposing their body (1.235655ms)
+✔ malformed successful responses are rejected without exposing their body (0.871983ms)
+✔ malformed successful responses are rejected without exposing their body (0.774211ms)
+✔ health also validates unknown JSON (1.194979ms)
+✔ network errors are sanitized and never automatically retried (0.602975ms)
+✔ investigate aborts at its total budget (1.961176ms)
+✔ health aborts at its total budget (0.328077ms)
+✔ the deadline covers a stalled response body as well as headers (0.712528ms)
+✔ caller cancellation aborts the local fetch without claiming backend cancellation (0.619876ms)
+✔ a previously aborted caller never starts a request (0.23224ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_OPENAI_API_KEY's value (2.791932ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGSMITH_API_KEY's value (0.469348ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGCHAIN_API_KEY's value (0.307007ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_MODEL_TOKEN's value (0.337484ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_BACKEND_ORIGIN's value (2.077252ms)
+✔ backend-only provider/tracing settings are never forwarded into frontend configuration (1.304142ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (3642.411794ms)
+✔ browser paths map only investigations and health to the local backend (7.20841ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.949887ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.50287ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.798827ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.348744ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.56205ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (1.775123ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.596703ms)
+✔ invalid backend origin is rejected without echoing its value: http (2.495174ms)
+✔ invalid backend origin is rejected without echoing its value: http (1.090577ms)
+✔ invalid backend origin is rejected without echoing its value: http (1.406932ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.523639ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3743.979407
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/home/rensilver/workspaces/incident-response-copilot/frontend[39m
+
+ [32m✓[39m tests/components/accessibility.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1148[2mms[22m[39m
+   [33m[2m✓[22m[39m invalid submission focuses and describes the first rejected field[33m 466[2mms[22m[39m
+ [32m✓[39m tests/components/page.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1413[2mms[22m[39m
+   [33m[2m✓[22m[39m the workspace exposes labeled inputs and live degraded dependency results[33m 448[2mms[22m[39m
+   [33m[2m✓[22m[39m whitespace questions and invalid durations never reach the API[33m 433[2mms[22m[39m
+ [32m✓[39m tests/components/report.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1428[2mms[22m[39m
+   [33m[2m✓[22m[39m renders the actual report and every evidence source in API order[33m 721[2mms[22m[39m
+ [32m✓[39m tests/components/content.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1435[2mms[22m[39m
+   [33m[2m✓[22m[39m blank report fields and empty evidence are explicit without inventing content[33m 656[2mms[22m[39m
+   [33m[2m✓[22m[39m markup and markdown from all model fields stay literal and never become elements[33m 457[2mms[22m[39m
+ [32m✓[39m tests/components/session.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1636[2mms[22m[39m
+   [33m[2m✓[22m[39m pending state prevents duplicate submissions and does not invent progress[33m 624[2mms[22m[39m
+   [33m[2m✓[22m[39m errors preserve every input and only an explicit retry sends another request[33m 415[2mms[22m[39m
+ [32m✓[39m tests/components/failures.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 1970[2mms[22m[39m
+   [33m[2m✓[22m[39m HTTP 422 (HTML) gives safe, deliberate recovery[33m 614[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m52 passed[39m[22m[90m (52)[39m
+[2m   Start at [22m 20:53:59
+[2m   Duration [22m 4.94s[2m (environment 41%, tests 36%, import 9%, setup 8%, transform 7%)[22m
+
+npm --prefix frontend run lint
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+npm --prefix frontend run format:check
+
+> incident-copilot-frontend@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+/tmp/ic-phase7-py312/bin/python backend/scripts/export_openapi.py --check
+OpenAPI schema matches the backend.
+npm --prefix frontend run api:check
+
+> incident-copilot-frontend@0.1.0 api:check
+> node scripts/generate-api.mjs --check
+
+OpenAPI types match the schema.
+npm --prefix frontend run typecheck
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+npm --prefix frontend run build
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 19ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 575ms
+  Running TypeScript ...
+  Finished TypeScript in 1796ms ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 560ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
