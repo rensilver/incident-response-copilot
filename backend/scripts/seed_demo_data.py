@@ -35,7 +35,7 @@ logger = get_logger(__name__)
 # This script lives in backend/scripts; Docker bind mounts are rooted in the checkout.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROM_DATA = REPO_ROOT / "docker" / "prometheus" / "data"
-PROM_IMAGE = "prom/prometheus:latest"
+PROM_IMAGE = "prom/prometheus:v3.13.5"
 
 
 def backfill_metrics(openmetrics: str, data_dir: Path) -> None:
