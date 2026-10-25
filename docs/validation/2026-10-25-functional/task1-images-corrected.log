@@ -1,0 +1,133 @@
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+ Image incident-copilot-app Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 570B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 633B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12.14-slim-bookworm
+#3 DONE 0.2s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 339B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 4.82kB done
+#5 DONE 0.0s
+
+#6 [builder 1/6] FROM docker.io/library/python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e
+#6 resolve docker.io/library/python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e 0.0s done
+#6 DONE 0.0s
+
+#7 [builder 2/6] RUN pip install --no-cache-dir uv==0.12.5
+#7 CACHED
+
+#8 [builder 4/6] COPY backend/pyproject.toml backend/uv.lock ./
+#8 CACHED
+
+#9 [stage-1 3/4] COPY --from=builder /opt/venv /opt/venv
+#9 CACHED
+
+#10 [stage-1 2/4] WORKDIR /app
+#10 CACHED
+
+#11 [builder 3/6] WORKDIR /app
+#11 CACHED
+
+#12 [builder 5/6] COPY backend/src ./src
+#12 CACHED
+
+#13 [builder 6/6] RUN UV_PROJECT_ENVIRONMENT=/opt/venv uv sync --python /usr/local/bin/python3     --locked --no-dev --no-editable --no-cache
+#13 CACHED
+
+#14 [stage-1 4/4] COPY backend/src ./src
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 exporting manifest sha256:24db914ee0b33209a01ef829aba98cf336fb188350b195fb90fa93843b258e04 done
+#15 exporting config sha256:5184aef205c5bd0170d06118ce43c78f916cf7b54d7b8dddbc8e865157f69550 done
+#15 exporting attestation manifest sha256:845ec303f05dcb1b954884e257e073787cd4502280e96c40b309f476b5f9893c done
+#15 exporting manifest list sha256:675cb2bcf140b4f4d974a83198701403156673c3d05ffdc401f6dfe5ae7aa96b done
+#15 naming to docker.io/library/incident-copilot-app:latest done
+#15 unpacking to docker.io/library/incident-copilot-app:latest done
+#15 DONE 0.0s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.0s
+ Image incident-copilot-app Built
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+ Image incident-copilot-frontend Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.15kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 841B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22.23.4-bookworm-slim
+#3 DONE 0.2s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 274B done
+#4 DONE 0.0s
+
+#5 [dependencies 1/4] FROM docker.io/library/node:22.23.4-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d
+#5 resolve docker.io/library/node:22.23.4-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d 0.1s done
+#5 DONE 0.1s
+
+#6 [internal] load build context
+#6 transferring context: 1.41kB done
+#6 DONE 0.0s
+
+#7 [builder 3/5] COPY src ./src
+#7 CACHED
+
+#8 [builder 5/5] RUN npm run build
+#8 CACHED
+
+#9 [dependencies 3/4] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [dependencies 4/4] RUN npm ci --no-audit --no-fund
+#10 CACHED
+
+#11 [dependencies 2/4] WORKDIR /app
+#11 CACHED
+
+#12 [builder 1/5] COPY next.config.mjs tsconfig.json ./
+#12 CACHED
+
+#13 [runner 3/5] COPY --from=builder --chown=node:node /app/.next/standalone ./
+#13 CACHED
+
+#14 [runner 4/5] COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+#14 CACHED
+
+#15 [builder 4/5] COPY public ./public
+#15 CACHED
+
+#16 [builder 2/5] COPY config ./config
+#16 CACHED
+
+#17 [runner 5/5] COPY --from=builder --chown=node:node /app/public ./public
+#17 CACHED
+
+#18 exporting to image
+#18 exporting layers done
+#18 exporting manifest sha256:f80274deb27d1232c7a3e1b46f31554a3317d1363754481840bada915dba7f27 done
+#18 exporting config sha256:1e69ea52a0ae5daf7342318ec7db142033af2aa72a85d95b691a2d43be9021d2 done
+#18 exporting attestation manifest sha256:7ad35a5d1881bff02437df180443c5a1402a6127ba650d3ac990558fe786ad32 done
+#18 exporting manifest list sha256:a5f5937d199b584d47e0f2b6d723eb8d050311163167a4232ccc05188043dc19 done
+#18 naming to docker.io/library/incident-copilot-frontend:latest done
+#18 unpacking to docker.io/library/incident-copilot-frontend:latest done
+#18 DONE 0.0s
+
+#19 resolving provenance for metadata file
+#19 DONE 0.0s
+ Image incident-copilot-frontend Built

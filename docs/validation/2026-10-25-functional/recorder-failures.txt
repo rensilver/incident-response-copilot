@@ -1,0 +1,2 @@
+Initial direct-file Docker capture retained empty output despite exit 0.
+During conversion to PIPE, task2-images-pipe and task1-images-pipe each ended in FileNotFoundError reading an output file not yet written; their subprocesses had returned 0. No output from those two attempts was retained. Corrected fresh invocations are separately labelled.
