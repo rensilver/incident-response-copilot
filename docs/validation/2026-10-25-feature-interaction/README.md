@@ -55,3 +55,15 @@ and the original `time` machine value. Absent/null intervals are unavailable and
 never reconstructed from browser time or the form’s duration. `Intl.NumberFormat`
 preserves the supplied score precision without a gauge. API/model behavior and
 schema are unchanged. The five new cases bring component coverage to thirteen.
+
+## Task 3 — rank, severity, and confidence semantics
+
+Reviewed the rendered report hierarchy and added visible explanations: rank is
+model ordering, not severity or proof of causality; confidence is not calibrated
+probability or measured accuracy; observations are report citations requiring
+verification; next steps are suggestions. Candidate labels have the same neutral
+style and preserve API order. There is no severity inference, confidence meter,
+telemetry chart, simulated progress stage or report-history surface. No new logic
+was needed; existing report tests cover ordering and exact supplied scores.
+This copy/style change uses the required full checks rather than adding tests
+that merely mirror static prose.

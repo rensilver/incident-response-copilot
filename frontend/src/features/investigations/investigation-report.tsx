@@ -68,8 +68,15 @@ export function InvestigationReport({
           <span>{score.format(report.confidence)} / 1</span>
         </p>
       </section>
+      <p className="report-note">
+        Model confidence is not a calibrated probability or measured accuracy.
+      </p>
       <section className="report-section" aria-labelledby="causes-title">
         <h3 id="causes-title">Possible causes</h3>
+        <p className="report-note">
+          Candidates are ranked by the model. Rank does not indicate severity or
+          prove causality.
+        </p>
         <ol className="candidates" aria-label="Possible causes">
           {report.likely_causes.map((cause, index) => (
             <li key={index} className="candidate">
@@ -81,6 +88,9 @@ export function InvestigationReport({
                 <span>{score.format(cause.confidence)} / 1</span>
               </p>
               <h5>Supporting observations</h5>
+              <p className="report-note">
+                Report citations; verify against the source before acting.
+              </p>
               <ul className="evidence">
                 {cause.supporting_evidence.map((entry, position) => (
                   <li key={position}>
@@ -99,6 +109,7 @@ export function InvestigationReport({
       </section>
       <section className="report-section" aria-labelledby="steps-title">
         <h3 id="steps-title">Next steps</h3>
+        <p className="report-note">Suggested actions for review.</p>
         <ul>
           {report.next_steps.map((step, index) => (
             <li key={index}>{step}</li>
