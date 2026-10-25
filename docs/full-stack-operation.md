@@ -12,6 +12,11 @@ origin. Production Compose uses `http://app:8000` at frontend build time. Rebuil
 the frontend when changing that origin. The [frontend guide](../frontend/README.md)
 explains host configuration, response validation and browser checks.
 
+The full stack needs host ports 3001, 8000, 3000, 9090 and 9200 free. When another
+project owns a port, use a Compose override for the published host port; keep
+internal service URLs unchanged. The [validation review](validation/2026-10-25-full-stack/review.md)
+records the port-18000 backend override used on this checkout.
+
 | Purpose | Root command |
 | --- | --- |
 | Locked backend/dev installation | `make install` |

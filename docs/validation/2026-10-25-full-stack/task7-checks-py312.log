@@ -1,0 +1,1104 @@
+/tmp/ic-phase6-py312/bin/ruff check backend/src backend/tests
+All checks passed!
+/tmp/ic-phase6-py312/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+Success: no issues found in 60 source files
+/tmp/ic-phase6-py312/bin/black --config backend/pyproject.toml --check backend/src backend/tests
+All done! ✨ 🍰 ✨
+128 files would be left unchanged.
+/tmp/ic-phase6-py312/bin/pytest backend/tests/unit
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: langsmith-0.11.0, asyncio-1.4.0, respx-0.23.1, mock-3.15.1, anyio-4.14.2
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 615 items
+
+backend/tests/unit/agents/test_correlation_agent.py .....                [  0%]
+backend/tests/unit/agents/test_evidence_preservation.py ..........       [  2%]
+backend/tests/unit/agents/test_execution.py ......................       [  6%]
+backend/tests/unit/agents/test_graph.py ...................              [  9%]
+backend/tests/unit/agents/test_investigation_window.py ....              [  9%]
+backend/tests/unit/agents/test_prompts.py .........                      [ 11%]
+backend/tests/unit/agents/test_specialists.py ...                        [ 11%]
+backend/tests/unit/agents/test_state.py ....                             [ 12%]
+backend/tests/unit/agents/test_supervisor.py .......                     [ 13%]
+backend/tests/unit/agents/test_temporal_boundaries.py FFFFFF..FFFFFFFFFF [ 16%]
+                                                                         [ 16%]
+backend/tests/unit/agents/test_tool_loop.py .............                [ 18%]
+backend/tests/unit/analysis/test_summarise.py ....                       [ 19%]
+backend/tests/unit/analysis/test_thresholds.py .........                 [ 20%]
+backend/tests/unit/api/test_contract.py ............                     [ 22%]
+backend/tests/unit/api/test_disconnect.py ....                           [ 23%]
+backend/tests/unit/api/test_openapi_export.py ...                        [ 23%]
+backend/tests/unit/api/test_origin_contract.py ...                       [ 24%]
+backend/tests/unit/api/test_routes.py ..................                 [ 27%]
+backend/tests/unit/config/test_environment_loading.py .............      [ 29%]
+backend/tests/unit/config/test_openai_settings.py ....................   [ 32%]
+backend/tests/unit/config/test_settings.py ......                        [ 33%]
+backend/tests/unit/config/test_validation_environment.py .....           [ 34%]
+backend/tests/unit/connectors/test_elasticsearch.py ....                 [ 34%]
+backend/tests/unit/connectors/test_prometheus.py .....                   [ 35%]
+backend/tests/unit/connectors/test_promql.py .......                     [ 36%]
+backend/tests/unit/demo/test_curves.py ........                          [ 38%]
+backend/tests/unit/demo/test_es_index.py .....                           [ 39%]
+backend/tests/unit/demo/test_logs_render.py .......                      [ 40%]
+backend/tests/unit/demo/test_memory_evidence.py .....                    [ 40%]
+backend/tests/unit/demo/test_metrics_render.py ........                  [ 42%]
+backend/tests/unit/demo/test_scenarios.py ......                         [ 43%]
+backend/tests/unit/demo/test_seed_paths.py ......                        [ 44%]
+backend/tests/unit/evaluation/test_eval_runner.py ..........             [ 45%]
+backend/tests/unit/evaluation/test_scenarios.py ...                      [ 46%]
+backend/tests/unit/llm/test_factory.py .                                 [ 46%]
+backend/tests/unit/llm/test_fake_tool_calls.py .......                   [ 47%]
+backend/tests/unit/llm/test_openai_configuration.py ...                  [ 48%]
+backend/tests/unit/llm/test_openai_provider.py ......................... [ 52%]
+........................................................................ [ 63%]
+.............................                                            [ 68%]
+backend/tests/unit/llm/test_provider_contract.py ............            [ 70%]
+backend/tests/unit/llm/test_provider_health.py ......................... [ 74%]
+......                                                                   [ 75%]
+backend/tests/unit/llm/test_provider_imports.py .                        [ 75%]
+backend/tests/unit/llm/test_structured_repair.py .......                 [ 76%]
+backend/tests/unit/models/test_enums.py ..                               [ 77%]
+backend/tests/unit/models/test_findings.py .........                     [ 78%]
+backend/tests/unit/models/test_logs.py ...                               [ 79%]
+backend/tests/unit/models/test_metrics.py ....                           [ 79%]
+backend/tests/unit/models/test_report.py ......                          [ 80%]
+backend/tests/unit/services/test_deadline.py .........                   [ 82%]
+backend/tests/unit/services/test_incident_service.py ..........          [ 83%]
+backend/tests/unit/test_composition.py ..                                [ 84%]
+backend/tests/unit/test_main.py .......                                  [ 85%]
+backend/tests/unit/test_provider_failure_validator.py .........          [ 86%]
+backend/tests/unit/test_resource_lifecycle.py ......................     [ 90%]
+backend/tests/unit/test_script_paths.py ......................           [ 93%]
+backend/tests/unit/test_smoke.py .                                       [ 94%]
+backend/tests/unit/test_validation_metadata.py ........                  [ 95%]
+backend/tests/unit/tools/test_elasticsearch_tools.py ......              [ 96%]
+backend/tests/unit/tools/test_prometheus_tools.py ........               [ 97%]
+backend/tests/unit/utils/test_exceptions.py .....                        [ 98%]
+backend/tests/unit/utils/test_logging.py .                               [ 98%]
+backend/tests/unit/utils/test_tracing.py ........                        [100%]
+
+=================================== FAILURES ===================================
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1] _
+
+minutes = 1, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe9749b80>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580239845072'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580239845072'> = <MagicMock name='mock.search' id='131580239200336'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580239200336'> = <AsyncMock spec='AsyncElasticsearch' id='131580239676720'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=cddb8639-5126-48fa-8f97-2a146dd7018a
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-17] _
+
+minutes = 17, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe9723d10>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580239168144'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580239168144'> = <MagicMock name='mock.search' id='131580236966576'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580236966576'> = <AsyncMock spec='AsyncElasticsearch' id='131580239183744'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579 errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=71c83d71-5655-48e9-8d49-4444ec3c8579
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1440] _
+
+minutes = 1440, model_window = None
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe96a4c80>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580238981520'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580238981520'> = <MagicMock name='mock.search' id='131580239846992'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580239846992'> = <AsyncMock spec='AsyncElasticsearch' id='131580239850016'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84 errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=d4f3f1d5-99ef-4f7f-be7a-db2273dd1a84
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1] _
+
+minutes = 1
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe96a51c0>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580239133440'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580239133440'> = <MagicMock name='mock.search' id='131580238360464'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580238360464'> = <AsyncMock spec='AsyncElasticsearch' id='131580243572016'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=fa021f1c-0f8c-4e42-861b-6455d626a3dd
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-17] _
+
+minutes = 17
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe9aa7b00>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580243322656'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580243322656'> = <MagicMock name='mock.search' id='131580236964272'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580236964272'> = <AsyncMock spec='AsyncElasticsearch' id='131580243316992'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7 errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=41ae78e1-5362-479e-a892-79f05266f4b7
+_ test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1440] _
+
+minutes = 1440
+model_window = {'start': '2001-01-01T00:00:00Z', 'end': '2001-01-02T00:00:00Z'}
+mocker = <pytest_mock.plugin.MockerFixture object at 0x77abe9aa5b20>
+
+    @pytest.mark.parametrize("minutes", [1, 17, 1440])
+    @pytest.mark.parametrize("model_window", [None, SPOOFED_WINDOW], ids=["absent", "spoofed"])
+    async def test_service_window_matches_all_outgoing_queries_and_report_metadata(
+        minutes: int, model_window: dict[str, str] | None, mocker: MockerFixture
+    ) -> None:
+        # Advancing the clock exposes accidental per-tool recomputation of the window.
+        clock = mocker.patch("incident_copilot.models.metrics.datetime", wraps=datetime)
+        clock.now.side_effect = [END + timedelta(hours=index) for index in range(20)]
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(
+            [
+                '{"agents": ["metrics_agent", "logs_agent"], "reasoning": "both"}',
+                json.dumps(
+                    {
+                        "summary": "No observations",
+                        "likely_causes": [],
+                        "next_steps": [],
+                        "confidence": 0,
+                        "investigation_window": model_window,
+                    }
+                ),
+            ],
+            tool_rounds=[
+                [_call(name, args, index) for name, args in DEFINITIONS[offset : offset + 2]]
+                for offset in (0, 2)
+                for index in range(2)
+            ],
+        )
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            graph = build_graph(
+                provider,
+                build_metrics_tools(PrometheusConnector(client, "http://metrics.test")),
+                build_log_tools(ElasticsearchConnector(logs_client, "test-logs")),
+                Settings(_env_file=None, max_tool_rounds=2),
+            )
+            report = await IncidentService(graph).investigate(
+                InvestigationRequest(query="cart errors", minutes_back=minutes)
+            )
+
+        start = END - timedelta(minutes=minutes)
+        assert len(requests) == 4
+        assert {request.url.params["query"] for request in requests} == {
+            'sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / '
+            'sum(rate(http_requests_total{service="cart-service"}[5m]))',
+            "up",
+        }
+        for request in requests:
+            assert request.url.path == "/api/v1/query_range"
+            assert float(request.url.params["start"]) == start.timestamp()
+            assert float(request.url.params["end"]) == END.timestamp()
+>       assert logs_client.search.await_count == 4
+E       AssertionError: assert <MagicMock name='mock.search.await_count' id='131580239363008'> == 4
+E        +  where <MagicMock name='mock.search.await_count' id='131580239363008'> = <MagicMock name='mock.search' id='131580239127488'>.await_count
+E        +    where <MagicMock name='mock.search' id='131580239127488'> = <AsyncMock spec='AsyncElasticsearch' id='131580243567360'>.search
+
+backend/tests/unit/agents/test_temporal_boundaries.py:118: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [info     ] investigation_started          correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f query='cart errors' service=None
+2026-10-25 15:59:01 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent'] correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f results=0 round=1
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f results=2 round=1
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=0
+2026-10-25 15:59:01 [debug    ] promql_executed                correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f query=up series_count=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f results=0 round=2
+2026-10-25 15:59:01 [info     ] logs_agent_complete            correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f errors=4 findings=0
+2026-10-25 15:59:01 [debug    ] tool_round_complete            correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f results=4 round=2
+2026-10-25 15:59:01 [info     ] metrics_agent_complete         correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f errors=0 findings=4
+2026-10-25 15:59:01 [info     ] correlation_complete           causes=0 correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f
+2026-10-25 15:59:01 [info     ] investigation_complete         causes=0 correlation_id=3c08a565-1bb0-4f49-a317-b71eb155575f
+_ test_model_cannot_create_runtime_window_for_standalone_tools[search_logs-args2] _
+
+name = 'search_logs', args = {'service': 'cart-service'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+>       assert not outcome.errors
+E       assert not ["search_logs failed: elasticsearch search failed: object dict can't be used in 'await' expression"]
+E        +  where ["search_logs failed: elasticsearch search failed: object dict can't be used in 'await' expression"] = ToolLoopResult(results=[], errors=["search_logs failed: elasticsearch search failed: object dict can't be used in 'await' expression"]).errors
+
+backend/tests/unit/agents/test_temporal_boundaries.py:158: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [debug    ] tool_round_complete            results=0 round=1
+_ test_model_cannot_create_runtime_window_for_standalone_tools[log_level_histogram-args3] _
+
+name = 'log_level_histogram', args = {'service': 'cart-service'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    async def test_model_cannot_create_runtime_window_for_standalone_tools(
+        name: str, args: dict[str, Any]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        provider = FakeLLMProvider(["done"], tool_rounds=[[_call(name, args)]])
+        before = datetime.now(UTC)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            outcome = await run_tool_rounds(provider, tools, [], max_rounds=1)
+        after = datetime.now(UTC)
+
+>       assert not outcome.errors
+E       assert not ["log_level_histogram failed: elasticsearch search failed: object dict can't be used in 'await' expression"]
+E        +  where ["log_level_histogram failed: elasticsearch search failed: object dict can't be used in 'await' expression"] = ToolLoopResult(results=[], errors=["log_level_histogram failed: elasticsearch search failed: object dict can't be used in 'await' expression"]).errors
+
+backend/tests/unit/agents/test_temporal_boundaries.py:158: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-25 15:59:01 [debug    ] tool_round_complete            results=0 round=1
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-get_service_metric-args0] _
+
+name = 'get_service_metric'
+args = {'service': 'cart-service', 'kind': 'error_rate'}, invalid_window = {}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580236958704'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-raw_promql_query-args1] _
+
+name = 'raw_promql_query', args = {'query': 'up'}, invalid_window = {}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580239850208'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-search_logs-args2] _
+
+name = 'search_logs', args = {'service': 'cart-service'}, invalid_window = {}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580238348368'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-log_level_histogram-args3] _
+
+name = 'log_level_histogram', args = {'service': 'cart-service'}
+invalid_window = {}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580236828784'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-get_service_metric-args0] _
+
+name = 'get_service_metric'
+args = {'service': 'cart-service', 'kind': 'error_rate'}
+invalid_window = {'start': '2026-10-23T14:00:00Z', 'end': '2026-10-23T13:00:00Z'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580237870816'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-raw_promql_query-args1] _
+
+name = 'raw_promql_query', args = {'query': 'up'}
+invalid_window = {'start': '2026-10-23T14:00:00Z', 'end': '2026-10-23T13:00:00Z'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580249542096'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-search_logs-args2] _
+
+name = 'search_logs', args = {'service': 'cart-service'}
+invalid_window = {'start': '2026-10-23T14:00:00Z', 'end': '2026-10-23T13:00:00Z'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580239848912'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+_ test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-log_level_histogram-args3] _
+
+name = 'log_level_histogram', args = {'service': 'cart-service'}
+invalid_window = {'start': '2026-10-23T14:00:00Z', 'end': '2026-10-23T13:00:00Z'}
+
+    @pytest.mark.parametrize(("name", "args"), DEFINITIONS)
+    @pytest.mark.parametrize(
+        "invalid_window",
+        [{}, {"start": "2026-10-23T14:00:00Z", "end": "2026-10-23T13:00:00Z"}],
+        ids=["missing-boundaries", "inverted"],
+    )
+    async def test_invalid_runtime_window_never_falls_back_to_model_duration(
+        name: str, args: dict[str, Any], invalid_window: dict[str, str]
+    ) -> None:
+        requests: list[httpx.Request] = []
+
+        def respond(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(200, json={"status": "success", "data": {"result": []}})
+
+        logs_client = _logs_client()
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+            tools = build_metrics_tools(PrometheusConnector(client, "http://metrics.test"))
+            tools += build_log_tools(ElasticsearchConnector(logs_client, "test-logs"))
+            tool = next(tool for tool in tools if tool.name == name)
+            with pytest.raises(ValidationError):
+                await tool.ainvoke(
+                    {**args, "minutes_back": 60},
+                    config={"configurable": {INVESTIGATION_WINDOW_KEY: invalid_window}},
+                )
+        assert not requests
+>       logs_client.search.assert_not_awaited()
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/unit/agents/test_temporal_boundaries.py:200:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='mock.search' id='131580239361616'>
+name = 'assert_not_awaited'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+            raise AttributeError(name)
+        if not self._mock_unsafe and (not self._mock_methods or name not in self._mock_methods):
+            if name.startswith(('assert', 'assret', 'asert', 'aseert', 'assrt')) or name in _ATTRIB_DENY_LIST:
+>               raise AttributeError(
+                    f"{name!r} is not a valid assertion. Use a spec "
+                    f"for the mock if {name!r} is meant to be an attribute.")
+E               AttributeError: 'assert_not_awaited' is not a valid assertion. Use a spec for the mock if 'assert_not_awaited' is meant to be an attribute.. Did you mean: 'assert_not_called'?
+
+../../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/unittest/mock.py:665: AttributeError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-17]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[absent-1440]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-17]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_service_window_matches_all_outgoing_queries_and_report_metadata[spoofed-1440]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[search_logs-args2]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_model_cannot_create_runtime_window_for_standalone_tools[log_level_histogram-args3]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-get_service_metric-args0]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-raw_promql_query-args1]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-search_logs-args2]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[missing-boundaries-log_level_histogram-args3]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-get_service_metric-args0]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-raw_promql_query-args1]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-search_logs-args2]
+FAILED backend/tests/unit/agents/test_temporal_boundaries.py::test_invalid_runtime_window_never_falls_back_to_model_duration[inverted-log_level_histogram-args3]
+======================= 16 failed, 599 passed in 38.68s ========================
+make: *** [Makefile:74: test] Error 1

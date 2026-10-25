@@ -1,0 +1,1 @@
+{"uid": 10001, "provider": "openai", "model": "gpt-6-luna", "tracing": false, "budget_seconds": 240.0, "internal_origins_verified": true, "retired_and_dev_packages_absent": true, "dotenv_file_absent": true}

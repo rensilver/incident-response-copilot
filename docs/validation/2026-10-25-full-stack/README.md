@@ -182,3 +182,63 @@ assertions pass. Fresh sequential `make check` passes all 615 backend cases,
 production build (`task6-local-check.log`). Hosted Actions execution remains
 unverified until this branch is pushed; no push is authorized or performed.
 Fresh isolated Python 3.12/3.13 installations are verified in task 7.
+
+## Task 7: clean installs and deployed verification
+
+[Final review and exact reproduction](review.md) consolidate the action. Fresh
+Python 3.12.14 and 3.13.13 environments each pass all 615 backend cases plus
+Ruff/strict mypy/Black, with retired provider/UI packages absent. The clean 3.12
+attempt first exposed sixteen SDK mock-introspection failures; the existing test
+helper now sets an explicit async `search` mock. All eighteen focused cases and
+both full suites pass. Initial failures remain in `task7-checks-py312.log`; corrected
+results are separate (`task7-temporal-py312-green.log`, `task7-checks-py312-fixed.log`,
+`task7-checks-py313.log`). Runtime graph/connector code is unchanged.
+
+Clean npm installation, 104 frontend cases, lint/format/types, contract consistency,
+production build and 31 Chromium fixture cases (nine intentional skips) pass. See
+`task7-install-frontend.log`, `task7-frontend-checks.log`, `task7-browser-fixtures.log`.
+`timeout 900s make build` builds both production images sequentially; base digests,
+locked dependency installation and identities are retained in `task7-images.log`.
+
+The first bounded `make docker-up` downloaded all pinned service images, then
+failed because another project owned host 8000 (`task7-startup.log`). An isolated
+host-18000 mapping let the same root startup command pass
+(`task7-startup-isolated.log`); frontend 3001 → internal app:8000 is unchanged.
+Default host-8000 binding is therefore an environmental limitation, not a passed
+check. No unrelated listener was stopped. The reproducible override is
+`ports.override.yml` (Compose 2.24.4+); the production default stays host 8000.
+All five services become healthy (`task7-running-services.json`).
+
+`timeout 180s make seed VENV=/tmp/ic-phase6-py312` with local Elasticsearch selected
+and the same Compose override creates six metric blocks and 1,236 logs across all
+three scenarios (`task7-seed.log`). The six live seeded-connector cases pass with
+`INCIDENT_COPILOT_ENV_FILE='' LANGSMITH_TRACING=false LANGCHAIN_TRACING_V2=false
+ timeout 90s /tmp/ic-phase6-py312/bin/pytest
+ backend/tests/integration/test_seeded_stack.py -m integration`
+(`task7-seeded-connectors.log`). This command performs no model inference.
+
+One explicitly live Chromium probe, bounded at 360s, passes without fixtures or
+retries: `node docs/validation/2026-10-25-full-stack/browser-smoke.mjs NEW_OUTPUT.json
+ --live`. HTTP 200, 23.818s click-to-body, one candidate/two observations, exact
+180-minute API/display datetime attributes and `ok` dependency health. Saved
+request/report/health/timing: `task7-live-browser.json`; command outcome:
+`task7-live-browser.log`. This is deployment plumbing evidence, not an RCA score.
+No separate API/model latency or paid failure matrix is claimed.
+
+Actual runtime audits pass (`task7-{backend,frontend}-runtime.log`): non-root users,
+exact model and internal service URLs, no retired/dev packages in the backend,
+no frontend backend credentials/public settings, Node 22.23.4 and container-origin
+rewrites. Tracing is disabled; its enabled live validation remains later work.
+
+`timeout 300s make docker-down` with the override stops/removes all five services
+and their network (`task7-shutdown.log`). No project container remains running;
+the unrelated listener retains identical identity/start time
+(`task7-teardown-audit.log`). No volume was deleted. The pre-existing retired
+stopped orphan reported by Compose was neither started nor deleted. Task-created
+ignored override/snapshot scratch is removed; generated metrics remain ignored.
+
+Final scope/reference/whitespace/credential/ignored-file checks are recorded in
+`task7-final-audit.log`. Raw log trailing whitespace is normalized; failures and
+attempts remain intact. Hosted CI and default host-8000 binding are the explicit
+unverified limitations. All seven tasks end at this action's review/commit boundary;
+no later-phase implementation, push or public deployment was performed.

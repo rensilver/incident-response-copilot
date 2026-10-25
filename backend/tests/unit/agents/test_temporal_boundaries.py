@@ -52,10 +52,13 @@ def _call(name: str, args: dict[str, Any], index: int = 0) -> dict[str, Any]:
 
 def _logs_client() -> AsyncMock:
     client = AsyncMock(spec=AsyncElasticsearch)
-    client.search.return_value = {
-        "hits": {"total": {"value": 0}, "hits": []},
-        "aggregations": {"levels": {"buckets": []}},
-    }
+    # SDK decorators hide the coroutine from Python 3.12's spec introspection.
+    client.search = AsyncMock(
+        return_value={
+            "hits": {"total": {"value": 0}, "hits": []},
+            "aggregations": {"levels": {"buckets": []}},
+        }
+    )
     return client
 
 
