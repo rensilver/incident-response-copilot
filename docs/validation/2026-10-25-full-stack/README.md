@@ -83,3 +83,25 @@ does not promise cancellation of backend work.
 `task2-proxy.log`). Live health executables/startup ordering are checked in task 7.
 Configuration-only change: no API routes/schema or graph behavior changed.
 Raw recovered logs have trailing whitespace normalized without removing outcomes.
+
+## Task 3: restricted build contexts
+
+Root/backend and frontend contexts now use explicit input allowlists. Only the
+locked backend manifest/package or frontend manifest/config/source/public assets
+are admitted. Secret dotenv/key files are excluded even under allowed directories;
+local plans, VCS, virtualenvs, node_modules, generated builds/data, tests, media and
+documentation are outside the input lists.
+
+Checked Docker's actual matcher using an ephemeral scratch Dockerfile supplied on
+stdin: `docker buildx build --no-cache --progress=plain --output type=tar,dest=... -f - .`
+and the corresponding frontend context. Inspected tar members without extracting
+or printing contents. All exported file paths satisfy the exact allowlists
+(`task3-context-audit.log`, `task3-{backend-context-fixed,frontend-context}.log`).
+Temporary archives were removed. No production image built in this task.
+
+Retained initial failures: Python-wrapped local export failed (`task3-contexts.log`);
+a direct probe identified `lchownat backend: operation not permitted` in the local
+exporter. Tar export in the workspace succeeds without ownership changes. The
+first backend tar admitted backend tests/caches due to a parent reinclusion rule;
+adding an explicit backend-child exclusion before specific reinclusions fixed it.
+The final tar audit excludes them. No secrets were admitted by either attempt.
