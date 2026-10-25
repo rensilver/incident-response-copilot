@@ -2,7 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { createApiClient } from "../../lib/api/client";
-import type { InvestigationRequest } from "../../lib/api/types";
+import { InvestigationReport } from "./investigation-report";
+import type { IncidentReport, InvestigationRequest } from "../../lib/api/types";
 
 const presets = [
   {
@@ -31,6 +32,10 @@ export function InvestigationSession(): React.JSX.Element {
     query?: string | undefined;
     minutes?: string | undefined;
   }>({});
+  const [result, setResult] = useState<{
+    report: IncidentReport;
+    request: InvestigationRequest;
+  } | null>(null);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState(
     "Describe an incident or choose a seeded scenario.",
@@ -60,7 +65,8 @@ export function InvestigationSession(): React.JSX.Element {
     setPending(true);
     setMessage("Investigating…");
     try {
-      await createApiClient().investigate(request);
+      const report = await createApiClient().investigate(request);
+      setResult({ report, request });
       setMessage("Investigation received.");
     } catch {
       setMessage(
@@ -162,6 +168,12 @@ export function InvestigationSession(): React.JSX.Element {
       </form>
       <section className="result-area" aria-label="Investigation result">
         <p role="status">{message}</p>
+        {result ? (
+          <InvestigationReport
+            report={result.report}
+            request={result.request}
+          />
+        ) : null}
       </section>
     </div>
   );

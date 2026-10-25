@@ -42,3 +42,16 @@ The first rebuilt browser run passed five normal cases but failed five enlarged
 text cases: the old shell assertion assumed every paragraph was 16px. New
 proposal-specified 14px metadata correctly scaled to 28px. The check now uses
 that minimum; it still requires doubled sizes, intact headings and no overflow.
+
+## Task 2 — actual report and authoritative UTC interval
+
+Five regression cases failed before report rendering, then passed. API candidates
+and observations retain their original order even when a later confidence score
+is higher. Summary, rationale, source labels, detail, next steps and full numeric
+confidence come from the validated response. The report captures submitted context
+rather than reading subsequently edited inputs. `Intl.DateTimeFormat` converts
+server offset timestamps to explicitly labeled UTC, keeping millisecond precision
+and the original `time` machine value. Absent/null intervals are unavailable and
+never reconstructed from browser time or the form’s duration. `Intl.NumberFormat`
+preserves the supplied score precision without a gauge. API/model behavior and
+schema are unchanged. The five new cases bring component coverage to thirteen.

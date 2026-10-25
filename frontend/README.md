@@ -3,7 +3,10 @@
 The Next.js App Router workspace runs on port **3001**. Three seeded presets
 fill an editable question, optional service filter, and 1–1440 minute window.
 Only explicit submission starts investigation work; health checks are independent.
-Report rendering and further interaction hardening are in progress. The
+Reports show the API summary, ordered candidates and observations, confidence,
+next steps, and the authoritative queried start/end converted to explicit UTC.
+The report retains the submitted context when form values change. Further
+interaction hardening is in progress. The
 existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 

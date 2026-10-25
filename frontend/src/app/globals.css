@@ -261,3 +261,101 @@ textarea {
     padding: min(1.5rem, 5vw);
   }
 }
+
+h3,
+h4,
+h5 {
+  margin: 0;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: 1.375rem;
+}
+h4 {
+  font-size: 1.125rem;
+}
+h5 {
+  font-size: 1rem;
+}
+
+.report {
+  margin-top: 1rem;
+}
+.report p {
+  max-width: 72ch;
+  white-space: pre-wrap;
+}
+.submitted-question {
+  margin-top: 0.75rem;
+}
+.report-context {
+  margin-block: 1rem 0;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.report-context > div {
+  margin-top: 0.5rem;
+}
+.report-context dt {
+  font-weight: 500;
+}
+.report-context dd {
+  margin: 0;
+}
+.report-section {
+  margin-top: 2rem;
+}
+.report-section h3 + p,
+.candidate h4 + p {
+  margin-top: 0.75rem;
+}
+.confidence {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.candidates {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+}
+.candidate + .candidate {
+  margin-top: 2rem;
+  border-top: 1px solid var(--ink);
+  padding-top: 1.5rem;
+}
+.candidate-rank {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.candidate h5 {
+  margin-top: 1.5rem;
+}
+.evidence {
+  list-style: none;
+  padding: 0;
+  margin-block: 0.75rem 0;
+}
+.evidence li {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 0.5rem;
+}
+.evidence-source {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.log-detail {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5715;
+}
+@media (max-width: 39.999rem) {
+  .evidence li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}

@@ -1,0 +1,31 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:152853) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:152865) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (613ms)
+  ✓   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:47:1 › the shell reflows with enlarged text and reduced motion (577ms)
+(node:152992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (673ms)
+  ✓   4 [mobile-chromium] › tests/e2e/foundation.spec.ts:47:1 › the shell reflows with enlarged text and reduced motion (805ms)
+(node:153098) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (635ms)
+  ✓   6 [tablet-chromium] › tests/e2e/foundation.spec.ts:47:1 › the shell reflows with enlarged text and reduced motion (626ms)
+(node:153244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (611ms)
+  ✓   8 [narrow-chromium] › tests/e2e/foundation.spec.ts:47:1 › the shell reflows with enlarged text and reduced motion (791ms)
+(node:153432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (457ms)
+  ✓  10 [desktop-no-js] › tests/e2e/foundation.spec.ts:47:1 › the shell reflows with enlarged text and reduced motion (476ms)
+
+  10 passed (10.7s)
