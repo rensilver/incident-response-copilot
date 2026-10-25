@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm",
+    "--prefix",
+    "frontend",
+    "run",
+    "test:e2e:timeouts",
+    "--",
+    "--list"
+  ],
+  "exit_code": 1,
+  "seconds": 1.55
+}

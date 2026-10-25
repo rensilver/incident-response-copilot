@@ -1,0 +1,21 @@
+{
+  "mode": "browser deadline fixture",
+  "elapsedMs": 300189,
+  "checks": [
+    {
+      "mode": "browser deadline fixture",
+      "chunks": 29,
+      "closedAfterMs": 299992
+    },
+    {
+      "mode": "proxy inactivity fixture",
+      "chunks": 0,
+      "closedAfterMs": 270007
+    },
+    {
+      "mode": "backend deadline fixture",
+      "chunks": 0,
+      "closedAfterMs": 31001
+    }
+  ]
+}

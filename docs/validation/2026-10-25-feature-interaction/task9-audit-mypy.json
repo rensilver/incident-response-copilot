@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".venv/bin/mypy",
+    "--config-file",
+    "backend/pyproject.toml",
+    "--strict",
+    "docs/validation/2026-10-25-feature-interaction/review_audit.py"
+  ],
+  "exit_code": 0,
+  "seconds": 0.33
+}

@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  testIgnore: "**/real-timeouts.spec.ts",
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   workers: 1,

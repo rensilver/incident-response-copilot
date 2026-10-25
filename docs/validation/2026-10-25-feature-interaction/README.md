@@ -216,3 +216,76 @@ actions, overlays, incident URL state or raw HTML exist. Static framing stays
 server-rendered; expensive premature memoization/virtualization was not added.
 Screen readers, Firefox/WebKit, notched hardware and large-report performance
 profiling remain outside the performed checks. A report is never persisted.
+
+## Task 9 — full controlled browser verification and final review
+
+The expanded normal browser matrix passes 31 cases with nine intentional project
+skips. Two new cases per JavaScript project exercise all three preset submissions
+and nine failure variants followed by a successful manual retry. These include
+JSON 503 (with quota-like text that must not leak), explicit 429, HTML 500, 504,
+422, HTML 200, broken JSON, schema-invalid JSON and connection reset. Each attempt
+preserves query/service/duration, has safe feedback and appropriate focus, and
+sends exactly one request per deliberate action. The successful preset sequence
+also checks that incident state is absent from query strings and browser storage.
+[Unavailable investigation](controlled-unavailable.png) is a controlled 503 view,
+not a captured provider outage.
+
+The separate opt-in real-timeout configuration owns a loopback HTTP fixture on
+18765 plus the production Next server on 3001. Its build-origin guard first
+correctly rejected the ordinary 8000 build, before server startup or model access.
+A dedicated build then targets the fixture. This suite uses real wall time,
+actual sockets, the configured 270-second proxy inactivity timer and 300-second
+browser total fetch/body timer; no clock acceleration or production budget changes
+are used. A controlled backend 504 waits 31 seconds to cross the common default
+proxy threshold. An idle connection exercises the real proxy timer; a continuously
+arriving incomplete JSON body keeps proxy activity alive while the browser's
+independent total budget expires. This verifies the UI and proxy; it is not a live
+FastAPI/OpenAI investigation or a new measurement of the default backend deadline.
+
+Reproduce the long suite using the commands in the
+[frontend guide](../../../frontend/README.md#real-elapsed-time-timeout-checks).
+The bounded shared recorder command is:
+
+```bash
+python3 docs/validation/2026-10-24-frontend-boundaries/run_check.py docs/validation/2026-10-25-feature-interaction task9-real-timeouts frontend 400 npm run test:e2e:timeouts
+```
+
+It clears inherited environment except PATH, bounds the full suite to 400 seconds,
+cleans up its process group if stalled, and records `checks.jsonl` plus the named
+log. Other task command/exit/duration records remain paired `.json`/`.log` files.
+The explicitly expected origin-guard failure is evidence of isolation, not an
+unresolved failing check. All historical failures in tasks 1–8 remain intact.
+
+All three real-time paths passed in one planned run (304.045 seconds including
+runner/server setup). Measured from the explicit browser click to visible failure:
+
+| Path | Elapsed | Retained evidence |
+|---|---:|---|
+| Controlled backend 504 through the production rewrite | 31.226 s | [timing](task9-backend-deadline-timing.json), [UI](controlled-backend-deadline.png) |
+| Real configured proxy inactivity expiry | 270.297 s | [timing](task9-proxy-inactivity-timing.json), [UI](controlled-proxy-inactivity.png) |
+| Real configured browser total fetch/body expiry | 300.189 s | [timing](task9-browser-deadline-timing.json), [UI](controlled-browser-deadline.png) |
+
+The streaming fixture sent 29 body chunks before browser expiry. Fixture-side
+close times are separate from click-to-UI timing. The proxy returned a safe generic
+500 after its socket timeout; the browser deadline produced the explicit
+five-minute message and backend-may-continue caveat. Expected Next ECONNRESET
+server diagnostics remain in the check log and never appear in the UI. Every mode
+had one deliberate attempt. Inspected the retained timeout screenshots; no
+response-body diagnostics, credentials or raw HTML appear. Form values remain.
+
+The final [review](review.md) maps all nine tasks to checks, commits and boundaries.
+
+Final production restore and verification pass: the investigation rewrite again
+targets `http://127.0.0.1:8000`; resource-free backend schema export and frontend
+type drift both match; strict route/type generation, production build and all 31
+normal browser cases pass. The opt-in fixture/Next processes are stopped by their
+runner. [review_audit.py](review_audit.py) reproduces scope/reference, original
+commit preservation, generated-contract and root-dotenv-value exclusion checks;
+it never prints credential values. Run it with `.venv/bin/python` from any working
+directory. Ruff, strict mypy and Black pass for this documentation helper.
+
+The final root Python checks also pass: `make lint` (Ruff and strict mypy, 60 source
+files), `make test` (635 offline unit cases in 41.90 seconds) and
+`make format-check` (132 files). Dotenv loading was disabled explicitly. The
+retained Streamlit strict mypy and Ruff checks pass. The backend application was
+not changed; these fresh checks also verify the preserved parity foundation.

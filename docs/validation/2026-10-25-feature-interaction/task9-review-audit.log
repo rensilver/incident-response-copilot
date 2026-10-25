@@ -1,0 +1,10 @@
+{
+  "scope": "frontend and new action evidence only",
+  "files_scanned": 324,
+  "local_references_checked": 25,
+  "generated_contract_unchanged": true,
+  "private_files_ignored_and_untracked": true,
+  "root_dotenv_private_value_scan": "pass (values omitted)",
+  "browser_artifact_scan": "pass",
+  "earlier_commits_preserved": true
+}
