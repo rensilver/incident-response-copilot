@@ -1,5 +1,8 @@
 # Incident Response Copilot
 
+Current local Docker and host commands are documented in the
+[full-stack operation guide](docs/full-stack-operation.md).
+
 An agentic AI system that helps engineers investigate production incidents faster. It turns a service symptom into a structured
 report using Prometheus metrics and Elasticsearch logs. A LangGraph supervisor
 routes work to metrics and logs specialists; a correlation agent proposes ranked

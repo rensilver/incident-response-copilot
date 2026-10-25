@@ -126,8 +126,10 @@ INCIDENT_COPILOT_BACKEND_ORIGIN=http://app:8000 npm --prefix frontend run build
 
 Production rewrites capture this value **at build time**. Rebuild when changing
 between host and container origins; setting it only for `npm start` cannot change
-a built destination. The image and Compose service are separate deployment work;
-this command prepares the routing configuration, not a container deployment.
+a built destination. `make docker-up` builds the standalone image with this
+internal origin and starts the five-service stack. See the
+[full-stack operation guide](../docs/full-stack-operation.md) for root commands,
+seeding, readiness, ports and shutdown.
 
 Browsers always call `/api/v1/investigations` and `/api/health`; neither the upstream
 origin nor model/tracing configuration belongs in browser code. Configuration

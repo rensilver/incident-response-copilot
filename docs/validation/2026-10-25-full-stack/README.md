@@ -105,3 +105,22 @@ exporter. Tar export in the workspace succeeds without ownership changes. The
 first backend tar admitted backend tests/caches due to a parent reinclusion rule;
 adding an explicit backend-child exclusion before specific reinclusions fixed it.
 The final tar audit excludes them. No secrets were admitted by either attempt.
+
+## Task 4: root operation commands
+
+Added explicit root frontend install/dev/build/lint/types/tests/format/browser
+commands, combined sequential install/check commands, sequential production image
+builds, bounded health-waiting startup, observability-only startup for host
+processes, and metric readiness after seeding. `docker-app-up` remains an alias.
+Removed the unbounded Elasticsearch polling loop. Existing backend command names,
+absolute `VENV` selection, evaluation and explicit destructive reset remain intact.
+
+The [operation guide](../../full-stack-operation.md) documents directories,
+configuration boundaries, ports, commands, seed effects and shutdown. README and
+frontend guide link it. Streamlit removal remains task 5; no historical measurements
+were replaced. `make -n install-all check build docker-up docker-down
+ docker-observability-up seed eval typecheck frontend-dev` passes
+(`task4-make-dry-run.log`), as do `make lint format-check` and
+`make frontend-lint frontend-format-check frontend-typecheck`
+(`task4-{static,frontend-checks}.log`). Live image/start/seed/down recipes run in
+task 7. Referenced guide files exist; `git diff --check` passes.

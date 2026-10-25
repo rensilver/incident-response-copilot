@@ -1,0 +1,69 @@
+make install
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+UV_PROJECT_ENVIRONMENT="/home/rensilver/workspaces/incident-response-copilot/.venv" uv sync --project backend \
+	--python 3.12.14 --locked --extra dev --inexact
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make install-frontend
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend ci --no-audit --no-fund
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make lint
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+.venv/bin/ruff check backend/src backend/tests
+.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make format-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+.venv/bin/black --config backend/pyproject.toml --check backend/src backend/tests streamlit_app
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make test
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+.venv/bin/pytest backend/tests/unit
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make frontend-lint
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend run lint
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make frontend-format-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend run format:check
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make frontend-test
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend test
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make api-contract-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+.venv/bin/python backend/scripts/export_openapi.py --check
+npm --prefix frontend run api:check
+npm --prefix frontend run typecheck
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make frontend-build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend run build
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+make build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+mkdir -p docker/prometheus/data
+mkdir -p docker/grafana/provisioning/datasources docker/grafana/provisioning/dashboards
+docker compose up -d --no-build --wait --wait-timeout 180
+echo "stack up: frontend :3001  backend :8000  grafana :3000  prometheus :9090  elasticsearch :9200"
+docker compose down
+mkdir -p docker/prometheus/data
+docker compose up -d --wait --wait-timeout 180 prometheus elasticsearch grafana
+.venv/bin/python backend/scripts/seed_demo_data.py
+docker compose restart prometheus
+docker compose up -d --no-deps --wait --wait-timeout 60 prometheus
+echo "seeded; prometheus restarted"
+.venv/bin/python -m incident_copilot.evaluation.eval_runner
+.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+make frontend-typecheck
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend run typecheck
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend run dev
