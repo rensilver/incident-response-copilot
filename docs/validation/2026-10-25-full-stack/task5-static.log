@@ -1,0 +1,7 @@
+.venv/bin/ruff check backend/src backend/tests
+All checks passed!
+.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+Success: no issues found in 60 source files
+.venv/bin/black --config backend/pyproject.toml --check backend/src backend/tests
+All done! ✨ 🍰 ✨
+128 files would be left unchanged.

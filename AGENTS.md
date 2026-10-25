@@ -18,8 +18,9 @@ report history, and additional production providers are outside the current scop
 The Python project lives in `backend/`, including `src/incident_copilot/`,
 `tests/`, backend `scripts/`, `pyproject.toml`, and `Dockerfile`. Root Make targets
 use the root `.venv/`; root `pytest.ini` configures collection from both root and
-`backend/`. `streamlit_app/` and its validator in root `scripts/` remain until the
-authorized frontend replacement. Further migration tasks remain in the local plan.
+`backend/`. The Next.js application, browser checks and production image live in
+`frontend/`. Root commands and local stack operation are documented in
+`docs/full-stack-operation.md`. Further migration tasks remain in the local plan.
 
 Checkout/editable settings load the root `.env` independently of the working
 directory; process variables override file values. Installed wheels use process
@@ -29,7 +30,7 @@ Offline tests disable dotenv loading before application collection.
 
 Checkout backend scripts import `backend/src/` directly. Evaluation/validation
 recorders resolve relative output paths from the repository root and preserve
-absolute paths; browser media stays within the selected output directory.
+absolute paths; Playwright browser artifacts stay in `frontend/test-results/`.
 
 The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
 requires explicit owner authorization for each task. Complete the authorized
@@ -98,12 +99,11 @@ the next task. A request to commit includes authorization for that task's commit
   they must run without Docker, network access, live credentials, or the owner's `.env`.
   Put live dependency checks in `backend/tests/integration` with the integration marker.
 - From the current repository root, run `make lint`, `make test`, and
-  `make format-check` for relevant Python changes. UI changes also require
-  `.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app` and
-  `.venv/bin/ruff check --config backend/pyproject.toml streamlit_app`.
+  `make format-check` for relevant Python changes.
   Packaging uses uv 0.12.5 and `backend/uv.lock` with Python 3.12/3.13 (default
   3.12.14 in `backend/.python-version`). `make install` installs locked backend/dev
-  dependencies; `make install-ui` also installs the UI extra. Both retain unrelated
+  dependencies; `make install-frontend` uses the frontend npm lock, and
+  `make install-all` runs both sequentially. Backend installation retains unrelated
   packages in compatible environments; changing Python recreates the environment.
   Use `VENV=/absolute/path` and optionally `PYTHON=3.13` for isolated checks.
   From `backend/`, set `UV_PROJECT_ENVIRONMENT` to the absolute root `.venv/` path

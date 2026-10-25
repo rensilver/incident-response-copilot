@@ -1,5 +1,5 @@
-.PHONY: install install-ui lint format format-check test test-integration docker-up docker-down docker-logs \
-        docker-app-up seed demo-reset eval serve streamlit clean api-contract api-contract-check
+.PHONY: install lint format format-check test test-integration docker-up docker-down docker-logs \
+        docker-app-up seed demo-reset eval serve clean api-contract api-contract-check
 .PHONY: install-frontend install-all frontend-dev frontend-build frontend-lint frontend-typecheck \
         frontend-test frontend-format-check frontend-e2e typecheck check build docker-observability-up
 
@@ -15,10 +15,6 @@ export HOST_GID := $(shell id -g)
 install:
 	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
 		--python $(PYTHON) --locked --extra dev --inexact
-
-install-ui:
-	UV_PROJECT_ENVIRONMENT="$(abspath $(VENV))" $(UV) sync --project backend \
-		--python $(PYTHON) --locked --extra dev --extra ui --inexact
 
 install-frontend:
 	npm --prefix frontend ci --no-audit --no-fund
@@ -72,7 +68,7 @@ format:
 	$(VENV)/bin/ruff check --fix backend/src backend/tests
 
 format-check:
-	$(VENV)/bin/black --config $(PYPROJECT) --check backend/src backend/tests streamlit_app
+	$(VENV)/bin/black --config $(PYPROJECT) --check backend/src backend/tests
 
 test:
 	$(VENV)/bin/pytest backend/tests/unit
@@ -121,9 +117,6 @@ demo-reset:
 
 eval:
 	$(VENV)/bin/python -m incident_copilot.evaluation.eval_runner
-
-streamlit:
-	$(VENV)/bin/streamlit run streamlit_app/app.py
 
 clean:
 	rm -rf $(VENV) .mypy_cache .ruff_cache .pytest_cache backend/.mypy_cache \

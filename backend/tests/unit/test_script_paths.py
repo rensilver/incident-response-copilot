@@ -26,7 +26,6 @@ def checkout(tmp_path: Path) -> Path:
     root = tmp_path / "checkout"
     shutil.copytree(source / "backend/scripts", root / "backend/scripts")
     shutil.copytree(source / "backend/src", root / "backend/src")
-    shutil.copytree(source / "scripts", root / "scripts")
     return root
 
 
@@ -96,41 +95,6 @@ async def test_backend_artifacts_resolve_from_checkout_and_preserve_absolute_pat
 
     assert expected.is_dir()
     assert list(expected.iterdir()) == []
-    if not absolute_output and cwd != checkout:
-        assert not (cwd / output).exists()
-
-
-@pytest.mark.parametrize("working_directory", [".", "backend", "unrelated"])
-@pytest.mark.parametrize("absolute_output", [False, True], ids=["relative", "absolute"])
-def test_browser_artifacts_and_media_remain_at_checkout_root(
-    checkout: Path,
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    working_directory: str,
-    absolute_output: bool,
-) -> None:
-    # Browser execution is optional; importing path setup needs no Playwright install.
-    playwright = ModuleType("playwright.sync_api")
-    monkeypatch.setattr(playwright, "sync_playwright", None, raising=False)
-    monkeypatch.setitem(sys.modules, "playwright.sync_api", playwright)
-    module = load_script(checkout / "scripts/validate_streamlit.py")
-    cwd = tmp_path if working_directory == "unrelated" else checkout / working_directory
-    monkeypatch.chdir(cwd)
-    output = tmp_path / "absolute-output" if absolute_output else Path("docs/validation/browser")
-    expected = (
-        tmp_path / "absolute-output" if absolute_output else checkout / "docs/validation/browser"
-    )
-    monkeypatch.setattr(sys, "argv", ["validate_streamlit.py", "--output", str(output)])
-
-    def stop(*args: Any, **kwargs: Any) -> Any:
-        raise BeforeExternalIOError
-
-    monkeypatch.setattr(module, "Relay", stop)
-    with pytest.raises(BeforeExternalIOError):
-        module.main()
-
-    assert (expected / "media").is_dir()
-    assert list((expected / "media").iterdir()) == []
     if not absolute_output and cwd != checkout:
         assert not (cwd / output).exists()
 

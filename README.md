@@ -7,14 +7,14 @@ An agentic AI system that helps engineers investigate production incidents faste
 report using Prometheus metrics and Elasticsearch logs. A LangGraph supervisor
 routes work to metrics and logs specialists; a correlation agent proposes ranked
 causes, cites observations, and suggests follow-up checks. Engineers can investigate
-through a FastAPI endpoint or a Streamlit console.
+through a FastAPI endpoint or the Next.js investigation workspace.
 
 **OpenAI Responses with `gpt-6-luna` is the only production provider**, with reasoning
 effort `none` and no automatic fallback. Configuration, serialized requests, bounded
 health probing, and normalized failures have offline coverage. A
 [live adapter smoke check](docs/validation/2026-10-22-openai-live-smoke/README.md)
 verified text, structured output, and tool continuation with this exact model and
-reasoning setting. Application provider-client cleanup remains pending. The recorded
+reasoning setting. The recorded
 demo and measured results below use the previous Groq/Ollama configuration and do
 not validate the current application.
 
@@ -31,12 +31,12 @@ Compose, and an OpenAI API key. Commands below run from the repository root.
 cp .env.example .env
 # Edit .env and set OPENAI_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
 
-make install-ui       # locked backend, development tools, and existing UI
+make install          # locked backend and development tools for seeding
 
-make docker-app-up   # build FastAPI and start all four services
+make docker-up        # build and start all five services
 make seed            # load fresh synthetic metrics/logs; restart Prometheus
 curl --fail http://localhost:8000/health
-make streamlit       # host UI on http://localhost:8501
+# Open http://localhost:3001
 ```
 
 `/health` reports Prometheus, Elasticsearch, and `llm` dependency booleans, with
@@ -44,7 +44,7 @@ overall status `ok` only when all probes succeed. The provider-owned OpenAI prob
 retrieves the configured model's metadata within a three-second deadline. A true
 `llm` result establishes metadata access, not inference permission or available
 quota. The full OpenAI walkthrough still awaits live validation.
-The UI runs on the host; FastAPI and the three supporting services run in Docker.
+The frontend, FastAPI and the three supporting services run in Docker.
 Docker receives `.env` configuration at container creation, so rerun
 `make docker-app-up` after changing it.
 
@@ -54,17 +54,16 @@ revalidated for this layout.
 
 | Service | Local URL | Purpose |
 |---|---|---|
-| Streamlit | http://localhost:8501 | Investigation form and report cards |
+| Next.js | http://localhost:3001 | Investigation workspace |
 | FastAPI | http://localhost:8000/docs | Interactive API documentation |
 | Prometheus | http://localhost:9090 | Seeded time series and PromQL |
 | Grafana | http://localhost:3000 | Provisioned Incident Overview dashboard |
 | Elasticsearch | http://localhost:9200 | Synthetic application logs |
 
 Choose **Memory leak**, **Slow dependency**, or **Bad deploy**, then click
-**RUN INVESTIGATION**. Each example selects its target service and a 180-minute
+**Run investigation**. Each example selects its target service and a 180-minute
 window. Reports display the API's authoritative start/end timestamps, a summary,
-ranked candidates, evidence, model confidence, and next steps. P1/P2/P3 indicate
-candidate rank, not measured incident severity. Confidence is not calibrated.
+ranked candidates, evidence, model confidence, and next steps. Candidate order indicates rank, not measured incident severity. Confidence is not calibrated.
 
 Allow roughly 65 seconds between live demo investigations to reduce quota pressure;
 this does not guarantee quota availability. Health checks do not reserve cloud quota.
@@ -72,10 +71,9 @@ this does not guarantee quota availability. Health checks do not reserve cloud q
 Seed shortly before a demo: investigations query a window ending **now**, while
 seeded history stays fixed. `make seed` replaces the synthetic log index and adds
 fresh metric blocks. For a clean demo reset, `make demo-reset` replaces generated
-data and starts the supporting services; follow it with `make docker-app-up` to
-restore the API. These commands affect this project's demo data.
+Prometheus data and starts/reseeds the full stack. These commands affect this project's demo data.
 
-Stop the UI with Ctrl+C and the Docker stack with `make docker-down`. Existing
+Stop the full Docker stack with `make docker-down`. Existing
 Docker volumes survive normal shutdown.
 The demo uses unauthenticated Elasticsearch and anonymous Grafana viewing and is
 intended for local synthetic data.
@@ -96,13 +94,10 @@ the service, independently of model-written prose. `service` is optional and
 `minutes_back` accepts 1–1440. Invalid requests return HTTP 422; an investigation
 that cannot produce a report returns HTTP 503.
 
-To run FastAPI on the host instead of in Docker, start the supporting services with
-`make docker-up`, seed, and use `make serve`. Port 8000 must be free. Set
-`INCIDENT_COPILOT_API_URL` in the UI process environment to use a different API:
-
-```bash
-INCIDENT_COPILOT_API_URL=http://localhost:8000 make streamlit
-```
+For host development, run `make install-all`, `make docker-observability-up`, and
+`make seed`, then `make serve` and `make frontend-dev` in separate terminals.
+Ports 8000 and 3001 must be free. The frontend's server-only backend origin and
+production rebuild requirements are in the [frontend guide](frontend/README.md).
 
 ## Seeded scenarios
 
@@ -124,7 +119,7 @@ seeded causal pattern does not establish that a generated report recovered it.
 
 ```mermaid
 flowchart TD
-    UI[Streamlit HTTP client] --> API[FastAPI]
+    UI[Next.js same-origin HTTP client] --> API[FastAPI]
     API --> Service[IncidentService: fixed window and correlation ID]
     Eval[Evaluation harness] --> Service
     Service --> Supervisor[Supervisor]
@@ -166,8 +161,8 @@ it does **not** verify that cited evidence proves a diagnosis.
 | Orchestration | LangGraph, LangChain Core |
 | API and validation | FastAPI, Pydantic v2, pydantic-settings |
 | Model provider | langchain-openai and OpenAI Responses behind `LLMProvider` |
-| Data and dashboards | Prometheus, Elasticsearch 8.13, Grafana |
-| UI | Streamlit, HTTPX |
+| Data and dashboards | Prometheus, Elasticsearch 8.19, Grafana |
+| UI | Next.js App Router, React, TypeScript |
 | Observability | structlog, optional LangSmith |
 | Quality checks | pytest, Ruff, Black, strict mypy |
 | Deployment and demo capture | Docker Compose; Playwright and FFmpeg for validation/media |
@@ -190,14 +185,13 @@ backend/src/incident_copilot/
 ├── utils/            # tracing, logging, exceptions
 ├── composition.py    # shared construction for API and evaluation
 └── main.py           # FastAPI entry point
-streamlit_app/             # independent HTTP client, page, styles
+frontend/                  # Next.js workspace, validated API transport, browser checks
 backend/scripts/           # seeding and backend validation recorders
 backend/tests/unit/        # offline tests with fake/stub dependencies
 backend/tests/integration/ # live stack and deployed API checks
 backend/pyproject.toml     # Python package and static-tool configuration
 backend/Dockerfile         # built with the repository root as context
 pytest.ini                 # shared root/backend test collection configuration
-scripts/                   # existing Streamlit validation recorder
 docker/                    # service configuration and Grafana provisioning
 docs/validation/           # reports, measurements, commands, screenshots
 ```
@@ -347,25 +341,25 @@ not establish factual grounding; model confidence is not an accuracy estimate.
 
 Mobile/browser compatibility beyond desktop Chromium, tracing outages, and server
 cancellation after UI timeout are unverified. Python dependencies are locked in
-`backend/uv.lock`; several
-container tags remain unpinned. Retained version/image records identify historical
+`backend/uv.lock`;
+production container tags are pinned to explicit patch versions. Retained version/image records identify historical
 tested environments. Model output and cloud quotas
 can vary between runs.
 
 ## Development and reproduction
 
-Install uv 0.12.5 before running `make install` (backend and development tools) or
-`make install-ui` (also includes Streamlit). Both install from `backend/uv.lock`
-into the root `.venv/` and fail if the lock does not match the manifest. They
-retain unrelated installed packages when reusing a compatible environment; changing
+Install uv 0.12.5 before running `make install` (backend and development tools).
+It installs from `backend/uv.lock`
+into the root `.venv/` and fails if the lock does not match the manifest. It
+retains unrelated installed packages when reusing a compatible environment; changing
 the interpreter recreates it. The default interpreter is Python 3.12.14,
 recorded in `backend/.python-version`; uv can download it if needed. To use
 Python 3.13 in a separate environment, run
-`make install-ui PYTHON=3.13 VENV=/tmp/incident-copilot-dev313`, then pass the same
+`make install PYTHON=3.13 VENV=/tmp/incident-copilot-dev313`, then pass the same
 `VENV` to root check commands.
 
 From `backend/`, the equivalent install is
-`UV_PROJECT_ENVIRONMENT="$(pwd)/../.venv" uv sync --locked --extra dev --extra ui --inexact`.
+`UV_PROJECT_ENVIRONMENT="$(pwd)/../.venv" uv sync --locked --extra dev --inexact`.
 Without that environment selector, uv uses `backend/.venv/`, which the root Make
 commands do not use. To intentionally change dependencies, edit the manifest,
 run `uv lock --project backend`, review the lock diff, and rerun the checks below.
@@ -376,10 +370,10 @@ dependencies in `uv.lock`.
 ```bash
 make test                 # offline unit suite; no live providers or Docker required
 make lint                 # Ruff and strict backend mypy
-make format-check         # Black for backend, tests, and existing UI
+make format-check         # Black for backend and tests
+make install-frontend
+make frontend-lint frontend-format-check frontend-typecheck frontend-test
 .venv/bin/python backend/scripts/validate_provider_failures.py
-.venv/bin/ruff check --config backend/pyproject.toml streamlit_app scripts/validate_streamlit.py
-.venv/bin/mypy --config-file backend/pyproject.toml --strict streamlit_app
 
 # Requires a running API, freshly seeded data, and a configured OpenAI key.
 INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
@@ -389,11 +383,9 @@ INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
   --output /tmp/incident-eval-repeat --delay-seconds 65
 
-# Optional live validators; use new directories for each tracing/browser run.
+# Optional live tracing validator; use a new output directory for each run.
 .venv/bin/python backend/scripts/validate_langsmith.py \
   --mode disabled --output docs/validation/langsmith-repeat
-.venv/bin/python scripts/validate_streamlit.py \
-  --output docs/validation/browser-repeat --delay-seconds 65
 ```
 
 Direct backend checks also work from `backend/`, for example
@@ -402,10 +394,9 @@ Root pytest commands select `pytest.ini`; its test paths and source path are
 relative to the repository, including when invoked from `backend/`.
 Checkout scripts import the relocated backend source directly. From `backend/`,
 use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
-For all three evaluation/validation recorders, relative `--output` paths resolve
+For both evaluation/tracing recorders, relative `--output` paths resolve
 from the repository root, including when launched elsewhere. Absolute paths such
-as `/tmp/incident-eval-repeat` are preserved. Browser screenshots and videos stay
-under the selected output directory's `media/`; documentation and published media
+as `/tmp/incident-eval-repeat` are preserved. Current Playwright artifacts stay in `frontend/test-results/`; documentation and published media
 remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
 commands also use the repository root.
 

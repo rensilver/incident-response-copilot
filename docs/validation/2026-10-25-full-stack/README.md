@@ -124,3 +124,33 @@ were replaced. `make -n install-all check build docker-up docker-down
 `make frontend-lint frontend-format-check frontend-typecheck`
 (`task4-{static,frontend-checks}.log`). Live image/start/seed/down recipes run in
 task 7. Referenced guide files exist; `git diff --check` passes.
+
+## Task 5: retire the previous UI
+
+Removed the old application/configuration, standalone browser validator, Python UI
+client tests and validator-only path/metadata cases, optional dependency and Make
+entry points. Updated current README commands/package/architecture/UI references
+and AGENTS guidance. Historical reports/media and their clearly labeled references
+remain for the separately scoped evidence replacement; no old result was relabeled.
+Regenerated the manifest lock with uv 0.12.5: 21 UI-only packages removed, all 82
+retained package versions unchanged (`task5-lock-audit.log`); offline lock check
+passes (`task5-lock-check.log`). Initial default-cache access was read-only;
+authorized host lock generation succeeded, and check uses a writable `/tmp` cache.
+
+Replacement coverage was verified before deletion in recovery checks. Mapping:
+
+- Old client response/window/literal-evidence cases: `frontend/tests/api-contract.test.ts`,
+  `api-transport.test.ts`, `components/report.test.ts`, `components/content.test.ts`.
+- HTTP/non-JSON/schema/connection/timeout handling and health degradation:
+  `api-transport.test.ts`, `components/failures.test.ts`, `components/page.test.ts`.
+- Form/scenario/report/focus/recovery browser behavior: `tests/e2e/interaction.spec.ts`,
+  `failure-recovery.spec.ts`, `report-layout.spec.ts` (under `frontend/`).
+- Current browser artifact directory: Playwright's `frontend/test-results/`;
+  removed tests only exercised the retired recorder's output-directory plumbing.
+
+Fresh `make lint format-check` passes, as do all 615 remaining backend cases
+(635 minus 13 old-client cases, six retired-browser path cases and one retired
+recorder-import case), and all 104 frontend cases. See `task5-static.log`,
+`task5-backend-tests.log`, `task5-frontend-tests.log`. Runtime/config/manifests and
+Make/AGENTS have no remaining old UI entry points; retained README matches are
+historical evidence links/text only. Diff whitespace check passes.
