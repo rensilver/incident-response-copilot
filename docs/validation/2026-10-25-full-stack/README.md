@@ -154,3 +154,31 @@ recorder-import case), and all 104 frontend cases. See `task5-static.log`,
 `task5-backend-tests.log`, `task5-frontend-tests.log`. Runtime/config/manifests and
 Make/AGENTS have no remaining old UI entry points; retained README matches are
 historical evidence links/text only. Diff whitespace check passes.
+
+## Task 6: offline CI
+
+Added `.github/workflows/offline.yml` on push, pull request and manual dispatch.
+Backend checks run on Python 3.12.14 and 3.13; frontend checks install both locked
+projects, lint/format/test, verify backend/snapshot/types contract consistency,
+generate strict types and build sequentially. Jobs have 12-minute bounds,
+read-only repository permission and no persisted checkout credentials. No paid
+integration, evaluation, Docker stack, model or tracing secrets are configured.
+Dotenv loading and tracing are disabled explicitly. Live checks remain root
+commands in the operation guide, outside ordinary CI.
+
+Action release commits and inputs were checked against official sources on
+2026-10-25, then pinned by full SHA:
+[checkout 7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1),
+[setup-python 7.1.0](https://github.com/actions/setup-python/releases/tag/v7.1.0),
+[setup-node 7.1.0](https://github.com/actions/setup-node/releases/tag/v7.1.0),
+[setup-uv 10.3.2](https://github.com/astral-sh/setup-uv/releases/tag/v10.3.2).
+The uv executable stays at the project-required 0.12.5, and Node at 22.23.4.
+
+`actionlint` 1.7.12, downloaded from its official release into `/tmp` and verified
+against the release SHA256 list, validates the workflow with exit 0/no diagnostics
+(`task6-actionlint.log`). YAML parsing and trigger/permission/deadline/action-SHA
+assertions pass. Fresh sequential `make check` passes all 615 backend cases,
+104 frontend cases, Ruff/mypy/Black, frontend lint/format, contract drift/types and
+production build (`task6-local-check.log`). Hosted Actions execution remains
+unverified until this branch is pushed; no push is authorized or performed.
+Fresh isolated Python 3.12/3.13 installations are verified in task 7.
