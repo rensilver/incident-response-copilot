@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "/home/rensilver/miniconda3/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['docker', 'buildx', 'build', '--progress=plain', '--output', 'type=local,dest=/tmp/ic-context-2spbzl9v', '-f', '-', '.']' returned non-zero exit status 1.

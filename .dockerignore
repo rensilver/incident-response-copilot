@@ -1,17 +1,15 @@
-.venv/
-__pycache__/
-*.py[cod]
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
-.git/
-.env
-docker/prometheus/data/
-seed-*/
-backend/tests/
-backend/scripts/
-docs/
-REFACTORING_PLAN.md
+# The backend image accepts only its locked package and application source.
+**
+!backend/
+backend/**
+!backend/pyproject.toml
+!backend/uv.lock
+!backend/src/
+!backend/src/**
 
-*-api.txt
-*.key
+# Exclusions also apply inside otherwise allowed source directories.
+**/__pycache__/
+**/*.py[cod]
+**/.env*
+**/*.key
+**/*.pem

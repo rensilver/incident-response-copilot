@@ -56,7 +56,7 @@ def test_backfill_uses_compose_data_and_repository_scratch_from_any_cwd(
             f"{staging}:/w",
             "--entrypoint",
             "promtool",
-            "prom/prometheus:latest",
+            "prom/prometheus:v3.13.5",
             "tsdb",
             "create-blocks-from",
             "openmetrics",

@@ -1,0 +1,19 @@
+npm --prefix frontend run lint
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+npm --prefix frontend run format:check
+
+> incident-copilot-frontend@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+npm --prefix frontend run typecheck
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully

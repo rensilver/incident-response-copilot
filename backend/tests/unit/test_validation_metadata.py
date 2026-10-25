@@ -4,7 +4,6 @@ import asyncio
 import builtins
 import importlib.util
 import json
-import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
@@ -128,7 +127,6 @@ async def test_evaluation_recorder_reports_openai_metadata(
     [
         "backend/scripts/measure_evaluation.py",
         "backend/scripts/validate_langsmith.py",
-        "scripts/validate_streamlit.py",
     ],
 )
 def test_recorders_import_without_host_profiling_dependency(
@@ -141,10 +139,6 @@ def test_recorders_import_without_host_profiling_dependency(
             raise AssertionError("Recorder still requires host profiling")
         return original_import(name, *args, **kwargs)
 
-    # Playwright is optional; importing the recorder should not need a browser.
-    playwright = ModuleType("playwright.sync_api")
-    monkeypatch.setattr(playwright, "sync_playwright", None, raising=False)
-    monkeypatch.setitem(sys.modules, "playwright.sync_api", playwright)
     monkeypatch.setattr(builtins, "__import__", without_psutil)
     path = Path(__file__).resolve().parents[3] / script
     spec = importlib.util.spec_from_file_location("recorder_without_profiling", path)

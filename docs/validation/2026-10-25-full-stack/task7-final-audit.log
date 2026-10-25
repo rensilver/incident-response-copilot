@@ -1,0 +1,5 @@
+Credential-value scan passed across 89 changed/new files; private values not printed.
+Current README/AGENTS/frontend/operation/evidence Markdown file references exist.
+Private dotenv/local plan/generated metrics ignored; retired UI sources not tracked.
+Task scratch removed; live attempt retained and passed; production source scoped to Action 6.1.
+git diff 4143b66 --check, browser probe syntax and actionlint 1.7.12 pass.

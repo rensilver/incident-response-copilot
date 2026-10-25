@@ -1,0 +1,63 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:241336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+Running 40 tests using 1 worker
+
+(node:241379) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (923ms)
+  ✓   2 [desktop-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.4s)
+  ✓   3 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (414ms)
+  ✓   4 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (479ms)
+  ✓   5 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (551ms)
+  ✓   6 [desktop-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (552ms)
+  ✓   7 [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.4s)
+  ✓   8 [desktop-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report (2.4s)
+(node:241834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [mobile-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (890ms)
+  ✓  10 [mobile-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.6s)
+  ✓  11 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (605ms)
+  ✓  12 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (687ms)
+  ✓  13 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (564ms)
+  ✓  14 [mobile-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (770ms)
+  ✓  15 [mobile-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (4.0s)
+  -  16 [mobile-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:242096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  17 [tablet-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (871ms)
+  ✓  18 [tablet-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.4s)
+  ✓  19 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (404ms)
+  ✓  20 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (427ms)
+  ✓  21 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (532ms)
+  ✓  22 [tablet-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (585ms)
+  ✓  23 [tablet-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.5s)
+  -  24 [tablet-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:242355) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [narrow-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (853ms)
+  ✓  26 [narrow-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.3s)
+  ✓  27 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (373ms)
+  ✓  28 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (496ms)
+  ✓  29 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (704ms)
+  ✓  30 [narrow-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (716ms)
+  ✓  31 [narrow-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.0s)
+  -  32 [narrow-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:242595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -  33 [desktop-no-js] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests
+  -  34 [desktop-no-js] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry
+  ✓  35 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (359ms)
+  ✓  36 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (352ms)
+  -  37 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+  -  38 [desktop-no-js] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context
+  -  39 [desktop-no-js] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+  -  40 [desktop-no-js] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+
+  9 skipped
+  31 passed (34.4s)

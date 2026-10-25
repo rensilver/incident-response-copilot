@@ -1,0 +1,71 @@
+name: Offline checks
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  INCIDENT_COPILOT_ENV_FILE: ""
+  LANGSMITH_TRACING: "false"
+  LANGCHAIN_TRACING_V2: "false"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12.14", "3.13"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.12.5"
+          enable-cache: false
+      - run: make install PYTHON=${{ matrix.python }}
+      - run: make lint
+      - run: make format-check
+      - run: timeout 180s make test
+
+  frontend-and-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version-file: backend/.python-version
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.12.5"
+          enable-cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22.23.4"
+          package-manager-cache: false
+      - run: make install-all
+      - run: make frontend-lint frontend-format-check
+      - run: timeout 120s make frontend-test
+      # Type generation and build must run sequentially; both write .next/.
+      - run: make api-contract-check
+      - run: make frontend-build
+
+# Paid provider integration/evaluation and Docker startup are explicit local
+# commands. This workflow has no model/tracing secrets and starts no live stack.

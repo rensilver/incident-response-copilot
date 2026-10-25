@@ -1,0 +1,18 @@
+# Explicit inputs for the standalone production build.
+**
+!package.json
+!package-lock.json
+!next.config.mjs
+!tsconfig.json
+!config/
+!config/**
+!src/
+!src/**
+!public/
+!public/**
+
+**/.env*
+**/*.key
+**/*.pem
+**/node_modules/
+**/.next/

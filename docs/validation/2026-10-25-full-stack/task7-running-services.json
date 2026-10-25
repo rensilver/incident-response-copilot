@@ -1,0 +1,113 @@
+[
+  {
+    "service": "app",
+    "state": "running",
+    "health": "healthy",
+    "image_tag": "incident-copilot-app",
+    "image_id": "sha256:391770cf6f441ad20ce16270598e6c1eded440865ec7aea99781b4eedc407c54",
+    "ports": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 8000,
+        "PublishedPort": 18000,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 8000,
+        "PublishedPort": 18000,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "service": "elasticsearch",
+    "state": "running",
+    "health": "healthy",
+    "image_tag": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "image_id": "sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1",
+    "ports": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 9200,
+        "PublishedPort": 9200,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 9200,
+        "PublishedPort": 9200,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "",
+        "TargetPort": 9300,
+        "PublishedPort": 0,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "service": "frontend",
+    "state": "running",
+    "health": "healthy",
+    "image_tag": "sha256:344887370fe20969e8400879b3d739353617054fcf3d43871809f0a3d21c6cd7",
+    "image_id": "sha256:344887370fe20969e8400879b3d739353617054fcf3d43871809f0a3d21c6cd7",
+    "ports": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 3001,
+        "PublishedPort": 3001,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 3001,
+        "PublishedPort": 3001,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "service": "grafana",
+    "state": "running",
+    "health": "healthy",
+    "image_tag": "grafana/grafana:13.2.4",
+    "image_id": "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f",
+    "ports": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 3000,
+        "PublishedPort": 3000,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 3000,
+        "PublishedPort": 3000,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "service": "prometheus",
+    "state": "running",
+    "health": "healthy",
+    "image_tag": "prom/prometheus:v3.13.5",
+    "image_id": "sha256:aafa9d694e6a883c02db516d9f6e5b84e14195f49a2a6456a4cca815edda72b9",
+    "ports": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 9090,
+        "PublishedPort": 9090,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 9090,
+        "PublishedPort": 9090,
+        "Protocol": "tcp"
+      }
+    ]
+  }
+]
