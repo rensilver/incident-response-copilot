@@ -1,0 +1,51 @@
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 21ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 error:
+./src/lib/api/client.ts:2:1
+Error: Module not found: Can't resolve './validation.js'
+  1 | /** Same-origin browser transport. Import from interactive leaves only. */
+> 2 | import {
+    | ^^^^^^^
+> 3 |   InvalidApiResponseError,
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 4 |   parseHealth,
+    | ^^^^^^^^^^^^^^
+> 5 |   parseReport,
+    | ^^^^^^^^^^^^^^
+> 6 | } from "./validation.js";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 | import type { Health, IncidentReport, InvestigationRequest } from "./types.js";
+  8 |
+  9 | type ApiErrorKind =
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/api/client.ts [Client Component Browser]
+    ./src/features/investigations/investigation-session.tsx [Client Component Browser]
+    ./src/features/investigations/investigation-session.tsx [Server Component]
+    ./src/features/investigations/investigation-workspace.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/api/client.ts [Client Component SSR]
+    ./src/features/investigations/investigation-session.tsx [Client Component SSR]
+    ./src/features/investigations/investigation-session.tsx [Server Component]
+    ./src/features/investigations/investigation-workspace.tsx [Server Component]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

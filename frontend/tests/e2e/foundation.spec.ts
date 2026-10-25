@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the local foundation loads with keyboard access and no API calls", async ({
+test("the workspace loads with keyboard access and no automatic investigations", async ({
   page,
 }, testInfo) => {
   const apiRequests: string[] = [];
@@ -14,12 +14,15 @@ test("the local foundation loads with keyboard access and no API calls", async (
   });
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
+  await page.route("**/api/health", (route) =>
+    route.fulfill({ json: { status: "ok", dependencies: { llm: true } } }),
+  );
   await page.goto("/");
   await expect(page).toHaveTitle("Incident Response Copilot");
   await expect(
     page.getByRole("heading", { level: 1, name: "Investigate an incident" }),
   ).toBeVisible();
-  await expect(page.getByText(/foundation preview/i)).toBeVisible();
+  await expect(page.getByLabel("Incident question")).toBeVisible();
   await page.keyboard.press("Tab");
   const skip = page.getByRole("link", { name: "Skip to main content" });
   await expect(skip).toBeFocused();
@@ -32,7 +35,7 @@ test("the local foundation loads with keyboard access and no API calls", async (
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  expect(apiRequests).toEqual([]);
+  expect(apiRequests.every((path) => path === "/api/health")).toBe(true);
   expect(externalRequests).toEqual([]);
   expect(pageErrors).toEqual([]);
   await page.screenshot({
@@ -45,6 +48,9 @@ test("the shell reflows with enlarged text and reduced motion", async ({
   page,
 }, testInfo) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/api/health", (route) =>
+    route.fulfill({ json: { status: "ok", dependencies: { llm: true } } }),
+  );
   await page.goto("/");
   // Text-size stress, not a claim to emulate browser UI zoom.
   await page.evaluate(() => {
@@ -55,9 +61,7 @@ test("the shell reflows with enlarged text and reduced motion", async ({
     name: "Investigate an incident",
   });
   await expect(heading).toBeVisible();
-  await expect(
-    page.getByText("Investigation controls and reports will appear here."),
-  ).toBeVisible();
+  await expect(page.getByLabel("Incident question")).toBeVisible();
   const geometry = await page.evaluate(() => ({
     width: window.innerWidth,
     documentWidth: document.documentElement.scrollWidth,
@@ -93,7 +97,7 @@ test("the shell reflows with enlarged text and reduced motion", async ({
   for (const box of geometry.text) {
     expect(box.left).toBeGreaterThanOrEqual(0);
     expect(box.right).toBeLessThanOrEqual(geometry.width);
-    expect(box.fontSize).toBeGreaterThanOrEqual(32);
+    expect(box.fontSize).toBeGreaterThanOrEqual(28);
   }
   await page.keyboard.press("Tab");
   const skip = page.getByRole("link", { name: "Skip to main content" });

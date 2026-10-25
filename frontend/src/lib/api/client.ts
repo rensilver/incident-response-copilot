@@ -3,7 +3,7 @@ import {
   InvalidApiResponseError,
   parseHealth,
   parseReport,
-} from "./validation.js";
+} from "./validation.ts";
 import type { Health, IncidentReport, InvestigationRequest } from "./types.js";
 
 type ApiErrorKind =

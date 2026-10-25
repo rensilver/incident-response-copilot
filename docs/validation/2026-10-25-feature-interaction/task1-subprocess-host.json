@@ -1,0 +1,8 @@
+{
+  "command": [
+    "node",
+    "docs/validation/2026-10-24-frontend-scaffold/probe-subprocess.mjs"
+  ],
+  "exit_code": 0,
+  "seconds": 0.1
+}

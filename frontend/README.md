@@ -1,7 +1,9 @@
 # Frontend development
 
-The Next.js App Router foundation serves a static preview on port **3001**.
-Investigation controls and reports remain separate implementation tasks. The
+The Next.js App Router workspace runs on port **3001**. Three seeded presets
+fill an editable question, optional service filter, and 1–1440 minute window.
+Only explicit submission starts investigation work; health checks are independent.
+Report rendering and further interaction hardening are in progress. The
 existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 
@@ -13,8 +15,8 @@ npm --prefix frontend ci
 npm --prefix frontend run dev
 ```
 
-Open <http://localhost:3001>. This preview needs no backend, credentials, or seeded
-stack. The frontend does not load the root `.env` as a client configuration file.
+Open <http://localhost:3001>. Health and investigation requests need FastAPI;
+the three synthetic exercises also need freshly seeded observability data. The frontend does not load the root `.env` as a client configuration file.
 Keep model and tracing keys in the backend's private configuration.
 
 Production preview:
@@ -38,7 +40,9 @@ npm --prefix frontend run build
 Type checking generates Next.js route declarations before checking the complete
 strict TypeScript project. Build and type generation both write `.next/`; run
 them sequentially. `next-env.d.ts`, `.next/`, and TypeScript incremental state are
-generated and ignored. The separate `tsconfig.contract.json` emits only the
+generated and ignored. The browser imports the transport validator by its actual `.ts` extension.
+The contract compiler rewrites this extension for emitted Node ESM, using
+TypeScript’s `rewriteRelativeImportExtensions`. The separate `tsconfig.contract.json` emits only the
 existing Node contract tests into `.contract-build/`. `npm test` runs those
 contract/proxy/generation checks, then Vitest with React Testing Library and jsdom.
 The generated OpenAPI files remain governed by the contract generator, excluded
@@ -58,7 +62,7 @@ npm run test:e2e
 Ten foundation browser checks cover desktop (1280px), tablet (768px), mobile
 (393px), narrow (320px), and desktop with page JavaScript disabled. They check
 keyboard skip navigation, horizontal overflow, JavaScript errors, absence of
-external/API requests, 200% text sizing, and reduced motion. Narrow spacing keeps
+external requests or automatic investigations, 200% text sizing, and reduced motion. Narrow spacing keeps
 ordinary heading words intact at enlarged text sizes. The 320px viewport checks
 reflow; text-size injection is not browser UI zoom emulation. Screenshots and
 failure traces go into ignored `test-results/`. These checks do not validate
@@ -86,9 +90,9 @@ There is no runtime font CDN request.
 `src/app/` composes routes, metadata, fonts, and global styles. Shared static
 navigation lives in `src/components/site-header.tsx`; `components/ui/workspace.tsx`
 owns the main landmark/skip target. `src/features/investigations/` owns incident
-framing and will host the interactive feature leaves. These components remain
-Server Components: there is no client directive, hook, or transport import in the
-static shell. Add client boundaries only where browser state is needed.
+static framing plus independent health and investigation client leaves. Routes,
+shared navigation, and framing remain Server Components; client boundaries own
+only browser state and API calls.
 
 `src/lib/api/client.ts` exposes `createApiClient().investigate(request, { signal })`
 and `.health({ signal })`. It uses fixed relative paths, generated request types,
@@ -97,9 +101,8 @@ requests have a 300-second total fetch/body budget; health has 10 seconds.
 HTTP failures retain only their status, while malformed JSON, invalid schema,
 network failures, expiry, and caller cancellation have safe `ApiError.kind` values.
 Response bodies and low-level exceptions are never attached to errors. There are
-no automatic retries, persistent browser storage, or requests during shell render.
-Abort stops local I/O; backend/provider work may still run. Feature views will map
-these categories to accessible feedback when those views are implemented.
+no automatic retries, persistent browser storage, or investigation calls during render.
+Abort stops local I/O; backend/provider work may still run. Further feature tasks map these categories to accessible feedback.
 
 ## Host and container configuration
 

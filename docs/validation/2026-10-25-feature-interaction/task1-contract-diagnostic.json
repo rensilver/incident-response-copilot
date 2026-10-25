@@ -1,0 +1,10 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-isolation=none",
+    "frontend/tests/generation.test.mjs"
+  ],
+  "exit_code": 1,
+  "seconds": 3.6
+}

@@ -1,0 +1,27 @@
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ .contract-build/tests/api-contract.test.js (302.598926ms)
+✔ .contract-build/tests/api-transport.test.js (340.547849ms)
+✔ tests/frontend-config.test.mjs (92.387079ms)
+✖ tests/generation.test.mjs (2687.120784ms)
+✔ tests/proxy-config.test.mjs (119.654782ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2715.435213
+
+✖ failing tests:
+
+test at tests/generation.test.mjs:1:1
+✖ tests/generation.test.mjs (2687.120784ms)
+  'test failed'
