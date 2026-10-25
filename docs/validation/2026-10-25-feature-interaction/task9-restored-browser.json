@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm",
+    "--prefix",
+    "frontend",
+    "run",
+    "test:e2e"
+  ],
+  "exit_code": 0,
+  "seconds": 35.92
+}

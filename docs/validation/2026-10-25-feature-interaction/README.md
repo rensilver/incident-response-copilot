@@ -1,0 +1,291 @@
+# Action 5.2 — feature interaction evidence
+
+The owner authorized the entire action and one commit per task on 2026-10-25.
+Tasks are implemented sequentially; later phases are excluded. The initial tree
+was clean. Each `taskN-*.json` records the exact bounded command, exit code, and
+elapsed time; the matching `.log` retains output including failed attempts.
+
+Applied frontend-design, vercel-react-best-practices, test-driven-development,
+systematic-debugging, web-design-guidelines, and verification-before-completion.
+The approved [proposal](../../frontend-design-proposal.md) supplies the palette,
+typography, report hierarchy, and evidence gutter. The current
+[interface checklist](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md)
+was fetched on 2026-10-25. Existing contextual decisions (sentence case, native
+controls, private incident state) remain applicable.
+
+## Task 1 — presets, controls, health, and validated submission
+
+Eight component cases first failed against the preview, then passed. They exercise
+all three presets without auto-submission; required/whitespace questions; empty,
+fractional, zero, and out-of-range windows; both inclusive limits; trimming and
+omitting empty service; and independent degraded/unavailable health. Known
+health dependencies are labeled; unknown names do not expose raw diagnostics.
+Static framing remains server rendered, with small health/session client leaves.
+The backend, generated schemas, dependencies, secrets, and seed data are unchanged.
+
+Full verification is recorded in `task1-*`. The first suite and independent Node
+probe reproduced the documented sandbox empty-child-stdout defect; the same
+standalone probe and full suite pass with host access. No app workaround was
+introduced. The first production build exposed the previously unused transport’s
+`.js` import of a TypeScript source. The browser now imports the actual `.ts`
+file, while the contract compiler rewrites the emitted extension, following the
+[TypeScript reference](https://www.typescriptlang.org/tsconfig/rewriteRelativeImportExtensions.html).
+The first typecheck also caught an untyped test tuple; `as const` preserves the
+strict tuple types. The failed build and ensuing refused browser startup remain
+recorded. Final checks supersede those attempts, without removing them.
+
+Report rendering, complete state handling, security stress, accessibility review,
+and visual refinement are later tasks in this same authorized action. No paid
+provider call or live seeded investigation has been run.
+
+The first rebuilt browser run passed five normal cases but failed five enlarged
+text cases: the old shell assertion assumed every paragraph was 16px. New
+proposal-specified 14px metadata correctly scaled to 28px. The check now uses
+that minimum; it still requires doubled sizes, intact headings and no overflow.
+
+## Task 2 — actual report and authoritative UTC interval
+
+Five regression cases failed before report rendering, then passed. API candidates
+and observations retain their original order even when a later confidence score
+is higher. Summary, rationale, source labels, detail, next steps and full numeric
+confidence come from the validated response. The report captures submitted context
+rather than reading subsequently edited inputs. `Intl.DateTimeFormat` converts
+server offset timestamps to explicitly labeled UTC, keeping millisecond precision
+and the original `time` machine value. Absent/null intervals are unavailable and
+never reconstructed from browser time or the form’s duration. `Intl.NumberFormat`
+preserves the supplied score precision without a gauge. API/model behavior and
+schema are unchanged. The five new cases bring component coverage to thirteen.
+
+## Task 3 — rank, severity, and confidence semantics
+
+Reviewed the rendered report hierarchy and added visible explanations: rank is
+model ordering, not severity or proof of causality; confidence is not calibrated
+probability or measured accuracy; observations are report citations requiring
+verification; next steps are suggestions. Candidate labels have the same neutral
+style and preserve API order. There is no severity inference, confidence meter,
+telemetry chart, simulated progress stage or report-history surface. No new logic
+was needed; existing report tests cover ordering and exact supplied scores.
+This copy/style change uses the required full checks rather than adding tests
+that merely mirror static prose.
+
+## Task 4 — states, duplicate protection, stale responses, and retry
+
+Six new regression cases failed, then passed (nineteen component cases total).
+A discriminated state union represents idle, loading, abandoned, success and
+error. Empty valid reports explain missing candidates/steps. A synchronous
+request-owner reference blocks duplicate form events. Stop waiting releases that
+ownership before aborting; late success or failure cannot replace a newer result.
+Tests deliberately use an old transport promise that ignores abort to verify
+this guard. A new valid attempt clears the prior report rather than attaching new
+inputs to old output. Failures preserve all form values, show an error callout,
+and explain deliberate retry through Run investigation. No automatic retry,
+backend-cancellation guarantee, fake progress, or stored report history is added.
+
+## Task 5 — failures, timeouts, and abandoned browser requests
+
+Twenty-two new cases first failed, then passed (41 component cases total).
+The real transport is used with controlled HTTP/fetch boundaries. JSON and HTML
+422/401/403/429/500/502/503/504 errors receive safe category-specific recovery;
+malformed JSON, successful HTML, schema-invalid success and connection loss are
+rejected. Error bodies and exception diagnostics never reach the DOM. A generic
+503 cannot identify authentication versus quota versus connector failure, so copy
+does not guess. Explicit 429 identifies rate/quota limits without reading its body.
+The configured 300-second timer is exercised just before/at expiry using fake
+time; the later browser verification covers the real-time path separately.
+Unmount releases request ownership and aborts browser I/O; Stop waiting already
+uses the same cancellation boundary. Copy explicitly states backend work may
+continue. No dependency/model call, retry policy, budget, API schema or provider
+behavior changed. The transport’s existing tests also bound stalled body reads.
+
+## Task 6 — untrusted content, long observations, and missing fields
+
+Five new cases cover literal script/image/markdown payloads in every report text
+field; ignored extra debug/key fields; 8,000-character identifiers; distinct
+near-duplicate log observations with dependency names, units and non-anomalous
+raw-query qualifiers; blank text and empty evidence; and unusable server windows.
+The initial run had three expected failures and one renderer RangeError: JSON
+Schema accepts a leap-second date that JavaScript Date cannot render. Browser
+validation now rejects unrenderable or reversed intervals before React receives
+them. No timestamp is repaired or synthesized. This adds a semantic browser
+boundary check without changing generated artifacts or the backend contract.
+All 46 component cases now pass without unhandled errors.
+
+Only explicit report fields are rendered, using React text interpolation. There
+is no HTML/Markdown renderer, automatic link creation, raw response dump, runtime
+log panel or configuration display. Required field omissions remain malformed
+responses; optional absent/null intervals retain the explicit unavailable label.
+Blank domain text and absent observations get descriptive fallbacks; numeric
+zero and one remain intact. Full nonblank text, whitespace, observations and
+source order remain available and selectable. Incident log evidence is intentional;
+backend diagnostic logs and credentials are not part of the displayed payload.
+No heuristic redaction is presented as a guarantee against secrets in arbitrary
+model prose; credentials remain a backend data-handling responsibility.
+
+## Task 7 — keyboard, focus, announcements, and contrast
+
+Five regressions first failed, then passed (51 component cases). Invalid submit
+focuses the first invalid field with its associated description. Pending moves
+focus to Stop waiting; abandoning returns it to the editable question. Success
+and failure focus their heading; independent health completion does not steal
+focus. Live pending/completion text sits outside the busy report region, so busy
+semantics cannot defer the loading announcement. Report context uses semantic
+definition lists, UTC `time` elements and ordered candidates with attached evidence.
+Controls have names/labels, native keyboard behavior, 44px minimum targets,
+visible focus and correct number constraints. Identifier/time elements opt out of
+translation. Server HTML disables all form controls until hydration and uses POST
+as a defensive fallback; disabling JavaScript cannot put incident text into a GET
+query. State still lives only in memory, without URL/storage persistence.
+
+The keyboard browser case traverses skip link, presets, fields and submit,
+recovers from controlled 503 using Shift+Tab/Enter, then verifies report focus in
+all four JavaScript viewport projects. The no-JavaScript project verifies disabled
+controls and the explanatory message. `task7-contrast.json` records calculated
+sRGB contrast: every foreground/background pair used for ordinary text exceeds
+4.5:1. Existing reduced-motion checks see no animation. No screen-reader or
+multi-browser certification is claimed; native HTML and browser focus checks
+provide bounded evidence of the implemented behavior.
+
+The first browser run caught two integration details retained in its log: Next
+adds a separate route-announcer alert, so the test now scopes the request alert
+to its result landmark; Chromium’s JavaScript-disabled mode did not expose the
+`noscript` message despite disabled controls. A server-rendered message now stays
+visible until hydration hides it, covering actual script failure as well. The
+keyboard focus checks had reached the expected error heading before the ambiguous
+alert selector failed; final reruns verify the complete retry flow.
+
+## Task 8 — report density, responsive layout, and visual review
+
+A new component regression first failed for the absent Edit question action and
+now passes (52 component cases). Below desktop width, a successful submission
+collapses the composer to its submitted question and an Edit question button;
+reopening restores values and focuses the question without replacing the report.
+Desktop keeps the full composer. Viewport changes alone never move focus.
+The independent health group now aligns beside the title on wide layouts.
+
+The first expanded browser run found real layout failures: rem-sized fixed desktop
+columns remained active under CSS text enlargement, splitting ordinary headings
+at 200% and overflowing at 400%. Container queries now choose columns from usable
+content space, so larger text returns to one column. The rebuilt non-zoom matrix
+passes 22 cases (three deliberate no-JavaScript interactive skips), covering
+normal/long/empty evidence, absent windows, precise scores, full identifier text,
+200%/400% text enlargement and no animation under reduced motion. Neither hidden
+overflow nor content truncation is used. The failed run remains recorded.
+
+Inspected these screenshots from controlled API fixtures, not live provider runs:
+
+- [Desktop report](controlled-desktop.png): compact composer beside the report,
+  attached source gutter, readable summary/candidate/action hierarchy.
+- [Tablet report](controlled-tablet.png): collapsed composer and one report column,
+  source labels aligned beside observations.
+- [Mobile report](controlled-mobile.png): 393 CSS pixels, labels above evidence,
+  complete UTC dates and full next-step text.
+- [Narrow report](controlled-narrow.png): 320 CSS pixels, wrapping dependency/log
+  text without page overflow or clipped observations.
+
+The focus outline visible around the report heading is intentional keyboard
+feedback. Neutral typography and source placement keep attention on evidence;
+confidence has no gauge or severity color. Real report density remains dependent
+on returned content; long fixtures test preservation rather than summarization.
+
+Native tab zoom also passes. `task8-native-zoom.json` records 1280/640/320 CSS-pixel
+widths at 100/200/400% with the root font unchanged at 16px and pixel ratio 1/2/4.
+The test uses a disposable extension/profile with Chrome’s actual
+[tabs.setZoom API](https://developer.chrome.com/docs/extensions/reference/api/tabs),
+following [Playwright’s Chromium extension guidance](https://playwright.dev/docs/chrome-extensions).
+Full matching Chromium was installed separately from the existing headless shell;
+`task8-browser-install.json` records the exact version and successful command
+(download duration was not recorded). No production dependency was added.
+
+Two initial zoom attempts rejected a null viewport combined with Playwright’s
+inherited deviceScaleFactor. Explicit fixture delivery of undefined removes that
+emulation; passing probes then verify actual native-window reflow. ESLint treated
+the fixture callback named `use` as a React hook; renaming it to `provide` resolves
+the false positive without a suppression. Visual inspection also found that
+Playwright’s full-page capture clipped native-zoom images despite correct DOM
+geometry. Native screenshots now use CDP viewport capture without resizing the
+window. Inspected [200%](controlled-zoom-2.png), [400%](controlled-zoom-4.png), and
+[empty observations/steps](controlled-empty-evidence.png) captures. All attempt
+logs remain. The final full browser matrix passes 23 cases with seven explicit
+project skips (three no-JS interactive cases and four duplicate native-zoom runs).
+
+The 17-category interface review has no remaining implementation blocker within
+this action: semantic controls, focus, validation, announcements, typography,
+wrapping/empty content, native navigation, touch targets, light-theme contrast,
+locale-safe UTC/numbers, and hydration were checked. No motion, images, gesture-only
+actions, overlays, incident URL state or raw HTML exist. Static framing stays
+server-rendered; expensive premature memoization/virtualization was not added.
+Screen readers, Firefox/WebKit, notched hardware and large-report performance
+profiling remain outside the performed checks. A report is never persisted.
+
+## Task 9 — full controlled browser verification and final review
+
+The expanded normal browser matrix passes 31 cases with nine intentional project
+skips. Two new cases per JavaScript project exercise all three preset submissions
+and nine failure variants followed by a successful manual retry. These include
+JSON 503 (with quota-like text that must not leak), explicit 429, HTML 500, 504,
+422, HTML 200, broken JSON, schema-invalid JSON and connection reset. Each attempt
+preserves query/service/duration, has safe feedback and appropriate focus, and
+sends exactly one request per deliberate action. The successful preset sequence
+also checks that incident state is absent from query strings and browser storage.
+[Unavailable investigation](controlled-unavailable.png) is a controlled 503 view,
+not a captured provider outage.
+
+The separate opt-in real-timeout configuration owns a loopback HTTP fixture on
+18765 plus the production Next server on 3001. Its build-origin guard first
+correctly rejected the ordinary 8000 build, before server startup or model access.
+A dedicated build then targets the fixture. This suite uses real wall time,
+actual sockets, the configured 270-second proxy inactivity timer and 300-second
+browser total fetch/body timer; no clock acceleration or production budget changes
+are used. A controlled backend 504 waits 31 seconds to cross the common default
+proxy threshold. An idle connection exercises the real proxy timer; a continuously
+arriving incomplete JSON body keeps proxy activity alive while the browser's
+independent total budget expires. This verifies the UI and proxy; it is not a live
+FastAPI/OpenAI investigation or a new measurement of the default backend deadline.
+
+Reproduce the long suite using the commands in the
+[frontend guide](../../../frontend/README.md#real-elapsed-time-timeout-checks).
+The bounded shared recorder command is:
+
+```bash
+python3 docs/validation/2026-10-24-frontend-boundaries/run_check.py docs/validation/2026-10-25-feature-interaction task9-real-timeouts frontend 400 npm run test:e2e:timeouts
+```
+
+It clears inherited environment except PATH, bounds the full suite to 400 seconds,
+cleans up its process group if stalled, and records `checks.jsonl` plus the named
+log. Other task command/exit/duration records remain paired `.json`/`.log` files.
+The explicitly expected origin-guard failure is evidence of isolation, not an
+unresolved failing check. All historical failures in tasks 1–8 remain intact.
+
+All three real-time paths passed in one planned run (304.045 seconds including
+runner/server setup). Measured from the explicit browser click to visible failure:
+
+| Path | Elapsed | Retained evidence |
+|---|---:|---|
+| Controlled backend 504 through the production rewrite | 31.226 s | [timing](task9-backend-deadline-timing.json), [UI](controlled-backend-deadline.png) |
+| Real configured proxy inactivity expiry | 270.297 s | [timing](task9-proxy-inactivity-timing.json), [UI](controlled-proxy-inactivity.png) |
+| Real configured browser total fetch/body expiry | 300.189 s | [timing](task9-browser-deadline-timing.json), [UI](controlled-browser-deadline.png) |
+
+The streaming fixture sent 29 body chunks before browser expiry. Fixture-side
+close times are separate from click-to-UI timing. The proxy returned a safe generic
+500 after its socket timeout; the browser deadline produced the explicit
+five-minute message and backend-may-continue caveat. Expected Next ECONNRESET
+server diagnostics remain in the check log and never appear in the UI. Every mode
+had one deliberate attempt. Inspected the retained timeout screenshots; no
+response-body diagnostics, credentials or raw HTML appear. Form values remain.
+
+The final [review](review.md) maps all nine tasks to checks, commits and boundaries.
+
+Final production restore and verification pass: the investigation rewrite again
+targets `http://127.0.0.1:8000`; resource-free backend schema export and frontend
+type drift both match; strict route/type generation, production build and all 31
+normal browser cases pass. The opt-in fixture/Next processes are stopped by their
+runner. [review_audit.py](review_audit.py) reproduces scope/reference, original
+commit preservation, generated-contract and root-dotenv-value exclusion checks;
+it never prints credential values. Run it with `.venv/bin/python` from any working
+directory. Ruff, strict mypy and Black pass for this documentation helper.
+
+The final root Python checks also pass: `make lint` (Ruff and strict mypy, 60 source
+files), `make test` (635 offline unit cases in 41.90 seconds) and
+`make format-check` (132 files). Dotenv loading was disabled explicitly. The
+retained Streamlit strict mypy and Ruff checks pass. The backend application was
+not changed; these fresh checks also verify the preserved parity foundation.

@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".venv/bin/ruff",
+    "check",
+    "--config",
+    "backend/pyproject.toml",
+    "streamlit_app"
+  ],
+  "exit_code": 0,
+  "seconds": 0.01
+}

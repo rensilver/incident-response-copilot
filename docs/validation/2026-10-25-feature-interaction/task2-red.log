@@ -1,0 +1,1474 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+ ❯ tests/components/report.test.tsx (5 tests | 5 failed) 5361ms
+   × renders the actual report and every evidence source in API order 1246ms
+   × converts authoritative offset timestamps to UTC without deriving from form time 1034ms
+   × absent or null authoritative window is explicitly unavailable (false) 1028ms
+   × absent or null authoritative window is explicitly unavailable (true) 1024ms
+   × report context is the submitted question even after editing inputs 1026ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/components/report.test.tsx > renders the actual report and every evidence source in API order
+TestingLibraryElementError: Unable to find role="heading" and name "Investigation report"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ investigate tests/components/report.test.tsx:14:16
+     12|   fireEvent.click(screen.getByRole("button", { name: "Slow dependency"…
+     13|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     14|   await screen.findByRole("heading", { name: "Investigation report" });
+       |                ^
+     15| }
+     16|
+ ❯ tests/components/report.test.tsx:18:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/components/report.test.tsx > converts authoritative offset timestamps to UTC without deriving from form time
+TestingLibraryElementError: Unable to find role="heading" and name "Investigation report"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ investigate tests/components/report.test.tsx:14:16
+     12|   fireEvent.click(screen.getByRole("button", { name: "Slow dependency"…
+     13|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     14|   await screen.findByRole("heading", { name: "Investigation report" });
+       |                ^
+     15| }
+     16|
+ ❯ tests/components/report.test.tsx:34:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/components/report.test.tsx > absent or null authoritative window is explicitly unavailable (false)
+ FAIL  tests/components/report.test.tsx > absent or null authoritative window is explicitly unavailable (true)
+TestingLibraryElementError: Unable to find role="heading" and name "Investigation report"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ investigate tests/components/report.test.tsx:14:16
+     12|   fireEvent.click(screen.getByRole("button", { name: "Slow dependency"…
+     13|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     14|   await screen.findByRole("heading", { name: "Investigation report" });
+       |                ^
+     15| }
+     16|
+ ❯ tests/components/report.test.tsx:46:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/components/report.test.tsx > report context is the submitted question even after editing inputs
+TestingLibraryElementError: Unable to find role="heading" and name "Investigation report"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ investigate tests/components/report.test.tsx:14:16
+     12|   fireEvent.click(screen.getByRole("button", { name: "Slow dependency"…
+     13|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     14|   await screen.findByRole("heading", { name: "Investigation report" });
+       |                ^
+     15| }
+     16|
+ ❯ tests/components/report.test.tsx:53:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  5 failed | 8 passed (13)
+   Start at  13:22:00
+   Duration  6.97s (tests 67%, environment 24%, setup 4%, import 3%, transform 2%)

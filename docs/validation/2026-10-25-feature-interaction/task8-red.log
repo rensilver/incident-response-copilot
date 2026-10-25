@@ -1,0 +1,767 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+ ❯ tests/components/session.test.tsx (7 tests | 1 failed) 1814ms
+   × Edit question reopens the preserved form and focuses it without replacing the report 146ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/components/session.test.tsx > Edit question reopens the preserved form and focuses it without replacing the report
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit question"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  <main
+    class="workspace"
+    id="main-content"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Investigate an incident":
+  <h1 />
+
+  Name "Investigation report":
+  <h2
+    tabindex="-1"
+  />
+
+  Name "Summary":
+  <h3
+    id="summary-title"
+  />
+
+  Name "Possible causes":
+  <h3
+    id="causes-title"
+  />
+
+  Name "Possible fraud-api slowdown":
+  <h4 />
+
+  Name "Supporting observations":
+  <h5 />
+
+  Name "Next steps":
+  <h3
+    id="steps-title"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="introduction"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    id="service-hint"
+  />
+
+  Name "":
+  <p
+    id="minutes-hint"
+  />
+
+  Name "":
+  <p
+    class="submitted-question"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="confidence"
+  />
+
+  Name "":
+  <p
+    class="report-note"
+  />
+
+  Name "":
+  <p
+    class="report-note"
+  />
+
+  Name "":
+  <p
+    class="candidate-rank"
+  />
+
+  Name "":
+  <p />
+
+  Name "":
+  <p
+    class="confidence"
+  />
+
+  Name "":
+  <p
+    class="report-note"
+  />
+
+  Name "":
+  <p
+    class="log-detail"
+    translate="no"
+  />
+
+  Name "":
+  <p
+    class=""
+    translate="no"
+  />
+
+  Name "":
+  <p
+    class="report-note"
+  />
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Dependency checks":
+  <aside
+    aria-label="Dependency checks"
+    class="dependency-status"
+  />
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  <p
+    role="status"
+  />
+
+  Name "":
+  <p
+    aria-atomic="true"
+    aria-live="polite"
+    role="status"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ul />
+
+  Name "Possible causes":
+  <ol
+    aria-label="Possible causes"
+    class="candidates"
+  />
+
+  Name "":
+  <ul
+    class="evidence"
+  />
+
+  Name "":
+  <ul />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li
+    class=""
+  />
+
+  Name "":
+  <li
+    class=""
+  />
+
+  Name "":
+  <li
+    class="caution"
+  />
+
+  Name "":
+  <li
+    class="candidate"
+  />
+
+  Name "":
+  <li />
+
+  Name "":
+  <li />
+
+  Name "":
+  <li />
+
+  --------------------------------------------------
+  form:
+
+  Name "Investigation":
+  <form
+    aria-label="Investigation"
+    class="composer"
+    method="post"
+    novalidate=""
+  />
+
+  --------------------------------------------------
+  group:
+
+  Name "Try a seeded scenario":
+  <fieldset />
+
+  --------------------------------------------------
+  button:
+
+  Name "Memory leak":
+  <button
+    type="button"
+  />
+
+  Name "Slow dependency":
+  <button
+    type="button"
+  />
+
+  Name "Bad deploy":
+  <button
+    type="button"
+  />
+
+  Name "Run investigation":
+  <button
+    class="primary-action"
+    type="submit"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Incident question":
+  <textarea
+    aria-invalid="false"
+    autocomplete="off"
+    id="incident-query"
+    name="query"
+    required=""
+    rows="4"
+  />
+
+  Name "Service (optional)":
+  <input
+    aria-describedby="service-hint"
+    autocomplete="off"
+    id="incident-service"
+    name="service"
+    spellcheck="false"
+    value="payment-service"
+  />
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "Window (minutes)":
+  <input
+    aria-describedby="minutes-hint"
+    aria-invalid="false"
+    autocomplete="off"
+    id="incident-minutes"
+    inputmode="numeric"
+    max="1440"
+    min="1"
+    name="minutes_back"
+    step="1"
+    type="number"
+    value="180"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "Investigation result":
+  <section
+    aria-busy="false"
+    aria-label="Investigation result"
+  />
+
+  Name "Summary":
+  <section
+    aria-labelledby="summary-title"
+    class="report-section"
+  />
+
+  Name "Possible causes":
+  <section
+    aria-labelledby="causes-title"
+    class="report-section"
+  />
+
+  Name "Next steps":
+  <section
+    aria-labelledby="steps-title"
+    class="report-section"
+  />
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  <article
+    class="report"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  Name "":
+  <dt />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd
+    translate="no"
+  />
+
+  Name "":
+  <dd />
+
+  Name "":
+  <dd />
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  <time
+    datetime="2026-10-25T07:13:14.123-03:00"
+    translate="no"
+  />
+
+  Name "":
+  <time
+    datetime="2026-10-25T10:13:14.123-03:00"
+    translate="no"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :
+
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :
+
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :
+
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          method="post"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              required=""
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint"
+                  aria-invalid="false"
+                  autocomplete="off"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <p
+            class="hydration-message"
+            hidden=""
+          >
+            Enable JavaScript to submit investigations and check dependencies.
+          </p>
+        </form>
+        <div
+          class="result-area"
+        >
+          <p
+            aria-atomic="true"
+            aria-live="polite"
+            role="status"
+          >
+            Investigation received.
+          </p>
+          <section
+            aria-busy="false"
+            aria-label="Investigation result"
+          >
+            <article
+              class="report"
+            >
+              <h2
+                tabindex="-1"
+              >
+                Investigation report
+              </h2>
+              <p
+                class="submitted-question"
+              >
+                payment-service latency is elevated
+              </p>
+              <dl
+                class="report-context"
+              >
+                <div>
+                  <dt>
+                    Service
+                  </dt>
+                  <dd
+                    translate="no"
+                  >
+                    payment-service
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Queried start (UTC)
+                  </dt>
+                  <dd>
+                    <time
+                      datetime="2026-10-25T07:13:14.123-03:00"
+                      translate="no"
+                    >
+                      Oct 25, 2026, 10:13:14.123
+
+                      UTC
+                    </time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Queried end (UTC)
+                  </dt>
+                  <dd>
+                    <time
+                      datetime="2026-10-25T10:13:14.123-03:00"
+                      translate="no"
+                    >
+                      Oct 25, 2026, 13:13:14.123
+
+                      UTC
+                    </time>
+                  </dd>
+                </div>
+              </dl>
+              <section
+                aria-labelledby="summary-title"
+                class="report-section"
+              >
+                <h3
+                  id="summary-title"
+                >
+                  Summary
+                </h3>
+                <p>
+                  Dependency timeout observed in payment-service.
+                </p>
+                <p
+                  class="confidence"
+                >
+                  Overall model confidence:
+
+                  <span>
+                    0.654321
+                     / 1
+                  </span>
+                </p>
+              </section>
+              <p
+                class="report-note"
+              >
+                Model confidence is not a calibrated probability or measured accuracy.
+              </p>
+              <section
+                aria-labelledby="causes-title"
+                class="report-section"
+              >
+                <h3
+                  id="causes-title"
+                >
+                  Possible causes
+                </h3>
+                <p
+                  class="report-note"
+                >
+                  Candidates are ranked by the model. Rank does not indicate severity or prove causality.
+                </p>
+                <ol
+                  aria-label="Possible causes"
+                  class="candidates"
+                >
+                  <li
+                    class="candidate"
+                  >
+                    <p
+                      class="candidate-rank"
+                    >
+                      Candidate
+                      1
+                    </p>
+                    <h4>
+                      Possible fraud-api slowdown
+                    </h4>
+                    <p>
+                      Payment timeouts cite fraud-api; timing needs confirmation.
+                    </p>
+                    <p
+                      class="confidence"
+                    >
+                      Candidate model confidence:
+
+                      <span>
+                        0.73
+                         / 1
+                      </span>
+                    </p>
+                    <h5>
+                      Supporting observations
+                    </h5>
+                    <p
+                      class="report-note"
+                    >
+                      Report citations; verify against the source before acting.
+                    </p>
+                    <ul
+                      class="evidence"
+                    >
+                      <li>
+                        <span
+                          class="evidence-source"
+                        >
+                          Logs
+                        </span>
+                        <p
+                          class="log-detail"
+                          translate="no"
+                        >
+                          upstream timeout calling fraud-api after 2000ms
+                        </p>
+                      </li>
+                      <li>
+                        <span
+                          class="evidence-source"
+                        >
+                          Metrics
+                        </span>
+                        <p
+                          class=""
+                          translate="no"
+                        >
+                          payment-service p95 increased by 140 ms
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                </ol>
+              </section>
+              <section
+                aria-labelledby="steps-title"
+                class="report-section"
+              >
+                <h3
+                  id="steps-title"
+                >
+                  Next steps
+                </h3>
+                <p
+                  class="report-note"
+                >
+                  Suggested actions for review.
+                </p>
+                <ul>
+                  <li>
+                    Compare fraud-api timing with payment-service symptoms.
+                  </li>
+                </ul>
+              </section>
+            </article>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/session.test.tsx:183:26
+    181|   start();
+    182|   await screen.findByRole("heading", { name: "Investigation report" });
+    183|   fireEvent.click(screen.getByRole("button", { name: "Edit question" }…
+       |                          ^
+    184|   expect(screen.getByLabelText("Incident question")).toHaveFocus();
+    185|   expect(screen.getByLabelText("Service (optional)")).toHaveValue(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 51 passed (52)
+   Start at  13:37:04
+   Duration  4.61s (tests 40%, environment 39%, setup 9%, import 8%, transform 3%)

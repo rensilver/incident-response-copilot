@@ -1,0 +1,1330 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+ ❯ tests/components/accessibility.test.tsx (5 tests | 5 failed) 2959ms
+   × invalid submission focuses and describes the first rejected field 628ms
+   × success focuses its result heading without health stealing focus 1194ms
+   × failure focuses its result heading without health stealing focus 1054ms
+   × loading is announced outside the busy region and stop waiting returns focus to the form 43ms
+   × server HTML disables submission until hydration rather than exposing incident values through GET 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/components/accessibility.test.tsx > invalid submission focuses and describes the first rejected field
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <textarea
+  aria-describedby="query-error"
+  aria-invalid="true"
+  autocomplete="off"
+  id="incident-query"
+  name="query"
+  rows="4"
+/>
+Received element with focus:
+  <body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Checking dependencies…
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-describedby="query-error"
+              aria-invalid="true"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            />
+            <p
+              class="field-error"
+              id="query-error"
+            >
+              Enter an incident question.
+            </p>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value=""
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="60"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-busy="false"
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Describe an incident or choose a seeded scenario.
+          </p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ tests/components/accessibility.test.tsx:17:17
+     15|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     16|   const query = screen.getByLabelText("Incident question");
+     17|   expect(query).toHaveFocus();
+       |                 ^
+     18|   expect(query).toHaveAttribute("aria-invalid", "true");
+     19|   expect(query).toHaveAccessibleDescription("Enter an incident questio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/components/accessibility.test.tsx > success focuses its result heading without health stealing focus
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <h2>
+  Investigation report
+</h2>
+Received element with focus:
+  <body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :··············
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :··············
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :··············
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-busy="false"
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation received.
+          </p>
+          <article
+            class="report"
+          >
+            <h2>
+              Investigation report
+            </h2>
+            <p
+              class="submitted-question"
+            >
+              payment-service latency is elevated
+            </p>
+            <dl
+              class="report-context"
+            >
+              <div>
+                <dt>
+                  Service
+                </dt>
+                <dd>
+                  payment-service
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  Queried start (UTC)
+                </dt>
+                <dd>
+                  <time
+                    datetime="2026-10-25T07:13:14.123-03:00"
+                  >
+                    Oct 25, 2026, 10:13:14.123······················
+                    UTC
+                  </time>
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  Queried end (UTC)
+                </dt>
+                <dd>
+                  <time
+                    datetime="2026-10-25T10:13:14.123-03:00"
+                  >
+                    Oct 25, 2026, 13:13:14.123······················
+                    UTC
+                  </time>
+                </dd>
+              </div>
+            </dl>
+            <section
+              aria-labelledby="summary-title"
+              class="report-section"
+            >
+              <h3
+                id="summary-title"
+              >
+                Summary
+              </h3>
+              <p>
+                Dependency timeout observed in payment-service.
+              </p>
+              <p
+                class="confidence"
+              >
+                Overall model confidence:··················
+                <span>
+                  0.654321
+                   / 1
+                </span>
+              </p>
+            </section>
+            <p
+              class="report-note"
+            >
+              Model confidence is not a calibrated probability or measured accuracy.
+            </p>
+            <section
+              aria-labelledby="causes-title"
+              class="report-section"
+            >
+              <h3
+                id="causes-title"
+              >
+                Possible causes
+              </h3>
+              <p
+                class="report-note"
+              >
+                Candidates are ranked by the model. Rank does not indicate severity or prove causality.
+              </p>
+              <ol
+                aria-label="Possible causes"
+                class="candidates"
+              >
+                <li
+                  class="candidate"
+                >
+                  <p
+                    class="candidate-rank"
+                  >
+                    Candidate·
+                    1
+                  </p>
+                  <h4>
+                    Possible fraud-api slowdown
+                  </h4>
+                  <p>
+                    Payment timeouts cite fraud-api; timing needs confirmation.
+                  </p>
+                  <p
+                    class="confidence"
+                  >
+                    Candidate model confidence:······················
+                    <span … />
+                  </p>
+                  <h5>
+                    Supporting observations
+                  </h5>
+                  <p
+                    class="report-note"
+                  >
+                    Report citations; verify against the source before acting.
+                  </p>
+                  <ul
+                    class="evidence"
+                  >
+                    <li … />
+                    <li … />
+                  </ul>
+                </li>
+              </ol>
+            </section>
+            <section
+              aria-labelledby="steps-title"
+              class="report-section"
+            >
+              <h3
+                id="steps-title"
+              >
+                Next steps
+              </h3>
+              <p
+                class="report-note"
+              >
+                Suggested actions for review.
+              </p>
+              <ul>
+                <li>
+                  Compare fraud-api timing with payment-service symptoms.
+                </li>
+              </ul>
+            </section>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<html>
+  <head />
+  <body>
+    <div>
+      <main
+        class="workspace"
+        id="main-content"
+        tabindex="-1"
+      >
+        <h1>
+          Investigate an incident
+        </h1>
+        <p
+          class="introduction"
+        >
+          Follow observations from metrics and logs to possible causes and next steps.
+        </p>
+        <aside
+          aria-label="Dependency checks"
+          class="dependency-status"
+        >
+          <p
+            role="status"
+          >
+            Dependencies degraded
+          </p>
+          <ul>
+            <li
+              class=""
+            >
+              Prometheus
+              :
+
+              reachable
+            </li>
+            <li
+              class=""
+            >
+              Elasticsearch
+              :
+
+              reachable
+            </li>
+            <li
+              class="caution"
+            >
+              Model
+              :
+
+              unreachable
+            </li>
+          </ul>
+          <p>
+            Reachability does not guarantee a usable investigation.
+          </p>
+        </aside>
+        <div
+          class="investigation-grid"
+        >
+          <form
+            aria-label="Investigation"
+            class="composer"
+            novalidate=""
+          >
+            <fieldset>
+              <legend>
+                Try a seeded scenario
+              </legend>
+              <div
+                class="presets"
+              >
+                <button
+                  type="button"
+                >
+                  Memory leak
+                </button>
+                <button
+                  type="button"
+                >
+                  Slow dependency
+                </button>
+                <button
+                  type="button"
+                >
+                  Bad deploy
+                </button>
+              </div>
+              <label
+                for="incident-query"
+              >
+                Incident question
+              </label>
+              <textarea
+                aria-invalid="false"
+                autocomplete="off"
+                id="incident-query"
+                name="query"
+                rows="4"
+              >
+                payment-service latency is elevated
+              </textarea>
+              <div
+                class="form-fields"
+              >
+                <div>
+                  <label
+                    for="incident-service"
+                  >
+                    Service (optional)
+                  </label>
+                  <input
+                    aria-describedby="service-hint"
+                    autocomplete="off"
+                    id="incident-service"
+                    name="service"
+                    spellcheck="false"
+                    value="payment-service"
+                  />
+                  <p
+                    id="service-hint"
+                  >
+                    Leave blank to investigate without a service filter.
+                  </p>
+                </div>
+                <div>
+                  <label
+                    for="incident-minutes"
+                  >
+                    Window (minutes)
+                  </label>
+                  <input
+                    aria-describedby="minutes-hint minutes-error"
+                    aria-invalid="false"
+                    id="incident-minutes"
+                    inputmode="numeric"
+                    max="1440"
+                    min="1"
+                    name="minutes_back"
+                    step="1"
+                    type="number"
+                    value="180"
+                  />
+                  <p
+                    id="minutes-hint"
+                  >
+                    1–1440 minutes
+                  </p>
+                </div>
+              </div>
+              <button
+                class="primary-action"
+                type="submit"
+              >
+                Run investigation
+              </button>
+            </fieldset>
+            <noscript>
+              Enable JavaScript to submit investigations and check dependencies.
+            </noscript>
+          </form>
+          <section
+            aria-busy="false"
+            aria-label="Investigation result"
+            class="result-area"
+          >
+            <p
+              role="status"
+            >
+              Investigation received.
+            </p>
+            <article
+              class="report"
+            >
+              <h2>
+                Investigation report
+              </h2>
+              <p
+                class="submitted-question"
+              >
+                payment-service latency is elevated
+              </p>
+              <dl
+                class="report-context"
+              >
+                <div>
+                  <dt>
+                    Service
+                  </dt>
+                  <dd>
+                    payment-service
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Queried start (UTC)
+                  </dt>
+                  <dd>
+                    <time
+                      datetime="2026-10-25T07:13:14.123-03:00"
+                    >
+                      Oct 25, 2026, 10:13:14.123
+
+                      UTC
+                    </time>
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    Queried end (UTC)
+                  </dt>
+                  <dd>
+                    <time
+                      datetime="2026-10-25T10:13:14.123-03:00"
+                    >
+                      Oct 25, 2026, 13:13:14.123
+
+                      UTC
+                    </time>
+                  </dd>
+                </div>
+              </dl>
+              <section
+                aria-labelledby="summary-title"
+                class="report-section"
+              >
+                <h3
+                  id="summary-title"
+                >
+                  Summary
+                </h3>
+                <p>
+                  Dependency timeout observed in payment-service.
+                </p>
+                <p
+                  class="confidence"
+                >
+                  Overall model confidence:
+
+                  <span>
+                    0.654321
+                     / 1
+                  </span>
+                </p>
+              </section>
+              <p
+                class="report-note"
+              >
+                Model confidence is not a calibrated probability or measured accuracy.
+              </p>
+              <section
+                aria-labelledby="causes-title"
+                class="report-section"
+              >
+                <h3
+                  id="causes-title"
+                >
+                  Possible causes
+                </h3>
+                <p
+                  class="report-note"
+                >
+                  Candidates are ranked by the model. Rank does not indicate severity or prove causality.
+                </p>
+                <ol
+                  aria-label="Possible causes"
+                  class="candidates"
+                >
+                  <li
+                    class="candidate"
+                  >
+                    <p
+                      class="candidate-rank"
+                    >
+                      Candidate
+                      1
+                    </p>
+                    <h4>
+                      Possible fraud-api slowdown
+                    </h4>
+                    <p>
+                      Payment timeouts cite fraud-api; timing needs confirmation.
+                    </p>
+                    <p
+                      class="confidence"
+                    >
+                      Candidate model confidence:
+
+                      <span>
+                        0.73
+                         / 1
+                      </span>
+                    </p>
+                    <h5>
+                      Supporting observations
+                    </h5>
+                    <p
+                      class="report-note"
+                    >
+                      Report citations; verify against the source before acting.
+                    </p>
+                    <ul
+                      class="evidence"
+                    >
+                      <li>
+                        <span
+                          class="evidence-source"
+                        >
+                          Logs
+                        </span>
+                        <p
+                          class="log-detail"
+                        >
+                          upstream timeout calling fraud-api after 2000ms
+                        </p>
+                      </li>
+                      <li>
+                        <span
+                          class="evidence-source"
+                        >
+                          Metrics
+                        </span>
+                        <p
+                          class=""
+                        >
+                          payment-service p95 increased by 140 ms
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                </ol>
+              </section>
+              <section
+                aria-labelledby="steps-title"
+                class="report-section"
+              >
+                <h3
+                  id="steps-title"
+                >
+                  Next steps
+                </h3>
+                <p
+                  class="report-note"
+                >
+                  Suggested actions for review.
+                </p>
+                <ul>
+                  <li>
+                    Compare fraud-api timing with payment-service symptoms.
+                  </li>
+                </ul>
+              </section>
+            </article>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+ ❯ tests/components/accessibility.test.tsx:34:41
+     32|     fireEvent.click(screen.getByRole("button", { name: "Run investigat…
+     33|     const heading = await screen.findByRole("heading", { name: ok ? "I…
+     34|     await waitFor(() => expect(heading).toHaveFocus());
+       |                                         ^
+     35|     await screen.findByText("Model: unreachable");
+     36|     expect(heading).toHaveFocus();
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/components/accessibility.test.tsx > failure focuses its result heading without health stealing focus
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <h2>
+  Investigation failed
+</h2>
+Received element with focus:
+  <body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <aside
+        aria-label="Dependency checks"
+        class="dependency-status"
+      >
+        <p
+          role="status"
+        >
+          Dependencies degraded
+        </p>
+        <ul>
+          <li
+            class=""
+          >
+            Prometheus
+            :··············
+            reachable
+          </li>
+          <li
+            class=""
+          >
+            Elasticsearch
+            :··············
+            reachable
+          </li>
+          <li
+            class="caution"
+          >
+            Model
+            :··············
+            unreachable
+          </li>
+        </ul>
+        <p>
+          Reachability does not guarantee a usable investigation.
+        </p>
+      </aside>
+      <div
+        class="investigation-grid"
+      >
+        <form
+          aria-label="Investigation"
+          class="composer"
+          novalidate=""
+        >
+          <fieldset>
+            <legend>
+              Try a seeded scenario
+            </legend>
+            <div
+              class="presets"
+            >
+              <button
+                type="button"
+              >
+                Memory leak
+              </button>
+              <button
+                type="button"
+              >
+                Slow dependency
+              </button>
+              <button
+                type="button"
+              >
+                Bad deploy
+              </button>
+            </div>
+            <label
+              for="incident-query"
+            >
+              Incident question
+            </label>
+            <textarea
+              aria-invalid="false"
+              autocomplete="off"
+              id="incident-query"
+              name="query"
+              rows="4"
+            >
+              payment-service latency is elevated
+            </textarea>
+            <div
+              class="form-fields"
+            >
+              <div>
+                <label
+                  for="incident-service"
+                >
+                  Service (optional)
+                </label>
+                <input
+                  aria-describedby="service-hint"
+                  autocomplete="off"
+                  id="incident-service"
+                  name="service"
+                  spellcheck="false"
+                  value="payment-service"
+                />
+                <p
+                  id="service-hint"
+                >
+                  Leave blank to investigate without a service filter.
+                </p>
+              </div>
+              <div>
+                <label
+                  for="incident-minutes"
+                >
+                  Window (minutes)
+                </label>
+                <input
+                  aria-describedby="minutes-hint minutes-error"
+                  aria-invalid="false"
+                  id="incident-minutes"
+                  inputmode="numeric"
+                  max="1440"
+                  min="1"
+                  name="minutes_back"
+                  step="1"
+                  type="number"
+                  value="180"
+                />
+                <p
+                  id="minutes-hint"
+                >
+                  1–1440 minutes
+                </p>
+              </div>
+            </div>
+            <button
+              class="primary-action"
+              type="submit"
+            >
+              Run investigation
+            </button>
+          </fieldset>
+          <noscript>
+            Enable JavaScript to submit investigations and check dependencies.
+          </noscript>
+        </form>
+        <section
+          aria-busy="false"
+          aria-label="Investigation result"
+          class="result-area"
+        >
+          <p
+            role="status"
+          >
+            Investigation failed. Review the error before trying again.
+          </p>
+          <div
+            class="request-error"
+            role="alert"
+          >
+            <h2>
+              Investigation failed
+            </h2>
+            <p>
+              Investigation unavailable. Check backend dependencies or model access before trying again.
+            </p>
+            <p>
+              Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<html>
+  <head />
+  <body>
+    <div>
+      <main
+        class="workspace"
+        id="main-content"
+        tabindex="-1"
+      >
+        <h1>
+          Investigate an incident
+        </h1>
+        <p
+          class="introduction"
+        >
+          Follow observations from metrics and logs to possible causes and next steps.
+        </p>
+        <aside
+          aria-label="Dependency checks"
+          class="dependency-status"
+        >
+          <p
+            role="status"
+          >
+            Dependencies degraded
+          </p>
+          <ul>
+            <li
+              class=""
+            >
+              Prometheus
+              :
+
+              reachable
+            </li>
+            <li
+              class=""
+            >
+              Elasticsearch
+              :
+
+              reachable
+            </li>
+            <li
+              class="caution"
+            >
+              Model
+              :
+
+              unreachable
+            </li>
+          </ul>
+          <p>
+            Reachability does not guarantee a usable investigation.
+          </p>
+        </aside>
+        <div
+          class="investigation-grid"
+        >
+          <form
+            aria-label="Investigation"
+            class="composer"
+            novalidate=""
+          >
+            <fieldset>
+              <legend>
+                Try a seeded scenario
+              </legend>
+              <div
+                class="presets"
+              >
+                <button
+                  type="button"
+                >
+                  Memory leak
+                </button>
+                <button
+                  type="button"
+                >
+                  Slow dependency
+                </button>
+                <button
+                  type="button"
+                >
+                  Bad deploy
+                </button>
+              </div>
+              <label
+                for="incident-query"
+              >
+                Incident question
+              </label>
+              <textarea
+                aria-invalid="false"
+                autocomplete="off"
+                id="incident-query"
+                name="query"
+                rows="4"
+              >
+                payment-service latency is elevated
+              </textarea>
+              <div
+                class="form-fields"
+              >
+                <div>
+                  <label
+                    for="incident-service"
+                  >
+                    Service (optional)
+                  </label>
+                  <input
+                    aria-describedby="service-hint"
+                    autocomplete="off"
+                    id="incident-service"
+                    name="service"
+                    spellcheck="false"
+                    value="payment-service"
+                  />
+                  <p
+                    id="service-hint"
+                  >
+                    Leave blank to investigate without a service filter.
+                  </p>
+                </div>
+                <div>
+                  <label
+                    for="incident-minutes"
+                  >
+                    Window (minutes)
+                  </label>
+                  <input
+                    aria-describedby="minutes-hint minutes-error"
+                    aria-invalid="false"
+                    id="incident-minutes"
+                    inputmode="numeric"
+                    max="1440"
+                    min="1"
+                    name="minutes_back"
+                    step="1"
+                    type="number"
+                    value="180"
+                  />
+                  <p
+                    id="minutes-hint"
+                  >
+                    1–1440 minutes
+                  </p>
+                </div>
+              </div>
+              <button
+                class="primary-action"
+                type="submit"
+              >
+                Run investigation
+              </button>
+            </fieldset>
+            <noscript>
+              Enable JavaScript to submit investigations and check dependencies.
+            </noscript>
+          </form>
+          <section
+            aria-busy="false"
+            aria-label="Investigation result"
+            class="result-area"
+          >
+            <p
+              role="status"
+            >
+              Investigation failed. Review the error before trying again.
+            </p>
+            <div
+              class="request-error"
+              role="alert"
+            >
+              <h2>
+                Investigation failed
+              </h2>
+              <p>
+                Investigation unavailable. Check backend dependencies or model access before trying again.
+              </p>
+              <p>
+                Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+              </p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+ ❯ tests/components/accessibility.test.tsx:34:41
+     32|     fireEvent.click(screen.getByRole("button", { name: "Run investigat…
+     33|     const heading = await screen.findByRole("heading", { name: ok ? "I…
+     34|     await waitFor(() => expect(heading).toHaveFocus());
+       |                                         ^
+     35|     await screen.findByText("Model: unreachable");
+     36|     expect(heading).toHaveFocus();
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/components/accessibility.test.tsx > loading is announced outside the busy region and stop waiting returns focus to the form
+Error: expect(element).toHaveAttribute("aria-live", "polite") // element.getAttribute("aria-live") === "polite"
+
+Expected the element to have attribute:
+  aria-live="polite"
+Received:
+  null
+ ❯ tests/components/accessibility.test.tsx:48:18
+     46|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     47|   const status = screen.getAllByRole("status").find((node) => node.tex…
+     48|   expect(status).toHaveAttribute("aria-live", "polite");
+       |                  ^
+     49|   expect(status?.closest('[aria-busy="true"]')).toBeNull();
+     50|   const stop = screen.getByRole("button", { name: "Stop waiting" });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/components/accessibility.test.tsx > server HTML disables submission until hydration rather than exposing incident values through GET
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/components/accessibility.test.tsx:61:53
+     59|   const page = new DOMParser().parseFromString(html, "text/html");
+     60|   const form = page.querySelector("form");
+     61|   expect(form?.querySelector("fieldset")?.disabled).toBe(true);
+       |                                                     ^
+     62|   expect(form?.method).toBe("post");
+     63| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  5 failed | 46 passed (51)
+   Start at  13:31:47
+   Duration  5.67s (tests 41%, environment 39%, import 10%, setup 7%, transform 3%)

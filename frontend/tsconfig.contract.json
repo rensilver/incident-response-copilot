@@ -5,7 +5,8 @@
     "incremental": false,
     "outDir": ".contract-build",
     "rootDir": ".",
-    "types": ["node"]
+    "types": ["node"],
+    "rewriteRelativeImportExtensions": true
   },
   "include": [
     "src/lib/api/**/*.ts",

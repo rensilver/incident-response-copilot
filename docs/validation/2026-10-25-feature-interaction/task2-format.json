@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm",
+    "--prefix",
+    "frontend",
+    "run",
+    "format:check"
+  ],
+  "exit_code": 0,
+  "seconds": 1.54
+}

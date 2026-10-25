@@ -1,0 +1,238 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+ ❯ tests/components/failures.test.tsx (22 tests | 22 failed) 1293ms
+   × HTTP 422 (HTML) gives safe, deliberate recovery 330ms
+   × HTTP 422 (JSON) gives safe, deliberate recovery 128ms
+   × HTTP 401 (HTML) gives safe, deliberate recovery 120ms
+   × HTTP 401 (JSON) gives safe, deliberate recovery 97ms
+   × HTTP 403 (HTML) gives safe, deliberate recovery 66ms
+   × HTTP 403 (JSON) gives safe, deliberate recovery 57ms
+   × HTTP 429 (HTML) gives safe, deliberate recovery 68ms
+   × HTTP 429 (JSON) gives safe, deliberate recovery 41ms
+   × HTTP 500 (HTML) gives safe, deliberate recovery 35ms
+   × HTTP 500 (JSON) gives safe, deliberate recovery 32ms
+   × HTTP 502 (HTML) gives safe, deliberate recovery 29ms
+   × HTTP 502 (JSON) gives safe, deliberate recovery 30ms
+   × HTTP 503 (HTML) gives safe, deliberate recovery 31ms
+   × HTTP 503 (JSON) gives safe, deliberate recovery 29ms
+   × HTTP 504 (HTML) gives safe, deliberate recovery 22ms
+   × HTTP 504 (JSON) gives safe, deliberate recovery 23ms
+   × invalid JSON is classified without displaying response text or diagnostics 28ms
+   × HTML success is classified without displaying response text or diagnostics 24ms
+   × invalid schema is classified without displaying response text or diagnostics 21ms
+   × connection loss is classified without displaying response text or diagnostics 27ms
+   × the configured five minute browser deadline aborts a stalled request 31ms
+   × unmount aborts the investigation browser fetch 22ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 422 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 422 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /request was rejected/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 401 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 401 (JSON) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 403 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 403 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /backend access/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 429 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 429 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /rate or quota limit/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 500 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 500 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /server could not complete/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 502 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 502 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /unsuccessful response/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 503 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 503 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /dependencies or model access/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > HTTP 504 (HTML) gives safe, deliberate recovery
+ FAIL  tests/components/failures.test.tsx > HTTP 504 (JSON) gives safe, deliberate recovery
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /deadline exceeded/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:34:21
+     32|       start();
+     33|       const error = await screen.findByRole("alert");
+     34|       expect(error).toHaveTextContent(expected);
+       |                     ^
+     35|       expect(error).toHaveTextContent(/Run investigation to retry/);
+     36|       expect(document.body).not.toHaveTextContent("private-failure-can…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > invalid JSON is classified without displaying response text or diagnostics
+ FAIL  tests/components/failures.test.tsx > HTML success is classified without displaying response text or diagnostics
+ FAIL  tests/components/failures.test.tsx > invalid schema is classified without displaying response text or diagnostics
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /invalid response/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:53:46
+     51|     render(<Page />);
+     52|     start();
+     53|     expect(await screen.findByRole("alert")).toHaveTextContent(expecte…
+       |                                              ^
+     54|     expect(document.body).not.toHaveTextContent("private-failure-canar…
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > connection loss is classified without displaying response text or diagnostics
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /connection was lost/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:53:46
+     51|     render(<Page />);
+     52|     start();
+     53|     expect(await screen.findByRole("alert")).toHaveTextContent(expecte…
+       |                                              ^
+     54|     expect(document.body).not.toHaveTextContent("private-failure-canar…
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > the configured five minute browser deadline aborts a stalled request
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  /within 5 minutes/i
+Received:
+  Investigation failedInvestigation unavailable. Review the question and try again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.
+ ❯ tests/components/failures.test.tsx:71:37
+     69|   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+     70|   await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+     71|   expect(screen.getByRole("alert")).toHaveTextContent(/within 5 minute…
+       |                                     ^
+     72|   expect(screen.getByRole("alert")).toHaveTextContent(/backend work ma…
+     73|   expect(requestSignal?.aborted).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/22]⎯
+
+ FAIL  tests/components/failures.test.tsx > unmount aborts the investigation browser fetch
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/components/failures.test.tsx:87:34
+     85|   expect(requestSignal?.aborted).toBe(false);
+     86|   unmount();
+     87|   expect(requestSignal?.aborted).toBe(true);
+       |                                  ^
+     88|   await act(async () => {});
+     89| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/22]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  22 failed | 19 passed (41)
+   Start at  13:27:29
+   Duration  3.02s (tests 44%, environment 39%, import 8%, setup 6%, transform 3%)

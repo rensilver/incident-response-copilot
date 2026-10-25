@@ -1,7 +1,13 @@
 # Frontend development
 
-The Next.js App Router foundation serves a static preview on port **3001**.
-Investigation controls and reports remain separate implementation tasks. The
+The Next.js App Router workspace runs on port **3001**. Three seeded presets
+fill an editable question, optional service filter, and 1–1440 minute window.
+Only explicit submission starts investigation work; health checks are independent.
+Reports show the API summary, ordered candidates and observations, confidence,
+next steps, and the authoritative queried start/end converted to explicit UTC.
+The report retains the submitted context when form values change. Loading,
+empty reports, safe failures, and deliberate retry are supported. Stop waiting
+aborts browser I/O; backend work may continue. The
 existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 
@@ -13,8 +19,8 @@ npm --prefix frontend ci
 npm --prefix frontend run dev
 ```
 
-Open <http://localhost:3001>. This preview needs no backend, credentials, or seeded
-stack. The frontend does not load the root `.env` as a client configuration file.
+Open <http://localhost:3001>. Health and investigation requests need FastAPI;
+the three synthetic exercises also need freshly seeded observability data. The frontend does not load the root `.env` as a client configuration file.
 Keep model and tracing keys in the backend's private configuration.
 
 Production preview:
@@ -38,7 +44,9 @@ npm --prefix frontend run build
 Type checking generates Next.js route declarations before checking the complete
 strict TypeScript project. Build and type generation both write `.next/`; run
 them sequentially. `next-env.d.ts`, `.next/`, and TypeScript incremental state are
-generated and ignored. The separate `tsconfig.contract.json` emits only the
+generated and ignored. The browser imports the transport validator by its actual `.ts` extension.
+The contract compiler rewrites this extension for emitted Node ESM, using
+TypeScript’s `rewriteRelativeImportExtensions`. The separate `tsconfig.contract.json` emits only the
 existing Node contract tests into `.contract-build/`. `npm test` runs those
 contract/proxy/generation checks, then Vitest with React Testing Library and jsdom.
 The generated OpenAPI files remain governed by the contract generator, excluded
@@ -50,21 +58,23 @@ server; leave port 3001 free. It refuses to reuse an existing server.
 
 ```bash
 cd frontend
-npx playwright install chromium --only-shell
+npx playwright install chromium
 npm run build
 npm run test:e2e
 ```
 
-Ten foundation browser checks cover desktop (1280px), tablet (768px), mobile
-(393px), narrow (320px), and desktop with page JavaScript disabled. They check
-keyboard skip navigation, horizontal overflow, JavaScript errors, absence of
-external/API requests, 200% text sizing, and reduced motion. Narrow spacing keeps
-ordinary heading words intact at enlarged text sizes. The 320px viewport checks
-reflow; text-size injection is not browser UI zoom emulation. Screenshots and
-failure traces go into ignored `test-results/`. These checks do not validate
-investigation behavior, actual browser zoom, screen readers, or broad accessibility.
-The [foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
-records inspected screenshots, design decisions, and feature-view boundaries.
+The browser matrix covers desktop (1280px), tablet (768px), mobile (393px),
+narrow (320px), and a script-disabled shell. It checks keyboard submission/retry,
+focus, long/empty observations, compact mobile editing, no page overflow,
+200%/400% text scaling and reduced motion. A separate disposable full-Chromium
+profile/extension uses native tab zoom at 200%/400%, verifies effective CSS widths,
+and captures viewport images. Install full Chromium as well as the headless shell
+for this check. Screenshots/traces go into ignored `test-results/`.
+These are controlled API fixtures, not live provider results. They do not certify
+screen-reader or cross-browser accessibility. The [feature review](../docs/validation/2026-10-25-feature-interaction/README.md)
+retains inspected captures, failures and scope. The earlier
+[foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
+remains historical evidence for the preview.
 
 Use `npm --prefix frontend run format` to format authored frontend files. ESLint
 uses Next.js's Core Web Vitals and TypeScript configurations, with Prettier handling
@@ -76,7 +86,7 @@ The initial CSS uses the [design proposal](../docs/frontend-design-proposal.md)
 palette and reading scale. IBM Plex Sans 400/500/600 and Mono 400 are bundled from
 pinned Fontsource packages via `next/font/local`, with swap and system fallbacks.
 Latin WOFF2 assets total 85,732 bytes; Sans totals 71,024 bytes and is preloaded.
-Mono is available as a CSS variable without preloading an unused evidence font.
+Mono is available as a CSS variable and loads when log evidence uses it.
 Fallback fonts cover characters outside the Latin subset. The fonts use the
 [SIL Open Font License](public/fonts/OFL.txt); the license ships in public assets.
 There is no runtime font CDN request.
@@ -86,9 +96,9 @@ There is no runtime font CDN request.
 `src/app/` composes routes, metadata, fonts, and global styles. Shared static
 navigation lives in `src/components/site-header.tsx`; `components/ui/workspace.tsx`
 owns the main landmark/skip target. `src/features/investigations/` owns incident
-framing and will host the interactive feature leaves. These components remain
-Server Components: there is no client directive, hook, or transport import in the
-static shell. Add client boundaries only where browser state is needed.
+static framing plus independent health and investigation client leaves. Routes,
+shared navigation, and framing remain Server Components; client boundaries own
+only browser state and API calls.
 
 `src/lib/api/client.ts` exposes `createApiClient().investigate(request, { signal })`
 and `.health({ signal })`. It uses fixed relative paths, generated request types,
@@ -97,9 +107,8 @@ requests have a 300-second total fetch/body budget; health has 10 seconds.
 HTTP failures retain only their status, while malformed JSON, invalid schema,
 network failures, expiry, and caller cancellation have safe `ApiError.kind` values.
 Response bodies and low-level exceptions are never attached to errors. There are
-no automatic retries, persistent browser storage, or requests during shell render.
-Abort stops local I/O; backend/provider work may still run. Feature views will map
-these categories to accessible feedback when those views are implemented.
+no automatic retries, persistent browser storage, or investigation calls during render.
+Abort stops local I/O; backend/provider work may still run. The feature maps these categories to safe recovery feedback.
 
 ## Host and container configuration
 
@@ -126,3 +135,29 @@ rejects every `NEXT_PUBLIC_*` setting, including arbitrary credential aliases.
 Do not add keys through Next's `env` object or import server configuration into
 client modules. The frontend needs no provider/tracing credentials at build or
 runtime. The root backend configuration remains private and backend-owned.
+
+## Real elapsed-time timeout checks
+
+Ordinary browser checks intercept API responses. The opt-in timeout suite instead
+uses an isolated HTTP fixture and the production Next.js rewrite. It runs three
+cases in parallel (about five minutes): a controlled 504 after 31 seconds, real
+270-second proxy inactivity, and real 300-second browser expiry while an
+incomplete JSON body keeps arriving. No fake clocks, model credentials or live
+provider calls are used in this suite. This verifies UI/proxy budgets; it does
+not revalidate FastAPI's default 240-second cooperative graph deadline.
+
+Leave ports 3001 and 18765 free. The timeout configuration refuses builds whose
+investigation rewrite does not target the fixture. Build/type generation and
+both browser suites must run sequentially:
+
+```bash
+INCIDENT_COPILOT_BACKEND_ORIGIN=http://127.0.0.1:18765 npm --prefix frontend run build
+npm --prefix frontend run test:e2e:timeouts
+npm --prefix frontend run build
+```
+
+The final command restores the ordinary backend origin. The fixture recognizes
+only its three literal test questions, listens on loopback, and is started/stopped
+by Playwright. Timing JSON, screenshots and traces stay under `test-results/`.
+The [action evidence](../docs/validation/2026-10-25-feature-interaction/README.md)
+separates controlled responses, real elapsed-time budgets, and untested live scope.

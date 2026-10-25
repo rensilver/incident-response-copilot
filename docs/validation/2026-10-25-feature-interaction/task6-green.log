@@ -1,0 +1,12 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+
+ Test Files  5 passed (5)
+      Tests  46 passed (46)
+   Start at  13:29:47
+   Duration  4.08s (tests 41%, environment 40%, import 10%, setup 6%, transform 3%)

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "env",
+    "INCIDENT_COPILOT_ENV_FILE=",
+    "make",
+    "format-check"
+  ],
+  "exit_code": 0,
+  "seconds": 1.08
+}

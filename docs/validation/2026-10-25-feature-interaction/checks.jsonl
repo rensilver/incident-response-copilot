@@ -1,0 +1,1 @@
+{"label": "task9-real-timeouts", "command": ["npm", "run", "test:e2e:timeouts"], "cwd": "/home/rensilver/workspaces/incident-response-copilot/frontend", "environment_keys": ["PATH"], "finished_at": "2026-10-25T16:56:23.866509+00:00", "elapsed_seconds": 304.045, "exit_code": 0, "timed_out": false, "bound_seconds": 400.0}

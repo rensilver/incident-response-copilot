@@ -1,0 +1,20 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e:timeouts
+> playwright test --config playwright.timeouts.config.ts
+
+
+Running 3 tests using 3 workers
+
+  ✓  1 tests/e2e/real-timeouts.spec.ts:9:3 › configured real backend deadline path (32.1s)
+[WebServer] Failed to proxy http://127.0.0.1:18765/api/v1/investigations Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+[WebServer] Error: socket hang up
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+  ✓  3 tests/e2e/real-timeouts.spec.ts:9:3 › configured real proxy inactivity path (4.5m)
+  ✓  2 tests/e2e/real-timeouts.spec.ts:9:3 › configured real browser total deadline path (5.0m)
+
+  3 passed (5.1m)

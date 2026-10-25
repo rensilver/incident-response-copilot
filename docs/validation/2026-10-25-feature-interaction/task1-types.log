@@ -1,0 +1,17 @@
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+tests/components/page.test.tsx(48,48): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Argument of type '{ name: string | undefined; }' is not assignable to parameter of type 'ByRoleOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+      Types of property 'name' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string | RegExp | ((accessibleName: string, element: Element) => boolean)'.
+          Type 'undefined' is not assignable to type 'string | RegExp | ((accessibleName: string, element: Element) => boolean)'.
+  Overload 2 of 2, '(role: ByRoleMatcher, options?: ByRoleOptions | undefined): HTMLElement', gave the following error.
+    Argument of type '{ name: string | undefined; }' is not assignable to parameter of type 'ByRoleOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+      Types of property 'name' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string | RegExp | ((accessibleName: string, element: Element) => boolean)'.
+          Type 'undefined' is not assignable to type 'string | RegExp | ((accessibleName: string, element: Element) => boolean)'.

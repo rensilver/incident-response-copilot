@@ -1,0 +1,52 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:176714) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 30 tests using 1 worker
+
+(node:176726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (556ms)
+  ✓   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (542ms)
+  ✓   3 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (599ms)
+  ✓   4 [desktop-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (614ms)
+  ✓   5 [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.6s)
+  ✓   6 [desktop-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report (2.6s)
+(node:177138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (744ms)
+  ✓   8 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (790ms)
+  ✓   9 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (609ms)
+  ✓  10 [mobile-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (854ms)
+  ✓  11 [mobile-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (5.4s)
+  -  12 [mobile-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:177349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (604ms)
+  ✓  14 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (578ms)
+  ✓  15 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (635ms)
+  ✓  16 [tablet-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (682ms)
+  ✓  17 [tablet-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.8s)
+  -  18 [tablet-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:177544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (518ms)
+  ✓  20 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (481ms)
+  ✓  21 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (537ms)
+  ✓  22 [narrow-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (638ms)
+  ✓  23 [narrow-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.2s)
+  -  24 [narrow-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+(node:177714) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  25 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (409ms)
+  ✓  26 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (376ms)
+  -  27 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+  -  28 [desktop-no-js] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context
+  -  29 [desktop-no-js] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+  -  30 [desktop-no-js] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+
+  7 skipped
+  23 passed (28.3s)

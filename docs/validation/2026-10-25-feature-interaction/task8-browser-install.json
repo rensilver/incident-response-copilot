@@ -1,0 +1,8 @@
+{
+  "command": ["frontend/node_modules/.bin/playwright", "install", "chromium", "--no-shell"],
+  "exit_code": 0,
+  "browser": "Chrome for Testing 156.0.8078.4 (Playwright Chromium revision 1248)",
+  "purpose": "Full Chromium supports native tab zoom extension APIs; ordinary cases use the existing matching headless shell.",
+  "duration_not_recorded": true,
+  "result": "191.1 MiB download completed in the ordinary Playwright cache; no project dependency change."
+}

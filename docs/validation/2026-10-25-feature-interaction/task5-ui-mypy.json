@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".venv/bin/mypy",
+    "--config-file",
+    "backend/pyproject.toml",
+    "--strict",
+    "streamlit_app"
+  ],
+  "exit_code": 0,
+  "seconds": 0.97
+}

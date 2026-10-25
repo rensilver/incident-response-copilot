@@ -1,0 +1,80 @@
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (5.375534ms)
+✔ rejects null before treating a response as a report (0.833442ms)
+✔ rejects array before treating a response as a report (0.274798ms)
+✔ rejects HTML before treating a response as a report (0.198708ms)
+✔ rejects missing required summary before treating a response as a report (0.317758ms)
+✔ rejects coerced confidence before treating a response as a report (0.313691ms)
+✔ rejects low confidence before treating a response as a report (0.956309ms)
+✔ rejects high confidence before treating a response as a report (0.41098ms)
+✔ rejects non-finite confidence before treating a response as a report (1.284386ms)
+✔ rejects invalid candidate confidence before treating a response as a report (1.553164ms)
+✔ rejects missing evidence detail before treating a response as a report (0.812363ms)
+✔ rejects unknown evidence source before treating a response as a report (0.835094ms)
+✔ rejects invalid steps before treating a response as a report (1.521505ms)
+✔ rejects invalid date before treating a response as a report (0.360757ms)
+✔ rejects missing window end before treating a response as a report (0.182738ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.949817ms)
+✔ validates both public error shapes without rendering raw rejected payloads (2.041807ms)
+✔ investigations send JSON only to the same-origin API and validate the report (55.215365ms)
+✔ health uses the proxy path and retains degraded dependency results (1.337615ms)
+✔ HTTP 422 is classified without retrying or exposing response text (1.482673ms)
+✔ HTTP 503 is classified without retrying or exposing response text (0.838261ms)
+✔ HTTP 504 is classified without retrying or exposing response text (0.96201ms)
+✔ HTTP 500 is classified without retrying or exposing response text (0.703492ms)
+✔ malformed successful responses are rejected without exposing their body (1.296839ms)
+✔ malformed successful responses are rejected without exposing their body (1.269198ms)
+✔ malformed successful responses are rejected without exposing their body (2.20521ms)
+✔ health also validates unknown JSON (1.5675ms)
+✔ network errors are sanitized and never automatically retried (2.10278ms)
+✔ investigate aborts at its total budget (2.977828ms)
+✔ health aborts at its total budget (0.661423ms)
+✔ the deadline covers a stalled response body as well as headers (1.33532ms)
+✔ caller cancellation aborts the local fetch without claiming backend cancellation (1.470681ms)
+✔ a previously aborted caller never starts a request (0.487472ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_OPENAI_API_KEY's value (2.937274ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGSMITH_API_KEY's value (0.422111ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGCHAIN_API_KEY's value (0.673315ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_MODEL_TOKEN's value (0.47537ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_BACKEND_ORIGIN's value (2.894235ms)
+✔ backend-only provider/tracing settings are never forwarded into frontend configuration (1.093583ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (5012.584298ms)
+✔ browser paths map only investigations and health to the local backend (8.638009ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.885088ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.728738ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.903221ms)
+✔ invalid backend origin is rejected without echoing its value:  (2.215097ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.83763ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (2.156599ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (1.282903ms)
+✔ invalid backend origin is rejected without echoing its value: http (2.262535ms)
+✔ invalid backend origin is rejected without echoing its value: http (3.224395ms)
+✔ invalid backend origin is rejected without echoing its value: http (1.402525ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.533647ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5161.691695
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  41 passed (41)
+   Start at  13:28:29
+   Duration  4.00s (tests 44%, environment 37%, import 10%, setup 7%, transform 2%)

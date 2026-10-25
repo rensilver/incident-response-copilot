@@ -1,0 +1,531 @@
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+ ❯ tests/components/page.test.tsx (8 tests | 8 failed) 1211ms
+   × the workspace exposes labeled inputs and live degraded dependency results 134ms
+   × Memory leak fills editable inputs without starting an investigation 25ms
+   × Slow dependency fills editable inputs without starting an investigation 24ms
+   × Bad deploy fills editable inputs without starting an investigation 10ms
+   × whitespace questions and invalid durations never reach the API 4ms
+   × submission trims text, accepts 1 minutes and omits an empty filter 4ms
+   × submission trims text, accepts 1440 minutes and omits an empty filter 3ms
+   × a failed health check remains unknown and permits explicit investigation 1005ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/components/page.test.tsx > the workspace exposes labeled inputs and live degraded dependency results
+TestingLibraryElementError: Unable to find a label with the text of: Incident question
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:20:17
+     18|   render(<Page />);
+     19|   expect(within(screen.getByRole("main")).getByRole("heading", { level…
+     20|   expect(screen.getByLabelText("Incident question")).toHaveValue("");
+       |                 ^
+     21|   expect(screen.getByLabelText("Service (optional)")).toHaveValue("");
+     22|   expect(screen.getByLabelText("Window (minutes)")).toHaveValue(60);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/components/page.test.tsx > Memory leak fills editable inputs without starting an investigation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Memory leak"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  <main
+    class="workspace"
+    id="main-content"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Investigate an incident":
+  <h1 />
+
+  Name "Foundation preview":
+  <h2
+    id="preview-title"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="introduction"
+  />
+
+  Name "":
+  <p />
+
+  --------------------------------------------------
+  region:
+
+  Name "Foundation preview":
+  <section
+    aria-labelledby="preview-title"
+    class="preview"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:36:28
+     34|     const fetcher = mockApi();
+     35|     render(<Page />);
+     36|     fireEvent.click(screen.getByRole("button", { name }));
+       |                            ^
+     37|     expect(screen.getByLabelText("Incident question")).toHaveValue(que…
+     38|     expect(screen.getByLabelText("Service (optional)")).toHaveValue(se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/components/page.test.tsx > Slow dependency fills editable inputs without starting an investigation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Slow dependency"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  <main
+    class="workspace"
+    id="main-content"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Investigate an incident":
+  <h1 />
+
+  Name "Foundation preview":
+  <h2
+    id="preview-title"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="introduction"
+  />
+
+  Name "":
+  <p />
+
+  --------------------------------------------------
+  region:
+
+  Name "Foundation preview":
+  <section
+    aria-labelledby="preview-title"
+    class="preview"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:36:28
+     34|     const fetcher = mockApi();
+     35|     render(<Page />);
+     36|     fireEvent.click(screen.getByRole("button", { name }));
+       |                            ^
+     37|     expect(screen.getByLabelText("Incident question")).toHaveValue(que…
+     38|     expect(screen.getByLabelText("Service (optional)")).toHaveValue(se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/components/page.test.tsx > Bad deploy fills editable inputs without starting an investigation
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Bad deploy"
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  <main
+    class="workspace"
+    id="main-content"
+    tabindex="-1"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Investigate an incident":
+  <h1 />
+
+  Name "Foundation preview":
+  <h2
+    id="preview-title"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="introduction"
+  />
+
+  Name "":
+  <p />
+
+  --------------------------------------------------
+  region:
+
+  Name "Foundation preview":
+  <section
+    aria-labelledby="preview-title"
+    class="preview"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:36:28
+     34|     const fetcher = mockApi();
+     35|     render(<Page />);
+     36|     fireEvent.click(screen.getByRole("button", { name }));
+       |                            ^
+     37|     expect(screen.getByLabelText("Incident question")).toHaveValue(que…
+     38|     expect(screen.getByLabelText("Service (optional)")).toHaveValue(se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/components/page.test.tsx > whitespace questions and invalid durations never reach the API
+TestingLibraryElementError: Unable to find a label with the text of: Incident question
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:48:27
+     46|   const fetcher = mockApi();
+     47|   render(<Page />);
+     48|   fireEvent.change(screen.getByLabelText("Incident question"), { targe…
+       |                           ^
+     49|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+     50|   expect(screen.getByText("Enter an incident question.")).toBeVisible(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/components/page.test.tsx > submission trims text, accepts 1 minutes and omits an empty filter
+ FAIL  tests/components/page.test.tsx > submission trims text, accepts 1440 minutes and omits an empty filter
+TestingLibraryElementError: Unable to find a label with the text of: Incident question
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/components/page.test.tsx:65:29
+     63|     const fetcher = mockApi();
+     64|     render(<Page />);
+     65|     fireEvent.change(screen.getByLabelText("Incident question"), { tar…
+       |                             ^
+     66|     fireEvent.change(screen.getByLabelText("Service (optional)"), { ta…
+     67|     fireEvent.change(screen.getByLabelText("Window (minutes)"), { targ…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/components/page.test.tsx > a failed health check remains unknown and permits explicit investigation
+TestingLibraryElementError: Unable to find an element with the text: Dependency check unavailable. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="workspace"
+      id="main-content"
+      tabindex="-1"
+    >
+      <h1>
+        Investigate an incident
+      </h1>
+      <p
+        class="introduction"
+      >
+        Follow observations from metrics and logs to possible causes and next steps.
+      </p>
+      <section
+        aria-labelledby="preview-title"
+        class="preview"
+      >
+        <h2
+          id="preview-title"
+        >
+          Foundation preview
+        </h2>
+        <p>
+          Investigation controls and reports will appear here.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/components/page.test.tsx:81:23
+     79|   }));
+     80|   render(<Page />);
+     81|   expect(await screen.findByText("Dependency check unavailable")).toBe…
+       |                       ^
+     82|   fireEvent.click(screen.getByRole("button", { name: "Slow dependency"…
+     83|   fireEvent.click(screen.getByRole("button", { name: "Run investigatio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  13:17:21
+   Duration  2.45s (tests 53%, environment 37%, setup 7%, transform 3%)

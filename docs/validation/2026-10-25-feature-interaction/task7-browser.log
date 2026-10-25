@@ -1,0 +1,275 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:164889) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:164924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (671ms)
+  ✓   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (592ms)
+  ✘   3 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (627ms)
+(node:165081) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (659ms)
+  ✓   5 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (741ms)
+  ✘   6 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (673ms)
+(node:165239) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (594ms)
+  ✓   8 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (530ms)
+  ✘   9 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (593ms)
+(node:165379) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (498ms)
+  ✓  11 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (482ms)
+  ✘  12 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (521ms)
+(node:165519) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  13 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (5.3s)
+(node:165651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  14 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (5.3s)
+(node:165778) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -  15 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+
+  1) [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: not "private-browser-canary"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <div role="alert" class="request-error">…</div> aka getByText('Investigation failedInvestigation unavailable. Check backend dependencies or')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "not toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      49 |     page.getByRole("heading", { name: "Investigation failed" }),
+      50 |   ).toBeFocused();
+    > 51 |   await expect(page.getByRole("alert")).not.toContainText(
+         |                                             ^
+      52 |     "private-browser-canary",
+      53 |   );
+      54 |   expect(attempts).toBe(1);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/interaction.spec.ts:51:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: not "private-browser-canary"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <div role="alert" class="request-error">…</div> aka getByText('Investigation failedInvestigation unavailable. Check backend dependencies or')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "not toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      49 |     page.getByRole("heading", { name: "Investigation failed" }),
+      50 |   ).toBeFocused();
+    > 51 |   await expect(page.getByRole("alert")).not.toContainText(
+         |                                             ^
+      52 |     "private-browser-canary",
+      53 |   );
+      54 |   expect(attempts).toBe(1);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/interaction.spec.ts:51:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-mobile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-mobile-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: not "private-browser-canary"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <div role="alert" class="request-error">…</div> aka getByText('Investigation failedInvestigation unavailable. Check backend dependencies or')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "not toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      49 |     page.getByRole("heading", { name: "Investigation failed" }),
+      50 |   ).toBeFocused();
+    > 51 |   await expect(page.getByRole("alert")).not.toContainText(
+         |                                             ^
+      52 |     "private-browser-canary",
+      53 |   );
+      54 |   expect(attempts).toBe(1);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/interaction.spec.ts:51:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-tablet-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-tablet-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-tablet-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-tablet-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: not "private-browser-canary"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <div role="alert" class="request-error">…</div> aka getByText('Investigation failedInvestigation unavailable. Check backend dependencies or')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "not toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      49 |     page.getByRole("heading", { name: "Investigation failed" }),
+      50 |   ).toBeFocused();
+    > 51 |   await expect(page.getByRole("alert")).not.toContainText(
+         |                                             ^
+      52 |     "private-browser-canary",
+      53 |   );
+      54 |   expect(attempts).toBe(1);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/interaction.spec.ts:51:45
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-narrow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-narrow-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-narrow-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/interaction-keyboard-submi-ad108-e-recovery-and-result-focus-narrow-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText(/Enable JavaScript/)
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText(/Enable JavaScript/) with timeout 5000ms
+      - waiting for getByText(/Enable JavaScript/)
+
+
+      28 |       page.getByRole("button", { name: "Run investigation" }),
+      29 |     ).toBeDisabled();
+    > 30 |     await expect(page.getByText(/Enable JavaScript/)).toBeVisible();
+         |                                                       ^
+      31 |   }
+      32 |   await page.keyboard.press("Tab");
+      33 |   const skip = page.getByRole("link", { name: "Skip to main content" });
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/foundation.spec.ts:30:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/foundation-the-workspace-l-f4dee-no-automatic-investigations-desktop-no-js/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/foundation-the-workspace-l-f4dee-no-automatic-investigations-desktop-no-js/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/foundation-the-workspace-l-f4dee-no-automatic-investigations-desktop-no-js/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/foundation-the-workspace-l-f4dee-no-automatic-investigations-desktop-no-js/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText(/Enable JavaScript/)
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText(/Enable JavaScript/) with timeout 5000ms
+      - waiting for getByText(/Enable JavaScript/)
+
+
+      73 |       page.getByRole("button", { name: "Run investigation" }),
+      74 |     ).toBeDisabled();
+    > 75 |     await expect(page.getByText(/Enable JavaScript/)).toBeVisible();
+         |                                                       ^
+      76 |   }
+      77 |   const geometry = await page.evaluate(() => ({
+      78 |     width: window.innerWidth,
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/foundation.spec.ts:75:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+    [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+    [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+    [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+    [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations
+    [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+  1 skipped
+  8 passed (24.1s)
