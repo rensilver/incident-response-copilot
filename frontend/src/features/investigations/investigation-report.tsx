@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import type { IncidentReport, InvestigationRequest } from "../../lib/api/types";
 
 const timestamp = new Intl.DateTimeFormat("en-US", {
@@ -17,25 +18,32 @@ const score = new Intl.NumberFormat("en-US", { maximumSignificantDigits: 21 });
 export function InvestigationReport({
   report,
   request,
+  headingRef,
 }: Readonly<{
   report: IncidentReport;
   request: InvestigationRequest;
+  headingRef: Ref<HTMLHeadingElement>;
 }>): React.JSX.Element {
   return (
     <article className="report">
-      <h2>Investigation report</h2>
+      <h2 ref={headingRef} tabIndex={-1}>
+        Investigation report
+      </h2>
       <p className="submitted-question">{request.query}</p>
       <dl className="report-context">
         <div>
           <dt>Service</dt>
-          <dd>{request.service ?? "All services"}</dd>
+          <dd translate="no">{request.service ?? "All services"}</dd>
         </div>
         {report.investigation_window ? (
           <>
             <div>
               <dt>Queried start (UTC)</dt>
               <dd>
-                <time dateTime={report.investigation_window.start}>
+                <time
+                  translate="no"
+                  dateTime={report.investigation_window.start}
+                >
                   {timestamp.format(
                     new Date(report.investigation_window.start),
                   )}{" "}
@@ -46,7 +54,7 @@ export function InvestigationReport({
             <div>
               <dt>Queried end (UTC)</dt>
               <dd>
-                <time dateTime={report.investigation_window.end}>
+                <time translate="no" dateTime={report.investigation_window.end}>
                   {timestamp.format(new Date(report.investigation_window.end))}{" "}
                   UTC
                 </time>
@@ -111,7 +119,10 @@ export function InvestigationReport({
                     <span className="evidence-source">
                       {entry.source === "metrics" ? "Metrics" : "Logs"}
                     </span>
-                    <p className={entry.source === "logs" ? "log-detail" : ""}>
+                    <p
+                      translate="no"
+                      className={entry.source === "logs" ? "log-detail" : ""}
+                    >
                       {entry.detail.trim()
                         ? entry.detail
                         : "Observation text unavailable."}

@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type FormEvent,
+} from "react";
 import { createApiClient } from "../../lib/api/client";
 import { failureMessage } from "./failure-message";
 import { InvestigationReport } from "./investigation-report";
@@ -24,6 +30,10 @@ const presets = [
   },
 ] as const;
 
+const subscribeHydration = (): (() => void) => () => {};
+const clientSnapshot = (): boolean => true;
+const serverSnapshot = (): boolean => false;
+
 type SessionState =
   | { kind: "idle" | "loading" | "abandoned" }
   | { kind: "error"; message: string }
@@ -41,6 +51,22 @@ export function InvestigationSession(): React.JSX.Element {
   const [state, setState] = useState<SessionState>({ kind: "idle" });
   const active = useRef<AbortController | null>(null);
   const pending = state.kind === "loading";
+  const interactive = useSyncExternalStore(
+    subscribeHydration,
+    clientSnapshot,
+    serverSnapshot,
+  );
+  const queryField = useRef<HTMLTextAreaElement>(null);
+  const minutesField = useRef<HTMLInputElement>(null);
+  const resultHeading = useRef<HTMLHeadingElement>(null);
+  const stopButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (state.kind === "success" || state.kind === "error")
+      resultHeading.current?.focus();
+    else if (state.kind === "loading") stopButton.current?.focus();
+    else if (state.kind === "abandoned") queryField.current?.focus();
+  }, [state.kind]);
   useEffect(
     () => () => {
       const controller = active.current;
@@ -72,7 +98,10 @@ export function InvestigationSession(): React.JSX.Element {
           : "Enter a whole number from 1 to 1440.",
     };
     setErrors(nextErrors);
-    if (nextErrors.query || nextErrors.minutes) return;
+    if (nextErrors.query || nextErrors.minutes) {
+      (nextErrors.query ? queryField.current : minutesField.current)?.focus();
+      return;
+    }
     const request: InvestigationRequest = {
       query: query.trim(),
       minutes_back: duration,
@@ -103,10 +132,11 @@ export function InvestigationSession(): React.JSX.Element {
       <form
         className="composer"
         onSubmit={(event) => void submit(event)}
+        method="post"
         noValidate
         aria-label="Investigation"
       >
-        <fieldset disabled={pending}>
+        <fieldset disabled={pending || !interactive}>
           <legend>Try a seeded scenario</legend>
           <div className="presets">
             {presets.map((preset) => (
@@ -126,6 +156,8 @@ export function InvestigationSession(): React.JSX.Element {
           </div>
           <label htmlFor="incident-query">Incident question</label>
           <textarea
+            ref={queryField}
+            required
             id="incident-query"
             name="query"
             rows={4}
@@ -159,6 +191,8 @@ export function InvestigationSession(): React.JSX.Element {
             <div>
               <label htmlFor="incident-minutes">Window (minutes)</label>
               <input
+                ref={minutesField}
+                autoComplete="off"
                 id="incident-minutes"
                 name="minutes_back"
                 type="number"
@@ -169,7 +203,9 @@ export function InvestigationSession(): React.JSX.Element {
                 value={minutes}
                 onChange={(event) => setMinutes(event.target.value)}
                 aria-invalid={Boolean(errors.minutes)}
-                aria-describedby="minutes-hint minutes-error"
+                aria-describedby={
+                  errors.minutes ? "minutes-hint minutes-error" : "minutes-hint"
+                }
               />
               <p id="minutes-hint">1–1440 minutes</p>
               {errors.minutes ? (
@@ -183,16 +219,12 @@ export function InvestigationSession(): React.JSX.Element {
             {pending ? "Investigating…" : "Run investigation"}
           </button>
         </fieldset>
-        <noscript>
+        <p className="hydration-message" hidden={interactive}>
           Enable JavaScript to submit investigations and check dependencies.
-        </noscript>
+        </p>
       </form>
-      <section
-        className="result-area"
-        aria-label="Investigation result"
-        aria-busy={pending}
-      >
-        <p role="status">
+      <div className="result-area">
+        <p role="status" aria-live="polite" aria-atomic="true">
           {state.kind === "idle"
             ? "Describe an incident or choose a seeded scenario."
             : state.kind === "loading"
@@ -204,24 +236,32 @@ export function InvestigationSession(): React.JSX.Element {
                   : "Investigation failed. Review the error before trying again."}
         </p>
         {pending ? (
-          <button type="button" onClick={stopWaiting}>
+          <button ref={stopButton} type="button" onClick={stopWaiting}>
             Stop waiting
           </button>
         ) : null}
-        {state.kind === "error" ? (
-          <div className="request-error" role="alert">
-            <h2>Investigation failed</h2>
-            <p>{state.message}</p>
-            <p>
-              Review your inputs, then use Run investigation to retry. Requests
-              are never retried automatically.
-            </p>
-          </div>
-        ) : null}
-        {state.kind === "success" ? (
-          <InvestigationReport report={state.report} request={state.request} />
-        ) : null}
-      </section>
+        <section aria-label="Investigation result" aria-busy={pending}>
+          {state.kind === "error" ? (
+            <div className="request-error" role="alert">
+              <h2 ref={resultHeading} tabIndex={-1}>
+                Investigation failed
+              </h2>
+              <p>{state.message}</p>
+              <p>
+                Review your inputs, then use Run investigation to retry.
+                Requests are never retried automatically.
+              </p>
+            </div>
+          ) : null}
+          {state.kind === "success" ? (
+            <InvestigationReport
+              report={state.report}
+              request={state.request}
+              headingRef={resultHeading}
+            />
+          ) : null}
+        </section>
+      </div>
     </div>
   );
 }

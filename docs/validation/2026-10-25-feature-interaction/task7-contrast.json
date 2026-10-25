@@ -1,0 +1,53 @@
+{
+  "method": "WCAG sRGB relative luminance, 4.5:1 minimum for ordinary text",
+  "colors": {
+    "paper": "#ffffff",
+    "canvas": "#edf2f7",
+    "ink": "#172b4d",
+    "action": "#214ecf",
+    "caution": "#7a4b00",
+    "error": "#b42318"
+  },
+  "pairs": [
+    {
+      "foreground": "ink",
+      "background": "paper",
+      "ratio": 14.102
+    },
+    {
+      "foreground": "ink",
+      "background": "canvas",
+      "ratio": 12.52
+    },
+    {
+      "foreground": "action",
+      "background": "paper",
+      "ratio": 6.873
+    },
+    {
+      "foreground": "action",
+      "background": "canvas",
+      "ratio": 6.102
+    },
+    {
+      "foreground": "caution",
+      "background": "paper",
+      "ratio": 7.41
+    },
+    {
+      "foreground": "caution",
+      "background": "canvas",
+      "ratio": 6.579
+    },
+    {
+      "foreground": "error",
+      "background": "paper",
+      "ratio": 6.574
+    },
+    {
+      "foreground": "error",
+      "background": "canvas",
+      "ratio": 5.837
+    }
+  ]
+}

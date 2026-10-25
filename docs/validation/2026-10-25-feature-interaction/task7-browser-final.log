@@ -1,0 +1,37 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:166821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:166873) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (622ms)
+  ✓   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (624ms)
+  ✓   3 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (764ms)
+(node:166997) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (774ms)
+  ✓   5 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (842ms)
+  ✓   6 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (611ms)
+(node:167174) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (501ms)
+  ✓   8 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (643ms)
+  ✓   9 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (605ms)
+(node:167316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (483ms)
+  ✓  11 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (450ms)
+  ✓  12 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (530ms)
+(node:167456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (439ms)
+  ✓  14 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (468ms)
+  -  15 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+
+  1 skipped
+  14 passed (13.1s)

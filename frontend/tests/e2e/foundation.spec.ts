@@ -23,6 +23,12 @@ test("the workspace loads with keyboard access and no automatic investigations",
     page.getByRole("heading", { level: 1, name: "Investigate an incident" }),
   ).toBeVisible();
   await expect(page.getByLabel("Incident question")).toBeVisible();
+  if (testInfo.project.name === "desktop-no-js") {
+    await expect(
+      page.getByRole("button", { name: "Run investigation" }),
+    ).toBeDisabled();
+    await expect(page.getByText(/Enable JavaScript/)).toBeVisible();
+  }
   await page.keyboard.press("Tab");
   const skip = page.getByRole("link", { name: "Skip to main content" });
   await expect(skip).toBeFocused();
@@ -62,6 +68,12 @@ test("the shell reflows with enlarged text and reduced motion", async ({
   });
   await expect(heading).toBeVisible();
   await expect(page.getByLabel("Incident question")).toBeVisible();
+  if (testInfo.project.name === "desktop-no-js") {
+    await expect(
+      page.getByRole("button", { name: "Run investigation" }),
+    ).toBeDisabled();
+    await expect(page.getByText(/Enable JavaScript/)).toBeVisible();
+  }
   const geometry = await page.evaluate(() => ({
     width: window.innerWidth,
     documentWidth: document.documentElement.scrollWidth,

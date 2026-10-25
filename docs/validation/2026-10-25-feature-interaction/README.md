@@ -120,3 +120,35 @@ source order remain available and selectable. Incident log evidence is intention
 backend diagnostic logs and credentials are not part of the displayed payload.
 No heuristic redaction is presented as a guarantee against secrets in arbitrary
 model prose; credentials remain a backend data-handling responsibility.
+
+## Task 7 — keyboard, focus, announcements, and contrast
+
+Five regressions first failed, then passed (51 component cases). Invalid submit
+focuses the first invalid field with its associated description. Pending moves
+focus to Stop waiting; abandoning returns it to the editable question. Success
+and failure focus their heading; independent health completion does not steal
+focus. Live pending/completion text sits outside the busy report region, so busy
+semantics cannot defer the loading announcement. Report context uses semantic
+definition lists, UTC `time` elements and ordered candidates with attached evidence.
+Controls have names/labels, native keyboard behavior, 44px minimum targets,
+visible focus and correct number constraints. Identifier/time elements opt out of
+translation. Server HTML disables all form controls until hydration and uses POST
+as a defensive fallback; disabling JavaScript cannot put incident text into a GET
+query. State still lives only in memory, without URL/storage persistence.
+
+The keyboard browser case traverses skip link, presets, fields and submit,
+recovers from controlled 503 using Shift+Tab/Enter, then verifies report focus in
+all four JavaScript viewport projects. The no-JavaScript project verifies disabled
+controls and the explanatory message. `task7-contrast.json` records calculated
+sRGB contrast: every foreground/background pair used for ordinary text exceeds
+4.5:1. Existing reduced-motion checks see no animation. No screen-reader or
+multi-browser certification is claimed; native HTML and browser focus checks
+provide bounded evidence of the implemented behavior.
+
+The first browser run caught two integration details retained in its log: Next
+adds a separate route-announcer alert, so the test now scopes the request alert
+to its result landmark; Chromium’s JavaScript-disabled mode did not expose the
+`noscript` message despite disabled controls. A server-rendered message now stays
+visible until hydration hides it, covering actual script failure as well. The
+keyboard focus checks had reached the expected error heading before the ambiguous
+alert selector failed; final reruns verify the complete retry flow.

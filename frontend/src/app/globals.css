@@ -382,3 +382,19 @@ h5 {
 .result-area > button {
   margin-top: 1rem;
 }
+
+h2[tabindex="-1"] {
+  scroll-margin-top: 1rem;
+}
+
+h2[tabindex="-1"]:focus {
+  outline: 3px solid var(--action);
+  outline-offset: 3px;
+}
+
+button,
+input,
+textarea,
+a {
+  -webkit-tap-highlight-color: #edf2f7;
+}
