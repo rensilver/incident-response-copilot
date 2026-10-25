@@ -47,7 +47,15 @@ function parse<T>(value: unknown, validate: ValidateFunction<T>): T {
 }
 
 export function parseReport(value: unknown): IncidentReport {
-  return parse(value, validateReport);
+  const report = parse(value, validateReport);
+  if (report.investigation_window) {
+    const start = Date.parse(report.investigation_window.start);
+    const end = Date.parse(report.investigation_window.end);
+    // JSON Schema permits leap seconds that JavaScript Date cannot render.
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end < start)
+      throw new InvalidApiResponseError();
+  }
+  return report;
 }
 export function parseHealth(value: unknown): Health {
   return parse(value, validateHealth);

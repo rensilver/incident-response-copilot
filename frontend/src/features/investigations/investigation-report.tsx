@@ -62,7 +62,7 @@ export function InvestigationReport({
       </dl>
       <section className="report-section" aria-labelledby="summary-title">
         <h3 id="summary-title">Summary</h3>
-        <p>{report.summary}</p>
+        <p>{report.summary.trim() ? report.summary : "Summary unavailable."}</p>
         <p className="confidence">
           Overall model confidence:{" "}
           <span>{score.format(report.confidence)} / 1</span>
@@ -84,8 +84,16 @@ export function InvestigationReport({
           {report.likely_causes.map((cause, index) => (
             <li key={index} className="candidate">
               <p className="candidate-rank">Candidate {index + 1}</p>
-              <h4>{cause.title}</h4>
-              <p>{cause.rationale}</p>
+              <h4>
+                {cause.title.trim()
+                  ? cause.title
+                  : "Candidate title unavailable."}
+              </h4>
+              <p>
+                {cause.rationale.trim()
+                  ? cause.rationale
+                  : "Rationale unavailable."}
+              </p>
               <p className="confidence">
                 Candidate model confidence:{" "}
                 <span>{score.format(cause.confidence)} / 1</span>
@@ -94,6 +102,9 @@ export function InvestigationReport({
               <p className="report-note">
                 Report citations; verify against the source before acting.
               </p>
+              {cause.supporting_evidence.length === 0 ? (
+                <p>No supporting observations returned.</p>
+              ) : null}
               <ul className="evidence">
                 {cause.supporting_evidence.map((entry, position) => (
                   <li key={position}>
@@ -101,7 +112,9 @@ export function InvestigationReport({
                       {entry.source === "metrics" ? "Metrics" : "Logs"}
                     </span>
                     <p className={entry.source === "logs" ? "log-detail" : ""}>
-                      {entry.detail}
+                      {entry.detail.trim()
+                        ? entry.detail
+                        : "Observation text unavailable."}
                     </p>
                   </li>
                 ))}
@@ -116,7 +129,9 @@ export function InvestigationReport({
         {report.next_steps.length === 0 ? <p>No next steps returned.</p> : null}
         <ul>
           {report.next_steps.map((step, index) => (
-            <li key={index}>{step}</li>
+            <li key={index}>
+              {step.trim() ? step : "Next step text unavailable."}
+            </li>
           ))}
         </ul>
       </section>

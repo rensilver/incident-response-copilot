@@ -96,3 +96,27 @@ Unmount releases request ownership and aborts browser I/O; Stop waiting already
 uses the same cancellation boundary. Copy explicitly states backend work may
 continue. No dependency/model call, retry policy, budget, API schema or provider
 behavior changed. The transport’s existing tests also bound stalled body reads.
+
+## Task 6 — untrusted content, long observations, and missing fields
+
+Five new cases cover literal script/image/markdown payloads in every report text
+field; ignored extra debug/key fields; 8,000-character identifiers; distinct
+near-duplicate log observations with dependency names, units and non-anomalous
+raw-query qualifiers; blank text and empty evidence; and unusable server windows.
+The initial run had three expected failures and one renderer RangeError: JSON
+Schema accepts a leap-second date that JavaScript Date cannot render. Browser
+validation now rejects unrenderable or reversed intervals before React receives
+them. No timestamp is repaired or synthesized. This adds a semantic browser
+boundary check without changing generated artifacts or the backend contract.
+All 46 component cases now pass without unhandled errors.
+
+Only explicit report fields are rendered, using React text interpolation. There
+is no HTML/Markdown renderer, automatic link creation, raw response dump, runtime
+log panel or configuration display. Required field omissions remain malformed
+responses; optional absent/null intervals retain the explicit unavailable label.
+Blank domain text and absent observations get descriptive fallbacks; numeric
+zero and one remain intact. Full nonblank text, whitespace, observations and
+source order remain available and selectable. Incident log evidence is intentional;
+backend diagnostic logs and credentials are not part of the displayed payload.
+No heuristic redaction is presented as a guarantee against secrets in arbitrary
+model prose; credentials remain a backend data-handling responsibility.
