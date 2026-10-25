@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { createApiClient } from "../../lib/api/client";
 import { InvestigationReport } from "./investigation-report";
 import type { IncidentReport, InvestigationRequest } from "../../lib/api/types";
@@ -23,6 +23,11 @@ const presets = [
   },
 ] as const;
 
+type SessionState =
+  | { kind: "idle" | "loading" | "abandoned" }
+  | { kind: "error"; message: string }
+  | { kind: "success"; report: IncidentReport; request: InvestigationRequest };
+
 /** Browser-owned form state; all investigation work goes through FastAPI. */
 export function InvestigationSession(): React.JSX.Element {
   const [query, setQuery] = useState("");
@@ -32,18 +37,20 @@ export function InvestigationSession(): React.JSX.Element {
     query?: string | undefined;
     minutes?: string | undefined;
   }>({});
-  const [result, setResult] = useState<{
-    report: IncidentReport;
-    request: InvestigationRequest;
-  } | null>(null);
-  const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState(
-    "Describe an incident or choose a seeded scenario.",
-  );
+  const [state, setState] = useState<SessionState>({ kind: "idle" });
+  const active = useRef<AbortController | null>(null);
+  const pending = state.kind === "loading";
+
+  function stopWaiting(): void {
+    const controller = active.current;
+    active.current = null;
+    controller?.abort();
+    setState({ kind: "abandoned" });
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    if (pending) return;
+    if (active.current) return;
     const duration = Number(minutes);
     const nextErrors = {
       query: query.trim() ? undefined : "Enter an incident question.",
@@ -62,18 +69,24 @@ export function InvestigationSession(): React.JSX.Element {
       minutes_back: duration,
       ...(service.trim() ? { service: service.trim() } : {}),
     };
-    setPending(true);
-    setMessage("Investigating…");
+    const controller = new AbortController();
+    active.current = controller;
+    setState({ kind: "loading" });
     try {
-      const report = await createApiClient().investigate(request);
-      setResult({ report, request });
-      setMessage("Investigation received.");
+      const report = await createApiClient().investigate(request, {
+        signal: controller.signal,
+      });
+      if (active.current === controller)
+        setState({ kind: "success", report, request });
     } catch {
-      setMessage(
-        "Investigation unavailable. Review the question and try again.",
-      );
+      if (active.current === controller)
+        setState({
+          kind: "error",
+          message:
+            "Investigation unavailable. Review the question and try again.",
+        });
     } finally {
-      setPending(false);
+      if (active.current === controller) active.current = null;
     }
   }
 
@@ -166,13 +179,39 @@ export function InvestigationSession(): React.JSX.Element {
           Enable JavaScript to submit investigations and check dependencies.
         </noscript>
       </form>
-      <section className="result-area" aria-label="Investigation result">
-        <p role="status">{message}</p>
-        {result ? (
-          <InvestigationReport
-            report={result.report}
-            request={result.request}
-          />
+      <section
+        className="result-area"
+        aria-label="Investigation result"
+        aria-busy={pending}
+      >
+        <p role="status">
+          {state.kind === "idle"
+            ? "Describe an incident or choose a seeded scenario."
+            : state.kind === "loading"
+              ? "Investigating…"
+              : state.kind === "success"
+                ? "Investigation received."
+                : state.kind === "abandoned"
+                  ? "Request abandoned. Backend work may still be running."
+                  : "Investigation failed. Review the error before trying again."}
+        </p>
+        {pending ? (
+          <button type="button" onClick={stopWaiting}>
+            Stop waiting
+          </button>
+        ) : null}
+        {state.kind === "error" ? (
+          <div className="request-error" role="alert">
+            <h2>Investigation failed</h2>
+            <p>{state.message}</p>
+            <p>
+              Review your inputs, then use Run investigation to retry. Requests
+              are never retried automatically.
+            </p>
+          </div>
+        ) : null}
+        {state.kind === "success" ? (
+          <InvestigationReport report={state.report} request={state.request} />
         ) : null}
       </section>
     </div>

@@ -67,3 +67,16 @@ telemetry chart, simulated progress stage or report-history surface. No new logi
 was needed; existing report tests cover ordering and exact supplied scores.
 This copy/style change uses the required full checks rather than adding tests
 that merely mirror static prose.
+
+## Task 4 — states, duplicate protection, stale responses, and retry
+
+Six new regression cases failed, then passed (nineteen component cases total).
+A discriminated state union represents idle, loading, abandoned, success and
+error. Empty valid reports explain missing candidates/steps. A synchronous
+request-owner reference blocks duplicate form events. Stop waiting releases that
+ownership before aborting; late success or failure cannot replace a newer result.
+Tests deliberately use an old transport promise that ignores abort to verify
+this guard. A new valid attempt clears the prior report rather than attaching new
+inputs to old output. Failures preserve all form values, show an error callout,
+and explain deliberate retry through Run investigation. No automatic retry,
+backend-cancellation guarantee, fake progress, or stored report history is added.

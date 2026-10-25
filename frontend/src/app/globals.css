@@ -365,3 +365,20 @@ h5 {
   margin-top: 0.5rem;
   max-width: 72ch;
 }
+
+.request-error {
+  border-left: 3px solid var(--error);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.request-error h2 {
+  color: var(--error);
+}
+.request-error p {
+  margin-top: 0.75rem;
+  max-width: 72ch;
+}
+.result-area > button {
+  margin-top: 1rem;
+}

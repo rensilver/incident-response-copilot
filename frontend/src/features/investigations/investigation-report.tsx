@@ -77,6 +77,9 @@ export function InvestigationReport({
           Candidates are ranked by the model. Rank does not indicate severity or
           prove causality.
         </p>
+        {report.likely_causes.length === 0 ? (
+          <p>No supported cause candidates returned.</p>
+        ) : null}
         <ol className="candidates" aria-label="Possible causes">
           {report.likely_causes.map((cause, index) => (
             <li key={index} className="candidate">
@@ -110,6 +113,7 @@ export function InvestigationReport({
       <section className="report-section" aria-labelledby="steps-title">
         <h3 id="steps-title">Next steps</h3>
         <p className="report-note">Suggested actions for review.</p>
+        {report.next_steps.length === 0 ? <p>No next steps returned.</p> : null}
         <ul>
           {report.next_steps.map((step, index) => (
             <li key={index}>{step}</li>
