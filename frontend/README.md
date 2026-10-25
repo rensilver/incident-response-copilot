@@ -5,8 +5,9 @@ fill an editable question, optional service filter, and 1–1440 minute window.
 Only explicit submission starts investigation work; health checks are independent.
 Reports show the API summary, ordered candidates and observations, confidence,
 next steps, and the authoritative queried start/end converted to explicit UTC.
-The report retains the submitted context when form values change. Further
-interaction hardening is in progress. The
+The report retains the submitted context when form values change. Loading,
+empty reports, safe failures, and deliberate retry are supported. Stop waiting
+aborts browser I/O; backend work may continue. The
 existing [API contract](../docs/frontend-api-contract.md) and
 [proxy mapping](../docs/proxy-contract.md) are retained.
 
@@ -105,7 +106,7 @@ HTTP failures retain only their status, while malformed JSON, invalid schema,
 network failures, expiry, and caller cancellation have safe `ApiError.kind` values.
 Response bodies and low-level exceptions are never attached to errors. There are
 no automatic retries, persistent browser storage, or investigation calls during render.
-Abort stops local I/O; backend/provider work may still run. Further feature tasks map these categories to accessible feedback.
+Abort stops local I/O; backend/provider work may still run. The feature maps these categories to safe recovery feedback.
 
 ## Host and container configuration
 

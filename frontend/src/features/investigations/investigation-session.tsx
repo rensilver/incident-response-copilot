@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createApiClient } from "../../lib/api/client";
+import { failureMessage } from "./failure-message";
 import { InvestigationReport } from "./investigation-report";
 import type { IncidentReport, InvestigationRequest } from "../../lib/api/types";
 
@@ -40,6 +41,14 @@ export function InvestigationSession(): React.JSX.Element {
   const [state, setState] = useState<SessionState>({ kind: "idle" });
   const active = useRef<AbortController | null>(null);
   const pending = state.kind === "loading";
+  useEffect(
+    () => () => {
+      const controller = active.current;
+      active.current = null;
+      controller?.abort();
+    },
+    [],
+  );
 
   function stopWaiting(): void {
     const controller = active.current;
@@ -78,12 +87,11 @@ export function InvestigationSession(): React.JSX.Element {
       });
       if (active.current === controller)
         setState({ kind: "success", report, request });
-    } catch {
+    } catch (error: unknown) {
       if (active.current === controller)
         setState({
           kind: "error",
-          message:
-            "Investigation unavailable. Review the question and try again.",
+          message: failureMessage(error),
         });
     } finally {
       if (active.current === controller) active.current = null;

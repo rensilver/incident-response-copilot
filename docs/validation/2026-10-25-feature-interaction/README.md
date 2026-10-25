@@ -80,3 +80,19 @@ this guard. A new valid attempt clears the prior report rather than attaching ne
 inputs to old output. Failures preserve all form values, show an error callout,
 and explain deliberate retry through Run investigation. No automatic retry,
 backend-cancellation guarantee, fake progress, or stored report history is added.
+
+## Task 5 — failures, timeouts, and abandoned browser requests
+
+Twenty-two new cases first failed, then passed (41 component cases total).
+The real transport is used with controlled HTTP/fetch boundaries. JSON and HTML
+422/401/403/429/500/502/503/504 errors receive safe category-specific recovery;
+malformed JSON, successful HTML, schema-invalid success and connection loss are
+rejected. Error bodies and exception diagnostics never reach the DOM. A generic
+503 cannot identify authentication versus quota versus connector failure, so copy
+does not guess. Explicit 429 identifies rate/quota limits without reading its body.
+The configured 300-second timer is exercised just before/at expiry using fake
+time; the later browser verification covers the real-time path separately.
+Unmount releases request ownership and aborts browser I/O; Stop waiting already
+uses the same cancellation boundary. Copy explicitly states backend work may
+continue. No dependency/model call, retry policy, budget, API schema or provider
+behavior changed. The transport’s existing tests also bound stalled body reads.
