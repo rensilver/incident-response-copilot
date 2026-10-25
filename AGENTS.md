@@ -110,6 +110,15 @@ the next task. A request to commit includes authorization for that task's commit
   when syncing. Regenerate with `uv lock --project backend` only for intentional
   dependency changes and commit the lock with the manifest.
   Documentation-only changes require diff, reference, and scope checks.
+- Frontend checks run from root with `npm --prefix frontend`: `test`,
+  `run lint`, `run format:check`, `run typecheck`, `run build`, then `run test:e2e`.
+  Run build and type generation sequentially because both write `.next/`.
+  Playwright owns port 3001 and needs its matching Chromium installed. Keep static
+  route/shared framing server-rendered and put interactive state in feature leaves.
+  The sole frontend environment setting is the server-only backend origin;
+  production rewrites require rebuilding when it changes. All `NEXT_PUBLIC_*`
+  settings are rejected; never copy backend credentials into frontend dotenv or
+  Next's `env` object. See the [frontend guide](frontend/README.md).
 - After API schema changes, run `make api-contract` and commit both generated
   artifacts in `frontend/src/lib/api/generated/`. Run `make api-contract-check`
   and `npm --prefix frontend test` with the locked frontend dependencies installed.

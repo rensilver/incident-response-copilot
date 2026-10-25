@@ -1,0 +1,13 @@
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 21ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 684ms
+  Running TypeScript ...
+Could not parse output from TypeScript's --showConfig.

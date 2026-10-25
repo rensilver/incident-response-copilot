@@ -1,0 +1,128 @@
+# Frontend development
+
+The Next.js App Router foundation serves a static preview on port **3001**.
+Investigation controls and reports remain separate implementation tasks. The
+existing [API contract](../docs/frontend-api-contract.md) and
+[proxy mapping](../docs/proxy-contract.md) are retained.
+
+Use Node.js 22.18+ and npm 10+. Dependencies are pinned in `package.json` and
+`package-lock.json`; install with npm from the repository root:
+
+```bash
+npm --prefix frontend ci
+npm --prefix frontend run dev
+```
+
+Open <http://localhost:3001>. This preview needs no backend, credentials, or seeded
+stack. The frontend does not load the root `.env` as a client configuration file.
+Keep model and tracing keys in the backend's private configuration.
+
+Production preview:
+
+```bash
+npm --prefix frontend run build
+npm --prefix frontend run start
+```
+
+Run checks sequentially from the repository root:
+
+```bash
+npm --prefix frontend run typecheck
+npm --prefix frontend run lint
+npm --prefix frontend run format:check
+npm --prefix frontend test
+make api-contract-check
+npm --prefix frontend run build
+```
+
+Type checking generates Next.js route declarations before checking the complete
+strict TypeScript project. Build and type generation both write `.next/`; run
+them sequentially. `next-env.d.ts`, `.next/`, and TypeScript incremental state are
+generated and ignored. The separate `tsconfig.contract.json` emits only the
+existing Node contract tests into `.contract-build/`. `npm test` runs those
+contract/proxy/generation checks, then Vitest with React Testing Library and jsdom.
+The generated OpenAPI files remain governed by the contract generator, excluded
+from manual lint/format rewrites.
+
+Install Playwright's matching headless Chromium once, then run browser checks
+against a fresh production build. The test runner starts and stops its own Next.js
+server; leave port 3001 free. It refuses to reuse an existing server.
+
+```bash
+cd frontend
+npx playwright install chromium --only-shell
+npm run build
+npm run test:e2e
+```
+
+Ten foundation browser checks cover desktop (1280px), tablet (768px), mobile
+(393px), narrow (320px), and desktop with page JavaScript disabled. They check
+keyboard skip navigation, horizontal overflow, JavaScript errors, absence of
+external/API requests, 200% text sizing, and reduced motion. Narrow spacing keeps
+ordinary heading words intact at enlarged text sizes. The 320px viewport checks
+reflow; text-size injection is not browser UI zoom emulation. Screenshots and
+failure traces go into ignored `test-results/`. These checks do not validate
+investigation behavior, actual browser zoom, screen readers, or broad accessibility.
+The [foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
+records inspected screenshots, design decisions, and feature-view boundaries.
+
+Use `npm --prefix frontend run format` to format authored frontend files. ESLint
+uses Next.js's Core Web Vitals and TypeScript configurations, with Prettier handling
+formatting. ESLint 9 is pinned for the current Next.js plugin peer ranges; npm
+marks that ESLint release deprecated. Review the upstream plugin ranges before
+upgrading to ESLint 10 rather than forcing incompatible peers.
+
+The initial CSS uses the [design proposal](../docs/frontend-design-proposal.md)
+palette and reading scale. IBM Plex Sans 400/500/600 and Mono 400 are bundled from
+pinned Fontsource packages via `next/font/local`, with swap and system fallbacks.
+Latin WOFF2 assets total 85,732 bytes; Sans totals 71,024 bytes and is preloaded.
+Mono is available as a CSS variable without preloading an unused evidence font.
+Fallback fonts cover characters outside the Latin subset. The fonts use the
+[SIL Open Font License](public/fonts/OFL.txt); the license ships in public assets.
+There is no runtime font CDN request.
+
+## Source boundaries
+
+`src/app/` composes routes, metadata, fonts, and global styles. Shared static
+navigation lives in `src/components/site-header.tsx`; `components/ui/workspace.tsx`
+owns the main landmark/skip target. `src/features/investigations/` owns incident
+framing and will host the interactive feature leaves. These components remain
+Server Components: there is no client directive, hook, or transport import in the
+static shell. Add client boundaries only where browser state is needed.
+
+`src/lib/api/client.ts` exposes `createApiClient().investigate(request, { signal })`
+and `.health({ signal })`. It uses fixed relative paths, generated request types,
+and runtime response parsers; callers never choose an upstream URL. Investigation
+requests have a 300-second total fetch/body budget; health has 10 seconds.
+HTTP failures retain only their status, while malformed JSON, invalid schema,
+network failures, expiry, and caller cancellation have safe `ApiError.kind` values.
+Response bodies and low-level exceptions are never attached to errors. There are
+no automatic retries, persistent browser storage, or requests during shell render.
+Abort stops local I/O; backend/provider work may still run. Feature views will map
+these categories to accessible feedback when those views are implemented.
+
+## Host and container configuration
+
+The only frontend setting is the server-only `INCIDENT_COPILOT_BACKEND_ORIGIN`.
+Host development defaults to `http://127.0.0.1:8000`. Optionally copy
+`.env.example` to `frontend/.env.local`; Next loads dotenv files from `frontend/`,
+and shell variables override them. Frontend dotenv variants are ignored. Never
+copy the backend's root `.env` into the frontend or its image.
+
+Use the internal `http://app:8000` origin for a frontend on the Compose network:
+
+```bash
+INCIDENT_COPILOT_BACKEND_ORIGIN=http://app:8000 npm --prefix frontend run build
+```
+
+Production rewrites capture this value **at build time**. Rebuild when changing
+between host and container origins; setting it only for `npm start` cannot change
+a built destination. The image and Compose service are separate deployment work;
+this command prepares the routing configuration, not a container deployment.
+
+Browsers always call `/api/v1/investigations` and `/api/health`; neither the upstream
+origin nor model/tracing configuration belongs in browser code. Configuration
+rejects every `NEXT_PUBLIC_*` setting, including arbitrary credential aliases.
+Do not add keys through Next's `env` object or import server configuration into
+client modules. The frontend needs no provider/tracing credentials at build or
+runtime. The root backend configuration remains private and backend-owned.

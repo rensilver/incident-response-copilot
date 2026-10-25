@@ -1,0 +1,19 @@
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+    - allowJs was set to true
+    - skipLibCheck was set to true
+
+Generating route types...
+✓ Types generated successfully
+error TS6053: File '/home/rensilver/workspaces/incident-response-copilot/frontend/.next/types/cache-life.d.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in '/home/rensilver/workspaces/incident-response-copilot/frontend/tsconfig.json'
+error TS6053: File '/home/rensilver/workspaces/incident-response-copilot/frontend/.next/types/validator.ts' not found.
+  The file is in the program because:
+    Matched by include pattern '.next/types/**/*.ts' in '/home/rensilver/workspaces/incident-response-copilot/frontend/tsconfig.json'

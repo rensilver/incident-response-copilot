@@ -1,0 +1,4 @@
+Command: git add .gitignore frontend docs/validation/2026-10-24-frontend-scaffold && git diff --cached --check && git diff --cached --stat
+Exit: 2 (staging succeeded; whitespace check failed)
+Two space-before-tab indentation findings in types-initial.log lines 9 and 10, from Next.js compiler-configuration suggestions.
+The recorder now expands tabs before storing display output; the retained log has that normalization too. Failure text and exit code remain unchanged.

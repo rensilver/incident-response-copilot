@@ -1,0 +1,11 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (383ms)
+  ✓  2 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the local foundation loads with keyboard access and no API calls (468ms)
+
+  2 passed (4.2s)

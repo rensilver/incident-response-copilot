@@ -1,0 +1,13 @@
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+tests/api-types.ts(20,1): error TS2578: Unused '@ts-expect-error' directive.
+tests/api-types.ts(23,19): error TS2322: Type 'string' is not assignable to type 'boolean'.
+tests/api-types.ts(27,1): error TS2578: Unused '@ts-expect-error' directive.
+tests/api-types.ts(29,3): error TS2322: Type 'Date' is not assignable to type 'string'.
+tests/api-types.ts(30,3): error TS2322: Type 'Date' is not assignable to type 'string'.

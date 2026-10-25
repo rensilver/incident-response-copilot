@@ -1,0 +1,11 @@
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+tests/api-transport.test.ts(3,33): error TS2307: Cannot find module '../src/lib/api/client.js' or its corresponding type declarations.
+tests/api-transport.test.ts(24,38): error TS7006: Parameter 'url' implicitly has an 'any' type.
+tests/api-transport.test.ts(24,43): error TS7006: Parameter 'init' implicitly has an 'any' type.
+tests/api-transport.test.ts(40,38): error TS7006: Parameter 'url' implicitly has an 'any' type.
+tests/api-transport.test.ts(40,43): error TS7006: Parameter 'init' implicitly has an 'any' type.
+tests/api-transport.test.ts(117,40): error TS7006: Parameter '_url' implicitly has an 'any' type.
+tests/api-transport.test.ts(117,46): error TS7006: Parameter 'init' implicitly has an 'any' type.

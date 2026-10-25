@@ -1,0 +1,44 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test --project=narrow-chromium --grep=enlarged
+
+
+Running 1 test using 1 worker
+
+  ✘  1 [narrow-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion (408ms)
+
+
+  1) [narrow-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion
+
+    Error: Keep “Investigate” readable without splitting
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+      89 |       heading.lines,
+      90 |       `Keep “${heading.word}” readable without splitting`,
+    > 91 |     ).toBe(1);
+         |       ^
+      92 |   }
+      93 |   for (const box of geometry.text) {
+      94 |     expect(box.left).toBeGreaterThanOrEqual(0);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/foundation.spec.ts:91:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-narrow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-narrow-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-narrow-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-narrow-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [narrow-chromium] › tests/e2e/foundation.spec.ts:44:1 › the shell reflows with enlarged text and reduced motion

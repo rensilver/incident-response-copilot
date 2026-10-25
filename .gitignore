@@ -25,3 +25,12 @@ seed-*/
 # frontend dependencies and contract test output
 /frontend/node_modules/
 /frontend/.contract-build/
+/frontend/.next/
+/frontend/next-env.d.ts
+/frontend/*.tsbuildinfo
+/frontend/playwright-report/
+/frontend/test-results/
+
+# Next.js automatically loads frontend dotenv variants; keep them private.
+/frontend/.env*
+!/frontend/.env.example

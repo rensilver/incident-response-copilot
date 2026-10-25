@@ -1,6 +1,6 @@
 # Same-origin API proxy
 
-The planned Next.js server listens on port 3001 and forwards these browser paths
+The Next.js server listens on port 3001 and forwards these browser paths
 to FastAPI. Browser callers use relative URLs on the page's origin.
 
 | Method | Browser path | FastAPI destination |
@@ -16,7 +16,7 @@ redirect the browser. FastAPI still rejects unsupported methods. Next.js may
 normalize trailing slashes with a redirect; callers use the exact paths above.
 
 `INCIDENT_COPILOT_BACKEND_ORIGIN` is a server-only HTTP(S) origin, defaulting to
-`http://127.0.0.1:8000` for a host-run backend. A future Compose frontend can use
+`http://127.0.0.1:8000` for a host-run backend. A frontend on the Compose network uses
 `http://app:8000`, matching the existing backend service name. An optional trailing
 slash is accepted; credentials, non-root paths, queries, and fragments are rejected
 without echoing the input. Do not put this setting in `NEXT_PUBLIC_*` or Next's
@@ -26,16 +26,19 @@ Set this variable in the frontend process environment before `next dev` or
 `next build`. The root backend `.env` is not loaded by this configuration. Next
 builds record rewrite destinations, so production requires rebuilding when the
 backend origin changes; a runtime environment change alone is insufficient.
-The frontend package, startup commands, Docker build, and Compose wiring belong
-to their subsequent implementation tasks. The configuration is present now; this
-repository does not yet contain a runnable frontend application.
+The [frontend guide](../frontend/README.md) documents host/container configuration
+and the runnable static preview. The production Docker image and Compose frontend
+service remain deployment work. Next loads frontend dotenv files, with process
+variables taking precedence; the root backend dotenv stays outside this package.
+All `NEXT_PUBLIC_*` settings are rejected before build/start configuration, and
+frontend dotenv variants are ignored except for the credential-free template.
 
 ## Timeouts and responses
 
 `experimental.proxyTimeout` is explicitly 270,000 milliseconds. Next.js passes
 it to the external rewrite proxy as an upstream socket inactivity timeout; it is
 not a total wall-clock deadline. The backend's cooperative graph deadline is at
-most 240 seconds. The future browser transport must allow 300 seconds total.
+most 240 seconds. The typed browser transport allows 300 seconds total.
 See [timeout limits and cancellation](investigation-timeouts.md) for cleanup,
 overhead, and abandoned-work limitations. Recheck this experimental option against
 the version locked when the frontend is scaffolded.
@@ -66,7 +69,10 @@ node --test frontend/tests/proxy-config.test.mjs
 
 [Validation evidence](validation/2026-10-23-same-origin-proxy/README.md) records
 configuration tests, backend origin characterization, and a temporary Next.js
-16.3.1/FastAPI socket harness. This is not a frontend build or browser UI check.
+16.3.1/FastAPI socket harness. That earlier check was a temporary harness. The current
+[configuration evidence](validation/2026-10-24-frontend-config/README.md) adds
+production builds, private-canary artifact checks, and real Next proxy requests
+against an offline fixture; container DNS/deployment and feature UI remain pending.
 The selected mechanism follows Next.js
 [external rewrites](https://nextjs.org/docs/app/api-reference/config/next-config-js/rewrites).
 The inspected version's

@@ -1,0 +1,35 @@
+D100 Missing docstring in public module
+--> docs/validation/2026-10-24-foundation-review/review_audit.py:1:1
+
+E501 Line too long (136 > 100)
+  --> docs/validation/2026-10-24-foundation-review/review_audit.py:30:101
+   |
+28 | …", ".env", "REFACTORING_PLAN.md"])
+29 | …
+30 | …s} local references; whitespace, credential patterns, scope, private files checked."
+   |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 | …
+   |
+
+E402 Module level import not at top of file
+  --> docs/validation/2026-10-24-foundation-review/review_audit.py:34:1
+   |
+33 | # Preserve every earlier evidence artifact from this action, including failures.
+34 | import hashlib
+   | ^^^^^^^^^^^^^^
+35 |
+36 | prior_directories = [
+   |
+help: Move module level imports to top of file
+
+E501 Line too long (145 > 100)
+  --> docs/validation/2026-10-24-foundation-review/review_audit.py:71:101
+   |
+69 | ….hexdigest(), name)
+70 | …
+71 | …idence files; commits are ancestors; locks/schema/backend/retained UI/Compose unchanged."
+   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+72 | …
+   |
+
+Found 4 errors.
