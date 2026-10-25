@@ -18,4 +18,4 @@ COPY backend/src ./src
 ENV PATH="/opt/venv/bin:$PATH"
 USER 10001:10001
 EXPOSE 8000
-CMD ["uvicorn", "incident_copilot.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "incident_copilot.main:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-graceful-shutdown", "245"]

@@ -57,3 +57,29 @@ See `recovery-task1-*.log`. Compose quiet validation passes; daemon version 29.8
 The sandbox Docker snap failed before connecting; host access succeeds. The
 interruption left no task commits. The recovered changes are now task 1's commit;
 production image/deployed checks remain task 7, after context exclusions.
+
+## Task 2: ports, readiness and deadlines
+
+Compose publishes frontend 3001, Grafana 3000, backend 8000, Prometheus 9090 and
+Elasticsearch 9200. Internal origins use service DNS; the baked frontend proxy
+origin remains `http://app:8000`. Every service has a bounded health check;
+Prometheus and Elasticsearch readiness gate the backend, backend serving
+readiness gates the frontend, and Prometheus readiness gates Grafana.
+
+Backend readiness uses resource-free `/openapi.json` after lifespan startup. It
+checks serving availability without polling OpenAI. Frontend readiness checks the
+rendered shell. These do not claim provider/dependency health: `/api/health`
+proxies backend `/health` and reports that separately, including degraded status.
+Elasticsearch waits for yellow (single-node replicas need not reach green).
+
+The existing cooperative investigation limit is <=240s, Next's upstream inactivity
+limit is 270s, and the browser deadline is 300s. Uvicorn's graceful-shutdown bound
+is now 245s and Docker allows 260s for backend shutdown. Browser abandonment still
+does not promise cancellation of backend work.
+
+`docker compose config --quiet` and sanitized parsed configuration assertions pass
+(`task2-compose.log`). All twelve real proxy-configuration cases pass
+(`task2-proxy-host.log`; sandbox reported only a file-level pass in
+`task2-proxy.log`). Live health executables/startup ordering are checked in task 7.
+Configuration-only change: no API routes/schema or graph behavior changed.
+Raw recovered logs have trailing whitespace normalized without removing outcomes.
