@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm",
+    "--prefix",
+    "frontend",
+    "run",
+    "lint"
+  ],
+  "exit_code": 1,
+  "seconds": 3.22
+}

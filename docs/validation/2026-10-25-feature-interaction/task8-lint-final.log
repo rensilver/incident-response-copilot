@@ -1,0 +1,9 @@
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+
+/home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/zoom.spec.ts
+  9:11  error  React Hook "use" is called in function "deviceScaleFactor" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
+
+✖ 1 problem (1 error, 0 warnings)

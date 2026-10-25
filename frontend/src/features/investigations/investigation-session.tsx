@@ -49,6 +49,7 @@ export function InvestigationSession(): React.JSX.Element {
     minutes?: string | undefined;
   }>({});
   const [state, setState] = useState<SessionState>({ kind: "idle" });
+  const [editing, setEditing] = useState(true);
   const active = useRef<AbortController | null>(null);
   const pending = state.kind === "loading";
   const interactive = useSyncExternalStore(
@@ -62,11 +63,12 @@ export function InvestigationSession(): React.JSX.Element {
   const stopButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (state.kind === "success" || state.kind === "error")
+    if (state.kind === "success" && editing) queryField.current?.focus();
+    else if (state.kind === "success" || state.kind === "error")
       resultHeading.current?.focus();
     else if (state.kind === "loading") stopButton.current?.focus();
     else if (state.kind === "abandoned") queryField.current?.focus();
-  }, [state.kind]);
+  }, [state.kind, editing]);
   useEffect(
     () => () => {
       const controller = active.current;
@@ -109,13 +111,16 @@ export function InvestigationSession(): React.JSX.Element {
     };
     const controller = new AbortController();
     active.current = controller;
+    setEditing(true);
     setState({ kind: "loading" });
     try {
       const report = await createApiClient().investigate(request, {
         signal: controller.signal,
       });
-      if (active.current === controller)
+      if (active.current === controller) {
+        setEditing(false);
         setState({ kind: "success", report, request });
+      }
     } catch (error: unknown) {
       if (active.current === controller)
         setState({
@@ -129,100 +134,112 @@ export function InvestigationSession(): React.JSX.Element {
 
   return (
     <div className="investigation-grid">
-      <form
-        className="composer"
-        onSubmit={(event) => void submit(event)}
-        method="post"
-        noValidate
-        aria-label="Investigation"
-      >
-        <fieldset disabled={pending || !interactive}>
-          <legend>Try a seeded scenario</legend>
-          <div className="presets">
-            {presets.map((preset) => (
-              <button
-                type="button"
-                key={preset.label}
-                onClick={() => {
-                  setQuery(preset.query);
-                  setService(preset.service);
-                  setMinutes("180");
-                  setErrors({});
-                }}
-              >
-                {preset.label}
-              </button>
-            ))}
+      <div className="composer">
+        {state.kind === "success" && !editing ? (
+          <div className="compact-composer">
+            <p>{state.request.query}</p>
+            <button type="button" onClick={() => setEditing(true)}>
+              Edit question
+            </button>
           </div>
-          <label htmlFor="incident-query">Incident question</label>
-          <textarea
-            ref={queryField}
-            required
-            id="incident-query"
-            name="query"
-            rows={4}
-            autoComplete="off"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            aria-invalid={Boolean(errors.query)}
-            aria-describedby={errors.query ? "query-error" : undefined}
-          />
-          {errors.query ? (
-            <p className="field-error" id="query-error">
-              {errors.query}
-            </p>
-          ) : null}
-          <div className="form-fields">
-            <div>
-              <label htmlFor="incident-service">Service (optional)</label>
-              <input
-                id="incident-service"
-                name="service"
-                autoComplete="off"
-                spellCheck={false}
-                value={service}
-                onChange={(event) => setService(event.target.value)}
-                aria-describedby="service-hint"
-              />
-              <p id="service-hint">
-                Leave blank to investigate without a service filter.
+        ) : null}
+        <form
+          className={editing ? "composer-form" : "composer-form is-collapsed"}
+          onSubmit={(event) => void submit(event)}
+          method="post"
+          noValidate
+          aria-label="Investigation"
+        >
+          <fieldset disabled={pending || !interactive}>
+            <legend>Try a seeded scenario</legend>
+            <div className="presets">
+              {presets.map((preset) => (
+                <button
+                  type="button"
+                  key={preset.label}
+                  onClick={() => {
+                    setQuery(preset.query);
+                    setService(preset.service);
+                    setMinutes("180");
+                    setErrors({});
+                  }}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+            <label htmlFor="incident-query">Incident question</label>
+            <textarea
+              ref={queryField}
+              required
+              id="incident-query"
+              name="query"
+              rows={4}
+              autoComplete="off"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-invalid={Boolean(errors.query)}
+              aria-describedby={errors.query ? "query-error" : undefined}
+            />
+            {errors.query ? (
+              <p className="field-error" id="query-error">
+                {errors.query}
               </p>
-            </div>
-            <div>
-              <label htmlFor="incident-minutes">Window (minutes)</label>
-              <input
-                ref={minutesField}
-                autoComplete="off"
-                id="incident-minutes"
-                name="minutes_back"
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={1440}
-                step={1}
-                value={minutes}
-                onChange={(event) => setMinutes(event.target.value)}
-                aria-invalid={Boolean(errors.minutes)}
-                aria-describedby={
-                  errors.minutes ? "minutes-hint minutes-error" : "minutes-hint"
-                }
-              />
-              <p id="minutes-hint">1–1440 minutes</p>
-              {errors.minutes ? (
-                <p className="field-error" id="minutes-error">
-                  {errors.minutes}
+            ) : null}
+            <div className="form-fields">
+              <div>
+                <label htmlFor="incident-service">Service (optional)</label>
+                <input
+                  id="incident-service"
+                  name="service"
+                  autoComplete="off"
+                  spellCheck={false}
+                  value={service}
+                  onChange={(event) => setService(event.target.value)}
+                  aria-describedby="service-hint"
+                />
+                <p id="service-hint">
+                  Leave blank to investigate without a service filter.
                 </p>
-              ) : null}
+              </div>
+              <div>
+                <label htmlFor="incident-minutes">Window (minutes)</label>
+                <input
+                  ref={minutesField}
+                  autoComplete="off"
+                  id="incident-minutes"
+                  name="minutes_back"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={1440}
+                  step={1}
+                  value={minutes}
+                  onChange={(event) => setMinutes(event.target.value)}
+                  aria-invalid={Boolean(errors.minutes)}
+                  aria-describedby={
+                    errors.minutes
+                      ? "minutes-hint minutes-error"
+                      : "minutes-hint"
+                  }
+                />
+                <p id="minutes-hint">1–1440 minutes</p>
+                {errors.minutes ? (
+                  <p className="field-error" id="minutes-error">
+                    {errors.minutes}
+                  </p>
+                ) : null}
+              </div>
             </div>
-          </div>
-          <button className="primary-action" type="submit">
-            {pending ? "Investigating…" : "Run investigation"}
-          </button>
-        </fieldset>
-        <p className="hydration-message" hidden={interactive}>
-          Enable JavaScript to submit investigations and check dependencies.
-        </p>
-      </form>
+            <button className="primary-action" type="submit">
+              {pending ? "Investigating…" : "Run investigation"}
+            </button>
+          </fieldset>
+          <p className="hydration-message" hidden={interactive}>
+            Enable JavaScript to submit investigations and check dependencies.
+          </p>
+        </form>
+      </div>
       <div className="result-area">
         <p role="status" aria-live="polite" aria-atomic="true">
           {state.kind === "idle"

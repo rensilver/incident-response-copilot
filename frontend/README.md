@@ -58,21 +58,23 @@ server; leave port 3001 free. It refuses to reuse an existing server.
 
 ```bash
 cd frontend
-npx playwright install chromium --only-shell
+npx playwright install chromium
 npm run build
 npm run test:e2e
 ```
 
-Ten foundation browser checks cover desktop (1280px), tablet (768px), mobile
-(393px), narrow (320px), and desktop with page JavaScript disabled. They check
-keyboard skip navigation, horizontal overflow, JavaScript errors, absence of
-external requests or automatic investigations, 200% text sizing, and reduced motion. Narrow spacing keeps
-ordinary heading words intact at enlarged text sizes. The 320px viewport checks
-reflow; text-size injection is not browser UI zoom emulation. Screenshots and
-failure traces go into ignored `test-results/`. These checks do not validate
-investigation behavior, actual browser zoom, screen readers, or broad accessibility.
-The [foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
-records inspected screenshots, design decisions, and feature-view boundaries.
+The browser matrix covers desktop (1280px), tablet (768px), mobile (393px),
+narrow (320px), and a script-disabled shell. It checks keyboard submission/retry,
+focus, long/empty observations, compact mobile editing, no page overflow,
+200%/400% text scaling and reduced motion. A separate disposable full-Chromium
+profile/extension uses native tab zoom at 200%/400%, verifies effective CSS widths,
+and captures viewport images. Install full Chromium as well as the headless shell
+for this check. Screenshots/traces go into ignored `test-results/`.
+These are controlled API fixtures, not live provider results. They do not certify
+screen-reader or cross-browser accessibility. The [feature review](../docs/validation/2026-10-25-feature-interaction/README.md)
+retains inspected captures, failures and scope. The earlier
+[foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
+remains historical evidence for the preview.
 
 Use `npm --prefix frontend run format` to format authored frontend files. ESLint
 uses Next.js's Core Web Vitals and TypeScript configurations, with Prettier handling

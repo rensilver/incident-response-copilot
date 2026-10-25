@@ -1,0 +1,23 @@
+[
+  {
+    "factor": 1,
+    "width": 1280,
+    "documentWidth": 1280,
+    "rootFontSize": "16px",
+    "pixelRatio": 1
+  },
+  {
+    "factor": 2,
+    "width": 640,
+    "documentWidth": 640,
+    "rootFontSize": "16px",
+    "pixelRatio": 2
+  },
+  {
+    "factor": 3.9999999999999996,
+    "width": 320,
+    "documentWidth": 320,
+    "rootFontSize": "16px",
+    "pixelRatio": 4
+  }
+]

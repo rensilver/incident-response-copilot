@@ -5,12 +5,16 @@ import { InvestigationSession } from "./investigation-session";
 export function InvestigationWorkspace(): React.JSX.Element {
   return (
     <>
-      <h1>Investigate an incident</h1>
-      <p className="introduction">
-        Follow observations from metrics and logs to possible causes and next
-        steps.
-      </p>
-      <HealthIndicator />
+      <div className="workspace-intro">
+        <div>
+          <h1>Investigate an incident</h1>
+          <p className="introduction">
+            Follow observations from metrics and logs to possible causes and
+            next steps.
+          </p>
+        </div>
+        <HealthIndicator />
+      </div>
       <InvestigationSession />
     </>
   );

@@ -169,3 +169,22 @@ test("an empty valid report explains absent candidates and next steps", async ()
     ).toHaveAttribute("aria-busy", "false"),
   );
 });
+
+test("Edit question reopens the preserved form and focuses it without replacing the report", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn<typeof fetch>(async (url) =>
+      url === "/api/health" ? healthResponse() : Response.json(report),
+    ),
+  );
+  render(<Page />);
+  start();
+  await screen.findByRole("heading", { name: "Investigation report" });
+  fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
+  expect(screen.getByLabelText("Incident question")).toHaveFocus();
+  expect(screen.getByLabelText("Service (optional)")).toHaveValue(
+    "payment-service",
+  );
+  expect(screen.getByLabelText("Window (minutes)")).toHaveValue(180);
+  expect(screen.getByText(report.summary)).toBeVisible();
+});

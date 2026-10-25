@@ -1,0 +1,151 @@
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:169894) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 25 tests using 1 worker
+
+(node:169930) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (953ms)
+  ✘   2 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (389ms)
+(node:170108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (635ms)
+  ✓   4 [desktop-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (627ms)
+  ✘   5 [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (657ms)
+(node:170231) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (647ms)
+  ✓   7 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (738ms)
+  ✓   8 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (613ms)
+  ✓   9 [mobile-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (854ms)
+  ✓  10 [mobile-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (3.7s)
+(node:170423) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (512ms)
+  ✓  12 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (503ms)
+  ✓  13 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (549ms)
+  ✓  14 [tablet-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (611ms)
+  ✓  15 [tablet-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.5s)
+(node:170588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  16 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (485ms)
+  ✓  17 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (447ms)
+  ✓  18 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (473ms)
+  ✓  19 [narrow-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (587ms)
+  ✓  20 [narrow-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.0s)
+(node:170757) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  21 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (416ms)
+  ✘  22 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (238ms)
+(node:170857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -  23 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+  -  24 [desktop-no-js] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context
+  -  25 [desktop-no-js] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+
+
+  1) [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+
+    Error: Keep “Investigate” readable without splitting
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+      105 |       heading.lines,
+      106 |       `Keep “${heading.word}” readable without splitting`,
+    > 107 |     ).toBe(1);
+          |       ^
+      108 |   }
+      109 |   for (const box of geometry.text) {
+      110 |     expect(box.left).toBeGreaterThanOrEqual(0);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/foundation.spec.ts:107:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      27 |       () => document.documentElement.scrollWidth <= window.innerWidth,
+      28 |     ),
+    > 29 |   ).toBe(true);
+         |     ^
+      30 |   const boxes = await page
+      31 |     .locator(".report p, .report h2, .report h3, .report h4, .report dd")
+      32 |     .evaluateAll((items) =>
+        at fits (/home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/report-layout.spec.ts:29:5)
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/report-layout.spec.ts:118:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/report-layout-long-distinc-859a8-flow-at-enlarged-text-sizes-desktop-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/report-layout-long-distinc-859a8-flow-at-enlarged-text-sizes-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/report-layout-long-distinc-859a8-flow-at-enlarged-text-sizes-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/report-layout-long-distinc-859a8-flow-at-enlarged-text-sizes-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+
+    Error: Keep “Investigate” readable without splitting
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+      105 |       heading.lines,
+      106 |       `Keep “${heading.word}” readable without splitting`,
+    > 107 |     ).toBe(1);
+          |       ^
+      108 |   }
+      109 |   for (const box of geometry.text) {
+      110 |     expect(box.left).toBeGreaterThanOrEqual(0);
+        at /home/rensilver/workspaces/incident-response-copilot/frontend/tests/e2e/foundation.spec.ts:107:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/foundation-the-shell-reflo-70a34-ged-text-and-reduced-motion-desktop-no-js/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+    [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+    [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion
+  3 skipped
+  19 passed (23.7s)

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "npm",
+    "--prefix",
+    "frontend",
+    "run",
+    "test:e2e",
+    "--",
+    "--grep-invert",
+    "actual Chromium"
+  ],
+  "exit_code": 0,
+  "seconds": 23.19
+}

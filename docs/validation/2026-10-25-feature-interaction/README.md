@@ -152,3 +152,67 @@ to its result landmark; Chromium’s JavaScript-disabled mode did not expose the
 visible until hydration hides it, covering actual script failure as well. The
 keyboard focus checks had reached the expected error heading before the ambiguous
 alert selector failed; final reruns verify the complete retry flow.
+
+## Task 8 — report density, responsive layout, and visual review
+
+A new component regression first failed for the absent Edit question action and
+now passes (52 component cases). Below desktop width, a successful submission
+collapses the composer to its submitted question and an Edit question button;
+reopening restores values and focuses the question without replacing the report.
+Desktop keeps the full composer. Viewport changes alone never move focus.
+The independent health group now aligns beside the title on wide layouts.
+
+The first expanded browser run found real layout failures: rem-sized fixed desktop
+columns remained active under CSS text enlargement, splitting ordinary headings
+at 200% and overflowing at 400%. Container queries now choose columns from usable
+content space, so larger text returns to one column. The rebuilt non-zoom matrix
+passes 22 cases (three deliberate no-JavaScript interactive skips), covering
+normal/long/empty evidence, absent windows, precise scores, full identifier text,
+200%/400% text enlargement and no animation under reduced motion. Neither hidden
+overflow nor content truncation is used. The failed run remains recorded.
+
+Inspected these screenshots from controlled API fixtures, not live provider runs:
+
+- [Desktop report](controlled-desktop.png): compact composer beside the report,
+  attached source gutter, readable summary/candidate/action hierarchy.
+- [Tablet report](controlled-tablet.png): collapsed composer and one report column,
+  source labels aligned beside observations.
+- [Mobile report](controlled-mobile.png): 393 CSS pixels, labels above evidence,
+  complete UTC dates and full next-step text.
+- [Narrow report](controlled-narrow.png): 320 CSS pixels, wrapping dependency/log
+  text without page overflow or clipped observations.
+
+The focus outline visible around the report heading is intentional keyboard
+feedback. Neutral typography and source placement keep attention on evidence;
+confidence has no gauge or severity color. Real report density remains dependent
+on returned content; long fixtures test preservation rather than summarization.
+
+Native tab zoom also passes. `task8-native-zoom.json` records 1280/640/320 CSS-pixel
+widths at 100/200/400% with the root font unchanged at 16px and pixel ratio 1/2/4.
+The test uses a disposable extension/profile with Chrome’s actual
+[tabs.setZoom API](https://developer.chrome.com/docs/extensions/reference/api/tabs),
+following [Playwright’s Chromium extension guidance](https://playwright.dev/docs/chrome-extensions).
+Full matching Chromium was installed separately from the existing headless shell;
+`task8-browser-install.json` records the exact version and successful command
+(download duration was not recorded). No production dependency was added.
+
+Two initial zoom attempts rejected a null viewport combined with Playwright’s
+inherited deviceScaleFactor. Explicit fixture delivery of undefined removes that
+emulation; passing probes then verify actual native-window reflow. ESLint treated
+the fixture callback named `use` as a React hook; renaming it to `provide` resolves
+the false positive without a suppression. Visual inspection also found that
+Playwright’s full-page capture clipped native-zoom images despite correct DOM
+geometry. Native screenshots now use CDP viewport capture without resizing the
+window. Inspected [200%](controlled-zoom-2.png), [400%](controlled-zoom-4.png), and
+[empty observations/steps](controlled-empty-evidence.png) captures. All attempt
+logs remain. The final full browser matrix passes 23 cases with seven explicit
+project skips (three no-JS interactive cases and four duplicate native-zoom runs).
+
+The 17-category interface review has no remaining implementation blocker within
+this action: semantic controls, focus, validation, announcements, typography,
+wrapping/empty content, native navigation, touch targets, light-theme contrast,
+locale-safe UTC/numbers, and hydration were checked. No motion, images, gesture-only
+actions, overlays, incident URL state or raw HTML exist. Static framing stays
+server-rendered; expensive premature memoization/virtualization was not added.
+Screen readers, Firefox/WebKit, notched hardware and large-report performance
+profiling remain outside the performed checks. A report is never persisted.
