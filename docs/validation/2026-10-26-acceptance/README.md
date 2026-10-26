@@ -121,26 +121,26 @@ without tracing credentials despite inherited enabled flags, and enabled/disable
 enabled cache transitions. These are also included in the larger suites, not
 additional independent counts. Their SDK/model transports are mocked.
 
-**External delivery remains unverified in this acceptance run.** Automatic
+**External delivery is excluded from this acceptance run by owner choice.** Automatic
 approval review [rejected the live traced investigation before execution](task4-live-approval.json)
 because it would send retrieved telemetry and derived prompts/reports to OpenAI
-and LangSmith. Explicit approval was requested for one enabled and one disabled
-synthetic investigation; neither ran while that approval was pending. The
+and LangSmith. The owner subsequently directed that both the enabled and disabled
+synthetic investigation checks stay offline. Neither ran; no approval is pending. The
 confirmation here is live synthetic evidence plus offline tracing behavior,
 without carrying forward older remote-delivery results.
 
 ## Task 5 — final checks and acceptance scope
 
-These V1–V5 labels define the mapping used by this acceptance record; no earlier
-definitions were available. They describe verified scope, not production certification.
+The owner deferred the undefined V1–V5 mapping. The areas below describe the
+verified scope without assigning those labels or claiming production certification.
 
 | Area | Current verification and limit |
 | --- | --- |
-| V1 — source and privacy | Tasks 1–2 inspect project source, media, ignored settings and worktrees. Final source/privacy/reference checks are recorded in task 6. The private plan and dotenv remain ignored. |
-| V2 — dependencies and configuration | Task 3 verifies fresh locked Python/npm installs, provider isolation and exactly five configured services. No retired service starts; a stopped orphan remains preserved. |
-| V3 — incident evidence and tracing | Task 4 verifies fresh synthetic memory growth/resets and GC/OOM/restart logs, six live connector cases and mocked automatic tracing behavior. New external OpenAI investigations/LangSmith delivery are blocked pending explicit approval; no older delivery is counted as a current pass. |
-| V4 — backend, browser, contract and builds | Fresh Python 3.12.14 and 3.13.13 each pass 612 offline cases, Ruff, strict mypy and Black. All 104 frontend cases and required static/type/contract/build checks pass; 31 controlled Chromium cases pass, nine intentionally skip. Both production images build with cached layers. |
-| V5 — release review | Task 6 reviews the complete diff, archive integrity, credential privacy, references, unchanged runtime/locks/scorer/media, recorded failures and explicit limits. No push or public release is authorized. |
+| Source and privacy | Tasks 1–2 inspect project source, media, ignored settings and worktrees. Final source/privacy/reference checks are recorded in task 6. The private plan and dotenv remain ignored. |
+| Dependencies and configuration | Task 3 verifies fresh locked Python/npm installs, provider isolation and exactly five configured services. No retired service starts; a stopped orphan remains preserved. |
+| Incident evidence and tracing | Task 4 verifies fresh synthetic memory growth/resets and GC/OOM/restart logs, six live connector cases and mocked automatic tracing behavior. The owner chose offline tracing checks; no new external investigation or remote delivery is claimed. |
+| Backend, browser, contract and builds | Fresh Python 3.12.14 and 3.13.13 each pass 612 offline cases, Ruff, strict mypy and Black. All 104 frontend cases and required static/type/contract/build checks pass; 31 controlled Chromium cases pass, nine intentionally skip. Both production images build with cached layers. |
+| Release review | Task 6 reviews the complete diff, archive integrity, credential privacy, references, unchanged runtime/locks/scorer/media, recorded failures and explicit limits. No push or public release is authorized. |
 
 Reproduction commands, bounds, source revisions, times and exit codes are in
 [the check ledger](checks.jsonl). Fresh evidence:
@@ -174,8 +174,8 @@ No volume, container, worktree or archive was deleted during these checks.
 
 ## Task 6 — final diff and evidence review
 
-The [final review](review.md) maps all six tasks and V1–V5 to current evidence,
-including blocked external delivery. Reviewed the entire diff from the action's
+The [final review](review.md) maps all six tasks to current evidence,
+including the owner's offline tracing scope. Reviewed the entire diff from the action's
 starting revision and repaired the validation index's table structure. Runtime,
 frontend, locks, scenarios, scoring and original media are unchanged.
 

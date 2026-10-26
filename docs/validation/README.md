@@ -2,7 +2,7 @@
 
 | Evidence | Scope |
 | --- | --- |
-| [Acceptance and release review](2026-10-26-acceptance/review.md) | Fresh source/privacy/dependency checks, Python 3.12/3.13, browser/build/connector checks, V1–V5 scope and blocked external delivery |
+| [Acceptance and release review](2026-10-26-acceptance/review.md) | Fresh source/privacy/dependency checks, Python 3.12/3.13, browser/build/connector checks and owner-selected offline tracing scope |
 | [Fresh README walkthrough](2026-10-26-documentation/README.md) | Current documentation, clean locked installs, literal demo/API checks, diagram/media and teardown evidence |
 | [Measured evaluation and review](2026-10-26-evaluation/README.md) | Frozen method, all nine OpenAI attempts, reproducible scores/latencies, qualitative review, versions, failures and final audit |
 | [Real browser media](../media/2026-10-26/README.md) | Desktop/mobile screenshots, original recordings, captioned video and descriptive transcript |

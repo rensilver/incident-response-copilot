@@ -1,7 +1,7 @@
 # Acceptance review — October 26, 2026
 
 The six authorized review tasks have separate commits. This review records the
-verified application scope and the external-delivery approval block; it does not
+verified application scope and the owner's offline tracing decision; it does not
 certify production readiness or authorize a push/public release.
 
 | Task | Commit / evidence |
@@ -9,9 +9,9 @@ certify production readiness or authorize a push/public release.
 | 1 — project source and visible-media audit | `ed2485d`; [scope and failures](README.md#task-1--tracked-source-and-visible-media-audit) |
 | 2 — ignored configuration and worktrees | `d4bbc63`; [private audit](task2-private.json) |
 | 3 — fresh dependencies and selection | `cb7171a`; [81 Python distributions, 468 npm paths](task3-dependencies.json), [157 offline cases](task3-provider-contracts.log) |
-| 4 — memory evidence and optional tracing | `ee1f49a`; [live memory/log evidence](task4-memory.json), [six connectors](task4-seeded-connectors.log), [automatic mocked tracing](task4-automatic-tracing.log), [live approval block](task4-live-approval.json) |
-| 5 — current acceptance matrix | `5ac0a19`; [V1–V5 definitions and limits](README.md#task-5--final-checks-and-acceptance-scope) |
-| 6 — complete diff, evidence and claim review | This commit; [integrity/privacy/scope audit](task6-audit.json), [references](task6-links-corrected.log), [source scan](task6-source-final.log) |
+| 4 — memory evidence and optional tracing | `ee1f49a`; [live memory/log evidence](task4-memory.json), [six connectors](task4-seeded-connectors.log), [automatic mocked tracing](task4-automatic-tracing.log), [offline-only decision and earlier rejection](task4-live-approval.json) |
+| 5 — current acceptance matrix | `5ac0a19`; [verified scope and limits](README.md#task-5--final-checks-and-acceptance-scope); undefined V1–V5 mapping deferred by the owner |
+| 6 — complete diff, evidence and claim review | `dfae8ef`; [integrity/privacy/scope audit](task6-audit.json), [references](task6-links-corrected.log), [source scan](task6-source-final.log) |
 
 Fresh verification covers **612 backend tests on each of clean Python 3.12.14
 and 3.13.13**, Ruff, strict mypy and Black; **104 frontend tests**, lint,
@@ -27,8 +27,9 @@ tool spans, report capture, credential-free disabled operation with inherited
 enabled flags, and re-enable transitions. **No new paid investigation or remote
 LangSmith delivery ran.** Automatic approval review rejected the enabled check
 because retrieved telemetry/prompts/results would leave the local environment for
-OpenAI/LangSmith. Explicit approval was requested for one enabled and one disabled
-synthetic run; external delivery remains unverified pending that approval.
+OpenAI/LangSmith. The owner subsequently chose to keep both the enabled and disabled
+synthetic checks offline. No approval is pending, and new external delivery remains
+outside the accepted verification scope.
 
 The complete diff from `e7d204d` contains the intended review/documentation changes,
 generic test fixtures, and the isolated offline failure-CLI inventory change
@@ -64,5 +65,5 @@ public deployment or history rewrite occurred.
 Default host port 8000, hosted CI, other browser engines, screen readers, new paid
 reports/remote traces and real elapsed-time deadline paths are outside the fresh
 passing scope. Earlier records are historical evidence with their own limits.
-The code/evidence review ends here; external delivery requires the requested
-explicit approval.
+The code/evidence review ends here with tracing checks kept offline and the
+undefined V1–V5 mapping deferred, as directed by the owner.
