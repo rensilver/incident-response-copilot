@@ -1,0 +1,10 @@
+{
+  "scope": "Controlled browser responses based on a saved report; no live inference",
+  "started_at": "2026-10-26T00:06:46.044Z",
+  "status": "failed",
+  "error": {
+    "type": "Error",
+    "message": "expect(locator).toBeDisabled() failed\n\nLocator:  getByRole('button', { name: 'Run investigation', exact: true })\nExpected: disabled\nReceived: enabled\nTimeout:  5000ms\n\nCall log:\n  - Expect \"toBeDisabled\" getByRole('button', { name: 'Run investigation', exact: true }) with timeout 5000ms\n  - waiting for getByRole('button', { name: 'Run investigation', exact: true })\n    14 × locator resolved to <button type=\"submit\" class=\"primary-action\">Run investigation</button>\n       - unexpected value \"enabled\"\n"
+  },
+  "finished_at": "2026-10-26T00:06:55.476Z"
+}

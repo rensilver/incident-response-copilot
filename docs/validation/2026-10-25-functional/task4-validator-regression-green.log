@@ -1,0 +1,20 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/ic-phase7-py312/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: asyncio-1.4.0, respx-0.23.1, mock-3.15.1, anyio-4.14.2, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 9 items
+
+backend/tests/unit/test_provider_failure_validator.py::test_validator_isolates_environment_and_propagates_case_failure[False-backend] PASSED [ 11%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_isolates_environment_and_propagates_case_failure[False-unrelated] PASSED [ 22%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_isolates_environment_and_propagates_case_failure[True-backend] PASSED [ 33%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_isolates_environment_and_propagates_case_failure[True-unrelated] PASSED [ 44%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_rejects_retired_installed_distribution[groq] PASSED [ 55%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_rejects_retired_installed_distribution[ollama] PASSED [ 66%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_rejects_retired_installed_distribution[langchain_groq] PASSED [ 77%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_rejects_retired_installed_distribution[langchain_ollama] PASSED [ 88%]
+backend/tests/unit/test_provider_failure_validator.py::test_validator_bounds_stalled_cases PASSED [100%]
+
+============================== 9 passed in 5.91s ===============================

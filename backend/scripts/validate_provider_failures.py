@@ -66,6 +66,8 @@ def main() -> int:
             "pytest_asyncio.plugin",
             "-p",
             "respx.plugin",
+            "-p",
+            "pytest_mock.plugin",
             *CASES,
             "-vv",
             "-o",

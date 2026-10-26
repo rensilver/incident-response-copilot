@@ -139,3 +139,83 @@ as JSON lines from `docker logs ic-validation-proxy`; point the verifier at the
 new report/capture filenames before comparing a new run. The ledger retains the
 exact capture and integration commands. After capture, [restore](task3-restore.log)
 the app with only the normal port override, then remove the temporary proxy.
+
+## Task 4 — failures and recovery
+
+Failure injection is explicitly **mocked**, with synthetic credentials and
+intercepted SDK HTTP, not a claim that the configured paid account encountered
+these errors. The initial [OpenAI validator attempt](task4-openai-mocked.log)
+retained **185 passes and three setup errors**: the CLI disabled plugin autoload
+but did not explicitly load `pytest-mock`, now required by the automatic tracing
+cases. Its existing seven-case subprocess fixture now requires the same fixture.
+All four selected CLI regressions [failed before the fix](task4-validator-regression-red.log)
+with missing `mocker`; all [nine CLI cases pass afterward](task4-validator-regression-green.log).
+The minimal fix explicitly registers `pytest_mock.plugin`. Application runtime
+and provider behavior are unchanged; the only non-evidence changes in this action
+are the validator script and its regression fixture.
+
+The corrected [188-case validator run](task4-openai-mocked-fixed.log) passes,
+covering text/structured/tool paths, authentication, quota/rate limits, connection,
+timeout/cancellation, bounded repairs, no hidden retries/fallback, redaction and
+same-provider/API recovery. The [61 offline API/deadline/graph cases](task4-api-failures.log)
+pass. Both supported Python environments receive full fresh checks after the fix.
+
+The [actual outage driver](outage-recovery.mjs) stops only this project's backend,
+keeps the real deployed frontend running, checks safe failure/focus and unchanged
+inputs, restarts the backend, then deliberately retries from the same page.
+The [saved attempt](task4-outage.json) passes: outage HTTP **500**, recovery HTTP
+**200**, and the real provider report renders after recovery. This adds exactly
+one paid investigation. The [run output](task4-outage.log) retains its outcome.
+
+The [deployed invalid-input driver](invalid-api.py) sends six rejected payloads:
+empty query, invalid/zero/excessive minutes, malformed JSON and an HTML body.
+All [six return sanitized 422 JSON](task4-invalid-deployed.log), omitting rejected
+canary text. The unit/API coverage verifies rejection occurs before investigation.
+HTML in model reports is additionally tested as inert text by component tests;
+the browser fixture suite covers HTML responses, invalid JSON/schema, quota,
+server/connection failures, empty controls and deliberate retry. These are
+controlled responses, separately labeled from live provider results.
+
+Reproduce the offline and deployed failure checks from root:
+
+```bash
+/tmp/ic-phase7-py312/bin/python backend/scripts/validate_provider_failures.py --timeout 120
+/tmp/ic-phase7-py312/bin/python docs/validation/2026-10-25-functional/invalid-api.py
+node docs/validation/2026-10-25-functional/outage-recovery.mjs /tmp/new-outage.json --live
+python docs/validation/2026-10-25-functional/run-timeouts.py
+```
+
+The [timeout driver](run-timeouts.py) stops only the deployed frontend while
+Playwright owns port 3001, builds against the local controlled backend, runs
+actual elapsed-time checks without retries, then restores the normal host build
+and deployed frontend in `finally`. Its fixtures exercise a 31-second simulated
+backend deadline, the actual 270-second Next inactivity timeout, and the actual
+300-second browser body deadline. The controlled backend makes no provider calls.
+The separate offline cases verify FastAPI's real deadline/cancellation semantics.
+
+The first supplemental browser-content check [failed](task4-browser-content.json)
+because its draft expected an empty-form submit button to be disabled. Inspection
+confirmed the established behavior: accessible inline validation and focus block
+submission when clicked. The corrected [driver](browser-content.mjs) [passes](task4-browser-content-corrected.json):
+empty/whitespace questions send zero requests, and HTML/JavaScript/Markdown in all
+five model fields remains literal text, with no created elements or dialogs.
+Only the validation script changed for this assumption; frontend code is unchanged.
+
+After the validator fix, all 615 offline cases plus Ruff, strict mypy and Black
+pass on [Python 3.12](task4-py312.log) and [Python 3.13](task4-py313.log).
+
+Fresh completion checks also pass: [188 validator cases](task4-recheck-validator-host.log),
+[31 browser fixture cases](task4-browser-fixtures.log) with nine intentional skips,
+and the [normal frontend build](task4-normal-build-restored.log).
+The real timeout run passed all three checks; measured browser elapsed times were
+31.790, 270.584 and 300.412 seconds in [retained timing metadata](task4-timeout-measurements.json).
+The temporary timeout build is replaced and the [deployed frontend is restored](task4-frontend-restored.log).
+
+The completion rerun encountered the documented sandbox asyncio stall. The
+[standalone sandbox probe](task4-probe-sandbox.log) timed out after printing that
+the worker ran, while the [identical host probe](task4-probe-host.log) passed in
+0.064 seconds. Both bounded incomplete sandbox checks are retained in the ledger;
+no graph change was made for this execution-environment limitation. The full
+[fresh host backend checks](task4-recheck-py312-host.log) verify the final diff.
+The existing failing-before/fixed-after regression artifacts were reviewed using
+the test-driven-development workflow; no additional behavior change was needed.
