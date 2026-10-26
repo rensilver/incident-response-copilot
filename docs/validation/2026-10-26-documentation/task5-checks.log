@@ -1,0 +1,7 @@
+PASS: nine saved scores, exact windows, frozen hashes and latency summaries reproduced
+{
+  "local_links": 288,
+  "archived_git_objects": 19,
+  "failures": []
+}
+PASS: 9 documentation/evidence files; JSON, private-value and scope checks

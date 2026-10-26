@@ -1,0 +1,132 @@
+docs/validation/2026-10-26-documentation/task8-image-build.log:1: trailing whitespace.
++ Image incident-copilot-app Building
+docs/validation/2026-10-26-documentation/task8-image-build.log:2: trailing whitespace.
++ Image incident-copilot-frontend Building
+docs/validation/2026-10-26-documentation/task8-image-build.log:128: trailing whitespace.
++ Image incident-copilot-app Built
+docs/validation/2026-10-26-documentation/task8-image-build.log:129: trailing whitespace.
++ Image incident-copilot-frontend Built
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:4: trailing whitespace.
++ Image incident-copilot-app Building
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:64: trailing whitespace.
++ Image incident-copilot-app Built
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:66: trailing whitespace.
++ Image incident-copilot-frontend Building
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:135: trailing whitespace.
++ Image incident-copilot-frontend Built
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:141: trailing whitespace.
++ Container ic-elasticsearch Running
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:142: trailing whitespace.
++ Container ic-grafana Running
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:143: trailing whitespace.
++ Container ic-frontend Running
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:144: trailing whitespace.
++ Container ic-prometheus Running
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:145: trailing whitespace.
++ Container ic-app Recreate
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:146: trailing whitespace.
++ Container ic-app Recreated
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:147: trailing whitespace.
++ Container ic-prometheus Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:148: trailing whitespace.
++ Container ic-elasticsearch Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:149: trailing whitespace.
++ Container ic-prometheus Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:150: trailing whitespace.
++ Container ic-elasticsearch Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:151: trailing whitespace.
++ Container ic-prometheus Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:152: trailing whitespace.
++ Container ic-prometheus Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:153: trailing whitespace.
++ Container ic-app Starting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:154: trailing whitespace.
++ Container ic-app Started
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:155: trailing whitespace.
++ Container ic-app Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:156: trailing whitespace.
++ Container ic-app Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:157: trailing whitespace.
++ Container ic-prometheus Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:158: trailing whitespace.
++ Container ic-elasticsearch Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:159: trailing whitespace.
++ Container ic-grafana Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:160: trailing whitespace.
++ Container ic-app Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:161: trailing whitespace.
++ Container ic-frontend Waiting
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:162: trailing whitespace.
++ Container ic-grafana Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:163: trailing whitespace.
++ Container ic-app Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:164: trailing whitespace.
++ Container ic-prometheus Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:165: trailing whitespace.
++ Container ic-frontend Healthy
+docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log:166: trailing whitespace.
++ Container ic-elasticsearch Healthy
+docs/validation/2026-10-26-documentation/task8-port8000-before.log:2: trailing whitespace.
++LISTEN 0      4096       127.0.0.1:8000      0.0.0.0:*
+docs/validation/2026-10-26-documentation/task8-seed.log:15: trailing whitespace.
++ Container ic-prometheus Restarting
+docs/validation/2026-10-26-documentation/task8-seed.log:16: trailing whitespace.
++ Container ic-prometheus Started
+docs/validation/2026-10-26-documentation/task8-seed.log:19: trailing whitespace.
++ Container ic-prometheus Running
+docs/validation/2026-10-26-documentation/task8-seed.log:20: trailing whitespace.
++ Container ic-prometheus Waiting
+docs/validation/2026-10-26-documentation/task8-seed.log:21: trailing whitespace.
++ Container ic-prometheus Healthy
+docs/validation/2026-10-26-documentation/task8-stop-apps.log:1: trailing whitespace.
++ Container ic-frontend Stopping
+docs/validation/2026-10-26-documentation/task8-stop-apps.log:2: trailing whitespace.
++ Container ic-frontend Stopped
+docs/validation/2026-10-26-documentation/task8-stop-apps.log:3: trailing whitespace.
++ Container ic-app Stopping
+docs/validation/2026-10-26-documentation/task8-stop-apps.log:4: trailing whitespace.
++ Container ic-app Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:2: trailing whitespace.
++ Container ic-frontend Stopping
+docs/validation/2026-10-26-documentation/task8-teardown.log:3: trailing whitespace.
++ Container ic-grafana Stopping
+docs/validation/2026-10-26-documentation/task8-teardown.log:4: trailing whitespace.
++ Container ic-frontend Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:5: trailing whitespace.
++ Container ic-frontend Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:6: trailing whitespace.
++ Container ic-frontend Removed
+docs/validation/2026-10-26-documentation/task8-teardown.log:7: trailing whitespace.
++ Container ic-app Stopping
+docs/validation/2026-10-26-documentation/task8-teardown.log:8: trailing whitespace.
++ Container ic-app Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:9: trailing whitespace.
++ Container ic-app Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:10: trailing whitespace.
++ Container ic-app Removed
+docs/validation/2026-10-26-documentation/task8-teardown.log:11: trailing whitespace.
++ Container ic-elasticsearch Stopping
+docs/validation/2026-10-26-documentation/task8-teardown.log:12: trailing whitespace.
++ Container ic-grafana Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:13: trailing whitespace.
++ Container ic-grafana Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:14: trailing whitespace.
++ Container ic-grafana Removed
+docs/validation/2026-10-26-documentation/task8-teardown.log:15: trailing whitespace.
++ Container ic-prometheus Stopping
+docs/validation/2026-10-26-documentation/task8-teardown.log:16: trailing whitespace.
++ Container ic-prometheus Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:17: trailing whitespace.
++ Container ic-prometheus Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:18: trailing whitespace.
++ Container ic-prometheus Removed
+docs/validation/2026-10-26-documentation/task8-teardown.log:19: trailing whitespace.
++ Container ic-elasticsearch Stopped
+docs/validation/2026-10-26-documentation/task8-teardown.log:20: trailing whitespace.
++ Container ic-elasticsearch Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:21: trailing whitespace.
++ Container ic-elasticsearch Removed
+docs/validation/2026-10-26-documentation/task8-teardown.log:22: trailing whitespace.
++ Network incident-copilot_default Removing
+docs/validation/2026-10-26-documentation/task8-teardown.log:23: trailing whitespace.
++ Network incident-copilot_default Removed

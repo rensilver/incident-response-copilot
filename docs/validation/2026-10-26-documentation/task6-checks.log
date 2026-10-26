@@ -1,0 +1,24 @@
+PASS: README current-project editorial scan; no archived result destinations
+# Incident Response Copilot
+## Build and run
+# On a new checkout only; preserve an existing private .env.
+# Edit .env: set OPENAI_API_KEY and leave LANGSMITH_TRACING=false.
+# Open http://localhost:3001
+### API usage
+### Host development
+## Seeded scenarios
+## System design
+### Technology stack
+### Repository structure
+## Configuration and failure behavior
+## Measured synthetic evaluation
+## Validation and tests
+## Development checks
+# Install matching Chromium once before browser checks:
+# Optional tracing check; use a new output directory for each run.
+{
+  "local_links": 290,
+  "archived_git_objects": 19,
+  "failures": []
+}
+PASS: 10 documentation/evidence files; JSON, private-value and scope checks

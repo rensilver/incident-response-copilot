@@ -1,0 +1,2 @@
+PASS: no running project Compose services
+PASS: walkthrough ports released; unrelated API response unchanged; original/fresh Prometheus data retained

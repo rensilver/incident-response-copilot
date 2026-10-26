@@ -1,0 +1,9 @@
+make build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+mkdir -p docker/prometheus/data
+mkdir -p docker/grafana/provisioning/datasources docker/grafana/provisioning/dashboards
+docker compose up -d --no-build --wait --wait-timeout 180
+make: *** [Makefile:86: docker-up] Error 1

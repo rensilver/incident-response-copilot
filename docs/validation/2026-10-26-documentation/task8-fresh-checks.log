@@ -1,0 +1,242 @@
+make lint
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+.venv/bin/ruff check backend/src backend/tests
+All checks passed!
+.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+Success: no issues found in 60 source files
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make format-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+.venv/bin/black --config backend/pyproject.toml --check backend/src backend/tests
+All done! ✨ 🍰 ✨
+128 files would be left unchanged.
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make test
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+.venv/bin/pytest backend/tests/unit
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/rensilver/workspaces/incident-response-copilot/seed-readme-validation
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 615 items
+
+backend/tests/unit/agents/test_correlation_agent.py .....                [  0%]
+backend/tests/unit/agents/test_evidence_preservation.py ..........       [  2%]
+backend/tests/unit/agents/test_execution.py ......................       [  6%]
+backend/tests/unit/agents/test_graph.py ...................              [  9%]
+backend/tests/unit/agents/test_investigation_window.py ....              [  9%]
+backend/tests/unit/agents/test_prompts.py .........                      [ 11%]
+backend/tests/unit/agents/test_specialists.py ...                        [ 11%]
+backend/tests/unit/agents/test_state.py ....                             [ 12%]
+backend/tests/unit/agents/test_supervisor.py .......                     [ 13%]
+backend/tests/unit/agents/test_temporal_boundaries.py .................. [ 16%]
+                                                                         [ 16%]
+backend/tests/unit/agents/test_tool_loop.py .............                [ 18%]
+backend/tests/unit/analysis/test_summarise.py ....                       [ 19%]
+backend/tests/unit/analysis/test_thresholds.py .........                 [ 20%]
+backend/tests/unit/api/test_contract.py ............                     [ 22%]
+backend/tests/unit/api/test_disconnect.py ....                           [ 23%]
+backend/tests/unit/api/test_openapi_export.py ...                        [ 23%]
+backend/tests/unit/api/test_origin_contract.py ...                       [ 24%]
+backend/tests/unit/api/test_routes.py ..................                 [ 27%]
+backend/tests/unit/config/test_environment_loading.py .............      [ 29%]
+backend/tests/unit/config/test_openai_settings.py ....................   [ 32%]
+backend/tests/unit/config/test_settings.py ......                        [ 33%]
+backend/tests/unit/config/test_validation_environment.py .....           [ 34%]
+backend/tests/unit/connectors/test_elasticsearch.py ....                 [ 34%]
+backend/tests/unit/connectors/test_prometheus.py .....                   [ 35%]
+backend/tests/unit/connectors/test_promql.py .......                     [ 36%]
+backend/tests/unit/demo/test_curves.py ........                          [ 38%]
+backend/tests/unit/demo/test_es_index.py .....                           [ 39%]
+backend/tests/unit/demo/test_logs_render.py .......                      [ 40%]
+backend/tests/unit/demo/test_memory_evidence.py .....                    [ 40%]
+backend/tests/unit/demo/test_metrics_render.py ........                  [ 42%]
+backend/tests/unit/demo/test_scenarios.py ......                         [ 43%]
+backend/tests/unit/demo/test_seed_paths.py ......                        [ 44%]
+backend/tests/unit/evaluation/test_eval_runner.py ..........             [ 45%]
+backend/tests/unit/evaluation/test_scenarios.py ...                      [ 46%]
+backend/tests/unit/llm/test_factory.py .                                 [ 46%]
+backend/tests/unit/llm/test_fake_tool_calls.py .......                   [ 47%]
+backend/tests/unit/llm/test_openai_configuration.py ...                  [ 48%]
+backend/tests/unit/llm/test_openai_provider.py ......................... [ 52%]
+........................................................................ [ 63%]
+.............................                                            [ 68%]
+backend/tests/unit/llm/test_provider_contract.py ............            [ 70%]
+backend/tests/unit/llm/test_provider_health.py ......................... [ 74%]
+......                                                                   [ 75%]
+backend/tests/unit/llm/test_provider_imports.py .                        [ 75%]
+backend/tests/unit/llm/test_structured_repair.py .......                 [ 76%]
+backend/tests/unit/models/test_enums.py ..                               [ 77%]
+backend/tests/unit/models/test_findings.py .........                     [ 78%]
+backend/tests/unit/models/test_logs.py ...                               [ 79%]
+backend/tests/unit/models/test_metrics.py ....                           [ 79%]
+backend/tests/unit/models/test_report.py ......                          [ 80%]
+backend/tests/unit/services/test_deadline.py .........                   [ 82%]
+backend/tests/unit/services/test_incident_service.py ..........          [ 83%]
+backend/tests/unit/test_composition.py ..                                [ 84%]
+backend/tests/unit/test_main.py .......                                  [ 85%]
+backend/tests/unit/test_provider_failure_validator.py .........          [ 86%]
+backend/tests/unit/test_resource_lifecycle.py ......................     [ 90%]
+backend/tests/unit/test_script_paths.py ......................           [ 93%]
+backend/tests/unit/test_smoke.py .                                       [ 94%]
+backend/tests/unit/test_validation_metadata.py ........                  [ 95%]
+backend/tests/unit/tools/test_elasticsearch_tools.py ......              [ 96%]
+backend/tests/unit/tools/test_prometheus_tools.py ........               [ 97%]
+backend/tests/unit/utils/test_exceptions.py .....                        [ 98%]
+backend/tests/unit/utils/test_logging.py .                               [ 98%]
+backend/tests/unit/utils/test_tracing.py ........                        [100%]
+
+============================= 615 passed in 41.35s =============================
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make frontend-lint
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+npm --prefix frontend run lint
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make frontend-format-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+npm --prefix frontend run format:check
+
+> incident-copilot-frontend@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make frontend-test
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+npm --prefix frontend test
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (2.827942ms)
+✔ rejects null before treating a response as a report (0.514162ms)
+✔ rejects array before treating a response as a report (0.159275ms)
+✔ rejects HTML before treating a response as a report (0.106978ms)
+✔ rejects missing required summary before treating a response as a report (0.147624ms)
+✔ rejects coerced confidence before treating a response as a report (0.10803ms)
+✔ rejects low confidence before treating a response as a report (0.157161ms)
+✔ rejects high confidence before treating a response as a report (0.154606ms)
+✔ rejects non-finite confidence before treating a response as a report (0.159556ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.362982ms)
+✔ rejects missing evidence detail before treating a response as a report (0.225788ms)
+✔ rejects unknown evidence source before treating a response as a report (0.160547ms)
+✔ rejects invalid steps before treating a response as a report (0.170225ms)
+✔ rejects invalid date before treating a response as a report (0.136482ms)
+✔ rejects missing window end before treating a response as a report (0.141982ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.700836ms)
+✔ validates both public error shapes without rendering raw rejected payloads (0.893834ms)
+✔ investigations send JSON only to the same-origin API and validate the report (31.409994ms)
+✔ health uses the proxy path and retains degraded dependency results (0.8591ms)
+✔ HTTP 422 is classified without retrying or exposing response text (0.939328ms)
+✔ HTTP 503 is classified without retrying or exposing response text (0.568161ms)
+✔ HTTP 504 is classified without retrying or exposing response text (0.388309ms)
+✔ HTTP 500 is classified without retrying or exposing response text (0.300826ms)
+✔ malformed successful responses are rejected without exposing their body (0.570615ms)
+✔ malformed successful responses are rejected without exposing their body (0.624967ms)
+✔ malformed successful responses are rejected without exposing their body (0.694855ms)
+✔ health also validates unknown JSON (0.83232ms)
+✔ network errors are sanitized and never automatically retried (0.406141ms)
+✔ investigate aborts at its total budget (1.195411ms)
+✔ health aborts at its total budget (0.245284ms)
+✔ the deadline covers a stalled response body as well as headers (0.557161ms)
+✔ caller cancellation aborts the local fetch without claiming backend cancellation (0.550899ms)
+✔ a previously aborted caller never starts a request (0.176687ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_OPENAI_API_KEY's value (2.531684ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGSMITH_API_KEY's value (0.360437ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGCHAIN_API_KEY's value (0.294394ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_MODEL_TOKEN's value (0.355097ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_BACKEND_ORIGIN's value (2.132566ms)
+✔ backend-only provider/tracing settings are never forwarded into frontend configuration (1.07565ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (3570.252676ms)
+✔ browser paths map only investigations and health to the local backend (6.58312ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.774673ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (0.656975ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.789009ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.348295ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.482382ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.486ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.531914ms)
+✔ invalid backend origin is rejected without echoing its value: http (1.035456ms)
+✔ invalid backend origin is rejected without echoing its value: http (2.303613ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.658639ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.498061ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3659.735556
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/seed-readme-validation/frontend
+
+
+ Test Files  6 passed (6)
+      Tests  52 passed (52)
+   Start at  12:41:46
+   Duration  4.58s (tests 45%, environment 34%, import 8%, setup 7%, transform 6%)
+
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make api-contract-check
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+.venv/bin/python backend/scripts/export_openapi.py --check
+OpenAPI schema matches the backend.
+npm --prefix frontend run api:check
+
+> incident-copilot-frontend@0.1.0 api:check
+> node scripts/generate-api.mjs --check
+
+OpenAPI types match the schema.
+npm --prefix frontend run typecheck
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make frontend-build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+npm --prefix frontend run build
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 15ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.5s
+  Running TypeScript ...
+  Finished TypeScript in 3.1s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 585ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'

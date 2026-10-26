@@ -1,0 +1,1 @@
+{"status":"ok","dependencies":{"prometheus":true,"elasticsearch":true,"llm":true}}

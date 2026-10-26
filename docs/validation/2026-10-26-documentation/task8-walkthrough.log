@@ -1,0 +1,3 @@
+{"scenario":"memory_leak","status":"passed","http_status":200,"click_to_body_seconds":18.28445270400001}
+{"scenario":"slow_dependency","status":"passed","http_status":200,"click_to_body_seconds":19.959345019}
+{"scenario":"bad_deploy","status":"passed","http_status":200,"click_to_body_seconds":18.999493661999992}

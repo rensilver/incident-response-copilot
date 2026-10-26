@@ -1,0 +1,172 @@
+{
+  "started_at": "2026-10-26T15:46:09.598Z",
+  "scope": "Three live README presets; separate from the nine-attempt evaluation; no retries or fixtures",
+  "model": "gpt-6-luna",
+  "reasoning": {
+    "effort": "none"
+  },
+  "tracing": false,
+  "pause_before_first_attempt_seconds": 65,
+  "pause_between_attempts_seconds": 65,
+  "attempts": [
+    {
+      "scenario": "memory_leak",
+      "preset": "Memory leak",
+      "started_at": "2026-10-26T15:47:14.711Z",
+      "status": "passed",
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "minutes_back": 180,
+        "service": "checkout-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested investigation window, checkout-service resident memory rose 1.8x, from 664.97 MiB to 1215.32 MiB. Logs show heap usage at 92%, approaching GC overhead limits, and Java heap exhaustion. The evidence supports severe heap pressure but does not identify its underlying trigger.",
+        "likely_causes": [
+          {
+            "title": "Excessive Java heap retention or allocation in checkout-service",
+            "rationale": "The combination of rising resident memory, high heap usage with GC overhead pressure, and Java heap exhaustion supports excessive heap retention or allocation as the likely failure mechanism. The findings do not distinguish a memory leak from workload-related allocation or identify a specific code path.",
+            "confidence": 0.88,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated resident memory increased 1.8x, from 664.97 MiB to 1215.32 MiB; anomaly_detected=True."
+              },
+              {
+                "source": "logs",
+                "detail": "Seventeen WARN samples report `GC overhead limit approaching; heap usage 92%`."
+              },
+              {
+                "source": "logs",
+                "detail": "Five ERROR samples report `java.lang.OutOfMemoryError: Java heap space`."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Capture and analyze heap dumps to identify retained objects and allocation sites; compare heap-used and post-GC heap trends with resident memory.",
+          "Review garbage-collection logs and the configured heap limit to determine whether collections reclaim memory.",
+          "Compare behavior across deployments and inspect changes associated with version v1.4.2; the version tags do not establish a deployment regression.",
+          "Measure request rate and workload mix before attributing memory growth to increased traffic; no request-rate evidence was provided.",
+          "Investigate the discrepancy between five ERROR samples containing `OutOfMemoryError` and the separate message-text search returning zero matches."
+        ],
+        "confidence": 0.88,
+        "investigation_window": {
+          "start": "2026-10-26T12:47:15.037399Z",
+          "end": "2026-10-26T15:47:15.037399Z"
+        }
+      },
+      "click_to_body_seconds": 18.28445270400001,
+      "displayed_timestamps": [
+        "2026-10-26T12:47:15.037399Z",
+        "2026-10-26T15:47:15.037399Z"
+      ],
+      "finished_at": "2026-10-26T15:47:33.535Z"
+    },
+    {
+      "scenario": "slow_dependency",
+      "preset": "Slow dependency",
+      "started_at": "2026-10-26T15:48:38.544Z",
+      "status": "passed",
+      "request": {
+        "query": "payment-service latency is elevated",
+        "minutes_back": 180,
+        "service": "payment-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested investigation window, payment-service p95 latency rose 4.0x, from 0.24s to 0.94s. Its logs report timeouts calling fraud-api and errors that the fraud check was unavailable, making dependency delays a plausible contributor. The evidence does not establish that fraud-api failed internally, that it became slow first, or that these events caused the overall latency increase. No fraud-api ERROR or WARN logs were found; that absence does not establish health. No request-rate, resource-utilization, or deployment findings were provided.",
+        "likely_causes": [
+          {
+            "title": "Delays or unavailable responses from fraud-api may contribute to payment-service latency",
+            "rationale": "payment-service logged upstream timeouts calling fraud-api after 2000ms and errors that the fraud check was unavailable. These observations support investigating the dependency as a possible contributor to the latency increase, but do not establish fraud-api's internal failure mechanism, temporal precedence, or causality for the overall p95 increase.",
+            "confidence": 0.55,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "47 payment-service WARN documents matched; 20 samples were retrieved. Sampled messages report 'upstream timeout calling fraud-api after 2000ms', with sample timestamps from 2026-10-26T15:03:32+00:00 to 2026-10-26T15:41:32+00:00."
+              },
+              {
+                "source": "logs",
+                "detail": "11 payment-service ERROR documents matched. Sampled messages report 'PaymentAuthorizationException: fraud check unavailable', with sample timestamps from 2026-10-26T14:40:32+00:00 to 2026-10-26T15:37:32+00:00."
+              },
+              {
+                "source": "metrics",
+                "detail": "payment-service p95 latency rose 4.0x, from 0.24s to 0.94s; the finding is threshold-validated and anomaly_detected=True."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Measure fraud-api latency, availability, and timeout rates over the same interval, and correlate them with payment-service traces; the absence of matching fraud-api ERROR and WARN logs does not establish that it was healthy.",
+          "Use traces to quantify how much payment-service request latency is spent waiting on fraud-api.",
+          "Check payment-service request-rate, resource-utilization, and deployment data before attributing the latency increase to traffic, contention, or a release.",
+          "Verify metric and log data coverage across the investigation interval; the requested query window does not establish continuous coverage or exact incident onset."
+        ],
+        "confidence": 0.55,
+        "investigation_window": {
+          "start": "2026-10-26T12:48:38.815465Z",
+          "end": "2026-10-26T15:48:38.815465Z"
+        }
+      },
+      "click_to_body_seconds": 19.959345019,
+      "displayed_timestamps": [
+        "2026-10-26T12:48:38.815465Z",
+        "2026-10-26T15:48:38.815465Z"
+      ],
+      "finished_at": "2026-10-26T15:48:58.890Z"
+    },
+    {
+      "scenario": "bad_deploy",
+      "preset": "Bad deploy",
+      "started_at": "2026-10-26T15:50:03.903Z",
+      "status": "passed",
+      "request": {
+        "query": "cart-service error rate spiked after the last deploy",
+        "minutes_back": 180,
+        "service": "cart-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested investigation window, cart-service's threshold-validated 5xx error rate rose from a near-zero baseline to 15.00pp. ERROR logs show NullPointerException occurrences in PromotionEngine.applyDiscount on version v1.5.0, making a null-handling defect a plausible contributor. The evidence does not establish that the exception caused the 5xx responses or that the last deploy caused the defect.",
+        "likely_causes": [
+          {
+            "title": "Null-handling defect in PromotionEngine.applyDiscount",
+            "rationale": "This is a plausible contributor because cart-service logged NullPointerException errors at PromotionEngine.applyDiscount while its 5xx error rate was anomalous in the same investigation window. The findings do not link individual exceptions to 5xx responses or establish that the logged errors preceded the rate increase; the logged version alone does not prove a deploy caused the issue.",
+            "confidence": 0.55,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated cart-service 5xx error rate emerged from a near-zero baseline and reached 15.00pp; anomaly_detected=True."
+              },
+              {
+                "source": "logs",
+                "detail": "20 retrieved ERROR samples include NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88), version=v1.5.0, with sampled timestamps from 2026-10-26T15:23:33+00:00 to 2026-10-26T15:42:33+00:00."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Correlate exception events with failed requests and 5xx responses using request IDs or traces.",
+          "Inspect null handling at PromotionEngine.applyDiscount line 88 and compare relevant code and configuration across deployed versions.",
+          "Verify deployment timestamps against the error-rate change; the provided findings do not establish a causal relationship to the last deploy.",
+          "Obtain request-rate data before assessing whether traffic changes contributed.",
+          "Investigate the inconsistent search results: the ERROR query retrieved PromotionEngine exceptions, while the separate PromotionEngine message search returned zero documents."
+        ],
+        "confidence": 0.55,
+        "investigation_window": {
+          "start": "2026-10-26T12:50:04.179144Z",
+          "end": "2026-10-26T15:50:04.179144Z"
+        }
+      },
+      "click_to_body_seconds": 18.999493661999992,
+      "displayed_timestamps": [
+        "2026-10-26T12:50:04.179144Z",
+        "2026-10-26T15:50:04.179144Z"
+      ],
+      "finished_at": "2026-10-26T15:50:23.283Z"
+    }
+  ],
+  "chromium": "156.0.8078.4",
+  "finished_at": "2026-10-26T15:50:23.320Z"
+}

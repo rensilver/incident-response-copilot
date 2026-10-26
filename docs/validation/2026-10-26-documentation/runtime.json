@@ -1,0 +1,35 @@
+{
+  "checkout_commit": "4c4694909018ab01057889b64230b12ef4c36c52",
+  "fresh_checkout": "seed-readme-validation (ignored; separate from primary checkout)",
+  "python": "3.12.14",
+  "uv": "uv 0.12.5 (x86_64-unknown-linux-gnu)",
+  "node": "v24.19.0",
+  "npm": "11.17.0",
+  "packages": {
+    "langgraph": "1.2.11",
+    "langchain-core": "1.5.6",
+    "langchain-openai": "1.1.16",
+    "openai": "2.54.0",
+    "fastapi": "0.141.1",
+    "pydantic": "2.13.4",
+    "elasticsearch": "8.19.3",
+    "httpx": "0.28.1"
+  },
+  "file_sha256": {
+    "backend/uv.lock": "bd86359608f95428e024a3d01d3edc9b6b49267be5d8f4787bc827e74b56e4b0",
+    "frontend/package-lock.json": "4fc0a8eed2641f030769a250e582a9a4eeead8e310d0eda8e596c87152fc1426",
+    "backend/src/incident_copilot/evaluation/eval_runner.py": "21f567a0cca32188570a8851c58e21fc6f92f47537b9ccc9051d54ba4c74a93b",
+    "backend/src/incident_copilot/evaluation/scenarios.py": "107d9037fe783063113b961a4cfb50c9993774378f98e3e08daf3294ae0e2058"
+  },
+  "docker_images": "Built from fresh source using existing Docker layer cache; no cold-cache claim",
+  "model": "gpt-6-luna",
+  "reasoning": {
+    "effort": "none"
+  },
+  "tracing": false,
+  "new_planned_live_investigations": {
+    "curl": 1,
+    "browser_presets": 3
+  },
+  "published_nine_attempt_evaluation": "Unchanged; these smoke calls do not enter its denominator"
+}

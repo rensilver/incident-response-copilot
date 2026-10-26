@@ -1,0 +1,11 @@
+E501 Line too long (105 > 100)
+  --> docs/validation/2026-10-26-documentation/audit.py:32:101
+   |
+30 | ).splitlines()
+31 | allowed = ("README.md", "AGENTS.md", "docs/validation/README.md")
+32 | assert all(name in allowed or name.startswith(str(EVIDENCE.relative_to(ROOT)) + "/") for name in changes)
+   |                                                                                                     ^^^^^
+33 | print(f"PASS: {len(files)} documentation/evidence files; JSON, private-value and scope checks")
+   |
+
+Found 1 error.

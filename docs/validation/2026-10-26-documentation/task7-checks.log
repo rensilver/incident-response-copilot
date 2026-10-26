@@ -1,0 +1,7 @@
+PASS: 12 installed skill references and retained architecture/evidence/check invariants
+{
+  "local_links": 292,
+  "archived_git_objects": 19,
+  "failures": []
+}
+PASS: 11 documentation/evidence files; JSON, private-value and scope checks
