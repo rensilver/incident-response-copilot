@@ -1,0 +1,56 @@
+UV_PROJECT_ENVIRONMENT="/home/rensilver/workspaces/incident-response-copilot/.venv" uv sync --project backend \
+	--python 3.12.14 --locked --extra dev --inexact
+make install
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+UV_PROJECT_ENVIRONMENT="/home/rensilver/workspaces/incident-response-copilot/.venv" uv sync --project backend \
+	--python 3.12.14 --locked --extra dev --inexact
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make install-frontend
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+npm --prefix frontend ci --no-audit --no-fund
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+mkdir -p docker/prometheus/data
+mkdir -p docker/grafana/provisioning/datasources docker/grafana/provisioning/dashboards
+docker compose up -d --no-build --wait --wait-timeout 180
+echo "stack up: frontend :3001  backend :8000  grafana :3000  prometheus :9090  elasticsearch :9200"
+.venv/bin/python backend/scripts/seed_demo_data.py
+docker compose restart prometheus
+docker compose up -d --no-deps --wait --wait-timeout 60 prometheus
+echo "seeded; prometheus restarted"
+docker compose down
+mkdir -p docker/prometheus/data
+docker compose up -d --wait --wait-timeout 180 prometheus elasticsearch grafana
+.venv/bin/uvicorn incident_copilot.main:app --app-dir backend/src --reload --port 8000
+npm --prefix frontend run dev
+docker compose down
+rm -rf docker/prometheus/data
+make docker-up
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+make build
+make[2]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+COMPOSE_PARALLEL_LIMIT=1 docker compose build frontend
+make[2]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+mkdir -p docker/prometheus/data
+mkdir -p docker/grafana/provisioning/datasources docker/grafana/provisioning/dashboards
+docker compose up -d --no-build --wait --wait-timeout 180
+echo "stack up: frontend :3001  backend :8000  grafana :3000  prometheus :9090  elasticsearch :9200"
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+make seed
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot'
+.venv/bin/python backend/scripts/seed_demo_data.py
+docker compose restart prometheus
+docker compose up -d --no-deps --wait --wait-timeout 60 prometheus
+echo "seeded; prometheus restarted"
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot'
+{
+  "local_links": 281,
+  "archived_git_objects": 19,
+  "failures": []
+}
+PASS: 8 documentation/evidence files; JSON, private-value and scope checks

@@ -28,31 +28,32 @@ hosting, authentication and persistent report history are outside its scope.
 
 ## Build and run
 
-Prerequisites: Python **3.12 or 3.13**, [uv 0.12.5](https://docs.astral.sh/uv/), Docker Engine with
-Compose, and an OpenAI API key. Commands below run from the repository root.
+Run commands from a fresh checkout's repository root. Docker setup needs
+Python **3.12 or 3.13** (default 3.12.14), [uv **0.12.5**](https://docs.astral.sh/uv/),
+Docker Engine with Compose v2 supporting `up --wait`, GNU Make, curl, and an
+OpenAI API key with access and quota for `gpt-6-luna`. Host frontend development
+and checks additionally need **Node 22.18+ and npm 10+**.
+Ports **3001, 8000, 3000, 9090 and 9200** must be free.
 
 ```bash
+# On a new checkout only; preserve an existing private .env.
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY. Leave LANGSMITH_TRACING=false for this walkthrough.
-
-make install          # locked backend and development tools for seeding
-
-make docker-up        # build and start all five services
-make seed            # load fresh synthetic metrics/logs; restart Prometheus
+# Edit .env: set OPENAI_API_KEY and leave LANGSMITH_TRACING=false.
+make install          # locked backend/dev dependencies; also used by the seeder
+make docker-up        # build and start all five services; wait for readiness
+make seed             # fresh synthetic metrics/logs; restart Prometheus
 curl --fail http://localhost:8000/health
 # Open http://localhost:3001
 ```
 
-`/health` reports Prometheus, Elasticsearch, and `llm` dependency booleans, with
-overall status `ok` only when all probes succeed. The provider-owned OpenAI probe
-retrieves the configured model's metadata within a three-second deadline. A true
-`llm` result establishes metadata access, not inference permission or available
-quota.
-The frontend, FastAPI and the three supporting services run in Docker.
-Docker receives `.env` configuration at container creation, so rerun
-`make docker-app-up` after changing it.
-
-Seeding and evaluation/validation paths resolve from the repository root.
+A healthy response has `status: "ok"` and true `prometheus`, `elasticsearch`,
+and `llm` dependency fields. The OpenAI probe checks model metadata within three
+seconds; it does not establish inference permission or reserve quota. If a host
+port is occupied, use the Compose override described in the
+[operation guide](docs/full-stack-operation.md) and substitute that published
+port in curl commands. Internal service URLs stay unchanged.
+Docker receives backend `.env` values at container creation; run `make docker-up`
+after changing them.
 
 | Service | Local URL | Purpose |
 |---|---|---|
@@ -62,23 +63,29 @@ Seeding and evaluation/validation paths resolve from the repository root.
 | Grafana | http://localhost:3000 | Provisioned Incident Overview dashboard |
 | Elasticsearch | http://localhost:9200 | Synthetic application logs |
 
-Choose **Memory leak**, **Slow dependency**, or **Bad deploy**, then click
-**Run investigation**. Each example selects its target service and a 180-minute
-window. Reports display the API's authoritative start/end timestamps, a summary,
-ranked candidates, evidence, model confidence, and next steps. Candidate order indicates rank, not measured incident severity. Confidence is not calibrated.
+Choose **Memory leak**, **Slow dependency**, or **Bad deploy**; review the filled
+question, service and **180-minute** window, then click **Run investigation**.
+The returned report shows the queried UTC endpoints, summary, ranked candidates,
+observations, uncalibrated model confidence and proposed next steps. Candidate
+rank does not measure incident severity. **Stop waiting** cancels browser I/O;
+backend work may continue. Failures offer an explicit retry.
 
-Allow roughly 65 seconds between live demo investigations to reduce quota pressure;
-this does not guarantee quota availability. Health checks do not reserve cloud quota.
+Live investigations incur OpenAI usage. Allow roughly 65 seconds between demo
+submissions to reduce quota pressure; quota availability is not guaranteed.
+Seed shortly before a demo: every investigation ends **now**, while generated
+history stays fixed. `make seed` recreates the synthetic log index and adds fresh
+metric blocks. For an explicit clean reset, inspect `Makefile` first:
+`make demo-reset` **deletes generated Prometheus data** and restarts/reseeds the
+stack. Ordinary startup and shutdown preserve that data; no volume deletion is
+needed.
 
-Seed shortly before a demo: investigations query a window ending **now**, while
-seeded history stays fixed. `make seed` replaces the synthetic log index and adds
-fresh metric blocks. For a clean demo reset, `make demo-reset` replaces generated
-Prometheus data and starts/reseeds the full stack. These commands affect this project's demo data.
+```bash
+make docker-down      # stop/remove stack containers and network, preserve data
+```
 
-Stop the full Docker stack with `make docker-down`. Existing
-Docker volumes survive normal shutdown.
-The demo uses unauthenticated Elasticsearch and anonymous Grafana viewing and is
-intended for local synthetic data.
+The stack uses unauthenticated Elasticsearch and anonymous Grafana viewing for
+local synthetic telemetry. Full command details and troubleshooting are in the
+[operation guide](docs/full-stack-operation.md).
 
 ### API usage
 
@@ -91,15 +98,28 @@ curl --fail-with-body http://localhost:8000/api/v1/investigations \
 The response contains `summary`, `likely_causes` (title, rationale, confidence,
 supporting evidence), `next_steps`, `confidence`, and `investigation_window`.
 [An actual captured response](docs/validation/2026-10-26-evaluation/browser-demo.json)
-is retained with its request, status, and timing. The window metadata comes from
-the service, independently of model-written prose. `service` is optional and
-`minutes_back` accepts 1–1440. Invalid requests return HTTP 422; an investigation
-that cannot produce a report returns HTTP 503.
+is retained with its request, status and timing. Window metadata is server-owned.
+`service` is optional; `minutes_back` accepts 1–1440. Invalid requests return 422;
+a failed investigation returns 503 with a safe message.
 
-For host development, run `make install-all`, `make docker-observability-up`, and
-`make seed`, then `make serve` and `make frontend-dev` in separate terminals.
-Ports 8000 and 3001 must be free. The frontend's server-only backend origin and
-production rebuild requirements are in the [frontend guide](frontend/README.md).
+### Host development
+
+Stop containerized app/frontend instances before using the same host ports.
+With the root `.env` configured as above:
+
+```bash
+make install-all                 # locked Python and npm installs, sequentially
+make docker-observability-up     # Prometheus, Elasticsearch and Grafana only
+make seed
+make serve                       # terminal 1: FastAPI on 8000
+```
+
+In a second terminal, run `make frontend-dev` and open <http://localhost:3001>.
+Stop host servers with Ctrl+C, then `make docker-down` to stop observability.
+The sole frontend setting is server-only `INCIDENT_COPILOT_BACKEND_ORIGIN`
+(default `http://127.0.0.1:8000`); production rewrites require a rebuild when it
+changes. Never put model/tracing credentials in frontend configuration. See the
+[frontend guide](frontend/README.md) for production previews and browser checks.
 
 ## Seeded scenarios
 
@@ -307,75 +327,45 @@ Chromium checks use controlled API fixtures for keyboard, responsive and zoom
 behavior; live connector/provider checks are explicit integration commands.
 Fixture success is distinct from a real model investigation.
 
-## Development and reproduction
+## Development checks
 
-Install uv 0.12.5 before running `make install` (backend and development tools).
-It installs from `backend/uv.lock`
-into the root `.venv/` and fails if the lock does not match the manifest. It
-retains unrelated installed packages when reusing a compatible environment; changing
-the interpreter recreates it. The default interpreter is Python 3.12.14,
-recorded in `backend/.python-version`; uv can download it if needed. To use
-Python 3.13 in a separate environment, run
-`make install PYTHON=3.13 VENV=/tmp/incident-copilot-dev313`, then pass the same
-`VENV` to root check commands.
-
-From `backend/`, the equivalent install is
-`UV_PROJECT_ENVIRONMENT="$(pwd)/../.venv" uv sync --locked --extra dev --inexact`.
-Without that environment selector, uv uses `backend/.venv/`, which the root Make
-commands do not use. To intentionally change dependencies, edit the manifest,
-run `uv lock --project backend`, review the lock diff, and rerun the checks below.
-Commit the manifest and lock together. The Hatchling build backend and uv version
-are pinned separately in the manifest because uv does not lock isolated build
-dependencies in `uv.lock`.
+`make install` installs the locked backend/dev set into the root `.venv/`.
+Use `VENV=/absolute/path` and optionally `PYTHON=3.13` for an isolated install,
+then pass the same `VENV` to checks. From `backend/`, set
+`UV_PROJECT_ENVIRONMENT` to the absolute root `.venv/` path before syncing.
+Dependency changes require an intentional `uv lock --project backend` and a
+manifest/lock commit together. Frontend installs use `frontend/package-lock.json`.
 
 ```bash
-make test                 # offline unit suite; no live providers or Docker required
-make lint                 # Ruff and strict backend mypy
-make format-check         # Black for backend and tests
+make lint
+make test                        # offline backend; no live credentials or Docker
+make format-check
 make install-frontend
-make frontend-lint frontend-format-check frontend-typecheck frontend-test
+make frontend-test frontend-lint frontend-format-check frontend-typecheck
+make api-contract-check
+make frontend-build
+# Install matching Chromium once before browser checks:
+(cd frontend && npx playwright install chromium)
+make frontend-e2e                # leave port 3001 free; controlled API fixtures
 .venv/bin/python backend/scripts/validate_provider_failures.py
-
-# Requires a running API, freshly seeded data, and a configured OpenAI key.
-INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
-
-# Retains all nine attempts, evidence, and timings.
-# The output directory must not already exist.
-LANGSMITH_TRACING=false .venv/bin/python -u backend/scripts/measure_evaluation.py \
-  --output /tmp/incident-eval-repeat --delay-seconds 65
-
-# Optional live tracing validator; use a new output directory for each run.
-.venv/bin/python backend/scripts/validate_langsmith.py \
-  --mode disabled --output docs/validation/langsmith-repeat
 ```
 
-Direct backend checks also work from `backend/`, for example
-`../.venv/bin/pytest tests/unit` and `../.venv/bin/mypy --strict src`.
-Root pytest commands select `pytest.ini`; its test paths and source path are
-relative to the repository, including when invoked from `backend/`.
-Checkout scripts import the relocated backend source directly. From `backend/`,
-use `../.venv/bin/python scripts/measure_evaluation.py` with the same arguments.
-For both evaluation/tracing recorders, relative `--output` paths resolve
-from the repository root, including when launched elsewhere. Absolute paths such
-as `/tmp/incident-eval-repeat` are preserved. Current Playwright artifacts stay in `frontend/test-results/`; documentation and published media
-remain in root `docs/validation/` and `docs/media/`. Git provenance and Compose
-commands also use the repository root.
+Run build and type generation sequentially; both write `frontend/.next/`.
+`make check` combines sequential static/unit/contract/build checks, excluding
+live integration and Chromium. Generated API types are checked for schema drift;
+network responses also pass runtime validation. Browser artifacts stay in
+`frontend/test-results/`.
 
-The tracing validator accepts `--mode enabled` to check remote delivery with
-configured LangSmith credentials. These are live commands, separate from the
-offline suite. The OpenAI failure validator runs the real adapter/factory/API
-tests with intercepted HTTP and synthetic credentials; it clears inherited
-configuration and disables dotenv and remote tracing. It checks authentication,
-quota/rate limits, timeouts, malformed output, recovery, redaction, and absence
-of fallback or local-provider requests without Docker or live credentials.
-It exits nonzero on failed cases, retired installed provider packages, or its
-90-second deadline (`--timeout` accepts 1–300 seconds). Use a fresh locked
-development install if an older environment still contains retired packages.
-See the [validation evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-only-failure-validator/README.md).
+Live checks need freshly seeded dependencies and a configured OpenAI key:
 
-`make eval` runs the basic nine-attempt scorer without pacing or artifact capture.
-The recorder above uses that same scorer and retains runtime/library versions,
-reports, errors and timings. The [current evaluation method and capture commands](docs/validation/2026-10-26-evaluation/README.md)
-record the fixed run protocol. Browser capture additionally requires Playwright/Chromium;
-[media provenance](docs/media/2026-10-26/README.md) describes capture, original footage,
-editing, playback and captions. Service, HTTP and browser timings have separate scopes.
+```bash
+INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
+# Optional tracing check; use a new output directory for each run.
+.venv/bin/python backend/scripts/validate_langsmith.py \
+  --mode disabled --output /tmp/incident-tracing-disabled
+```
+
+Use `--mode enabled` with LangSmith credentials to verify remote trace delivery.
+These commands make live requests and are separate from offline CI. Relative
+backend recorder outputs resolve from the repository root; absolute paths stay
+absolute. Evaluation reproduction is documented with the results below.

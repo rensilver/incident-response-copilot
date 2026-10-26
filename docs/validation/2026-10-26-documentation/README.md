@@ -56,3 +56,19 @@ Reviewed `llm/base.py`, `llm/openai_provider.py`, `llm/factory.py`, settings,
 frontend test inventory. [Checks](task3-checks.log): global reference audit,
 documentation privacy/scope audit and whitespace diff check. Runtime and tests
 are unchanged; full checks are part of the fresh setup in task 8.
+
+## Task 4: Docker, host and API instructions
+
+Reworked quickstart, prerequisites, five ports, dependency health semantics,
+configuration/rebuild rules, seeding/reset effects, UI submission/retry and
+teardown. Added a literal host-development sequence and concise check commands.
+The curl request matches the API schema; no credentials appear in examples.
+Reset is documented and inspected, not run against existing demo data.
+
+Checked every Make target against `Makefile`, configuration against `.env.example`
+and settings, scripts against their CLI arguments, and frontend behavior against
+the current session/client. `make -n` expands the documented operation targets;
+quiet Compose validation runs with host access because the snap-packaged Docker
+CLI fails under the sandbox. [Checks](task4-checks.log) include references, privacy,
+scope and whitespace. Fresh execution and any host-port conflict are recorded
+in task 8 rather than claiming historical runs validate these instructions.
