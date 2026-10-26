@@ -43,8 +43,7 @@ for secret in secrets:
 log = HERE / f"{label}.log"
 assert not log.exists(), "Use a new label for each attempt"
 log.write_text(
-    "\n".join(line.expandtabs(4).rstrip() for line in captured.splitlines()).rstrip()
-    + "\n"
+    "\n".join(line.expandtabs(4).rstrip() for line in captured.splitlines()).rstrip() + "\n"
 )
 record = {
     "label": label,

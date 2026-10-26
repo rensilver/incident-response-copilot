@@ -128,3 +128,46 @@ and LangSmith. Explicit approval was requested for one enabled and one disabled
 synthetic investigation; neither ran while that approval was pending. The
 confirmation here is live synthetic evidence plus offline tracing behavior,
 without carrying forward older remote-delivery results.
+
+## Task 5 — final checks and acceptance scope
+
+These V1–V5 labels define the mapping used by this acceptance record; no earlier
+definitions were available. They describe verified scope, not production certification.
+
+| Area | Current verification and limit |
+| --- | --- |
+| V1 — source and privacy | Tasks 1–2 inspect project source, media, ignored settings and worktrees. Final source/privacy/reference checks are recorded in task 6. The private plan and dotenv remain ignored. |
+| V2 — dependencies and configuration | Task 3 verifies fresh locked Python/npm installs, provider isolation and exactly five configured services. No retired service starts; a stopped orphan remains preserved. |
+| V3 — incident evidence and tracing | Task 4 verifies fresh synthetic memory growth/resets and GC/OOM/restart logs, six live connector cases and mocked automatic tracing behavior. New external OpenAI investigations/LangSmith delivery are blocked pending explicit approval; no older delivery is counted as a current pass. |
+| V4 — backend, browser, contract and builds | Fresh Python 3.12.14 and 3.13.13 each pass 612 offline cases, Ruff, strict mypy and Black. All 104 frontend cases and required static/type/contract/build checks pass; 31 controlled Chromium cases pass, nine intentionally skip. Both production images build with cached layers. |
+| V5 — release review | Task 6 reviews the complete diff, archive integrity, credential privacy, references, unchanged runtime/locks/scorer/media, recorded failures and explicit limits. No push or public release is authorized. |
+
+Reproduction commands, bounds, source revisions, times and exit codes are in
+[the check ledger](checks.jsonl). Fresh evidence:
+
+- Python: [3.12 checks](task5-python312.log),
+  [3.13 locked install](task5-python313-install.log) and [checks](task5-python313.log).
+- Frontend: [lint/format, 104 cases, API-contract drift, types and production
+  build](task5-frontend.log); [31 browser passes and nine skips](task5-browser.log).
+  Browser responses are controlled fixtures, not real-provider results.
+- Deployment: [both image builds](task5-images.log), [backend](task5-stack-start.log)
+  and [frontend startup](task5-frontend-start.log), then
+  [five healthy services, deployed-schema equality and proxied 422 validation](task5-deployed.json).
+  [`deployed.py`](deployed.py) creates no investigation. Host 18000 uses the
+  documented override; the unrelated listener on 8000 is preserved.
+- Evidence tooling: [Ruff](task5-evidence-style.log), [strict types](task5-evidence-types.log)
+  and [final formatting](task5-evidence-format-corrected.log). The
+  [first formatting check](task5-evidence-format.log) found one wrapped expression
+  in the existing recorder; only whitespace changed.
+- Teardown: [all five services stopped](task5-stop.log), with
+  [ports 3001/18000 released and generated data retained](task5-teardown-corrected.log).
+  The [first teardown audit](task5-teardown.log) interpreted Docker's lone newline
+  as a service name. Inspection confirmed stopped containers; whitespace-safe
+  parsing fixes the private check and the reusable dependency inventory.
+
+No application, manifest, lock, scoring, scenario or original-media change occurred
+in tasks 3–5. The 612-case count reflects task 1's documented four-to-one test
+replacement, not skipped backend cases. Hosted CI, default backend port 8000,
+other browser engines, screen readers, remote tracing delivery, paid report
+generation and actual elapsed-time timeout paths were not newly verified here.
+No volume, container, worktree or archive was deleted during these checks.

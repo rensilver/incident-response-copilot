@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/seed-acceptance/teardown.py", line 4, in <module>
+    assert running==[]
+           ^^^^^^^^^^^
+AssertionError

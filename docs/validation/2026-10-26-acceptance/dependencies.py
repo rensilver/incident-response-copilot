@@ -39,7 +39,7 @@ expected = {"app", "frontend", "prometheus", "elasticsearch", "grafana"}
 assert set(services) == expected
 running = subprocess.check_output(
     ["docker", "compose", "ps", "--status", "running", "--services"], cwd=ROOT, text=True
-).splitlines()
+).split()
 assert set(running) <= expected
 evidence = {
     "python_packages": dict(sorted(installed.items())),

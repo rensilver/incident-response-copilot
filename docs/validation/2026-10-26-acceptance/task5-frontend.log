@@ -1,0 +1,134 @@
+npm --prefix frontend run lint
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+npm --prefix frontend run format:check
+
+> incident-copilot-frontend@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+npm --prefix frontend test
+
+> incident-copilot-frontend@0.1.0 test
+> npm run test:contract && npm run test:components
+
+
+> incident-copilot-frontend@0.1.0 test:contract
+> tsc --project tsconfig.contract.json && node --test tests/*.test.mjs .contract-build/tests/*.test.js
+
+✔ accepts actual report shapes, preserves text and never coerces or mutates (3.378068ms)
+✔ rejects null before treating a response as a report (0.552198ms)
+✔ rejects array before treating a response as a report (0.177988ms)
+✔ rejects HTML before treating a response as a report (0.129098ms)
+✔ rejects missing required summary before treating a response as a report (0.196052ms)
+✔ rejects coerced confidence before treating a response as a report (0.188348ms)
+✔ rejects low confidence before treating a response as a report (0.222651ms)
+✔ rejects high confidence before treating a response as a report (0.231777ms)
+✔ rejects non-finite confidence before treating a response as a report (0.191884ms)
+✔ rejects invalid candidate confidence before treating a response as a report (0.426426ms)
+✔ rejects missing evidence detail before treating a response as a report (0.284174ms)
+✔ rejects unknown evidence source before treating a response as a report (0.212482ms)
+✔ rejects invalid steps before treating a response as a report (0.215958ms)
+✔ rejects invalid date before treating a response as a report (0.15717ms)
+✔ rejects missing window end before treating a response as a report (0.163452ms)
+✔ accepts healthy/degraded dependency booleans and rejects unknown statuses (0.633157ms)
+✔ validates both public error shapes without rendering raw rejected payloads (0.870605ms)
+✔ investigations send JSON only to the same-origin API and validate the report (47.500145ms)
+✔ health uses the proxy path and retains degraded dependency results (1.418626ms)
+✔ HTTP 422 is classified without retrying or exposing response text (1.443512ms)
+✔ HTTP 503 is classified without retrying or exposing response text (0.989324ms)
+✔ HTTP 504 is classified without retrying or exposing response text (0.919385ms)
+✔ HTTP 500 is classified without retrying or exposing response text (0.665858ms)
+✔ malformed successful responses are rejected without exposing their body (1.107672ms)
+✔ malformed successful responses are rejected without exposing their body (0.948389ms)
+✔ malformed successful responses are rejected without exposing their body (0.829499ms)
+✔ health also validates unknown JSON (1.639092ms)
+✔ network errors are sanitized and never automatically retried (0.855969ms)
+✔ investigate aborts at its total budget (2.308376ms)
+✔ health aborts at its total budget (0.462592ms)
+✔ the deadline covers a stalled response body as well as headers (1.926913ms)
+✔ caller cancellation aborts the local fetch without claiming backend cancellation (1.086162ms)
+✔ a previously aborted caller never starts a request (0.310543ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_OPENAI_API_KEY's value (1.658448ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGSMITH_API_KEY's value (0.343333ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_LANGCHAIN_API_KEY's value (0.24433ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_MODEL_TOKEN's value (0.178109ms)
+✔ public configuration is rejected without echoing NEXT_PUBLIC_BACKEND_ORIGIN's value (1.374785ms)
+✔ backend-only provider/tracing settings are never forwarded into frontend configuration (0.845379ms)
+✔ generation is deterministic and detects schema/type drift without rewriting (3810.685518ms)
+✔ browser paths map only investigations and health to the local backend (5.992378ms)
+✔ server configuration selects http://app:8000 without changing browser paths (0.913273ms)
+✔ server configuration selects http://localhost:8000/ without changing browser paths (2.107125ms)
+✔ server configuration selects https://backend.example.test:8443 without changing browser paths (0.879521ms)
+✔ invalid backend origin is rejected without echoing its value:  (1.620488ms)
+✔ invalid backend origin is rejected without echoing its value: /relative (0.762206ms)
+✔ invalid backend origin is rejected without echoing its value: not-a-url (0.706392ms)
+✔ invalid backend origin is rejected without echoing its value: ftp (0.698138ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.863983ms)
+✔ invalid backend origin is rejected without echoing its value: http (2.019243ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.795166ms)
+✔ invalid backend origin is rejected without echoing its value: http (0.517274ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3914.949827
+
+> incident-copilot-frontend@0.1.0 test:components
+> vitest run
+
+
+ RUN  v5.0.5 /home/rensilver/workspaces/incident-response-copilot/frontend
+
+
+ Test Files  6 passed (6)
+      Tests  52 passed (52)
+   Start at  14:35:57
+   Duration  5.05s (environment 38%, tests 37%, setup 11%, import 8%, transform 6%)
+
+.venv/bin/python backend/scripts/export_openapi.py --check
+OpenAPI schema matches the backend.
+npm --prefix frontend run api:check
+
+> incident-copilot-frontend@0.1.0 api:check
+> node scripts/generate-api.mjs --check
+
+OpenAPI types match the schema.
+npm --prefix frontend run typecheck
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+npm --prefix frontend run build
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 20ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 613ms
+  Running TypeScript ...
+  Finished TypeScript in 2.0s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 605ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
