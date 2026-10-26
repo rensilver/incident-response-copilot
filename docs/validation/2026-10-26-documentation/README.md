@@ -72,3 +72,18 @@ quiet Compose validation runs with host access because the snap-packaged Docker
 CLI fails under the sandbox. [Checks](task4-checks.log) include references, privacy,
 scope and whitespace. Fresh execution and any host-port conflict are recorded
 in task 8 rather than claiming historical runs validate these instructions.
+
+## Task 5: publish current measured results
+
+Published the October 26 OpenAI/none nine-attempt series only: exact per-scenario
+and overall mention scores, counts, errors, direct-service latency sample counts,
+mean/median/range, pacing and wall-time scope. Documented zero failed-call timing
+samples, retained misses, scorer field/substring sensitivity, unproven dependency
+ordering and causal mechanisms, and separate browser measurements. Linked the
+frozen method, versions, raw attempts, qualitative review and media provenance.
+Included both offline rescore and deliberately paid, fresh-output reproduction.
+
+[Checks](task5-checks.log) freshly reproduce all nine scores, windows, frozen
+hashes and saved aggregates, then check references, scope, privacy and whitespace.
+README numbers were compared row by row with `results.md`/`results.json`; source
+scoring and scenario definitions are unchanged. No new paid call ran for this task.

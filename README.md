@@ -310,7 +310,64 @@ configured together. Tracing configuration is process-wide, not a per-request
 switch. Disabled operation was tested without a tracing key in settings, including
 inherited enabled SDK flags.
 
-## Validation evidence
+## Measured synthetic evaluation
+
+On **October 26, 2026**, OpenAI Responses **`gpt-6-luna`**, reasoning effort
+**`none`**, tracing disabled, completed a fixed nine-attempt series: three
+attempts per scenario against freshly seeded data, each with a server-owned
+180-minute window. All nine reports and both score misses are retained; no
+replacement attempts were made. The [frozen method](docs/validation/2026-10-26-evaluation/method.md)
+and [runtime/lock versions](docs/validation/2026-10-26-evaluation/environment.md)
+define the run.
+
+| Scenario | Expected-service mentions | Reports | Errors | Latency n | Mean s | Median s | Range s |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Bad deploy | 3/3 (100%) | 3 | 0 | 3 | 40.522 | 40.820 | 38.616–42.131 |
+| Memory leak | 1/3 (33.3%) | 3 | 0 | 3 | 26.939 | 25.876 | 25.707–29.235 |
+| Slow dependency | 3/3 (100%) | 3 | 0 | 3 | 23.888 | 23.154 | 22.248–26.263 |
+| **Overall** | **7/9 (77.8%)** | **9** | **0** | **9** | **30.450** | **26.263** | **22.248–42.131** |
+
+Latency measures direct `IncidentService.investigate` calls, excluding setup,
+seeding and eight 15-second pacing gaps. All calls delivered reports, so delivered
+latency equals all-call latency; failed-call latency has n=0 and no defined
+statistics. Total series wall time was 394.150 seconds, including 120 seconds
+of planned pacing and recorder overhead. These are local synthetic observations,
+not a general latency or throughput estimate.
+
+**The score measures mentions, not root-cause accuracy.** The unchanged scorer
+checks a case-insensitive expected-service substring in the first cause's title,
+rationale and evidence details. Summary-only mentions fail; incidental or negated
+mentions can pass, and identifier aliases can fail. The two memory misses name
+`checkout-service` in their summaries but omit it from scored fields. Dependency
+reports name `fraud-api` without establishing that it degraded before its caller.
+Heap retention and deploy attribution remain hypotheses where evidence is absent.
+See the [nine-report qualitative review](docs/validation/2026-10-26-evaluation/qualitative-review.md)
+and [per-attempt results](docs/validation/2026-10-26-evaluation/results.json).
+
+Reproduce the saved scores offline, without new model calls:
+
+```bash
+INCIDENT_COPILOT_ENV_FILE='' .venv/bin/python docs/validation/2026-10-26-evaluation/rescore.py --check
+```
+
+To deliberately repeat the paid nine-attempt protocol, start the stack, seed
+immediately beforehand, and choose an output directory that does not exist:
+
+```bash
+make seed
+LANGSMITH_TRACING=false timeout 2400 .venv/bin/python \
+  docs/validation/2026-10-26-evaluation/collect.py /tmp/incident-eval-new --live
+```
+
+The collector preserves every attempt, including errors. It uses the same scorer,
+scenarios and production composition as `make eval`, adding fixed pacing and
+artifact capture. The [collection record](docs/validation/2026-10-26-evaluation/README.md)
+contains exact environment overrides and commands used for the published run.
+The demo's three additional browser investigations are a separate population:
+[HTTP/render timings and media provenance](docs/media/2026-10-26/README.md).
+The edited video's duration is not investigation latency.
+
+## Validation and tests
 
 The [current evidence index](docs/validation/README.md) links functional checks,
 reproduction methods, saved reports and media provenance. Scoring limitations and
@@ -368,4 +425,4 @@ INCIDENT_COPILOT_SCENARIO_DELAY_SECONDS=65 make test-integration
 Use `--mode enabled` with LangSmith credentials to verify remote trace delivery.
 These commands make live requests and are separate from offline CI. Relative
 backend recorder outputs resolve from the repository root; absolute paths stay
-absolute. Evaluation reproduction is documented with the results below.
+absolute. Evaluation reproduction is documented with the measured results above.
