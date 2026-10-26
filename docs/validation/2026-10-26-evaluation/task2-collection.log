@@ -1,0 +1,9 @@
+{"attempt": "bad_deploy-1.json", "mention_match": true, "elapsed_seconds": 42.13074755799994, "error": false}
+{"attempt": "bad_deploy-2.json", "mention_match": true, "elapsed_seconds": 40.81955530999994, "error": false}
+{"attempt": "bad_deploy-3.json", "mention_match": true, "elapsed_seconds": 38.616339982, "error": false}
+{"attempt": "memory_leak-1.json", "mention_match": false, "elapsed_seconds": 25.70680255700006, "error": false}
+{"attempt": "memory_leak-2.json", "mention_match": true, "elapsed_seconds": 25.876294168000072, "error": false}
+{"attempt": "memory_leak-3.json", "mention_match": false, "elapsed_seconds": 29.23538926499998, "error": false}
+{"attempt": "slow_dependency-1.json", "mention_match": true, "elapsed_seconds": 22.248452766000014, "error": false}
+{"attempt": "slow_dependency-2.json", "mention_match": true, "elapsed_seconds": 26.26259896499994, "error": false}
+{"attempt": "slow_dependency-3.json", "mention_match": true, "elapsed_seconds": 23.15412047399991, "error": false}

@@ -1,0 +1,29 @@
+{
+  "chromium": "156.0.8078.4",
+  "playback": "passed",
+  "controls": true,
+  "autoplay": false,
+  "paused": true,
+  "duration": 55.599674,
+  "captions": {
+    "mode": "showing",
+    "count": 6
+  },
+  "seeked_scenes": 3,
+  "scene_times": [
+    {
+      "target": 8,
+      "actual": 8
+    },
+    {
+      "target": 26.533008,
+      "actual": 26.533008
+    },
+    {
+      "target": 45.066340999999994,
+      "actual": 45.06634
+    }
+  ],
+  "mobile_overflow": false,
+  "scope": "Local media only; zero provider calls"
+}

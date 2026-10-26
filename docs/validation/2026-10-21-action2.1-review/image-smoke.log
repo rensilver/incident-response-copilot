@@ -1,9 +1,0 @@
-exec /opt/venv/bin/python: operation not permitted
-Traceback (most recent call last):
-  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-21-action2.1-review/check_image.py", line 102, in <module>
-    result.check_returncode()
-    ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/home/rensilver/miniconda3/lib/python3.13/subprocess.py", line 508, in check_returncode
-    raise CalledProcessError(self.returncode, self.args, self.stdout,
-                             self.stderr)
-subprocess.CalledProcessError: Command '['/snap/docker/current/bin/docker', 'run', '--rm', '--interactive', '--network', 'none', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--env', 'INCIDENT_COPILOT_ENV_FILE=', '--env', 'GROQ_API_KEY=test-key', '--env', 'LANGSMITH_TRACING=false', '--env', 'LANGCHAIN_TRACING_V2=false', 'incident-copilot-backend:phase2-review', 'python', '-I', '-']' returned non-zero exit status 255.

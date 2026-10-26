@@ -1,0 +1,83 @@
+[
+  {
+    "file": "bad_deploy-1.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 2,
+    "confidence": 0.78,
+    "top_confidence": 0.82
+  },
+  {
+    "file": "bad_deploy-2.json",
+    "tool_calls": 5,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 2,
+    "confidence": 0.72,
+    "top_confidence": 0.75
+  },
+  {
+    "file": "bad_deploy-3.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.58,
+    "top_confidence": 0.58
+  },
+  {
+    "file": "memory_leak-1.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.9,
+    "top_confidence": 0.9
+  },
+  {
+    "file": "memory_leak-2.json",
+    "tool_calls": 3,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.82,
+    "top_confidence": 0.82
+  },
+  {
+    "file": "memory_leak-3.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.55,
+    "top_confidence": 0.55
+  },
+  {
+    "file": "slow_dependency-1.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.65,
+    "top_confidence": 0.65
+  },
+  {
+    "file": "slow_dependency-2.json",
+    "tool_calls": 4,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 4,
+    "confidence": 0.62,
+    "top_confidence": 0.62
+  },
+  {
+    "file": "slow_dependency-3.json",
+    "tool_calls": 5,
+    "tool_errors": 0,
+    "graph_errors": [],
+    "prose_timestamps_checked": 2,
+    "confidence": 0.65,
+    "top_confidence": 0.65
+  }
+]

@@ -127,7 +127,7 @@ the next task. A request to commit includes authorization for that task's commit
   [frontend contract guide](docs/frontend-api-contract.md).
 - Bound potentially stalled checks and retain failures. If the asyncio/thread stall
   recurs, distinguish the execution environment from application defects using the
-  [baseline diagnostic](docs/validation/2026-10-21-baseline/checks.md#conditional-asyncio-investigation)
+  [independent diagnostic](docs/validation/diagnostics.md)
   before changing graph code. Historical passes do not verify changed code.
 - Live integration and `make eval` need the configured provider and freshly seeded
   observability stack. Retain every planned attempt, including errors, and the

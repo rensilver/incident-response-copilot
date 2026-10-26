@@ -1,4 +1,0 @@
-ImportError while loading conftest '/home/rensilver/workspaces/incident-response-copilot/backend/tests/unit/conftest.py'.
-/home/rensilver/workspaces/incident-response-copilot/tests/unit/conftest.py:5: in <module>
-    ???
-E   ModuleNotFoundError: No module named 'incident_copilot'

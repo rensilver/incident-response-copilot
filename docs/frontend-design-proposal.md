@@ -61,7 +61,7 @@ has a static reduced-motion equivalent with the same status text.
 
 ## Content and hierarchy
 
-The presets preserve the existing inputs from the [current client](../streamlit_app/app.py).
+The presets preserve the existing inputs from the [current client](../frontend/src/features/investigations/investigation-session.tsx).
 Choosing one fills the form without running an investigation; all use 180 minutes.
 The initial empty form uses the existing 60-minute default.
 
@@ -276,5 +276,5 @@ supplies a report, not an incident fleet overview.
 
 This task stops at the proposal. Scaffolding, final responsive CSS, transport,
 feature views, and browser evidence require their later authorizations. The
-[proposal review record](validation/2026-10-24-design-proposal/README.md) retains
+[proposal review record](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-24-design-proposal/README.md) retains
 the source and documentation checks; it makes no rendered compliance claim.

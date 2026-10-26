@@ -60,7 +60,7 @@ application must drive lifespan explicitly: `httpx.ASGITransport` does not do so
 Shutdown removes serving references from app state, and a later serving lifetime
 acquires a new collaborator set without registering duplicate routes.
 
-The [lifecycle validation](validation/2026-10-23-resource-lifecycle/README.md)
+The [lifecycle validation](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-23-resource-lifecycle/README.md)
 records offline shutdown, failure, cancellation, and ownership checks. Cleanup
 attempts cannot guarantee successful release by a broken or stalled external
 close implementation, or after process termination. Total shutdown/deadline and
@@ -96,7 +96,7 @@ and other noncompleted statuses raise `StructuredOutputError` immediately, even
 when their text happens to match the report schema. These failures receive no
 repair request; their fixed error messages and empty debugging output exclude
 provider refusal text. Injected chat models may omit Responses status metadata.
-The [structured-output evidence](validation/2026-10-22-openai-structured/README.md)
+The [structured-output evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-structured/README.md)
 records wire-level regressions and schema/repair coverage.
 
 Text extraction uses LangChain's message text accessor; tool runnables retain the
@@ -116,7 +116,7 @@ schemas retain their defaults, nullable log filters, enum vocabulary, and window
 bounds; every tool validates its arguments before connector I/O. Report generation
 uses JSON-object mode and local schema validation as described above.
 
-The [tool compatibility evidence](validation/2026-10-22-openai-tools/README.md)
+The [tool compatibility evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-tools/README.md)
 covers all five application tool schemas and three consecutive Responses requests.
 Keep the complete returned `AIMessage` in history: its content blocks carry the
 Responses item IDs, reasoning items, and function calls. `tool_calls[*].id` is the
@@ -146,7 +146,7 @@ settings are no longer fields; stale dotenv/process variables are ignored and
 cannot enable fallback. The private dotenv and Compose provider cleanup are
 complete. `backend/scripts/validate_provider_failures.py` runs the offline OpenAI
 failure matrix and rejects installed retired SDKs/adapters before starting tests.
-The [validator evidence](validation/2026-10-22-openai-only-failure-validator/README.md)
+The [validator evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-only-failure-validator/README.md)
 records a fresh locked install and endpoint/fallback isolation. Evaluation and
 validation recorders retain runtime/library versions, reports, and timings without
 host-capacity sampling or a profiling dependency.
@@ -165,14 +165,14 @@ as described below.
 logging uses DEBUG. SDK debug records can include raw request payloads and transport
 exception tracebacks before adapter normalization. Application debug events remain
 available; use the classified domain failures for provider diagnostics. The
-[failure validation evidence](validation/2026-10-22-openai-failure-validation/README.md)
+[failure validation evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-failure-validation/README.md)
 covers malformed health payloads, later-request recovery, and log redaction.
 
 OpenAI health uses the provider-owned metadata probe described below. The
-[retained live smoke](validation/2026-10-22-openai-live-smoke/README.md) validates
+[retained live smoke](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-live-smoke/README.md) validates
 small text, JSON-object, and tool-continuation requests with the exact model and
 reasoning setting. Current lifecycle wiring is described above.
-See the [configuration evidence](validation/2026-10-22-openai-settings/README.md).
+See the [configuration evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-settings/README.md).
 
 ### Provider health
 
@@ -200,14 +200,14 @@ model's metadata. It does **not** establish inference permission, available quot
 Responses compatibility, or support for `reasoning={"effort": "none"}`. A key
 restricted from reading model metadata can report degraded health even if it can
 generate responses. The
-[live smoke evidence](validation/2026-10-22-openai-live-smoke/README.md) records
+[live smoke evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-live-smoke/README.md) records
 successful inference separately; routine health polling still establishes only
 metadata access. Official OpenAI documentation describes the
 [model retrieval endpoint](https://developers.openai.com/api/reference/python/resources/models/methods/retrieve)
 as returning model metadata; the health interpretation is application policy.
 
 The OpenAI provider has no health fallback.
-The [health evidence](validation/2026-10-22-provider-health/README.md) records the
+The [health evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-provider-health/README.md) records the
 wire requests, deadline/cancellation regressions, injection, and checks.
 
 ### Operation budgets and retry policy
@@ -260,7 +260,7 @@ depending on responses. This counts model requests, not local tool executions or
 an end-to-end latency guarantee. The graph regression exercises both branches and
 exhausts their limits without assuming parallel arrival order.
 
-The [budget evidence](validation/2026-10-22-openai-budgets/README.md) records serialized
+The [budget evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-budgets/README.md) records serialized
 caps, shared-deadline cancellation, no-retry HTTP/transport failures, graph counts,
 and full offline verification. The failure taxonomy below applies to application
 deadlines and upstream failures alike.
@@ -322,7 +322,7 @@ credential, `Retry-After`, or error code is forwarded. Valid requests still retu
 the existing 200 report schema; invalid request bodies still return 422. A report
 can still succeed after a recoverable earlier graph operation fails.
 
-The [error-normalization evidence](validation/2026-10-22-openai-errors/README.md)
+The [error-normalization evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-errors/README.md)
 records the red/green matrix, real graph/API checks, callback and local LangSmith
 client capture with tracing enabled/disabled, retained failures, and full checks.
 Official OpenAI documentation distinguishes

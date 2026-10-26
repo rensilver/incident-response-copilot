@@ -1,0 +1,15 @@
+{
+  "chromium": "156.0.8078.4",
+  "playback": "passed",
+  "controls": true,
+  "autoplay": false,
+  "paused": true,
+  "duration": 55.599674,
+  "captions": {
+    "mode": "showing",
+    "count": 6
+  },
+  "seeked_scenes": 3,
+  "mobile_overflow": false,
+  "scope": "Local media only; zero provider calls"
+}

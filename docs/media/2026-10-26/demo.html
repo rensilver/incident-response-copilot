@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Incident Response Copilot — real investigation demo</title>
+    <style>
+      body {
+        margin: 0;
+        background: #edf2f7;
+        color: #172c43;
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 76rem;
+        margin: auto;
+        padding: clamp(1rem, 4vw, 3rem);
+      }
+      h1 {
+        line-height: 1.2;
+      }
+      video {
+        display: block;
+        width: 100%;
+        background: #172c43;
+        border-radius: 0.4rem;
+      }
+      video::cue {
+        font-size: 18px;
+      }
+      a {
+        color: #1642bd;
+        text-underline-offset: 0.2em;
+      }
+      a:focus-visible {
+        outline: 3px solid #1642bd;
+        outline-offset: 4px;
+      }
+      section {
+        background: white;
+        margin-top: 2rem;
+        padding: clamp(1rem, 3vw, 2rem);
+      }
+      li + li {
+        margin-top: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Follow an incident from symptom to evidence</h1>
+      <p id="description">
+        Three real Next.js investigations of seeded synthetic incidents: memory
+        pressure, a slow dependency, and application errors after a deploy.
+        OpenAI Responses gpt-6-luna, reasoning none, tracing disabled. Captured
+        October 26, 2026.
+      </p>
+      <video
+        controls
+        preload="metadata"
+        playsinline
+        aria-label="Three real incident investigations"
+        aria-describedby="description editing"
+      >
+        <source src="investigations.mp4" type="video/mp4" />
+        <track
+          kind="captions"
+          src="investigations.en.vtt"
+          srclang="en"
+          label="English descriptions"
+          default
+        />
+        <p>
+          Your browser cannot play this video.
+          <a href="investigations.mp4">Download the MP4</a> or read the
+          transcript below.
+        </p>
+      </video>
+      <p id="editing">
+        Original-speed excerpts. Most model waiting is omitted with a cut;
+        reports and outcomes are unchanged. The recording has no audio. English
+        captions describe actions and the text transcript explains the visible
+        reports. Playback length is not investigation latency.
+      </p>
+      <p>
+        <a href="investigations.mp4" download>Download video</a> ·
+        <a href="README.md"
+          >Screenshots, original recordings and timing provenance</a
+        >
+      </p>
+      <section aria-labelledby="transcript">
+        <h2 id="transcript">Descriptive transcript</h2>
+        <ol>
+          <li>
+            <strong>Memory leak preset:</strong> the engineer selects
+            checkout-service and a 180-minute window, then submits. A real
+            report describes increased resident memory, Java heap-space errors
+            and GC warnings. It proposes severe heap pressure, leaves its
+            underlying cause unproven, and suggests heap and allocation
+            analysis.
+          </li>
+          <li>
+            <strong>Slow dependency preset:</strong> the engineer submits
+            payment-service latency symptoms. The report cites increased p95
+            latency, timeouts calling fraud-api and unavailable fraud checks. It
+            proposes a dependency-path problem; dependency precedence and the
+            internal mechanism remain unproven.
+          </li>
+          <li>
+            <strong>Bad deploy preset:</strong> the engineer submits
+            cart-service errors. The report cites an elevated 5xx rate and
+            PromotionEngine exceptions. It proposes an application code-path
+            problem and asks for deployment/request correlation before
+            attributing the failure to a deploy.
+          </li>
+        </ol>
+        <p>
+          Each report displays authoritative queried timestamps in UTC, ranked
+          candidates, citations, uncalibrated model confidence and suggested
+          next steps. The camera scrolls through these actual report sections.
+          These three demo calls are separate from the nine-attempt
+          service-mention evaluation.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

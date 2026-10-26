@@ -1,5 +1,0 @@
-Fresh install: 83 distributions match lock; retired SDKs/adapters absent.
-Backend AST: no retired SDK imports.
-Scope: validator, coverage, docs, and evidence only; runtime/dependencies unchanged.
-Current documentation and task evidence: local file links resolve.
-Artifacts: API-key exclusion, whitespace, and private-file ignores pass.

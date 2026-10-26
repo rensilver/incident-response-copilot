@@ -1,8 +1,0 @@
-.venv/bin/python backend/scripts/export_openapi.py
-OpenAPI schema exported.
-npm --prefix frontend run api:generate
-
-> incident-copilot-frontend@0.1.0 api:generate
-> node scripts/generate-api.mjs
-
-OpenAPI types generated.

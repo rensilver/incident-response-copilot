@@ -1,6 +1,0 @@
-backend/tests/unit/llm/test_provider_contract.py:82: error: Signature of "_generate" incompatible with supertype "langchain_core.language_models.chat_models.BaseChatModel"  [override]
-backend/tests/unit/llm/test_provider_contract.py:82: note:      Superclass:
-backend/tests/unit/llm/test_provider_contract.py:82: note:          def _generate(self, messages: list[BaseMessage], stop: list[str] | None = ..., run_manager: CallbackManagerForLLMRun | None = ..., **kwargs: Any) -> ChatResult
-backend/tests/unit/llm/test_provider_contract.py:82: note:      Subclass:
-backend/tests/unit/llm/test_provider_contract.py:82: note:          def _generate(self, messages: list[BaseMessage], stop: list[str] | None = ..., **kwargs: Any) -> ChatResult
-Found 1 error in 1 file (checked 1 source file)

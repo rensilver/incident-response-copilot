@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-graph-routing/audit.py", line 104, in <module>
-    main()
-    ~~~~^^
-  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-graph-routing/audit.py", line 78, in main
-    assert not secret_pattern.search(contents), path
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError: /home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-23-graph-routing/audit.py

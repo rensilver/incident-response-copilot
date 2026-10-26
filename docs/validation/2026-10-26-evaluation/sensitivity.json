@@ -1,0 +1,42 @@
+[
+  {
+    "case": "ASCII uppercase",
+    "mention_match": true,
+    "synthetic": true
+  },
+  {
+    "case": "nonbreaking hyphen U+2011",
+    "mention_match": false,
+    "synthetic": true
+  },
+  {
+    "case": "underscore alias",
+    "mention_match": false,
+    "synthetic": true
+  },
+  {
+    "case": "longer identifier substring",
+    "mention_match": true,
+    "synthetic": true
+  },
+  {
+    "case": "negated attribution",
+    "mention_match": true,
+    "synthetic": true
+  },
+  {
+    "case": "summary only",
+    "mention_match": false,
+    "synthetic": true
+  },
+  {
+    "case": "lower-ranked cause only",
+    "mention_match": false,
+    "synthetic": true
+  },
+  {
+    "case": "unrelated title",
+    "mention_match": false,
+    "synthetic": true
+  }
+]

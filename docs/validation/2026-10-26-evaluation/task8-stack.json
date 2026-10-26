@@ -1,0 +1,103 @@
+[
+  {
+    "Service": "app",
+    "State": "running",
+    "Health": "healthy",
+    "Publishers": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 8000,
+        "PublishedPort": 18000,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 8000,
+        "PublishedPort": 18000,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "elasticsearch",
+    "State": "running",
+    "Health": "healthy",
+    "Publishers": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 9200,
+        "PublishedPort": 9200,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 9200,
+        "PublishedPort": 9200,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "",
+        "TargetPort": 9300,
+        "PublishedPort": 0,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "frontend",
+    "State": "running",
+    "Health": "healthy",
+    "Publishers": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 3001,
+        "PublishedPort": 3001,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 3001,
+        "PublishedPort": 3001,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "grafana",
+    "State": "running",
+    "Health": "healthy",
+    "Publishers": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 3000,
+        "PublishedPort": 3000,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 3000,
+        "PublishedPort": 3000,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "prometheus",
+    "State": "running",
+    "Health": "healthy",
+    "Publishers": [
+      {
+        "URL": "0.0.0.0",
+        "TargetPort": 9090,
+        "PublishedPort": 9090,
+        "Protocol": "tcp"
+      },
+      {
+        "URL": "::",
+        "TargetPort": 9090,
+        "PublishedPort": 9090,
+        "Protocol": "tcp"
+      }
+    ]
+  }
+]

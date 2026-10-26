@@ -1,5 +1,0 @@
-
-> incident-copilot-frontend@0.1.0 typecheck
-> tsc --noEmit
-
-tests/api-types.ts(6,1): error TS2578: Unused '@ts-expect-error' directive.

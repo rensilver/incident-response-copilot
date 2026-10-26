@@ -1,3 +1,0 @@
-PASS: scoped diff, whitespace, local references, check records, private-file ignores,
-and credential-pattern scan. All credentials in tests/evidence are synthetic.
-Reviewed 27 changed files; 17 isolated check records.

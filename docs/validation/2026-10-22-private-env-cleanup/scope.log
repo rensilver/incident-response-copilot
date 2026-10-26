@@ -1,5 +1,0 @@
-PASS: documentation links and recorded check outcomes
-PASS: private credential exclusion; values and hashes omitted
-PASS: private dotenv and local plan remain ignored and untracked
-PASS: worktree changes limited to authorized sanitized evidence
-PASS: git diff --check

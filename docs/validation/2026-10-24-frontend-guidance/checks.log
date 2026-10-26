@@ -1,9 +1,0 @@
-Command: git diff --cached --check; staged scope/reference/source audit
-PASS: exactly 4 documentation/provenance artifacts staged; no unstaged tracked edits
-PASS: 9 local Markdown references resolve; all 17 upstream review categories mapped
-PASS: fetched source is 8055 bytes; SHA-256 d246b026f4f29b5823a9cc857f9edf3d2507002e055e32040cadeaf3b38e0234
-PASS: hashes match 11 installed skill/rule files
-PASS: 168 existing non-documentation tracked files match HEAD byte-for-byte
-PASS: no React/CSS interface yet; rendered compliance and performance remain unassessed
-PASS: credential-pattern scan; .env and REFACTORING_PLAN.md remain ignored
-No application tests/builds run: documentation-only scope

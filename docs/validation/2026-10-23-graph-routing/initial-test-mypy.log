@@ -1,3 +1,0 @@
-backend/tests/unit/agents/test_graph.py:423: error: Argument 1 to "len" has incompatible type "object"; expected "Sized"  [arg-type]
-backend/tests/unit/agents/test_graph.py:425: error: Argument 1 to "len" has incompatible type "object"; expected "Sized"  [arg-type]
-Found 2 errors in 1 file (checked 2 source files)

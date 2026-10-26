@@ -67,10 +67,10 @@ Run the dependency-free configuration checks with Node 24:
 node --test frontend/tests/proxy-config.test.mjs
 ```
 
-[Validation evidence](validation/2026-10-23-same-origin-proxy/README.md) records
+[Validation evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-23-same-origin-proxy/README.md) records
 configuration tests, backend origin characterization, and a temporary Next.js
 16.3.1/FastAPI socket harness. That earlier check was a temporary harness. The current
-[configuration evidence](validation/2026-10-24-frontend-config/README.md) adds
+[configuration evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-24-frontend-config/README.md) adds
 production builds, private-canary artifact checks, and real Next proxy requests
 against an offline fixture; container DNS/deployment and feature UI remain pending.
 The selected mechanism follows Next.js

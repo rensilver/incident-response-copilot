@@ -1,0 +1,57 @@
+{
+  "edits": [
+    {
+      "source": "docs/media/2026-10-26/raw/memory_leak.webm",
+      "kept_source_intervals_seconds": [
+        [
+          0,
+          6
+        ],
+        [
+          24.457333933,
+          36.960574521
+        ]
+      ],
+      "output_start_seconds": 0.0,
+      "output_duration_seconds": 18.533008,
+      "http_request_to_body_seconds": 21.666936229,
+      "click_to_render_seconds": 21.71174666
+    },
+    {
+      "source": "docs/media/2026-10-26/raw/slow_dependency.webm",
+      "kept_source_intervals_seconds": [
+        [
+          0,
+          6
+        ],
+        [
+          30.586898899999994,
+          43.08779769099999
+        ]
+      ],
+      "output_start_seconds": 18.533008,
+      "output_duration_seconds": 18.533333,
+      "http_request_to_body_seconds": 27.989251611000007,
+      "click_to_render_seconds": 28.033979986000006
+    },
+    {
+      "source": "docs/media/2026-10-26/raw/bad_deploy.webm",
+      "kept_source_intervals_seconds": [
+        [
+          0,
+          6
+        ],
+        [
+          21.660531485,
+          34.17426527799999
+        ]
+      ],
+      "output_start_seconds": 37.066340999999994,
+      "output_duration_seconds": 18.533333,
+      "http_request_to_body_seconds": 19.037471612000008,
+      "click_to_render_seconds": 19.083483429
+    }
+  ],
+  "total_seconds": 55.59967399999999,
+  "policy": "Original-speed excerpts; waits omitted; reports unchanged"
+}

@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-10-26T13:11:23.928119+00:00",
+  "source_commit": "cff1e2610b1b32f2854da15ea89460b64afe49e0",
+  "method": "service-mention-v1",
+  "model": "gpt-6-luna",
+  "reasoning": {
+    "effort": "none"
+  },
+  "tracing": false,
+  "python": "3.13.13",
+  "packages": {
+    "langgraph": "1.2.11",
+    "langchain-core": "1.5.6",
+    "langchain-openai": "1.1.16",
+    "openai": "2.54.0",
+    "pydantic": "2.13.4",
+    "httpx": "0.28.1",
+    "elasticsearch": "8.19.3",
+    "fastapi": "0.141.1"
+  },
+  "limits": {
+    "llm_operation_timeout_seconds": 60.0,
+    "llm_max_output_tokens": 4096,
+    "llm_max_structured_attempts": 3,
+    "investigation_timeout_seconds": 240.0,
+    "max_tool_rounds": 2,
+    "max_supervisor_iterations": 3
+  },
+  "hashes": {
+    "backend/src/incident_copilot/evaluation/eval_runner.py": "21f567a0cca32188570a8851c58e21fc6f92f47537b9ccc9051d54ba4c74a93b",
+    "backend/src/incident_copilot/evaluation/scenarios.py": "107d9037fe783063113b961a4cfb50c9993774378f98e3e08daf3294ae0e2058",
+    "backend/uv.lock": "bd86359608f95428e024a3d01d3edc9b6b49267be5d8f4787bc827e74b56e4b0",
+    "frontend/package-lock.json": "4fc0a8eed2641f030769a250e582a9a4eeead8e310d0eda8e596c87152fc1426"
+  },
+  "planned_attempts": 9,
+  "pacing_seconds": 15,
+  "timing_channel": "IncidentService call; excludes setup and pacing"
+}
