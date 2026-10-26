@@ -1,0 +1,179 @@
+{
+  "method": "service-mention-v1",
+  "source_hashes_verified": true,
+  "planned_attempts": 9,
+  "overall": {
+    "attempts": 9,
+    "mention_matches": 7,
+    "mention_rate": 0.7777777777777778,
+    "delivered_reports": 9,
+    "investigation_errors": 0,
+    "all_service_calls": {
+      "n": 9,
+      "mean_seconds": 30.45003344944443,
+      "median_seconds": 26.26259896499994,
+      "min_seconds": 22.248452766000014,
+      "max_seconds": 42.13074755799994
+    },
+    "delivered_service_calls": {
+      "n": 9,
+      "mean_seconds": 30.45003344944443,
+      "median_seconds": 26.26259896499994,
+      "min_seconds": 22.248452766000014,
+      "max_seconds": 42.13074755799994
+    },
+    "failed_service_calls": {
+      "n": 0,
+      "mean_seconds": null,
+      "median_seconds": null,
+      "min_seconds": null,
+      "max_seconds": null
+    }
+  },
+  "per_scenario": {
+    "bad_deploy": {
+      "attempts": 3,
+      "mention_matches": 3,
+      "mention_rate": 1.0,
+      "delivered_reports": 3,
+      "investigation_errors": 0,
+      "all_service_calls": {
+        "n": 3,
+        "mean_seconds": 40.52221428333329,
+        "median_seconds": 40.81955530999994,
+        "min_seconds": 38.616339982,
+        "max_seconds": 42.13074755799994
+      },
+      "delivered_service_calls": {
+        "n": 3,
+        "mean_seconds": 40.52221428333329,
+        "median_seconds": 40.81955530999994,
+        "min_seconds": 38.616339982,
+        "max_seconds": 42.13074755799994
+      },
+      "failed_service_calls": {
+        "n": 0,
+        "mean_seconds": null,
+        "median_seconds": null,
+        "min_seconds": null,
+        "max_seconds": null
+      }
+    },
+    "memory_leak": {
+      "attempts": 3,
+      "mention_matches": 1,
+      "mention_rate": 0.3333333333333333,
+      "delivered_reports": 3,
+      "investigation_errors": 0,
+      "all_service_calls": {
+        "n": 3,
+        "mean_seconds": 26.93949533000004,
+        "median_seconds": 25.876294168000072,
+        "min_seconds": 25.70680255700006,
+        "max_seconds": 29.23538926499998
+      },
+      "delivered_service_calls": {
+        "n": 3,
+        "mean_seconds": 26.93949533000004,
+        "median_seconds": 25.876294168000072,
+        "min_seconds": 25.70680255700006,
+        "max_seconds": 29.23538926499998
+      },
+      "failed_service_calls": {
+        "n": 0,
+        "mean_seconds": null,
+        "median_seconds": null,
+        "min_seconds": null,
+        "max_seconds": null
+      }
+    },
+    "slow_dependency": {
+      "attempts": 3,
+      "mention_matches": 3,
+      "mention_rate": 1.0,
+      "delivered_reports": 3,
+      "investigation_errors": 0,
+      "all_service_calls": {
+        "n": 3,
+        "mean_seconds": 23.888390734999955,
+        "median_seconds": 23.15412047399991,
+        "min_seconds": 22.248452766000014,
+        "max_seconds": 26.26259896499994
+      },
+      "delivered_service_calls": {
+        "n": 3,
+        "mean_seconds": 23.888390734999955,
+        "median_seconds": 23.15412047399991,
+        "min_seconds": 22.248452766000014,
+        "max_seconds": 26.26259896499994
+      },
+      "failed_service_calls": {
+        "n": 0,
+        "mean_seconds": null,
+        "median_seconds": null,
+        "min_seconds": null,
+        "max_seconds": null
+      }
+    }
+  },
+  "attempts": [
+    {
+      "file": "bad_deploy-1.json",
+      "mention_match": true,
+      "elapsed_seconds": 42.13074755799994,
+      "error": null
+    },
+    {
+      "file": "bad_deploy-2.json",
+      "mention_match": true,
+      "elapsed_seconds": 40.81955530999994,
+      "error": null
+    },
+    {
+      "file": "bad_deploy-3.json",
+      "mention_match": true,
+      "elapsed_seconds": 38.616339982,
+      "error": null
+    },
+    {
+      "file": "memory_leak-1.json",
+      "mention_match": false,
+      "elapsed_seconds": 25.70680255700006,
+      "error": null
+    },
+    {
+      "file": "memory_leak-2.json",
+      "mention_match": true,
+      "elapsed_seconds": 25.876294168000072,
+      "error": null
+    },
+    {
+      "file": "memory_leak-3.json",
+      "mention_match": false,
+      "elapsed_seconds": 29.23538926499998,
+      "error": null
+    },
+    {
+      "file": "slow_dependency-1.json",
+      "mention_match": true,
+      "elapsed_seconds": 22.248452766000014,
+      "error": null
+    },
+    {
+      "file": "slow_dependency-2.json",
+      "mention_match": true,
+      "elapsed_seconds": 26.26259896499994,
+      "error": null
+    },
+    {
+      "file": "slow_dependency-3.json",
+      "mention_match": true,
+      "elapsed_seconds": 23.15412047399991,
+      "error": null
+    }
+  ],
+  "timing_channel": "direct IncidentService; excludes pacing/setup; not HTTP/browser",
+  "planned_pacing_seconds": 120,
+  "wall_seconds_including_pacing": 394.14963141199996,
+  "sum_service_seconds": 274.05030104499986
+}

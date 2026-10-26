@@ -1,0 +1,7 @@
+PASS: nine saved scores, exact windows, frozen hashes and latency summaries reproduced
+PASS: nine saved scores, exact windows, frozen hashes and latency summaries reproduced
+EXPECTED FAILURE: altered derived score rejected: Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-26-evaluation/rescore.py", line 172, in <module>
+    assert path.read_text() == expected, path.name
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: results.json

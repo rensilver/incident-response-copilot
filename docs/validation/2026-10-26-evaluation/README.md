@@ -58,3 +58,15 @@ with zero investigation errors and no replacement calls. All nine authoritative
 windows are 180 minutes and equal the captured graph input windows. Frozen scorer,
 scenario and lock hashes match. Task 2 inspection found 4–5 tool calls per bad-deploy
 run and 3–4 per memory/dependency run; full event streams are retained.
+
+## Task 3: saved reports and aggregates
+
+[Results](results.md) and [full-precision JSON](results.json) reproduce all nine
+saved scores: 7/9 expected-service mentions, 9/9 reports, zero investigation errors.
+The table includes per-scenario denominators and mean/median/range for service
+latency; no HTTP/browser timings enter this population. Eight pacing gaps are
+explicitly excluded. Tool events/findings and errors are in each independent
+attempt file. The first rescore style check caught three long string literals;
+they were split before generation. [Verification](task3-verify.log) passes before
+and after restoring a deliberately altered derived score; that alteration failed
+as expected. Saved source reports were never mutated.
