@@ -84,7 +84,7 @@ async def collect(output: Path) -> None:
             "timing_channel": "IncidentService call; excludes setup and pacing",
         },
     )
-    attempts = []
+    attempts: list[str] = []
     async with build_collaborators(settings) as collaborators:
         graph = RecordingGraph(collaborators.graph)
         service = RecordingService(

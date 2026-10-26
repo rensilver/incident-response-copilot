@@ -1,0 +1,52 @@
+npm --prefix frontend run lint
+
+> incident-copilot-frontend@0.1.0 lint
+> eslint . --max-warnings 0
+
+npm --prefix frontend run format:check
+
+> incident-copilot-frontend@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+.venv/bin/python backend/scripts/export_openapi.py --check
+OpenAPI schema matches the backend.
+npm --prefix frontend run api:check
+
+> incident-copilot-frontend@0.1.0 api:check
+> node scripts/generate-api.mjs --check
+
+OpenAPI types match the schema.
+npm --prefix frontend run typecheck
+
+> incident-copilot-frontend@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+npm --prefix frontend run build
+
+> incident-copilot-frontend@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.mjs took 18ms
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 608ms
+  Running TypeScript ...
+  Finished TypeScript in 2.1s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 609ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content

@@ -138,3 +138,14 @@ external links use the already-published revision, rather than new local commits
 The audit, source/diff scope review and privacy scan pass. The initial staged media
 commit check from task 6 flagged a trailing blank line in the captured frontend
 log; only trailing whitespace was normalized before that commit.
+
+## Task 8: final reproduction and review
+
+[Final action review](review.md) accounts for all eight tasks, nine fixed evaluation
+attempts and three separately timed browser investigations. [Saved-score
+reproduction](task8-rescore.log), [media playback](task8-media.log), [link audit](task8-links.log)
+and [preservation audit](review-audit.json) pass. The final [frontend checks](task8-frontend-checks.log)
+include lint, formatting, contract drift, generated types and a production build.
+The [stack snapshot](task8-stack.json) retains only service/state/health/port data;
+all five services are healthy. Private files remain ignored and untracked. The
+review records failures and limits and stops before Phase 8 README measured claims.

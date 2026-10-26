@@ -45,6 +45,6 @@ for name in sorted(set(names)):
             if fragment not in slugs:
                 failures.append({"file": name, "target": target, "error": "missing heading"})
         checked += 1
-result = {"local_links": checked, "archived_git_objects": archived, "failures": failures}
-print(json.dumps(result, indent=2))
+summary = {"local_links": checked, "archived_git_objects": archived, "failures": failures}
+print(json.dumps(summary, indent=2))
 assert not failures, "Broken documentation references"

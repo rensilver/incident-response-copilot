@@ -1,0 +1,122 @@
+{
+  "evaluation_attempts": 9,
+  "reports": 9,
+  "errors": 0,
+  "mention_matches": 7,
+  "pacing_gaps_seconds": [
+    15.016285,
+    15.016066,
+    15.01466,
+    15.016437,
+    15.016425,
+    15.006706,
+    15.005491,
+    15.005517
+  ],
+  "attempt_artifacts_unchanged_since_collection": true,
+  "media_unchanged_since_task6": true,
+  "preserved_current_artifacts": 474,
+  "retired_artifacts": 1277,
+  "application_and_locks_unchanged": true,
+  "private_files_ignored_and_untracked": true,
+  "media": [
+    {
+      "path": "docs/media/2026-10-26/bad_deploy-desktop.png",
+      "bytes": 206169,
+      "sha256": "7560a0dcaff0501b0e372d8ed5a04e42d1715efe809070da2b70364df96ac9f1",
+      "dimensions": {
+        "width": 1440,
+        "height": 1858
+      }
+    },
+    {
+      "path": "docs/media/2026-10-26/bad_deploy-mobile.png",
+      "bytes": 165565,
+      "sha256": "b2f4e66ea3483b0587f9ed9ffd8a51fd931ac33de034833ffee6d518c50e7874",
+      "dimensions": {
+        "width": 390,
+        "height": 2980
+      }
+    },
+    {
+      "path": "docs/media/2026-10-26/demo.html",
+      "bytes": 4331,
+      "sha256": "55a87c1eaf599d655d1b13a6ba692b400f33cceb694f4706569e3ebe0213572a"
+    },
+    {
+      "path": "docs/media/2026-10-26/investigations.en.vtt",
+      "bytes": 745,
+      "sha256": "f93632adda86f2d8a119411dafa64df98b8b74cb456a872e2c9bd4020f370a31"
+    },
+    {
+      "path": "docs/media/2026-10-26/investigations.mp4",
+      "bytes": 1565300,
+      "sha256": "e580d0d51bd196a5f72af697acdd018b5104b81b6455fe7fd400cdb7472edc4d"
+    },
+    {
+      "path": "docs/media/2026-10-26/memory_leak-desktop.png",
+      "bytes": 193225,
+      "sha256": "4a944005492d1f6105bf71be731a855744cab5085cee41eea29853011b9d4606",
+      "dimensions": {
+        "width": 1440,
+        "height": 1848
+      }
+    },
+    {
+      "path": "docs/media/2026-10-26/memory_leak-mobile.png",
+      "bytes": 155697,
+      "sha256": "0effb61e0f37bf498d250b489d2cf462c73dbf8c998793d416c8b6e2905b2e74",
+      "dimensions": {
+        "width": 390,
+        "height": 2753
+      }
+    },
+    {
+      "path": "docs/media/2026-10-26/raw/bad_deploy.webm",
+      "bytes": 3410837,
+      "sha256": "462dd6aa12f1dc13c4e82b23c40e1840052e8a580ff535349789539f7d679e5f"
+    },
+    {
+      "path": "docs/media/2026-10-26/raw/memory_leak.webm",
+      "bytes": 4204873,
+      "sha256": "b90406d717347f31b115799fdaf65d11d9d658e991da8784b145bdfae70aef46"
+    },
+    {
+      "path": "docs/media/2026-10-26/raw/slow_dependency.webm",
+      "bytes": 4973552,
+      "sha256": "e6a42e26c2a9963eeea024b651a43188941a7a5c14c116dccd565c1f6e6aff1f"
+    },
+    {
+      "path": "docs/media/2026-10-26/slow_dependency-desktop.png",
+      "bytes": 201710,
+      "sha256": "235a6cf5a05e51db1c10f192525ea8291e56d8f30a825c7cc316157c74562226",
+      "dimensions": {
+        "width": 1440,
+        "height": 1870
+      }
+    },
+    {
+      "path": "docs/media/2026-10-26/slow_dependency-mobile.png",
+      "bytes": 160102,
+      "sha256": "d81cac5b0766304775e24751d4b137b539b24c91fededbc53ccdabbbcfdef5af",
+      "dimensions": {
+        "width": 390,
+        "height": 2876
+      }
+    }
+  ],
+  "video": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1440,
+        "height": 1000
+      }
+    ],
+    "format": {
+      "duration": "55.599674"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+docs/validation/2026-10-26-evaluation/check-links.py:48: error: Incompatible types in assignment (expression has type "dict[str, object]", variable has type "CompletedProcess[bytes]")  [assignment]
+docs/validation/2026-10-26-evaluation/review-audit.py:58: error: "object" has no attribute "endswith"  [attr-defined]
+docs/validation/2026-10-26-evaluation/collect.py:87: error: Need type annotation for "attempts" (hint: "attempts: list[<type>] = ...")  [var-annotated]
+Found 3 errors in 3 files (checked 8 source files)

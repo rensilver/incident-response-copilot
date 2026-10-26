@@ -1,6 +1,7 @@
 """Audit current evidence JSON, local Markdown links and private values offline."""
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[3]
 EVIDENCE = Path(__file__).resolve().parent
-private = dotenv_values(ROOT / ".env")
+private = {**dotenv_values(ROOT / ".env"), **os.environ}
 secrets = [
     value.encode()
     for key, value in private.items()
