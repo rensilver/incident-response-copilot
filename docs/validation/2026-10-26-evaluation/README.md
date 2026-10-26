@@ -57,7 +57,7 @@ The series completed **exactly nine attempts**, each returning a validated repor
 with zero investigation errors and no replacement calls. All nine authoritative
 windows are 180 minutes and equal the captured graph input windows. Frozen scorer,
 scenario and lock hashes match. Task 2 inspection found 4–5 tool calls per bad-deploy
-run and 3–4 per memory/dependency run; full event streams are retained.
+run and 3–5 per memory/dependency run; full event streams are retained.
 
 ## Task 3: saved reports and aggregates
 
@@ -70,3 +70,13 @@ attempt file. The first rescore style check caught three long string literals;
 they were split before generation. [Verification](task3-verify.log) passes before
 and after restoring a deliberately altered derived score; that alteration failed
 as expected. Saved source reports were never mutated.
+
+## Task 4: qualitative and identifier review
+
+The [nine-report review](qualitative-review.md) checks dependency citations,
+proposed mechanisms, sampled-versus-total counts, window prose and confidence.
+[Review facts](review-facts.json) confirm every prose timestamp is within its
+window, every tool start has an end/error, and no graph/tool errors occurred.
+Eight [synthetic sensitivity probes](sensitivity.json) characterize field,
+Unicode, alias, negation and substring behavior without altering the scorer.
+These probes and manual judgments are separate from paid evaluation scores.
