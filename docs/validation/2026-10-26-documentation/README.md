@@ -41,3 +41,18 @@ run the global local-link/Git-object audit, documentation privacy/scope audit an
 The first inventory used `frontend/e2e`, which does not exist; the final tree
 correctly locates browser checks under `frontend/tests/e2e`.
 The first config read also used a `.ts` suffix; the actual config is `.mjs`.
+
+## Task 3: engineering behavior and evidence limits
+
+Explained interface/client ownership, round versus call bounds, structured repair,
+cooperative deadlines, server-owned windows, typed versus raw evidence, advisory
+anomalies, report filtering/ranking and browser runtime validation. Preserved the
+three synthetic scenarios and optional tracing with credential-free disabled
+operation. The tests paragraph describes actual boundary behaviors without a
+new passing-count claim.
+
+Reviewed `llm/base.py`, `llm/openai_provider.py`, `llm/factory.py`, settings,
+`agents/tool_loop.py`, `models/report.py`, temporal tools, tracing, and the unit/
+frontend test inventory. [Checks](task3-checks.log): global reference audit,
+documentation privacy/scope audit and whitespace diff check. Runtime and tests
+are unchanged; full checks are part of the fresh setup in task 8.

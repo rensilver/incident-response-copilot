@@ -162,9 +162,19 @@ chosen duration cannot override it.
 
 Curated metric analysis computes trends and thresholds deterministically before the
 model interprets them. Raw PromQL findings are marked as not threshold-validated.
-Correlation receives both specialists' findings, collection errors, and the exact
-window. Pydantic validates the report shape and ranks nonempty, evidenced causes;
-it does **not** verify that cited evidence proves a diagnosis.
+Correlation receives the selected specialists' findings, collection errors, and
+the exact window. Non-anomalous findings remain available for interpretation.
+Pydantic drops hollow candidates and sorts the remaining causes by model
+confidence; the browser validates unknown JSON before rendering. These checks
+establish report structure, not the truth of a diagnosis.
+
+| Engineering boundary | Behavior |
+|---|---|
+| Provider abstraction | Agents and services depend on `LLMProvider`; only the factory selects the OpenAI adapter. The fake provider is test-only. [Adapter and client ownership rules](docs/provider-adapters.md) define extension points. |
+| Bounded execution | Default two model/tool rounds per specialist, up to three structured-output attempts within a 60-second operation deadline, and a 240-second cooperative investigation budget. A round can contain multiple tool calls; the round cap is not a per-call count. SDK transport retries are disabled. |
+| Exact time scope | The service creates one UTC interval, injects it into every temporal tool and overwrites model-authored report window metadata. The UI displays those exact endpoints. Query scope does not establish incident onset. |
+| Observability | Structured runtime events carry investigation correlation IDs. Optional LangSmith traces capture graph/model/tool activity; the application also runs with tracing disabled and no tracing credentials. |
+| Evidence boundaries | Typed metrics retain units, deltas and threshold flags; logs retain distinct messages and dependency names. Citations and confidence do not prove causal order or a mechanism. |
 
 ### Technology stack
 
@@ -286,6 +296,16 @@ The [current evidence index](docs/validation/README.md) links functional checks,
 reproduction methods, saved reports and media provenance. Scoring limitations and
 qualitative findings accompany the evidence. Model confidence is uncalibrated;
 a service mention does not prove root cause.
+
+Tests focus on behavior at boundaries: fixed temporal intervals across tools,
+parallel finding/error merging, malformed tool recovery, report filtering and
+ranking, resource cleanup and provider failure redaction. Offline backend cases
+use fake providers, mocked transports and isolated settings without Docker,
+network requests or the private dotenv. Frontend cases exercise runtime JSON
+validation, request states, safe failures and accessible form/report interaction.
+Chromium checks use controlled API fixtures for keyboard, responsive and zoom
+behavior; live connector/provider checks are explicit integration commands.
+Fixture success is distinct from a real model investigation.
 
 ## Development and reproduction
 
