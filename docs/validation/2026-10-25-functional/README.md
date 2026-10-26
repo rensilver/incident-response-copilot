@@ -92,3 +92,50 @@ assertions. [Saved requests/reports/times](task2-live.json) and [run output](tas
 retain every attempt. API seconds to body: memory 20.991, dependency 19.349, deploy
 19.859. Browser click-to-body seconds: memory 19.147, dependency 23.630, deploy
 19.452. These six measurements describe this run only. Tracing was disabled.
+
+## Task 3 — exact temporal scope and concurrency
+
+The [validation override](windows.override.yml) routes the unchanged production
+backend's data requests through a [transparent proxy](window-proxy.py) inside the
+local Docker network. The proxy forwards to the real seeded services, preserves
+response headers, and records actual request paths/query parameters/JSON bodies,
+never model headers or credentials. Production defaults and application source
+are unchanged. The proxy is an observation point, not a fake data source.
+
+The [concurrent driver](concurrent-windows.mjs) plans three real investigations:
+17-minute memory and 43-minute dependency browser tabs plus a 91-minute deploy API
+request. It checks overlap, unique server-owned windows, exact submitted values,
+window durations, DOM datetime attributes and full displayed UTC text down to
+milliseconds. The [wire verifier](verify-windows.py) matches every temporal
+request to exactly one report's interval, with at least one Prometheus and one
+Elasticsearch request per investigation. Elasticsearch ISO timestamps are compared
+as aware datetimes (`Z` and `+00:00` are equivalent); Prometheus bounds are compared
+as exact numeric timestamp values. No tolerance is applied to outgoing bounds.
+
+[Two additional integration cases](task3-four-tools.log) use scripted test-only
+model calls against the real services. Each covers typed metrics, raw PromQL,
+log search and log histogram with contradictory model-requested minutes, at fixed
+17/180-minute windows. Both pass. Sample timestamps allow only Prometheus's known
+millisecond evaluation precision; outgoing query bounds remain exact.
+
+All **three of three** concurrent real-provider attempts pass, with overlap
+verified. [Reports and displayed text](task3-live.json), [run output](task3-concurrent.log)
+and [raw connector captures](task3-wire.jsonl) are retained. The [comparison](task3-verify.log)
+verifies all **17 temporal requests**: six Prometheus ranges and eleven
+Elasticsearch searches. The four remaining captures are dependency-health traffic.
+Each investigation has both metrics and log requests; no temporal query belongs
+to another investigation or uses the model's default window.
+
+Reproduction after task 2 startup/seeding (three paid investigations):
+
+```bash
+COMPOSE_FILE=docker-compose.yml:docs/validation/2026-10-25-functional/ports.override.yml:docs/validation/2026-10-25-functional/windows.override.yml docker compose up -d --no-build --wait --wait-timeout 120
+node docs/validation/2026-10-25-functional/concurrent-windows.mjs /tmp/new-windows.json --live
+```
+
+To repeat the saved comparison, run `python
+docs/validation/2026-10-25-functional/verify-windows.py`. New captures must be saved
+as JSON lines from `docker logs ic-validation-proxy`; point the verifier at the
+new report/capture filenames before comparing a new run. The ledger retains the
+exact capture and integration commands. After capture, [restore](task3-restore.log)
+the app with only the normal port override, then remove the temporary proxy.

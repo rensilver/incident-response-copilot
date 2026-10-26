@@ -1,0 +1,20 @@
+# Validation-only transparent proxies observe actual outgoing temporal queries.
+services:
+  validation-proxy:
+    image: incident-copilot-app:latest
+    container_name: ic-validation-proxy
+    command: ["python", "/validation/window-proxy.py"]
+    volumes:
+      - ./docs/validation/2026-10-25-functional/window-proxy.py:/validation/window-proxy.py:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+  app:
+    environment:
+      - PROMETHEUS_URL=http://validation-proxy:19090
+      - ELASTICSEARCH_URL=http://validation-proxy:19200
+    depends_on:
+      validation-proxy:
+        condition: service_started
