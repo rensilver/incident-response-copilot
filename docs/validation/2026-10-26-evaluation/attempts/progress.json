@@ -1,0 +1,15 @@
+{
+  "attempts": [
+    "bad_deploy-1.json",
+    "bad_deploy-2.json",
+    "bad_deploy-3.json",
+    "memory_leak-1.json",
+    "memory_leak-2.json",
+    "memory_leak-3.json",
+    "slow_dependency-1.json",
+    "slow_dependency-2.json",
+    "slow_dependency-3.json"
+  ],
+  "wall_seconds_including_pacing": 394.14963141199996,
+  "finished_at": "2026-10-26T13:17:59.412356+00:00"
+}

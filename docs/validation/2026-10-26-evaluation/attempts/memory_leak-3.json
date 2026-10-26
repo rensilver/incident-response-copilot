@@ -1,0 +1,3757 @@
+{
+  "started_at": "2026-10-26T13:15:33.492605+00:00",
+  "request": {
+    "query": "checkout-service memory keeps climbing",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the requested investigation window, checkout-service resident memory rose 1.7x, from 707.74 MiB to 1220.35 MiB. Logs also show 92% heap usage with GC-overhead warnings and repeated Java heap out-of-memory errors. These findings establish significant heap pressure, but do not identify its underlying cause or prove a memory leak. No collection errors were reported; the findings do not establish continuous data coverage or the exact onset of the increase.",
+    "likely_causes": [
+      {
+        "title": "Accumulation or retention of objects causing JVM heap exhaustion",
+        "rationale": "Heap growth together with high-heap GC warnings and out-of-memory errors supports object accumulation or retention as a candidate cause. The evidence does not distinguish a memory leak from workload-related allocation or another application-level cause.",
+        "confidence": 0.55,
+        "supporting_evidence": [
+          {
+            "source": "metrics",
+            "detail": "Threshold-validated resident memory rose 1.7x, from 707.74 MiB to 1220.35 MiB; anomaly_detected=True."
+          },
+          {
+            "source": "logs",
+            "detail": "Seventeen WARN samples for version v1.4.2 report `GC overhead limit approaching; heap usage 92%`; sample timestamps range from 2026-10-26T11:48:32+00:00 to 2026-10-26T13:04:32+00:00."
+          },
+          {
+            "source": "logs",
+            "detail": "Five ERROR samples for version v1.4.2 report `java.lang.OutOfMemoryError: Java heap space`; sample timestamps range from 2026-10-26T12:42:32+00:00 to 2026-10-26T13:04:32+00:00."
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Inspect JVM heap and garbage-collection time series, then analyze heap dumps or object-retention profiles to identify which objects consume or retain memory.",
+      "Compare allocation and retention behavior, relevant code, and JVM configuration for version v1.4.2 with a known-good version.",
+      "Collect request-rate and workload data before evaluating whether workload changes contributed; no request-rate evidence was provided.",
+      "Determine whether the resident-memory increase is primarily Java heap or non-heap/native memory."
+    ],
+    "confidence": 0.55,
+    "investigation_window": {
+      "start": "2026-10-26T10:15:33.492741Z",
+      "end": "2026-10-26T13:15:33.492741Z"
+    }
+  },
+  "error": null,
+  "elapsed_seconds": 29.23538926499998,
+  "finished_at": "2026-10-26T13:16:02.728045+00:00",
+  "evidence": {
+    "initial_state": {
+      "correlation_id": "b4890f3d-023a-4589-acd3-2b92b89a900f",
+      "query": "checkout-service memory keeps climbing",
+      "time_window": {
+        "start": "2026-10-26T10:15:33.492741Z",
+        "end": "2026-10-26T13:15:33.492741Z"
+      },
+      "target_service": "checkout-service",
+      "route": [],
+      "iterations": 0,
+      "metrics_findings": [],
+      "log_findings": [],
+      "report": null,
+      "errors": []
+    },
+    "tools": [
+      {
+        "event": "start",
+        "run_id": "01a1785a-3b81-74f0-bd79-9d103be06108",
+        "tool": "get_service_metric",
+        "inputs": {
+          "service": "checkout-service",
+          "kind": "memory",
+          "minutes_back": 180
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a1785a-3b81-74f0-bd79-9d103be06108",
+        "output": {
+          "service": "checkout-service",
+          "query": "process_resident_memory_bytes{service=\"checkout-service\"}",
+          "series": [
+            {
+              "labels": {
+                "__name__": "process_resident_memory_bytes",
+                "service": "checkout-service",
+                "version": "v1.4.2"
+              },
+              "samples": [
+                {
+                  "timestamp": "2026-10-26T10:15:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:33.493000Z",
+                  "value": 401426916.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:03.493000Z",
+                  "value": 401426916.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:33.493000Z",
+                  "value": 431107280.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:03.493000Z",
+                  "value": 431107280.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:33.493000Z",
+                  "value": 460787643.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:03.493000Z",
+                  "value": 460787643.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:33.493000Z",
+                  "value": 490468007.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:03.493000Z",
+                  "value": 490468007.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:33.493000Z",
+                  "value": 520148370.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:03.493000Z",
+                  "value": 520148370.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:33.493000Z",
+                  "value": 549828734.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:03.493000Z",
+                  "value": 549828734.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:33.493000Z",
+                  "value": 579509097.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:03.493000Z",
+                  "value": 579509097.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:33.493000Z",
+                  "value": 609189461.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:03.493000Z",
+                  "value": 609189461.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:33.493000Z",
+                  "value": 638869824.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:03.493000Z",
+                  "value": 638869824.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:33.493000Z",
+                  "value": 668550188.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:03.493000Z",
+                  "value": 668550188.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:33.493000Z",
+                  "value": 698230551.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:03.493000Z",
+                  "value": 698230551.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:33.493000Z",
+                  "value": 727910915.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:03.493000Z",
+                  "value": 727910915.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:33.493000Z",
+                  "value": 757591278.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:03.493000Z",
+                  "value": 757591278.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:33.493000Z",
+                  "value": 787271642.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:03.493000Z",
+                  "value": 787271642.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:33.493000Z",
+                  "value": 816952005.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:03.493000Z",
+                  "value": 816952005.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:33.493000Z",
+                  "value": 846632369.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:03.493000Z",
+                  "value": 846632369.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:33.493000Z",
+                  "value": 876312732.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:03.493000Z",
+                  "value": 876312732.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:33.493000Z",
+                  "value": 905993096.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:03.493000Z",
+                  "value": 905993096.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:33.493000Z",
+                  "value": 935673459.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:03.493000Z",
+                  "value": 935673459.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:33.493000Z",
+                  "value": 965353823.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:03.493000Z",
+                  "value": 965353823.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:33.493000Z",
+                  "value": 995034186.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:03.493000Z",
+                  "value": 995034186.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:33.493000Z",
+                  "value": 1024714550.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:03.493000Z",
+                  "value": 1024714550.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:33.493000Z",
+                  "value": 1054394913.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:03.493000Z",
+                  "value": 1054394913.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:33.493000Z",
+                  "value": 1084075277.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:03.493000Z",
+                  "value": 1084075277.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:33.493000Z",
+                  "value": 1113755640.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:03.493000Z",
+                  "value": 1113755640.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:33.493000Z",
+                  "value": 1143436004.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:03.493000Z",
+                  "value": 1143436004.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:33.493000Z",
+                  "value": 1173116367.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:03.493000Z",
+                  "value": 1173116367.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:33.493000Z",
+                  "value": 1202796731.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:03.493000Z",
+                  "value": 1202796731.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:33.493000Z",
+                  "value": 1232477094.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:03.493000Z",
+                  "value": 1232477094.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:33.493000Z",
+                  "value": 1262157458.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:03.493000Z",
+                  "value": 1262157458.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:33.493000Z",
+                  "value": 1291837821.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:03.493000Z",
+                  "value": 1291837821.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:33.493000Z",
+                  "value": 1321518185.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:03.493000Z",
+                  "value": 1321518185.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:33.493000Z",
+                  "value": 1351198548.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:03.493000Z",
+                  "value": 1351198548.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:33.493000Z",
+                  "value": 1380878912.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:03.493000Z",
+                  "value": 1380878912.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:33.493000Z",
+                  "value": 1410559275.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:03.493000Z",
+                  "value": 1410559275.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:33.493000Z",
+                  "value": 1440239639.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:03.493000Z",
+                  "value": 1440239639.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:33.493000Z",
+                  "value": 1469920002.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:03.493000Z",
+                  "value": 1469920002.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:33.493000Z",
+                  "value": 1499600366.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:03.493000Z",
+                  "value": 1499600366.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:33.493000Z",
+                  "value": 1529280729.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:03.493000Z",
+                  "value": 1529280729.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:33.493000Z",
+                  "value": 1558961093.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:03.493000Z",
+                  "value": 1558961093.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:33.493000Z",
+                  "value": 1588641456.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:03.493000Z",
+                  "value": 1588641456.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:33.493000Z",
+                  "value": 1618321820.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:03.493000Z",
+                  "value": 1618321820.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:33.493000Z",
+                  "value": 1648002183.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:03.493000Z",
+                  "value": 1648002183.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:33.493000Z",
+                  "value": 1677682547.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:03.493000Z",
+                  "value": 1677682547.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:33.493000Z",
+                  "value": 1707362910.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:03.493000Z",
+                  "value": 1707362910.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:33.493000Z",
+                  "value": 1737043274.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:03.493000Z",
+                  "value": 1737043274.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:33.493000Z",
+                  "value": 1766723637.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:03.493000Z",
+                  "value": 1766723637.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:33.493000Z",
+                  "value": 1796404001.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:03.493000Z",
+                  "value": 1796404001.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:33.493000Z",
+                  "value": 1826084364.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:03.493000Z",
+                  "value": 1826084364.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:33.493000Z",
+                  "value": 1855764728.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:03.493000Z",
+                  "value": 1855764728.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:33.493000Z",
+                  "value": 1885445091.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:03.493000Z",
+                  "value": 1885445091.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:33.493000Z",
+                  "value": 1915125455.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:03.493000Z",
+                  "value": 1915125455.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:33.493000Z",
+                  "value": 1944805818.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:03.493000Z",
+                  "value": 1944805818.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:33.493000Z",
+                  "value": 1974486182.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:03.493000Z",
+                  "value": 1974486182.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:33.493000Z",
+                  "value": 410331025.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:03.493000Z",
+                  "value": 410331025.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:33.493000Z",
+                  "value": 440011389.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:03.493000Z",
+                  "value": 440011389.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:33.493000Z",
+                  "value": 469691752.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:03.493000Z",
+                  "value": 469691752.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:33.493000Z",
+                  "value": 499372116.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:03.493000Z",
+                  "value": 499372116.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:33.493000Z",
+                  "value": 529052479.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:03.493000Z",
+                  "value": 529052479.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:33.493000Z",
+                  "value": 558732843.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:03.493000Z",
+                  "value": 558732843.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:33.493000Z",
+                  "value": 588413206.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:03.493000Z",
+                  "value": 588413206.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:33.493000Z",
+                  "value": 618093570.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:03.493000Z",
+                  "value": 618093570.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:33.493000Z",
+                  "value": 647773933.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:03.493000Z",
+                  "value": 647773933.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:33.493000Z",
+                  "value": 677454297.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:03.493000Z",
+                  "value": 677454297.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:33.493000Z",
+                  "value": 707134660.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:03.493000Z",
+                  "value": 707134660.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:33.493000Z",
+                  "value": 736815024.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:03.493000Z",
+                  "value": 736815024.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:33.493000Z",
+                  "value": 766495387.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:03.493000Z",
+                  "value": 766495387.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:33.493000Z",
+                  "value": 796175751.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:03.493000Z",
+                  "value": 796175751.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:33.493000Z",
+                  "value": 825856114.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:03.493000Z",
+                  "value": 825856114.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:33.493000Z",
+                  "value": 855536478.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:03.493000Z",
+                  "value": 855536478.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:33.493000Z",
+                  "value": 885216841.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:03.493000Z",
+                  "value": 885216841.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:33.493000Z",
+                  "value": 914897205.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:03.493000Z",
+                  "value": 914897205.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:33.493000Z",
+                  "value": 944577568.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:03.493000Z",
+                  "value": 944577568.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:33.493000Z",
+                  "value": 974257932.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:03.493000Z",
+                  "value": 974257932.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:33.493000Z",
+                  "value": 1003938295.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:03.493000Z",
+                  "value": 1003938295.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:33.493000Z",
+                  "value": 1033618659.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:03.493000Z",
+                  "value": 1033618659.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:33.493000Z",
+                  "value": 1063299022.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:03.493000Z",
+                  "value": 1063299022.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:33.493000Z",
+                  "value": 1092979386.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:03.493000Z",
+                  "value": 1092979386.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:33.493000Z",
+                  "value": 1122659749.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:03.493000Z",
+                  "value": 1122659749.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:33.493000Z",
+                  "value": 1152340113.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:03.493000Z",
+                  "value": 1152340113.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:33.493000Z",
+                  "value": 1182020476.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:03.493000Z",
+                  "value": 1182020476.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:33.493000Z",
+                  "value": 1211700840.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:03.493000Z",
+                  "value": 1211700840.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:33.493000Z",
+                  "value": 1241381203.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:03.493000Z",
+                  "value": 1241381203.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:33.493000Z",
+                  "value": 1271061567.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:03.493000Z",
+                  "value": 1271061567.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:33.493000Z",
+                  "value": 1300741930.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:03.493000Z",
+                  "value": 1300741930.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:33.493000Z",
+                  "value": 1330422294.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:03.493000Z",
+                  "value": 1330422294.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:33.493000Z",
+                  "value": 1360102657.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:03.493000Z",
+                  "value": 1360102657.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:33.493000Z",
+                  "value": 1389783021.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:03.493000Z",
+                  "value": 1389783021.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:33.493000Z",
+                  "value": 1419463384.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:03.493000Z",
+                  "value": 1419463384.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:33.493000Z",
+                  "value": 1449143748.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:03.493000Z",
+                  "value": 1449143748.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:33.493000Z",
+                  "value": 1478824111.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:03.493000Z",
+                  "value": 1478824111.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:33.493000Z",
+                  "value": 1508504475.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:03.493000Z",
+                  "value": 1508504475.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:33.493000Z",
+                  "value": 1538184838.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:03.493000Z",
+                  "value": 1538184838.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:33.493000Z",
+                  "value": 1567865202.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:03.493000Z",
+                  "value": 1567865202.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:33.493000Z",
+                  "value": 1597545565.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:03.493000Z",
+                  "value": 1597545565.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:33.493000Z",
+                  "value": 1627225929.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:03.493000Z",
+                  "value": 1627225929.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:33.493000Z",
+                  "value": 1656906292.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:03.493000Z",
+                  "value": 1656906292.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:33.493000Z",
+                  "value": 1686586656.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:03.493000Z",
+                  "value": 1686586656.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:33.493000Z",
+                  "value": 1716267019.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:03.493000Z",
+                  "value": 1716267019.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:33.493000Z",
+                  "value": 1745947383.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:03.493000Z",
+                  "value": 1745947383.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:33.493000Z",
+                  "value": 1775627746.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:03.493000Z",
+                  "value": 1775627746.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:33.493000Z",
+                  "value": 1805308110.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:03.493000Z",
+                  "value": 1805308110.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:33.493000Z",
+                  "value": 1834988473.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:03.493000Z",
+                  "value": 1834988473.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:33.493000Z",
+                  "value": 1864668837.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:03.493000Z",
+                  "value": 1864668837.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:33.493000Z",
+                  "value": 1894349200.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:03.493000Z",
+                  "value": 1894349200.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:33.493000Z",
+                  "value": 1924029564.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:03.493000Z",
+                  "value": 1924029564.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:33.493000Z",
+                  "value": 1953709927.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:03.493000Z",
+                  "value": 1953709927.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:33.493000Z",
+                  "value": 1983390291.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:03.493000Z",
+                  "value": 1983390291.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:33.493000Z",
+                  "value": 419235134.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:03.493000Z",
+                  "value": 419235134.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:33.493000Z",
+                  "value": 448915498.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:03.493000Z",
+                  "value": 448915498.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:33.493000Z",
+                  "value": 478595861.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:03.493000Z",
+                  "value": 478595861.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:33.493000Z",
+                  "value": 508276225.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:03.493000Z",
+                  "value": 508276225.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:33.493000Z",
+                  "value": 537956588.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:03.493000Z",
+                  "value": 537956588.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:33.493000Z",
+                  "value": 567636952.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:03.493000Z",
+                  "value": 567636952.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:33.493000Z",
+                  "value": 597317315.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:03.493000Z",
+                  "value": 597317315.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:33.493000Z",
+                  "value": 626997679.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:03.493000Z",
+                  "value": 626997679.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:33.493000Z",
+                  "value": 656678042.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:03.493000Z",
+                  "value": 656678042.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:33.493000Z",
+                  "value": 686358406.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:03.493000Z",
+                  "value": 686358406.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:33.493000Z",
+                  "value": 716038769.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:03.493000Z",
+                  "value": 716038769.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:33.493000Z",
+                  "value": 745719133.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:03.493000Z",
+                  "value": 745719133.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:33.493000Z",
+                  "value": 775399496.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:03.493000Z",
+                  "value": 775399496.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:33.493000Z",
+                  "value": 805079860.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:03.493000Z",
+                  "value": 805079860.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:33.493000Z",
+                  "value": 834760223.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:03.493000Z",
+                  "value": 834760223.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:33.493000Z",
+                  "value": 864440587.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:03.493000Z",
+                  "value": 864440587.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:33.493000Z",
+                  "value": 894120950.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:03.493000Z",
+                  "value": 894120950.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:33.493000Z",
+                  "value": 923801314.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:03.493000Z",
+                  "value": 923801314.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:33.493000Z",
+                  "value": 953481677.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:03.493000Z",
+                  "value": 953481677.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:33.493000Z",
+                  "value": 983162041.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:03.493000Z",
+                  "value": 983162041.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:33.493000Z",
+                  "value": 1012842404.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:03.493000Z",
+                  "value": 1012842404.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:33.493000Z",
+                  "value": 1042522768.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:03.493000Z",
+                  "value": 1042522768.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:33.493000Z",
+                  "value": 1072203131.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:03.493000Z",
+                  "value": 1072203131.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:33.493000Z",
+                  "value": 1101883495.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:03.493000Z",
+                  "value": 1101883495.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:33.493000Z",
+                  "value": 1131563858.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:03.493000Z",
+                  "value": 1131563858.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:33.493000Z",
+                  "value": 1161244222.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:03.493000Z",
+                  "value": 1161244222.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:33.493000Z",
+                  "value": 1190924585.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:03.493000Z",
+                  "value": 1190924585.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:33.493000Z",
+                  "value": 1220604949.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:03.493000Z",
+                  "value": 1220604949.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:33.493000Z",
+                  "value": 1250285312.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:03.493000Z",
+                  "value": 1250285312.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:33.493000Z",
+                  "value": 1279965676.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:03.493000Z",
+                  "value": 1279965676.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:33.493000Z",
+                  "value": 1309646039.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:03.493000Z",
+                  "value": 1309646039.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:33.493000Z",
+                  "value": 1339326403.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:03.493000Z",
+                  "value": 1339326403.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:33.493000Z",
+                  "value": 1369006766.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:03.493000Z",
+                  "value": 1369006766.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:33.493000Z",
+                  "value": 1398687130.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:03.493000Z",
+                  "value": 1398687130.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:33.493000Z",
+                  "value": 1428367493.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:03.493000Z",
+                  "value": 1428367493.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:33.493000Z",
+                  "value": 1458047857.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:03.493000Z",
+                  "value": 1458047857.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:33.493000Z",
+                  "value": 1487728220.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:03.493000Z",
+                  "value": 1487728220.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:33.493000Z",
+                  "value": 1517408584.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:03.493000Z",
+                  "value": 1517408584.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:33.493000Z",
+                  "value": 1547088947.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:03.493000Z",
+                  "value": 1547088947.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:33.493000Z",
+                  "value": 1576769311.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:03.493000Z",
+                  "value": 1576769311.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:33.493000Z",
+                  "value": 1606449674.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:03.493000Z",
+                  "value": 1606449674.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:33.493000Z",
+                  "value": 1636130038.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:03.493000Z",
+                  "value": 1636130038.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:33.493000Z",
+                  "value": 1665810401.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:03.493000Z",
+                  "value": 1665810401.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:33.493000Z",
+                  "value": 1695490765.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:03.493000Z",
+                  "value": 1695490765.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:33.493000Z",
+                  "value": 1725171128.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:03.493000Z",
+                  "value": 1725171128.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:33.493000Z",
+                  "value": 1754851492.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:03.493000Z",
+                  "value": 1754851492.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:33.493000Z",
+                  "value": 1784531855.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:03.493000Z",
+                  "value": 1784531855.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:33.493000Z",
+                  "value": 1814212219.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:03.493000Z",
+                  "value": 1814212219.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:33.493000Z",
+                  "value": 1843892582.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:03.493000Z",
+                  "value": 1843892582.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:33.493000Z",
+                  "value": 1873572946.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:03.493000Z",
+                  "value": 1873572946.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:33.493000Z",
+                  "value": 1903253309.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:03.493000Z",
+                  "value": 1903253309.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:33.493000Z",
+                  "value": 1932933673.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:03.493000Z",
+                  "value": 1932933673.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:33.493000Z",
+                  "value": 1962614036.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:03.493000Z",
+                  "value": 1962614036.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:13:03.493000Z",
+                  "value": 398458880.0
+                }
+              ]
+            }
+          ],
+          "summary": "resident memory rose 1.7x, from 707.74MiB to 1220.35MiB",
+          "trend": "rose",
+          "baseline_value": 742117470.7865169,
+          "current_value": 1279632188.539326,
+          "absolute_delta": 537514717.752809,
+          "pct_change": 72.42986978640133,
+          "anomaly_detected": true,
+          "source": "typed",
+          "metric_kind": "memory",
+          "threshold_validated": true
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a1785a-3fe1-7601-bf3e-8bce592f4bf6",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "checkout-service",
+          "minutes_back": 180,
+          "level": "WARN"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a1785a-3fe1-7601-bf3e-8bce592f4bf6",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'WARN'}}]}}",
+          "matched_count": 17,
+          "level_breakdown": {
+            "WARN": 17
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019572"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019272"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018972"
+            },
+            {
+              "timestamp": "2026-10-26T12:44:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018672"
+            },
+            {
+              "timestamp": "2026-10-26T12:39:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018372"
+            },
+            {
+              "timestamp": "2026-10-26T12:34:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018072"
+            },
+            {
+              "timestamp": "2026-10-26T12:29:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017772"
+            },
+            {
+              "timestamp": "2026-10-26T12:24:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017472"
+            },
+            {
+              "timestamp": "2026-10-26T12:19:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017172"
+            },
+            {
+              "timestamp": "2026-10-26T12:14:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016872"
+            },
+            {
+              "timestamp": "2026-10-26T12:09:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016572"
+            },
+            {
+              "timestamp": "2026-10-26T12:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016272"
+            },
+            {
+              "timestamp": "2026-10-26T11:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015972"
+            },
+            {
+              "timestamp": "2026-10-26T11:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015672"
+            },
+            {
+              "timestamp": "2026-10-26T11:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015372"
+            },
+            {
+              "timestamp": "2026-10-26T11:48:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015312"
+            }
+          ]
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a1785a-3fef-7852-a815-15a8ed249049",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "checkout-service",
+          "minutes_back": 180,
+          "level": "ERROR"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a1785a-3fef-7852-a815-15a8ed249049",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'ERROR'}}]}}",
+          "matched_count": 5,
+          "level_breakdown": {
+            "ERROR": 5
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:57:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019452"
+            },
+            {
+              "timestamp": "2026-10-26T12:50:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019032"
+            },
+            {
+              "timestamp": "2026-10-26T12:43:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018612"
+            },
+            {
+              "timestamp": "2026-10-26T12:42:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018552"
+            }
+          ]
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a1785a-47e1-7000-a4a8-f3d6792a0712",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "checkout-service",
+          "minutes_back": 180,
+          "level": "WARN",
+          "keyword": "GC overhead"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a1785a-47e1-7000-a4a8-f3d6792a0712",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'WARN'}}], 'must': [{'match': {'message': 'GC overhead'}}]}}",
+          "matched_count": 17,
+          "level_breakdown": {
+            "WARN": 17
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019572"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019272"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018972"
+            },
+            {
+              "timestamp": "2026-10-26T12:44:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018672"
+            },
+            {
+              "timestamp": "2026-10-26T12:39:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018372"
+            },
+            {
+              "timestamp": "2026-10-26T12:34:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018072"
+            },
+            {
+              "timestamp": "2026-10-26T12:29:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017772"
+            },
+            {
+              "timestamp": "2026-10-26T12:24:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017472"
+            },
+            {
+              "timestamp": "2026-10-26T12:19:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017172"
+            },
+            {
+              "timestamp": "2026-10-26T12:14:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016872"
+            },
+            {
+              "timestamp": "2026-10-26T12:09:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016572"
+            },
+            {
+              "timestamp": "2026-10-26T12:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016272"
+            },
+            {
+              "timestamp": "2026-10-26T11:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015972"
+            },
+            {
+              "timestamp": "2026-10-26T11:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015672"
+            },
+            {
+              "timestamp": "2026-10-26T11:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015372"
+            },
+            {
+              "timestamp": "2026-10-26T11:48:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015312"
+            }
+          ]
+        }
+      }
+    ],
+    "final_state": {
+      "correlation_id": "b4890f3d-023a-4589-acd3-2b92b89a900f",
+      "query": "checkout-service memory keeps climbing",
+      "time_window": {
+        "start": "2026-10-26T10:15:33.492741Z",
+        "end": "2026-10-26T13:15:33.492741Z"
+      },
+      "target_service": "checkout-service",
+      "route": [
+        "metrics_agent",
+        "logs_agent"
+      ],
+      "iterations": 1,
+      "metrics_findings": [
+        {
+          "service": "checkout-service",
+          "query": "process_resident_memory_bytes{service=\"checkout-service\"}",
+          "series": [
+            {
+              "labels": {
+                "__name__": "process_resident_memory_bytes",
+                "service": "checkout-service",
+                "version": "v1.4.2"
+              },
+              "samples": [
+                {
+                  "timestamp": "2026-10-26T10:15:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:33.493000Z",
+                  "value": 401426916.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:03.493000Z",
+                  "value": 401426916.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:33.493000Z",
+                  "value": 431107280.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:03.493000Z",
+                  "value": 431107280.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:33.493000Z",
+                  "value": 460787643.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:03.493000Z",
+                  "value": 460787643.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:33.493000Z",
+                  "value": 490468007.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:03.493000Z",
+                  "value": 490468007.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:33.493000Z",
+                  "value": 520148370.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:03.493000Z",
+                  "value": 520148370.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:33.493000Z",
+                  "value": 549828734.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:03.493000Z",
+                  "value": 549828734.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:33.493000Z",
+                  "value": 579509097.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:03.493000Z",
+                  "value": 579509097.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:33.493000Z",
+                  "value": 609189461.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:03.493000Z",
+                  "value": 609189461.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:33.493000Z",
+                  "value": 638869824.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:03.493000Z",
+                  "value": 638869824.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:33.493000Z",
+                  "value": 668550188.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:03.493000Z",
+                  "value": 668550188.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:33.493000Z",
+                  "value": 698230551.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:03.493000Z",
+                  "value": 698230551.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:33.493000Z",
+                  "value": 727910915.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:03.493000Z",
+                  "value": 727910915.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:33.493000Z",
+                  "value": 757591278.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:03.493000Z",
+                  "value": 757591278.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:33.493000Z",
+                  "value": 787271642.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:03.493000Z",
+                  "value": 787271642.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:33.493000Z",
+                  "value": 816952005.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:03.493000Z",
+                  "value": 816952005.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:33.493000Z",
+                  "value": 846632369.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:03.493000Z",
+                  "value": 846632369.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:33.493000Z",
+                  "value": 876312732.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:03.493000Z",
+                  "value": 876312732.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:33.493000Z",
+                  "value": 905993096.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:03.493000Z",
+                  "value": 905993096.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:33.493000Z",
+                  "value": 935673459.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:03.493000Z",
+                  "value": 935673459.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:33.493000Z",
+                  "value": 965353823.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:03.493000Z",
+                  "value": 965353823.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:33.493000Z",
+                  "value": 995034186.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:03.493000Z",
+                  "value": 995034186.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:33.493000Z",
+                  "value": 1024714550.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:03.493000Z",
+                  "value": 1024714550.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:33.493000Z",
+                  "value": 1054394913.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:03.493000Z",
+                  "value": 1054394913.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:33.493000Z",
+                  "value": 1084075277.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:03.493000Z",
+                  "value": 1084075277.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:33.493000Z",
+                  "value": 1113755640.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:03.493000Z",
+                  "value": 1113755640.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:33.493000Z",
+                  "value": 1143436004.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:03.493000Z",
+                  "value": 1143436004.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:33.493000Z",
+                  "value": 1173116367.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:03.493000Z",
+                  "value": 1173116367.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:33.493000Z",
+                  "value": 1202796731.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:03.493000Z",
+                  "value": 1202796731.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:33.493000Z",
+                  "value": 1232477094.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:03.493000Z",
+                  "value": 1232477094.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:33.493000Z",
+                  "value": 1262157458.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:03.493000Z",
+                  "value": 1262157458.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:33.493000Z",
+                  "value": 1291837821.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:03.493000Z",
+                  "value": 1291837821.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:33.493000Z",
+                  "value": 1321518185.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:03.493000Z",
+                  "value": 1321518185.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:33.493000Z",
+                  "value": 1351198548.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:03.493000Z",
+                  "value": 1351198548.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:33.493000Z",
+                  "value": 1380878912.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:03.493000Z",
+                  "value": 1380878912.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:33.493000Z",
+                  "value": 1410559275.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:03.493000Z",
+                  "value": 1410559275.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:33.493000Z",
+                  "value": 1440239639.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:03.493000Z",
+                  "value": 1440239639.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:33.493000Z",
+                  "value": 1469920002.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:03.493000Z",
+                  "value": 1469920002.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:33.493000Z",
+                  "value": 1499600366.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:03.493000Z",
+                  "value": 1499600366.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:33.493000Z",
+                  "value": 1529280729.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:03.493000Z",
+                  "value": 1529280729.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:33.493000Z",
+                  "value": 1558961093.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:03.493000Z",
+                  "value": 1558961093.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:33.493000Z",
+                  "value": 1588641456.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:03.493000Z",
+                  "value": 1588641456.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:33.493000Z",
+                  "value": 1618321820.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:03.493000Z",
+                  "value": 1618321820.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:33.493000Z",
+                  "value": 1648002183.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:03.493000Z",
+                  "value": 1648002183.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:33.493000Z",
+                  "value": 1677682547.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:03.493000Z",
+                  "value": 1677682547.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:33.493000Z",
+                  "value": 1707362910.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:03.493000Z",
+                  "value": 1707362910.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:33.493000Z",
+                  "value": 1737043274.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:03.493000Z",
+                  "value": 1737043274.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:33.493000Z",
+                  "value": 1766723637.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:03.493000Z",
+                  "value": 1766723637.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:33.493000Z",
+                  "value": 1796404001.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:03.493000Z",
+                  "value": 1796404001.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:33.493000Z",
+                  "value": 1826084364.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:03.493000Z",
+                  "value": 1826084364.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:33.493000Z",
+                  "value": 1855764728.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:03.493000Z",
+                  "value": 1855764728.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:33.493000Z",
+                  "value": 1885445091.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:03.493000Z",
+                  "value": 1885445091.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:33.493000Z",
+                  "value": 1915125455.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:03.493000Z",
+                  "value": 1915125455.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:33.493000Z",
+                  "value": 1944805818.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:03.493000Z",
+                  "value": 1944805818.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:33.493000Z",
+                  "value": 1974486182.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:03.493000Z",
+                  "value": 1974486182.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:33.493000Z",
+                  "value": 410331025.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:03.493000Z",
+                  "value": 410331025.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:33.493000Z",
+                  "value": 440011389.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:03.493000Z",
+                  "value": 440011389.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:33.493000Z",
+                  "value": 469691752.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:03.493000Z",
+                  "value": 469691752.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:33.493000Z",
+                  "value": 499372116.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:03.493000Z",
+                  "value": 499372116.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:33.493000Z",
+                  "value": 529052479.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:03.493000Z",
+                  "value": 529052479.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:33.493000Z",
+                  "value": 558732843.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:03.493000Z",
+                  "value": 558732843.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:33.493000Z",
+                  "value": 588413206.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:03.493000Z",
+                  "value": 588413206.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:33.493000Z",
+                  "value": 618093570.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:03.493000Z",
+                  "value": 618093570.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:33.493000Z",
+                  "value": 647773933.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:03.493000Z",
+                  "value": 647773933.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:33.493000Z",
+                  "value": 677454297.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:03.493000Z",
+                  "value": 677454297.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:33.493000Z",
+                  "value": 707134660.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:03.493000Z",
+                  "value": 707134660.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:33.493000Z",
+                  "value": 736815024.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:03.493000Z",
+                  "value": 736815024.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:33.493000Z",
+                  "value": 766495387.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:03.493000Z",
+                  "value": 766495387.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:33.493000Z",
+                  "value": 796175751.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:03.493000Z",
+                  "value": 796175751.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:33.493000Z",
+                  "value": 825856114.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:03.493000Z",
+                  "value": 825856114.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:33.493000Z",
+                  "value": 855536478.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:03.493000Z",
+                  "value": 855536478.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:33.493000Z",
+                  "value": 885216841.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:03.493000Z",
+                  "value": 885216841.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:33.493000Z",
+                  "value": 914897205.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:03.493000Z",
+                  "value": 914897205.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:33.493000Z",
+                  "value": 944577568.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:03.493000Z",
+                  "value": 944577568.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:33.493000Z",
+                  "value": 974257932.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:03.493000Z",
+                  "value": 974257932.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:33.493000Z",
+                  "value": 1003938295.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:03.493000Z",
+                  "value": 1003938295.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:33.493000Z",
+                  "value": 1033618659.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:03.493000Z",
+                  "value": 1033618659.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:33.493000Z",
+                  "value": 1063299022.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:03.493000Z",
+                  "value": 1063299022.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:33.493000Z",
+                  "value": 1092979386.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:03.493000Z",
+                  "value": 1092979386.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:33.493000Z",
+                  "value": 1122659749.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:03.493000Z",
+                  "value": 1122659749.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:33.493000Z",
+                  "value": 1152340113.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:03.493000Z",
+                  "value": 1152340113.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:33.493000Z",
+                  "value": 1182020476.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:03.493000Z",
+                  "value": 1182020476.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:33.493000Z",
+                  "value": 1211700840.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:03.493000Z",
+                  "value": 1211700840.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:33.493000Z",
+                  "value": 1241381203.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:03.493000Z",
+                  "value": 1241381203.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:33.493000Z",
+                  "value": 1271061567.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:03.493000Z",
+                  "value": 1271061567.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:33.493000Z",
+                  "value": 1300741930.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:03.493000Z",
+                  "value": 1300741930.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:33.493000Z",
+                  "value": 1330422294.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:03.493000Z",
+                  "value": 1330422294.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:33.493000Z",
+                  "value": 1360102657.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:03.493000Z",
+                  "value": 1360102657.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:33.493000Z",
+                  "value": 1389783021.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:03.493000Z",
+                  "value": 1389783021.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:33.493000Z",
+                  "value": 1419463384.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:03.493000Z",
+                  "value": 1419463384.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:33.493000Z",
+                  "value": 1449143748.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:03.493000Z",
+                  "value": 1449143748.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:33.493000Z",
+                  "value": 1478824111.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:03.493000Z",
+                  "value": 1478824111.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:33.493000Z",
+                  "value": 1508504475.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:03.493000Z",
+                  "value": 1508504475.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:33.493000Z",
+                  "value": 1538184838.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:03.493000Z",
+                  "value": 1538184838.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:33.493000Z",
+                  "value": 1567865202.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:03.493000Z",
+                  "value": 1567865202.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:33.493000Z",
+                  "value": 1597545565.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:03.493000Z",
+                  "value": 1597545565.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:33.493000Z",
+                  "value": 1627225929.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:03.493000Z",
+                  "value": 1627225929.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:33.493000Z",
+                  "value": 1656906292.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:03.493000Z",
+                  "value": 1656906292.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:33.493000Z",
+                  "value": 1686586656.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:03.493000Z",
+                  "value": 1686586656.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:33.493000Z",
+                  "value": 1716267019.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:03.493000Z",
+                  "value": 1716267019.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:33.493000Z",
+                  "value": 1745947383.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:03.493000Z",
+                  "value": 1745947383.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:33.493000Z",
+                  "value": 1775627746.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:03.493000Z",
+                  "value": 1775627746.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:33.493000Z",
+                  "value": 1805308110.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:03.493000Z",
+                  "value": 1805308110.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:33.493000Z",
+                  "value": 1834988473.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:03.493000Z",
+                  "value": 1834988473.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:33.493000Z",
+                  "value": 1864668837.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:03.493000Z",
+                  "value": 1864668837.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:33.493000Z",
+                  "value": 1894349200.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:03.493000Z",
+                  "value": 1894349200.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:33.493000Z",
+                  "value": 1924029564.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:03.493000Z",
+                  "value": 1924029564.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:33.493000Z",
+                  "value": 1953709927.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:03.493000Z",
+                  "value": 1953709927.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:33.493000Z",
+                  "value": 1983390291.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:03.493000Z",
+                  "value": 1983390291.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:33.493000Z",
+                  "value": 419235134.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:03.493000Z",
+                  "value": 419235134.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:33.493000Z",
+                  "value": 448915498.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:03.493000Z",
+                  "value": 448915498.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:33.493000Z",
+                  "value": 478595861.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:03.493000Z",
+                  "value": 478595861.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:33.493000Z",
+                  "value": 508276225.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:03.493000Z",
+                  "value": 508276225.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:33.493000Z",
+                  "value": 537956588.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:03.493000Z",
+                  "value": 537956588.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:33.493000Z",
+                  "value": 567636952.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:03.493000Z",
+                  "value": 567636952.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:33.493000Z",
+                  "value": 597317315.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:03.493000Z",
+                  "value": 597317315.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:33.493000Z",
+                  "value": 626997679.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:03.493000Z",
+                  "value": 626997679.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:33.493000Z",
+                  "value": 656678042.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:03.493000Z",
+                  "value": 656678042.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:33.493000Z",
+                  "value": 686358406.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:03.493000Z",
+                  "value": 686358406.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:33.493000Z",
+                  "value": 716038769.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:03.493000Z",
+                  "value": 716038769.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:33.493000Z",
+                  "value": 745719133.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:03.493000Z",
+                  "value": 745719133.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:33.493000Z",
+                  "value": 775399496.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:03.493000Z",
+                  "value": 775399496.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:33.493000Z",
+                  "value": 805079860.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:03.493000Z",
+                  "value": 805079860.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:33.493000Z",
+                  "value": 834760223.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:03.493000Z",
+                  "value": 834760223.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:33.493000Z",
+                  "value": 864440587.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:03.493000Z",
+                  "value": 864440587.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:33.493000Z",
+                  "value": 894120950.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:03.493000Z",
+                  "value": 894120950.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:33.493000Z",
+                  "value": 923801314.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:03.493000Z",
+                  "value": 923801314.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:33.493000Z",
+                  "value": 953481677.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:03.493000Z",
+                  "value": 953481677.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:33.493000Z",
+                  "value": 983162041.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:03.493000Z",
+                  "value": 983162041.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:33.493000Z",
+                  "value": 1012842404.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:03.493000Z",
+                  "value": 1012842404.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:33.493000Z",
+                  "value": 1042522768.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:03.493000Z",
+                  "value": 1042522768.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:33.493000Z",
+                  "value": 1072203131.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:03.493000Z",
+                  "value": 1072203131.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:33.493000Z",
+                  "value": 1101883495.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:03.493000Z",
+                  "value": 1101883495.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:33.493000Z",
+                  "value": 1131563858.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:03.493000Z",
+                  "value": 1131563858.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:33.493000Z",
+                  "value": 1161244222.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:03.493000Z",
+                  "value": 1161244222.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:33.493000Z",
+                  "value": 1190924585.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:03.493000Z",
+                  "value": 1190924585.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:33.493000Z",
+                  "value": 1220604949.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:03.493000Z",
+                  "value": 1220604949.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:33.493000Z",
+                  "value": 1250285312.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:03.493000Z",
+                  "value": 1250285312.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:33.493000Z",
+                  "value": 1279965676.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:03.493000Z",
+                  "value": 1279965676.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:33.493000Z",
+                  "value": 1309646039.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:03.493000Z",
+                  "value": 1309646039.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:33.493000Z",
+                  "value": 1339326403.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:03.493000Z",
+                  "value": 1339326403.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:33.493000Z",
+                  "value": 1369006766.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:03.493000Z",
+                  "value": 1369006766.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:33.493000Z",
+                  "value": 1398687130.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:03.493000Z",
+                  "value": 1398687130.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:33.493000Z",
+                  "value": 1428367493.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:03.493000Z",
+                  "value": 1428367493.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:33.493000Z",
+                  "value": 1458047857.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:03.493000Z",
+                  "value": 1458047857.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:33.493000Z",
+                  "value": 1487728220.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:03.493000Z",
+                  "value": 1487728220.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:33.493000Z",
+                  "value": 1517408584.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:03.493000Z",
+                  "value": 1517408584.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:33.493000Z",
+                  "value": 1547088947.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:03.493000Z",
+                  "value": 1547088947.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:33.493000Z",
+                  "value": 1576769311.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:03.493000Z",
+                  "value": 1576769311.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:33.493000Z",
+                  "value": 1606449674.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:03.493000Z",
+                  "value": 1606449674.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:33.493000Z",
+                  "value": 1636130038.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:03.493000Z",
+                  "value": 1636130038.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:33.493000Z",
+                  "value": 1665810401.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:03.493000Z",
+                  "value": 1665810401.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:33.493000Z",
+                  "value": 1695490765.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:03.493000Z",
+                  "value": 1695490765.0
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:33.493000Z",
+                  "value": 1725171128.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:03.493000Z",
+                  "value": 1725171128.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:33.493000Z",
+                  "value": 1754851492.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:03.493000Z",
+                  "value": 1754851492.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:33.493000Z",
+                  "value": 1784531855.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:03.493000Z",
+                  "value": 1784531855.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:33.493000Z",
+                  "value": 1814212219.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:03.493000Z",
+                  "value": 1814212219.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:33.493000Z",
+                  "value": 1843892582.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:03.493000Z",
+                  "value": 1843892582.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:33.493000Z",
+                  "value": 1873572946.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:03.493000Z",
+                  "value": 1873572946.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:33.493000Z",
+                  "value": 1903253309.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:03.493000Z",
+                  "value": 1903253309.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:33.493000Z",
+                  "value": 1932933673.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:03.493000Z",
+                  "value": 1932933673.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:33.493000Z",
+                  "value": 1962614036.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:03.493000Z",
+                  "value": 1962614036.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:03.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:33.493000Z",
+                  "value": 398458880.0
+                },
+                {
+                  "timestamp": "2026-10-26T13:13:03.493000Z",
+                  "value": 398458880.0
+                }
+              ]
+            }
+          ],
+          "summary": "resident memory rose 1.7x, from 707.74MiB to 1220.35MiB",
+          "trend": "rose",
+          "baseline_value": 742117470.7865169,
+          "current_value": 1279632188.539326,
+          "absolute_delta": 537514717.752809,
+          "pct_change": 72.42986978640133,
+          "anomaly_detected": true,
+          "source": "typed",
+          "metric_kind": "memory",
+          "threshold_validated": true
+        }
+      ],
+      "log_findings": [
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'WARN'}}]}}",
+          "matched_count": 17,
+          "level_breakdown": {
+            "WARN": 17
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019572"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019272"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018972"
+            },
+            {
+              "timestamp": "2026-10-26T12:44:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018672"
+            },
+            {
+              "timestamp": "2026-10-26T12:39:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018372"
+            },
+            {
+              "timestamp": "2026-10-26T12:34:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018072"
+            },
+            {
+              "timestamp": "2026-10-26T12:29:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017772"
+            },
+            {
+              "timestamp": "2026-10-26T12:24:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017472"
+            },
+            {
+              "timestamp": "2026-10-26T12:19:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017172"
+            },
+            {
+              "timestamp": "2026-10-26T12:14:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016872"
+            },
+            {
+              "timestamp": "2026-10-26T12:09:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016572"
+            },
+            {
+              "timestamp": "2026-10-26T12:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016272"
+            },
+            {
+              "timestamp": "2026-10-26T11:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015972"
+            },
+            {
+              "timestamp": "2026-10-26T11:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015672"
+            },
+            {
+              "timestamp": "2026-10-26T11:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015372"
+            },
+            {
+              "timestamp": "2026-10-26T11:48:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015312"
+            }
+          ]
+        },
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'ERROR'}}]}}",
+          "matched_count": 5,
+          "level_breakdown": {
+            "ERROR": 5
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:57:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019452"
+            },
+            {
+              "timestamp": "2026-10-26T12:50:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019032"
+            },
+            {
+              "timestamp": "2026-10-26T12:43:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018612"
+            },
+            {
+              "timestamp": "2026-10-26T12:42:32Z",
+              "service": "checkout-service",
+              "level": "ERROR",
+              "message": "java.lang.OutOfMemoryError: Java heap space",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018552"
+            }
+          ]
+        },
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'checkout-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:15:33.492741+00:00', 'lte': '2026-10-26T13:15:33.492741+00:00'}}}, {'term': {'level': 'WARN'}}], 'must': [{'match': {'message': 'GC overhead'}}]}}",
+          "matched_count": 17,
+          "level_breakdown": {
+            "WARN": 17
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019872"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019572"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793019272"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018972"
+            },
+            {
+              "timestamp": "2026-10-26T12:44:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018672"
+            },
+            {
+              "timestamp": "2026-10-26T12:39:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018372"
+            },
+            {
+              "timestamp": "2026-10-26T12:34:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793018072"
+            },
+            {
+              "timestamp": "2026-10-26T12:29:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017772"
+            },
+            {
+              "timestamp": "2026-10-26T12:24:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017472"
+            },
+            {
+              "timestamp": "2026-10-26T12:19:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793017172"
+            },
+            {
+              "timestamp": "2026-10-26T12:14:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016872"
+            },
+            {
+              "timestamp": "2026-10-26T12:09:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016572"
+            },
+            {
+              "timestamp": "2026-10-26T12:04:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793016272"
+            },
+            {
+              "timestamp": "2026-10-26T11:59:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015972"
+            },
+            {
+              "timestamp": "2026-10-26T11:54:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015672"
+            },
+            {
+              "timestamp": "2026-10-26T11:49:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015372"
+            },
+            {
+              "timestamp": "2026-10-26T11:48:32Z",
+              "service": "checkout-service",
+              "level": "WARN",
+              "message": "GC overhead limit approaching; heap usage 92%",
+              "version": "v1.4.2",
+              "trace_id": "checkout-service-1793015312"
+            }
+          ]
+        }
+      ],
+      "report": {
+        "summary": "During the requested investigation window, checkout-service resident memory rose 1.7x, from 707.74 MiB to 1220.35 MiB. Logs also show 92% heap usage with GC-overhead warnings and repeated Java heap out-of-memory errors. These findings establish significant heap pressure, but do not identify its underlying cause or prove a memory leak. No collection errors were reported; the findings do not establish continuous data coverage or the exact onset of the increase.",
+        "likely_causes": [
+          {
+            "title": "Accumulation or retention of objects causing JVM heap exhaustion",
+            "rationale": "Heap growth together with high-heap GC warnings and out-of-memory errors supports object accumulation or retention as a candidate cause. The evidence does not distinguish a memory leak from workload-related allocation or another application-level cause.",
+            "confidence": 0.55,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated resident memory rose 1.7x, from 707.74 MiB to 1220.35 MiB; anomaly_detected=True."
+              },
+              {
+                "source": "logs",
+                "detail": "Seventeen WARN samples for version v1.4.2 report `GC overhead limit approaching; heap usage 92%`; sample timestamps range from 2026-10-26T11:48:32+00:00 to 2026-10-26T13:04:32+00:00."
+              },
+              {
+                "source": "logs",
+                "detail": "Five ERROR samples for version v1.4.2 report `java.lang.OutOfMemoryError: Java heap space`; sample timestamps range from 2026-10-26T12:42:32+00:00 to 2026-10-26T13:04:32+00:00."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Inspect JVM heap and garbage-collection time series, then analyze heap dumps or object-retention profiles to identify which objects consume or retain memory.",
+          "Compare allocation and retention behavior, relevant code, and JVM configuration for version v1.4.2 with a known-good version.",
+          "Collect request-rate and workload data before evaluating whether workload changes contributed; no request-rate evidence was provided.",
+          "Determine whether the resident-memory increase is primarily Java heap or non-heap/native memory."
+        ],
+        "confidence": 0.55,
+        "investigation_window": {
+          "start": "2026-10-26T10:15:33.492741Z",
+          "end": "2026-10-26T13:15:33.492741Z"
+        }
+      },
+      "errors": []
+    }
+  },
+  "scenario": "memory_leak",
+  "repeat": 3,
+  "expected_culprit": "checkout-service",
+  "correct": false,
+  "detail": "Accumulation or retention of objects causing JVM heap exhaustion"
+}

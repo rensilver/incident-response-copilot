@@ -1,0 +1,3449 @@
+{
+  "started_at": "2026-10-26T13:13:18.245508+00:00",
+  "request": {
+    "query": "cart-service is returning 5xx errors after a deploy",
+    "service": "cart-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the requested 2026-10-26T10:13:18.245618+00:00 to 2026-10-26T13:13:18.245618+00:00 query interval, cart-service's 5xx error rate rose from a near-zero baseline to 15.00pp. Retrieved ERROR samples report a NullPointerException in PromotionEngine.applyDiscount. This is a plausible contributor, but the available evidence does not prove that the exception caused the 5xx increase or that a deploy introduced it. No collection errors were reported. The PromotionEngine-specific ERROR query and the WARN query returned no documents; these results do not establish service health.",
+    "likely_causes": [
+      {
+        "title": "NullPointerException in PromotionEngine.applyDiscount",
+        "rationale": "The reported exception provides a plausible application-level failure mechanism for cart-service errors and is consistent with the observed increase in 5xx rate. The findings do not directly link these exceptions to individual 5xx responses or establish deploy causality.",
+        "confidence": 0.58,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "20 retrieved ERROR samples report: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88); samples are labeled version=v1.5.0 and have timestamps from 2026-10-26T12:49:35+00:00 to 2026-10-26T13:08:35+00:00."
+          },
+          {
+            "source": "metrics",
+            "detail": "The threshold-validated cart-service 5xx error rate emerged from a near-zero baseline and reached 15.00pp."
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Correlate PromotionEngine.applyDiscount exceptions with individual 5xx responses and inspect the failing code path and inputs at line 88.",
+      "Establish deploy timing and compare error rates and exception counts across versions before attributing the issue to a deploy.",
+      "Check request rates and endpoint-level 5xx metrics; the supplied findings do not show whether traffic changed.",
+      "Investigate why the PromotionEngine-specific ERROR query returned zero documents while the general ERROR query returned samples."
+    ],
+    "confidence": 0.58,
+    "investigation_window": {
+      "start": "2026-10-26T10:13:18.245618Z",
+      "end": "2026-10-26T13:13:18.245618Z"
+    }
+  },
+  "error": null,
+  "elapsed_seconds": 38.616339982,
+  "finished_at": "2026-10-26T13:13:56.861890+00:00",
+  "evidence": {
+    "initial_state": {
+      "correlation_id": "97fcbbb9-a279-4b32-8455-cce746d1b09c",
+      "query": "cart-service is returning 5xx errors after a deploy",
+      "time_window": {
+        "start": "2026-10-26T10:13:18.245618Z",
+        "end": "2026-10-26T13:13:18.245618Z"
+      },
+      "target_service": "cart-service",
+      "route": [],
+      "iterations": 0,
+      "metrics_findings": [],
+      "log_findings": [],
+      "report": null,
+      "errors": []
+    },
+    "tools": [
+      {
+        "event": "start",
+        "run_id": "01a17858-3315-7223-8275-0171f493ee08",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "cart-service",
+          "minutes_back": 180,
+          "level": "WARN"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a17858-3315-7223-8275-0171f493ee08",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'WARN'}}]}}",
+          "matched_count": 0,
+          "level_breakdown": {},
+          "samples": []
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a17858-3321-7c30-8b22-d473efd1140b",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "cart-service",
+          "minutes_back": 180,
+          "level": "ERROR"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a17858-3321-7c30-8b22-d473efd1140b",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'ERROR'}}]}}",
+          "matched_count": 72,
+          "level_breakdown": {
+            "ERROR": 20
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:08:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793020115"
+            },
+            {
+              "timestamp": "2026-10-26T13:07:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793020055"
+            },
+            {
+              "timestamp": "2026-10-26T13:06:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019995"
+            },
+            {
+              "timestamp": "2026-10-26T13:05:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019935"
+            },
+            {
+              "timestamp": "2026-10-26T13:04:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019875"
+            },
+            {
+              "timestamp": "2026-10-26T13:03:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019815"
+            },
+            {
+              "timestamp": "2026-10-26T13:02:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019755"
+            },
+            {
+              "timestamp": "2026-10-26T13:01:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019695"
+            },
+            {
+              "timestamp": "2026-10-26T13:00:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019635"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019575"
+            },
+            {
+              "timestamp": "2026-10-26T12:58:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019515"
+            },
+            {
+              "timestamp": "2026-10-26T12:57:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019455"
+            },
+            {
+              "timestamp": "2026-10-26T12:56:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019395"
+            },
+            {
+              "timestamp": "2026-10-26T12:55:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019335"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019275"
+            },
+            {
+              "timestamp": "2026-10-26T12:53:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019215"
+            },
+            {
+              "timestamp": "2026-10-26T12:52:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019155"
+            },
+            {
+              "timestamp": "2026-10-26T12:51:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019095"
+            },
+            {
+              "timestamp": "2026-10-26T12:50:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019035"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793018975"
+            }
+          ]
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a17858-3f42-70c3-9c57-7a14bfe62ad7",
+        "tool": "search_logs",
+        "inputs": {
+          "service": "cart-service",
+          "minutes_back": 180,
+          "level": "ERROR",
+          "keyword": "PromotionEngine"
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a17858-3f42-70c3-9c57-7a14bfe62ad7",
+        "output": {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'ERROR'}}], 'must': [{'match': {'message': 'PromotionEngine'}}]}}",
+          "matched_count": 0,
+          "level_breakdown": {},
+          "samples": []
+        }
+      },
+      {
+        "event": "start",
+        "run_id": "01a17858-4684-7311-bf94-2b9b8cd861aa",
+        "tool": "get_service_metric",
+        "inputs": {
+          "service": "cart-service",
+          "kind": "error_rate",
+          "minutes_back": 180
+        }
+      },
+      {
+        "event": "end",
+        "run_id": "01a17858-4684-7311-bf94-2b9b8cd861aa",
+        "output": {
+          "service": "cart-service",
+          "query": "sum(rate(http_requests_total{service=\"cart-service\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"cart-service\"}[5m]))",
+          "series": [
+            {
+              "labels": {},
+              "samples": [
+                {
+                  "timestamp": "2026-10-26T10:13:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:13:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:14:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:14:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:15:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:15:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:48.246000Z",
+                  "value": 0.05212300000000001
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:18.246000Z",
+                  "value": 0.06712300000000002
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:48.246000Z",
+                  "value": 0.082123
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:18.246000Z",
+                  "value": 0.09712300000000001
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:48.246000Z",
+                  "value": 0.14999999999999997
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:18.246000Z",
+                  "value": 0.15
+                }
+              ]
+            }
+          ],
+          "summary": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (no ratio is meaningful)",
+          "trend": "from_zero",
+          "baseline_value": 0.0,
+          "current_value": 0.15,
+          "absolute_delta": 0.15,
+          "pct_change": null,
+          "anomaly_detected": true,
+          "source": "typed",
+          "metric_kind": "error_rate",
+          "threshold_validated": true
+        }
+      }
+    ],
+    "final_state": {
+      "correlation_id": "97fcbbb9-a279-4b32-8455-cce746d1b09c",
+      "query": "cart-service is returning 5xx errors after a deploy",
+      "time_window": {
+        "start": "2026-10-26T10:13:18.245618Z",
+        "end": "2026-10-26T13:13:18.245618Z"
+      },
+      "target_service": "cart-service",
+      "route": [
+        "metrics_agent",
+        "logs_agent"
+      ],
+      "iterations": 1,
+      "metrics_findings": [
+        {
+          "service": "cart-service",
+          "query": "sum(rate(http_requests_total{service=\"cart-service\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"cart-service\"}[5m]))",
+          "series": [
+            {
+              "labels": {},
+              "samples": [
+                {
+                  "timestamp": "2026-10-26T10:13:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:13:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:14:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:14:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:15:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:15:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:16:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:17:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:18:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:19:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:20:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:21:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:22:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:23:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:24:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:25:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:26:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:27:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:28:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:29:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:30:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:31:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:32:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:33:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:34:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:35:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:36:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:37:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:38:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:39:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:40:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:41:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:42:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:43:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:44:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:45:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:46:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:47:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:48:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:49:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:50:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:51:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:52:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:53:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:54:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:55:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:56:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:57:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:58:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T10:59:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:00:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:01:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:02:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:03:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:04:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:05:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:06:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:07:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:08:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:09:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:10:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:11:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:12:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:13:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:14:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:15:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:16:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:17:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:18:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:19:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:20:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:21:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:22:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:23:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:24:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:25:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:26:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:27:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:28:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:29:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:30:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:31:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:32:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:33:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:34:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:35:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:36:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:37:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:38:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:39:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:40:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:41:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:42:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:43:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:44:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:45:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:46:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:47:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:48:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:49:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:50:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:51:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:52:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:53:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:54:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:55:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:56:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:57:48.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:18.246000Z",
+                  "value": 0.0
+                },
+                {
+                  "timestamp": "2026-10-26T11:58:48.246000Z",
+                  "value": 0.05212300000000001
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:18.246000Z",
+                  "value": 0.06712300000000002
+                },
+                {
+                  "timestamp": "2026-10-26T11:59:48.246000Z",
+                  "value": 0.082123
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:18.246000Z",
+                  "value": 0.09712300000000001
+                },
+                {
+                  "timestamp": "2026-10-26T12:00:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:01:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:02:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:03:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:04:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:05:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:06:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:07:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:08:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:09:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:10:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:11:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:12:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:13:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:14:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:15:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:16:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:17:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:18:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:19:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:20:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:21:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:22:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:23:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:24:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:25:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:26:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:27:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:28:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:29:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:30:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:31:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:32:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:33:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:34:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:35:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:36:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:37:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:38:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:39:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:40:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:41:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:42:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:43:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:44:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:45:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:46:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:47:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:48:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:49:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:50:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:51:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:52:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:53:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:54:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:55:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:56:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:57:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:58:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T12:59:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:00:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:01:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:02:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:03:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:04:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:05:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:06:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:07:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:08:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:09:48.246000Z",
+                  "value": 0.14999999999999997
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:10:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:18.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:11:48.246000Z",
+                  "value": 0.15
+                },
+                {
+                  "timestamp": "2026-10-26T13:12:18.246000Z",
+                  "value": 0.15
+                }
+              ]
+            }
+          ],
+          "summary": "5xx error rate emerged from a near-zero baseline, reaching 15.00pp (no ratio is meaningful)",
+          "trend": "from_zero",
+          "baseline_value": 0.0,
+          "current_value": 0.15,
+          "absolute_delta": 0.15,
+          "pct_change": null,
+          "anomaly_detected": true,
+          "source": "typed",
+          "metric_kind": "error_rate",
+          "threshold_validated": true
+        }
+      ],
+      "log_findings": [
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'WARN'}}]}}",
+          "matched_count": 0,
+          "level_breakdown": {},
+          "samples": []
+        },
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'ERROR'}}]}}",
+          "matched_count": 72,
+          "level_breakdown": {
+            "ERROR": 20
+          },
+          "samples": [
+            {
+              "timestamp": "2026-10-26T13:08:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793020115"
+            },
+            {
+              "timestamp": "2026-10-26T13:07:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793020055"
+            },
+            {
+              "timestamp": "2026-10-26T13:06:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019995"
+            },
+            {
+              "timestamp": "2026-10-26T13:05:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019935"
+            },
+            {
+              "timestamp": "2026-10-26T13:04:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019875"
+            },
+            {
+              "timestamp": "2026-10-26T13:03:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019815"
+            },
+            {
+              "timestamp": "2026-10-26T13:02:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019755"
+            },
+            {
+              "timestamp": "2026-10-26T13:01:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019695"
+            },
+            {
+              "timestamp": "2026-10-26T13:00:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019635"
+            },
+            {
+              "timestamp": "2026-10-26T12:59:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019575"
+            },
+            {
+              "timestamp": "2026-10-26T12:58:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019515"
+            },
+            {
+              "timestamp": "2026-10-26T12:57:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019455"
+            },
+            {
+              "timestamp": "2026-10-26T12:56:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019395"
+            },
+            {
+              "timestamp": "2026-10-26T12:55:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019335"
+            },
+            {
+              "timestamp": "2026-10-26T12:54:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019275"
+            },
+            {
+              "timestamp": "2026-10-26T12:53:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019215"
+            },
+            {
+              "timestamp": "2026-10-26T12:52:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019155"
+            },
+            {
+              "timestamp": "2026-10-26T12:51:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019095"
+            },
+            {
+              "timestamp": "2026-10-26T12:50:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793019035"
+            },
+            {
+              "timestamp": "2026-10-26T12:49:35Z",
+              "service": "cart-service",
+              "level": "ERROR",
+              "message": "NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88)",
+              "version": "v1.5.0",
+              "trace_id": "cart-service-1793018975"
+            }
+          ]
+        },
+        {
+          "query": "{'bool': {'filter': [{'term': {'service': 'cart-service'}}, {'range': {'@timestamp': {'gte': '2026-10-26T10:13:18.245618+00:00', 'lte': '2026-10-26T13:13:18.245618+00:00'}}}, {'term': {'level': 'ERROR'}}], 'must': [{'match': {'message': 'PromotionEngine'}}]}}",
+          "matched_count": 0,
+          "level_breakdown": {},
+          "samples": []
+        }
+      ],
+      "report": {
+        "summary": "During the requested 2026-10-26T10:13:18.245618+00:00 to 2026-10-26T13:13:18.245618+00:00 query interval, cart-service's 5xx error rate rose from a near-zero baseline to 15.00pp. Retrieved ERROR samples report a NullPointerException in PromotionEngine.applyDiscount. This is a plausible contributor, but the available evidence does not prove that the exception caused the 5xx increase or that a deploy introduced it. No collection errors were reported. The PromotionEngine-specific ERROR query and the WARN query returned no documents; these results do not establish service health.",
+        "likely_causes": [
+          {
+            "title": "NullPointerException in PromotionEngine.applyDiscount",
+            "rationale": "The reported exception provides a plausible application-level failure mechanism for cart-service errors and is consistent with the observed increase in 5xx rate. The findings do not directly link these exceptions to individual 5xx responses or establish deploy causality.",
+            "confidence": 0.58,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "20 retrieved ERROR samples report: NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88); samples are labeled version=v1.5.0 and have timestamps from 2026-10-26T12:49:35+00:00 to 2026-10-26T13:08:35+00:00."
+              },
+              {
+                "source": "metrics",
+                "detail": "The threshold-validated cart-service 5xx error rate emerged from a near-zero baseline and reached 15.00pp."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Correlate PromotionEngine.applyDiscount exceptions with individual 5xx responses and inspect the failing code path and inputs at line 88.",
+          "Establish deploy timing and compare error rates and exception counts across versions before attributing the issue to a deploy.",
+          "Check request rates and endpoint-level 5xx metrics; the supplied findings do not show whether traffic changed.",
+          "Investigate why the PromotionEngine-specific ERROR query returned zero documents while the general ERROR query returned samples."
+        ],
+        "confidence": 0.58,
+        "investigation_window": {
+          "start": "2026-10-26T10:13:18.245618Z",
+          "end": "2026-10-26T13:13:18.245618Z"
+        }
+      },
+      "errors": []
+    }
+  },
+  "scenario": "bad_deploy",
+  "repeat": 3,
+  "expected_culprit": "cart-service",
+  "correct": true,
+  "detail": "NullPointerException in PromotionEngine.applyDiscount"
+}
