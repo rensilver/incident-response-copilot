@@ -1,0 +1,8 @@
+{
+  "attempted_check": "one enabled synthetic investigation and remote trace-tree validation",
+  "execution_started": false,
+  "status": "blocked_by_automatic_approval_review",
+  "reason": "Reviewer requires explicit authorization to send retrieved incident telemetry and derived prompts/reports to OpenAI and LangSmith.",
+  "user_approval_requested": true,
+  "scope_available": "fresh live synthetic connector/memory checks and offline automatic graph/model/tool tracing tests"
+}
