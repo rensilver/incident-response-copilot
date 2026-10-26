@@ -88,7 +88,7 @@ unsupported provider inputs and the test-only provider. Existing
 outgoing model/effort, Responses/tool paths, client isolation and CLI boundaries.
 
 Compose config defines exactly app, frontend, Prometheus, Elasticsearch and
-Grafana. [Startup](task3-observability-start.log) brings up only the three
+Grafana. [Startup](https://github.com/rensilver/incident-response-copilot/blob/5ac0a194401b387e23aabde29aa5d03e92124056/docs/validation/2026-10-26-acceptance/task3-observability-start.log) brings up only the three
 observability services. The stopped legacy orphan is preserved and verified
 not running. Docker's restricted snap runtime failed before inspection; host
 execution succeeds. No reset, volume deletion, orphan removal or dotenv change
@@ -99,7 +99,7 @@ ESLint deprecation and install-script policy notices; installation exits zero.
 
 ## Task 4 — retained incident evidence and optional tracing
 
-[Fresh seeding](task4-seed.log) adds six metric blocks and recreates the synthetic
+[Fresh seeding](https://github.com/rensilver/incident-response-copilot/blob/5ac0a194401b387e23aabde29aa5d03e92124056/docs/validation/2026-10-26-acceptance/task4-seed.log) adds six metric blocks and recreates the synthetic
 log index with **1,236 generated documents** across the three scenarios. It does
 not reset volumes. All [six seeded connector cases](task4-seeded-connectors.log)
 pass. The [live memory check](task4-live-memory-corrected.log) and
@@ -171,3 +171,17 @@ replacement, not skipped backend cases. Hosted CI, default backend port 8000,
 other browser engines, screen readers, remote tracing delivery, paid report
 generation and actual elapsed-time timeout paths were not newly verified here.
 No volume, container, worktree or archive was deleted during these checks.
+
+## Task 6 — final diff and evidence review
+
+The [final review](review.md) maps all six tasks and V1–V5 to current evidence,
+including blocked external delivery. Reviewed the entire diff from the action's
+starting revision and repaired the validation index's table structure. Runtime,
+frontend, locks, scenarios, scoring and original media are unchanged.
+
+The [initial final-source scan](task6-source-initial.log) identified only two
+new Docker logs containing a stopped-orphan warning. Retired them whole to
+immutable Git history with [hashes and revisions](retirement-final.json), without
+editing their measurements. Links above now point to the original Git objects.
+Final source, private-value, archive, JSON, scope and reference results are linked
+from the review. Saved-score reproduction is offline and adds no evaluation calls.

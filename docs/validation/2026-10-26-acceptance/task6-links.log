@@ -1,0 +1,21 @@
+{
+  "local_links": 400,
+  "archived_git_objects": 33,
+  "failures": [
+    {
+      "file": "docs/validation/2026-10-26-acceptance/review.md",
+      "target": "task6-links.log",
+      "error": "missing local file"
+    },
+    {
+      "file": "docs/validation/2026-10-26-acceptance/review.md",
+      "target": "task6-source-final.log",
+      "error": "missing local file"
+    }
+  ]
+}
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-26-evaluation/check-links.py", line 50, in <module>
+    assert not failures, "Broken documentation references"
+           ^^^^^^^^^^^^
+AssertionError: Broken documentation references
