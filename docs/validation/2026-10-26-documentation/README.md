@@ -87,3 +87,17 @@ Included both offline rescore and deliberately paid, fresh-output reproduction.
 hashes and saved aggregates, then check references, scope, privacy and whitespace.
 README numbers were compared row by row with `results.md`/`results.json`; source
 scoring and scenario definitions are unchanged. No new paid call ran for this task.
+
+## Task 6: current-project editorial audit
+
+Removed configuration prose about retired selections/variables and condensed
+dotenv, provider failures, deadlines and tracing into current behavior. Added the
+total-investigation setting to the defaults table. README contains no migration
+chronology, future-action list, host-capacity narrative or assistant/plan file
+reference. Existing scope limits and synthetic-history descriptions are current
+product behavior, not a project change log.
+
+[Checks](task6-checks.log) run a case-insensitive prohibited-reference scan of
+README, inspect its headings and local destinations, validate references and
+check scope/privacy/whitespace. No old evidence, media or measurement is copied
+into current results, and no runtime files change.

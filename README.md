@@ -256,19 +256,16 @@ pytest.ini                # root/backend test discovery
 ## Configuration and failure behavior
 
 [`.env.example`](.env.example) lists the current OpenAI and shared settings. Never put
-keys in tracked source. Source checkout and editable-install commands load the
-repository-root `.env`, including when launched from `backend/` or another working
-directory. A `backend/.env` or caller-directory `.env` is ignored. Process environment
-values override file values.
+keys in tracked source. Checkout and editable installs load the repository-root
+`.env` independently of the working directory. Process variables override file
+values. Keep backend secrets out of frontend files and browser artifacts.
 
 For an installed wheel, supply process variables or set `INCIDENT_COPILOT_ENV_FILE`
 to an absolute dotenv path **before starting Python**. This selector also overrides
 the checkout default; an empty value disables dotenv loading. The selection is
-fixed when the settings module is imported. Missing dotenv files leave process
-variables and defaults in effect. Docker Compose injects the root `.env` as process
-variables, with its service URLs taking precedence; the file is excluded from the
-image. Offline unit tests disable dotenv loading and use isolated dummy settings.
-Python callers can also use `Settings(_env_file=None)` to disable file loading.
+fixed when settings are imported. Compose injects the root `.env` as process
+variables with internal service URLs taking precedence; the file is excluded
+from images. Offline tests disable dotenv and use isolated dummy settings.
 
 The default configuration is:
 
@@ -281,34 +278,26 @@ The default configuration is:
 | `LLM_MAX_OUTPUT_TOKENS` | `4096` per request |
 | `LLM_MAX_STRUCTURED_ATTEMPTS` | `3`, including the initial generation |
 | `MAX_TOOL_ROUNDS` | `2` per specialist |
+| `INVESTIGATION_TIMEOUT_SECONDS` | `240` cooperative total; configurable up to this ceiling |
 | `LANGSMITH_TRACING` | `false` |
 
-A missing, empty, or whitespace-only OpenAI key fails configuration early.
-Model substitutions and retired provider selections are rejected; the fake provider
-is test-only and cannot be selected by configuration. Obsolete provider and fallback
-variables are ignored and cannot activate another provider. Process variables override
-the root file's `OPENAI_API_KEY` and `OPENAI_MODEL`. OpenAI keys use Pydantic
-`SecretStr`; settings validation messages hide input values. SDK retries are disabled.
-Upstream authentication, quota/rate-limit, connection, timeout, invalid-request, and
-service failures become fixed domain errors without forwarding provider payloads.
-See [provider boundaries and failure behavior](docs/provider-adapters.md) for accepted
-limit ranges, request bounds, redaction, health semantics, and client ownership.
+A missing or blank OpenAI key fails configuration early. Only `openai` and the
+exact configured model are accepted for production; the fake is test-only.
+Provider authentication, quota/rate-limit, connection, timeout and service failures
+become fixed domain errors without forwarding upstream payloads. If no report can
+be produced, the API returns 503 and the UI shows safe recovery feedback. See
+[provider boundaries](docs/provider-adapters.md) for limit ranges, redaction,
+health semantics and client ownership.
 
-Provider operation deadlines and bounded structured-output repair remain enforced.
-If the provider cannot produce a report, the API returns 503 and the UI displays
-the error.
-
-Provider deadlines apply to individual operations, within the service deadline.
-The browser has a **300-second total fetch/body budget**; proxy and backend budgets
-are documented in [timeout coordination](docs/investigation-timeouts.md). Aborting
-a browser request does not guarantee server cancellation. The UI handles disconnected
-APIs, JSON and non-JSON errors, malformed reports, and health-response failures.
+The browser has a **300-second total fetch/body budget** beyond the 240-second
+backend budget and 270-second proxy inactivity limit. Cancellation is cooperative;
+stopping browser waiting does not guarantee server cancellation. See
+[timeout coordination](docs/investigation-timeouts.md).
 
 To enable tracing, set `LANGSMITH_TRACING=true`, `LANGSMITH_API_KEY`, and optionally
-`LANGSMITH_PROJECT`; restart the application. Both modern and legacy SDK flags are
-configured together. Tracing configuration is process-wide, not a per-request
-switch. Disabled operation was tested without a tracing key in settings, including
-inherited enabled SDK flags.
+`LANGSMITH_PROJECT`; restart the application. Tracing is process-wide, and disabled
+operation needs no tracing key. The [functional validation](docs/validation/2026-10-25-functional/review.md)
+records enabled delivery and disabled operation separately.
 
 ## Measured synthetic evaluation
 
