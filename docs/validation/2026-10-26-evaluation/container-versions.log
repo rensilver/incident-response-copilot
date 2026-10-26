@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "docker",
+      "version",
+      "--format",
+      "client={{.Client.Version}} server={{.Server.Version}}"
+    ],
+    "exit_code": 0,
+    "stdout": "client=29.8.0 server=29.8.0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "docker",
+      "compose",
+      "version"
+    ],
+    "exit_code": 0,
+    "stdout": "Docker Compose version v5.5.1\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "docker",
+      "compose",
+      "exec",
+      "-T",
+      "app",
+      "python",
+      "-c",
+      "from incident_copilot.config.settings import get_settings; s=get_settings(); print({\"model\":s.openai_model,\"tracing\":s.langsmith_tracing})"
+    ],
+    "exit_code": 0,
+    "stdout": "{'model': 'gpt-6-luna', 'tracing': False}\n",
+    "stderr": ""
+  }
+]

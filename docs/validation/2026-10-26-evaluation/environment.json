@@ -1,0 +1,25 @@
+{
+  "python": "3.13.13",
+  "backend_packages": {
+    "langgraph": "1.2.11",
+    "langchain-core": "1.5.6",
+    "langchain-openai": "1.1.16",
+    "openai": "2.54.0",
+    "pydantic": "2.13.4",
+    "httpx": "0.28.1",
+    "elasticsearch": "8.19.3",
+    "fastapi": "0.141.1"
+  },
+  "backend_versions_match_lock": true,
+  "node": "v24.19.0",
+  "npm": "11.17.0",
+  "frontend_packages": {
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@playwright/test": "1.64.1",
+    "typescript": "5.9.3"
+  },
+  "frontend_versions_match_lock": true,
+  "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers"
+}

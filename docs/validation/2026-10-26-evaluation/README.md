@@ -80,3 +80,9 @@ window, every tool start has an end/error, and no graph/tool errors occurred.
 Eight [synthetic sensitivity probes](sensitivity.json) characterize field,
 Unicode, alias, negation and substring behavior without altering the scorer.
 These probes and manual judgments are separate from paid evaluation scores.
+
+## Task 5: reproduction environment
+
+The [environment record](environment.md) retains runtime/library versions and
+lock comparisons, without host-capacity samples or local inference blockers.
+Historical environment artifacts are retired with task 7's obsolete evidence.
