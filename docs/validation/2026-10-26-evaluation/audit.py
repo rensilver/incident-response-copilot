@@ -16,7 +16,12 @@ secrets = [
     and len(value) >= 12
     and any(word in key.upper() for word in ("KEY", "TOKEN", "PASSWORD"))
 ]
-files = [p for p in EVIDENCE.rglob("*") if p.is_file() and "__pycache__" not in p.parts]
+files = [
+    p
+    for directory in (EVIDENCE, ROOT / "docs/media/2026-10-26")
+    for p in directory.rglob("*")
+    if p.is_file() and "__pycache__" not in p.parts
+]
 links = 0
 for path in files:
     content = path.read_bytes()

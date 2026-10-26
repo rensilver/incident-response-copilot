@@ -1,0 +1,25 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.000
+Memory leak: choose a preset and submit.
+Real request. Waiting is omitted at the cut.
+
+00:00:06.000 --> 00:00:18.533
+Memory leak: real report, citations and next steps.
+Rank and confidence do not prove causality.
+
+00:00:18.533 --> 00:00:24.533
+Slow dependency: choose a preset and submit.
+Real request. Waiting is omitted at the cut.
+
+00:00:24.533 --> 00:00:37.066
+Slow dependency: real report, citations and next steps.
+Rank and confidence do not prove causality.
+
+00:00:37.066 --> 00:00:43.066
+Bad deploy: choose a preset and submit.
+Real request. Waiting is omitted at the cut.
+
+00:00:43.066 --> 00:00:55.600
+Bad deploy: real report, citations and next steps.
+Rank and confidence do not prove causality.

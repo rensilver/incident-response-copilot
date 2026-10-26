@@ -86,3 +86,30 @@ These probes and manual judgments are separate from paid evaluation scores.
 The [environment record](environment.md) retains runtime/library versions and
 lock comparisons, without host-capacity samples or local inference blockers.
 Historical environment artifacts are retired with task 7's obsolete evidence.
+
+## Task 6: genuine screenshots and recording
+
+[Current media and descriptive transcript](../../media/2026-10-26/README.md) include
+six inspected full-page desktop/mobile screenshots, three original recordings,
+a 55.6-second H.264 MP4, toggleable English captions and a keyboard-controlled
+player without autoplay. All three additional real browser calls succeeded;
+[requests/reports/timings](browser-demo.json) are excluded from the evaluation.
+The desktop report and its same-session mobile resize display exact API timestamps.
+No response interception, replacement call or report editing occurred.
+
+The initial media check passed insufficient assertions: visual frame inspection
+revealed seeking stayed at a blank opening frame. FFmpeg decoded the correct
+report from both raw and encoded files. The stricter [failing check](task6-media-seek-red.log)
+reproduced `seek target=8 actual=0`. Adding HTTP byte-range support to the local
+validation server fixed that failure; [corrected playback](task6-media-seek-fixed.log)
+and [final check](task6-media-final.log) retain controls, actual playback, all six
+caption cues, three verified seeks and no mobile horizontal overflow. Initial
+[JSON](media-check-initial.json) and [output](task6-media-check.log) remain labeled
+as insufficient verification. All six source screenshots and frames from all
+three final scenes were visually inspected. Initial converter lint found one long
+policy string; it was shortened. Both converter runs remain recorded.
+
+The full [frontend suite](task6-frontend-tests.log) passes 52 Node/contract cases
+and 52 component cases. The media privacy/link/JSON audit passes across binary
+and text artifacts. Media files show only the application and synthetic service
+identifiers, without credentials, account interfaces or account-specific links.

@@ -1,0 +1,3 @@
+{"scenario":"memory_leak","status":"passed","http_seconds":21.666936229,"browser_seconds":21.71174666}
+{"scenario":"slow_dependency","status":"passed","http_seconds":27.989251611000007,"browser_seconds":28.033979986000006}
+{"scenario":"bad_deploy","status":"passed","http_seconds":19.037471612000008,"browser_seconds":19.083483429}

@@ -1,0 +1,219 @@
+{
+  "started_at": "2026-10-26T13:25:25.619Z",
+  "scope": "Three real deployed browser investigations; no fixtures or retries; excluded from evaluation",
+  "model": "gpt-6-luna",
+  "reasoning": {
+    "effort": "none"
+  },
+  "tracing": false,
+  "attempts": [
+    {
+      "scenario": "memory_leak",
+      "preset": "Memory leak",
+      "started_at": "2026-10-26T13:25:26.185Z",
+      "status": "passed",
+      "navigation_and_setup_seconds": 0.4415149490000001,
+      "click_offset_seconds": 2.445570822,
+      "request": {
+        "query": "checkout-service memory keeps climbing",
+        "minutes_back": 180,
+        "service": "checkout-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested investigation window (2026-10-26T10:25:28.865181+00:00 to 2026-10-26T13:25:28.865181+00:00), checkout-service resident memory rose 1.4x, from 908.37MiB to 1245.27MiB. Logs also show repeated Java heap exhaustion and warnings of 92% heap usage with impending GC overhead. These findings support severe heap pressure but do not establish its underlying cause.",
+        "likely_causes": [
+          {
+            "title": "Severe Java heap pressure in checkout-service",
+            "rationale": "Repeated heap exhaustion and high-heap/GC-overhead warnings, alongside rising resident memory, support heap pressure as the immediate failure mechanism. The evidence does not identify what caused heap usage to rise, so a leak, traffic increase, or deployment regression cannot be concluded.",
+            "confidence": 0.86,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "Five sampled ERROR occurrences of java.lang.OutOfMemoryError: Java heap space, version v1.4.2, timestamped from 2026-10-26T12:42:32+00:00 to 2026-10-26T13:04:32+00:00."
+              },
+              {
+                "source": "logs",
+                "detail": "WARN messages reported GC overhead limit approaching and heap usage 92%; 17 occurrences matched, with sampled timestamps from 2026-10-26T11:48:32+00:00 to 2026-10-26T13:04:32+00:00."
+              },
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated resident memory increased 1.4x, from 908.37MiB to 1245.27MiB; anomaly_detected=True."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Inspect heap dumps and allocation profiles around the OutOfMemoryError events to identify retained objects and allocation sources.",
+          "Review JVM heap limits, garbage-collection metrics, and container memory limits to understand heap and resident-memory behavior.",
+          "Examine request-rate and workload metrics before assessing whether increased traffic contributed; no request-rate evidence was supplied.",
+          "Compare deployment timing and changes for version v1.4.2 with the incident timeline; the available findings do not establish a deployment regression.",
+          "Verify metric and log coverage across the requested interval; the query interval does not prove continuous data coverage."
+        ],
+        "confidence": 0.86,
+        "investigation_window": {
+          "start": "2026-10-26T10:25:28.865181Z",
+          "end": "2026-10-26T13:25:28.865181Z"
+        }
+      },
+      "http_request_to_body_seconds": 21.666936229,
+      "click_to_render_seconds": 21.71174666,
+      "render_offset_seconds": 24.157333933,
+      "displayed_times": [
+        {
+          "datetime": "2026-10-26T10:25:28.865181Z",
+          "text": "Oct 26, 2026, 10:25:28.865 UTC"
+        },
+        {
+          "datetime": "2026-10-26T13:25:28.865181Z",
+          "text": "Oct 26, 2026, 13:25:28.865 UTC"
+        }
+      ],
+      "desktop_recording_end_offset_seconds": 37.060574521,
+      "mobile_viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "total_seconds": 38.156684493,
+      "finished_at": "2026-10-26T13:26:04.817Z"
+    },
+    {
+      "scenario": "slow_dependency",
+      "preset": "Slow dependency",
+      "started_at": "2026-10-26T13:26:04.818Z",
+      "status": "passed",
+      "navigation_and_setup_seconds": 0.25077474199999417,
+      "click_offset_seconds": 2.2529150259999953,
+      "request": {
+        "query": "payment-service latency is elevated",
+        "minutes_back": 180,
+        "service": "payment-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested investigation window (2026-10-26T10:26:07.131823+00:00 to 2026-10-26T13:26:07.131823+00:00), payment-service p95 latency rose 4.0x, from 0.24s to 0.94s. payment-service logs also report authorization failures and timeouts calling fraud-api. These findings support investigating the dependency path, but do not establish fraud-api's internal failure mechanism, exact causal ordering, or whether the dependency issues explain the entire latency increase. No fraud-api WARN or ERROR documents were returned; this is missing log evidence, not evidence of health.",
+        "likely_causes": [
+          {
+            "title": "Slow or unavailable responses on the payment-service dependency path to fraud-api",
+            "rationale": "Timeouts calling fraud-api and authorization errors reporting fraud check unavailable make this a supported candidate contributor to elevated payment-service latency. The evidence does not prove fraud-api's internal condition, that its latency rose first, or the extent to which these failures explain the p95 increase.",
+            "confidence": 0.58,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "20 retrieved payment-service WARN samples report upstream timeout calling fraud-api after 2000ms; sampled timestamps range from 2026-10-26T12:29:34+00:00 to 2026-10-26T13:07:34+00:00."
+              },
+              {
+                "source": "logs",
+                "detail": "11 retrieved payment-service ERROR samples report PaymentAuthorizationException: fraud check unavailable; sampled timestamps range from 2026-10-26T12:06:34+00:00 to 2026-10-26T13:03:34+00:00."
+              },
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated payment-service p95 latency rose 4.0x, from 0.24s to 0.94s."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Inspect fraud-api latency, availability, saturation, and request-level traces for the same interval; the fraud-api log queries returned zero WARN and ERROR documents, which does not establish service health.",
+          "Correlate payment-service traces and request outcomes with fraud-api calls to determine whether dependency timeouts account for the p95 increase.",
+          "Check request-rate and concurrency metrics before assessing whether traffic changes contributed.",
+          "Check payment-service resource utilization and deployment or configuration changes; the supplied findings do not establish contention or a deployment regression.",
+          "Verify metric and log coverage across the requested interval; the query interval does not prove continuous data coverage."
+        ],
+        "confidence": 0.58,
+        "investigation_window": {
+          "start": "2026-10-26T10:26:07.131823Z",
+          "end": "2026-10-26T13:26:07.131823Z"
+        }
+      },
+      "http_request_to_body_seconds": 27.989251611000007,
+      "click_to_render_seconds": 28.033979986000006,
+      "render_offset_seconds": 30.286898899999994,
+      "displayed_times": [
+        {
+          "datetime": "2026-10-26T10:26:07.131823Z",
+          "text": "Oct 26, 2026, 10:26:07.131 UTC"
+        },
+        {
+          "datetime": "2026-10-26T13:26:07.131823Z",
+          "text": "Oct 26, 2026, 13:26:07.131 UTC"
+        }
+      ],
+      "desktop_recording_end_offset_seconds": 43.18779769099999,
+      "mobile_viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "total_seconds": 44.283664442,
+      "finished_at": "2026-10-26T13:26:49.841Z"
+    },
+    {
+      "scenario": "bad_deploy",
+      "preset": "Bad deploy",
+      "started_at": "2026-10-26T13:26:49.841Z",
+      "status": "passed",
+      "navigation_and_setup_seconds": 0.27577744799999343,
+      "click_offset_seconds": 2.277043466999996,
+      "request": {
+        "query": "cart-service error rate spiked after the last deploy",
+        "minutes_back": 180,
+        "service": "cart-service"
+      },
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested 2026-10-26T10:26:52.187823+00:00 to 2026-10-26T13:26:52.187823+00:00 query interval, cart-service had a threshold-validated 5xx error-rate anomaly, reaching 15.00 percentage points from a near-zero baseline (the ratio was reported as not meaningful). Sampled ERROR logs show a NullPointerException in PromotionEngine.applyDiscount at line 88, making this a plausible contributor. The evidence does not establish that the last deploy introduced the exception or that it explains all 5xx responses. No collection errors were reported. The targeted PromotionEngine ERROR query and the WARN query returned no matches; a separate general ERROR query returned 72 matching documents, with 20 samples retrieved.",
+        "likely_causes": [
+          {
+            "title": "Unhandled null value in the promotion discount path",
+            "rationale": "The logged exception in PromotionEngine.applyDiscount is a plausible direct source of failed cart requests and may contribute to the 5xx anomaly. The samples identify version v1.5.0, but there is no deployment timing or prior-version comparison to show that the last deploy introduced the defect, nor evidence that these exceptions account for all 5xx responses.",
+            "confidence": 0.58,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "The general cart-service ERROR query matched 72 documents and returned 20 samples; the samples report NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88), version v1.5.0, with sample timestamps 2026-10-26T12:49:35+00:00 to 2026-10-26T13:08:35+00:00."
+              },
+              {
+                "source": "metrics",
+                "detail": "The threshold-validated cart-service 5xx error-rate metric emerged from a near-zero baseline and reached 15.00pp; anomaly_detected=True."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Compare the v1.5.0 deployment time and changes with error onset; the supplied aggregate metric and sampled log timestamps do not establish exact incident onset or causal ordering.",
+          "Inspect PromotionEngine.applyDiscount around line 88 and identify which input can be null.",
+          "Correlate exception occurrences with request outcomes or traces to determine what proportion of 5xx responses they explain.",
+          "Check request-rate metrics before drawing conclusions about traffic changes; no request-rate evidence was supplied.",
+          "Investigate why the targeted PromotionEngine ERROR query returned zero matches while the general ERROR query returned matching exception samples."
+        ],
+        "confidence": 0.58,
+        "investigation_window": {
+          "start": "2026-10-26T10:26:52.187823Z",
+          "end": "2026-10-26T13:26:52.187823Z"
+        }
+      },
+      "http_request_to_body_seconds": 19.037471612000008,
+      "click_to_render_seconds": 19.083483429,
+      "render_offset_seconds": 21.360531485,
+      "displayed_times": [
+        {
+          "datetime": "2026-10-26T10:26:52.187823Z",
+          "text": "Oct 26, 2026, 10:26:52.187 UTC"
+        },
+        {
+          "datetime": "2026-10-26T13:26:52.187823Z",
+          "text": "Oct 26, 2026, 13:26:52.187 UTC"
+        }
+      ],
+      "desktop_recording_end_offset_seconds": 34.274265277999994,
+      "mobile_viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "total_seconds": 35.377792174999996,
+      "finished_at": "2026-10-26T13:27:25.661Z"
+    }
+  ],
+  "chromium": "156.0.8078.4",
+  "finished_at": "2026-10-26T13:27:25.701Z"
+}
