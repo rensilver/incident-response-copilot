@@ -287,5 +287,5 @@ directory. Ruff, strict mypy and Black pass for this documentation helper.
 The final root Python checks also pass: `make lint` (Ruff and strict mypy, 60 source
 files), `make test` (635 offline unit cases in 41.90 seconds) and
 `make format-check` (132 files). Dotenv loading was disabled explicitly. The
-retained Streamlit strict mypy and Ruff checks pass. The backend application was
+then-current legacy UI strict mypy and Ruff checks passed. The backend application was
 not changed; these fresh checks also verify the preserved parity foundation.

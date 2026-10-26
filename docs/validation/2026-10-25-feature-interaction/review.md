@@ -32,7 +32,7 @@ The three real-time checks run separately with a guarded fixture build, real
 sockets, and unchanged production budgets. No clocks are accelerated there.
 
 Strict types, ESLint, Prettier, production builds, API contract drift checks and
-retained Streamlit mypy/Ruff pass. Root `make lint`, `make test` (635 offline
+then-current legacy UI mypy/Ruff passed. Root `make lint`, `make test` (635 offline
 backend cases), and `make format-check` also pass; the documentation audit helper
 passes its own Ruff, strict mypy and Black checks. Build and type generation
 ran sequentially. The fixture-origin build is replaced by the normal 8000-origin
@@ -59,7 +59,7 @@ are introduced. Evidence and model ordering/scores remain distinct from proof.
 
 The timeout backend is a local fixture, not FastAPI or a real model. The default
 240-second cooperative graph deadline, live seeded scenarios, paid OpenAI calls,
-LangSmith delivery, Docker deployment, public hosting and Streamlit removal are
+LangSmith delivery, Docker deployment, public hosting and legacy UI removal are
 not validated or changed in this action. They retain their separately scoped work.
 The frontend is implemented; end-to-end live stack claims require later validation.
 

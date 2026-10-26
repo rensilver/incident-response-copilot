@@ -66,7 +66,7 @@ The fully captured [fresh build](task1-images-corrected.log), [image identities]
 and [service state](task2-running.log) replace reliance on silent Docker logs.
 This corrects task 1's build capture without changing production code.
 
-[Seeding](task2-seed.log) loaded all three scenarios: six metric blocks and 1,236
+[Seeding](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task2-seed.log) loaded all three scenarios: six metric blocks and 1,236
 synthetic log documents. All [six live connector checks](task2-connectors.log)
 pass. The [live driver](live-scenarios.mjs) submits exactly one API attempt and one
 real Chromium attempt per preset, sequentially, without fixture interception or
@@ -137,24 +137,24 @@ To repeat the saved comparison, run `python
 docs/validation/2026-10-25-functional/verify-windows.py`. New captures must be saved
 as JSON lines from `docker logs ic-validation-proxy`; point the verifier at the
 new report/capture filenames before comparing a new run. The ledger retains the
-exact capture and integration commands. After capture, [restore](task3-restore.log)
+exact capture and integration commands. After capture, [restore](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task3-restore.log)
 the app with only the normal port override, then remove the temporary proxy.
 
 ## Task 4 — failures and recovery
 
 Failure injection is explicitly **mocked**, with synthetic credentials and
 intercepted SDK HTTP, not a claim that the configured paid account encountered
-these errors. The initial [OpenAI validator attempt](task4-openai-mocked.log)
+these errors. The initial [OpenAI validator attempt](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-openai-mocked.log)
 retained **185 passes and three setup errors**: the CLI disabled plugin autoload
 but did not explicitly load `pytest-mock`, now required by the automatic tracing
 cases. Its existing seven-case subprocess fixture now requires the same fixture.
 All four selected CLI regressions [failed before the fix](task4-validator-regression-red.log)
-with missing `mocker`; all [nine CLI cases pass afterward](task4-validator-regression-green.log).
+with missing `mocker`; all [nine CLI cases pass afterward](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-validator-regression-green.log).
 The minimal fix explicitly registers `pytest_mock.plugin`. Application runtime
 and provider behavior are unchanged; the only non-evidence changes in this action
 are the validator script and its regression fixture.
 
-The corrected [188-case validator run](task4-openai-mocked-fixed.log) passes,
+The corrected [188-case validator run](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-openai-mocked-fixed.log) passes,
 covering text/structured/tool paths, authentication, quota/rate limits, connection,
 timeout/cancellation, bounded repairs, no hidden retries/fallback, redaction and
 same-provider/API recovery. The [61 offline API/deadline/graph cases](task4-api-failures.log)
@@ -204,12 +204,12 @@ Only the validation script changed for this assumption; frontend code is unchang
 After the validator fix, all 615 offline cases plus Ruff, strict mypy and Black
 pass on [Python 3.12](task4-py312.log) and [Python 3.13](task4-py313.log).
 
-Fresh completion checks also pass: [188 validator cases](task4-recheck-validator-host.log),
+Fresh completion checks also pass: [188 validator cases](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-recheck-validator-host.log),
 [31 browser fixture cases](task4-browser-fixtures.log) with nine intentional skips,
 and the [normal frontend build](task4-normal-build-restored.log).
 The real timeout run passed all three checks; measured browser elapsed times were
 31.790, 270.584 and 300.412 seconds in [retained timing metadata](task4-timeout-measurements.json).
-The temporary timeout build is replaced and the [deployed frontend is restored](task4-frontend-restored.log).
+The temporary timeout build is replaced and the [deployed frontend is restored](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-frontend-restored.log).
 
 The completion rerun encountered the documented sandbox asyncio stall. The
 [standalone sandbox probe](task4-probe-sandbox.log) timed out after printing that
@@ -224,7 +224,7 @@ the test-driven-development workflow; no additional behavior change was needed.
 
 The unchanged [validator](../../../backend/scripts/validate_langsmith.py) ran exactly
 **two planned live investigations**, one enabled and one disabled, without retries.
-[Fresh seeding](task5-seed.log) generated nine metric blocks and 1,236 synthetic
+[Fresh seeding](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task5-seed.log) generated nine metric blocks and 1,236 synthetic
 log documents; the inspected seeder recreates only the synthetic `app-logs` index.
 The execution path is host `IncidentService` → ordinary compiled graph → real
 OpenAI and local Docker data services. These are service timings, not HTTP or

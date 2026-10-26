@@ -1,0 +1,49 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_validator_does_not_inventory_unrelated_installed_packages ________
+
+validation_checkout = PosixPath('/tmp/pytest-of-rensilver/pytest-3/test_validator_does_not_invent0/checkout')
+tmp_path = PosixPath('/tmp/pytest-of-rensilver/pytest-3/test_validator_does_not_invent0')
+
+    def test_validator_does_not_inventory_unrelated_installed_packages(
+        validation_checkout: Path, tmp_path: Path
+    ) -> None:
+        # Package inventory belongs to the isolated release audit. Incomplete unrelated
+        # metadata must not prevent this CLI from exercising provider failures.
+        metadata = tmp_path / "unrelated_package-0.0.0.dist-info"
+        metadata.mkdir()
+        (metadata / "METADATA").write_text("Version: 0.0.0\n")
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-S",
+                str(validation_checkout / "backend/scripts/validate_provider_failures.py"),
+            ],
+            cwd=tmp_path,
+            env={"PATH": os.defpath, "PYTHONPATH": str(tmp_path)},
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: /tmp/pytest-of-rensilver/pytest-3/test_validator_does_not_invent0/checkout/backend/scripts/validate_provider_failures.py:45: DeprecationWarning: Implicit None on return values is deprecated and will raise KeyErrors.
+E           installed = {re.sub(r"[-_.]+", "-", item.metadata["Name"]).lower() for item in distributions()}
+E         Traceback (most recent call last):
+E           File "/tmp/pytest-of-rensilver/pytest-3/test_validator_does_not_invent0/checkout/backend/scripts/validate_provider_failures.py", line 92, in <module>
+E             raise SystemExit(main())
+E                              ~~~~^^
+E           File "/tmp/pytest-of-rensilver/pytest-3/test_validator_does_not_invent0/checkout/backend/scripts/validate_provider_failures.py", line 45, in main
+E             installed = {re.sub(r"[-_.]+", "-", item.metadata["Name"]).lower() for item in distributions()}
+E                          ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/rensilver/miniconda3/lib/python3.13/re/__init__.py", line 208, in sub
+E             return _compile(pattern, flags).sub(repl, string, count)
+E                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+E         TypeError: expected string or bytes-like object, got 'NoneType'
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/rensilver/workspaces/incident-response-copilot/.venv/bin/python', '-S', '/tmp/pytest-of-...~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: expected string or bytes-like object, got \'NoneType\'\n').returncode
+
+backend/tests/unit/test_provider_failure_validator.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/test_provider_failure_validator.py::test_validator_does_not_inventory_unrelated_installed_packages
+1 failed, 5 deselected in 0.32s

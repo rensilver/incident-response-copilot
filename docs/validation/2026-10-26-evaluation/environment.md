@@ -16,8 +16,6 @@ new dependency resolution or image rebuild was needed for evidence-only changes.
 The existing environment, rather than a fresh environment installation, was
 used for this action. Lock-version comparison is not a clean-install claim.
 
-There are no host RAM/capacity measurements or local inference requirements in
-this evidence set. Hardware procurement is not an application prerequisite.
 OpenAI account access/quota and freshly seeded synthetic data are required for
 deliberately repeated paid collection; saved scoring/review is entirely offline.
 Private credentials and account-specific tracing URLs are excluded. Historical

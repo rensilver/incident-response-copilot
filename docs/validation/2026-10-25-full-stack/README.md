@@ -117,7 +117,7 @@ absolute `VENV` selection, evaluation and explicit destructive reset remain inta
 
 The [operation guide](../../full-stack-operation.md) documents directories,
 configuration boundaries, ports, commands, seed effects and shutdown. README and
-frontend guide link it. Streamlit removal remains task 5; no historical measurements
+frontend guide link it. Legacy UI removal remains task 5; no historical measurements
 were replaced. `make -n install-all check build docker-up docker-down
  docker-observability-up seed eval typecheck frontend-dev` passes
 (`task4-make-dry-run.log`), as do `make lint format-check` and

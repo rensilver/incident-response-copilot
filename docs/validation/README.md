@@ -1,6 +1,7 @@
 # Current validation evidence
 
 | Evidence | Scope |
+| [Acceptance and release review](2026-10-26-acceptance/README.md) | Final source/privacy/dependency audit, retained application checks and explicit acceptance limits |
 | --- | --- |
 | [Fresh README walkthrough](2026-10-26-documentation/README.md) | Current documentation, clean locked installs, literal demo/API checks, diagram/media and teardown evidence |
 | [Measured evaluation and review](2026-10-26-evaluation/README.md) | Frozen method, all nine OpenAI attempts, reproducible scores/latencies, qualitative review, versions, failures and final audit |
@@ -24,3 +25,9 @@ Git history was not rewritten.
 
 For a stalled asyncio/thread check, use the [independent diagnostic](diagnostics.md)
 before changing graph behavior. The diagnostic is independent of the application.
+
+The acceptance audit subsequently retired 39 whole transition logs/JSON artifacts
+from the October 25–26 records. Their original bytes remain at the revision in
+the [additional retirement manifest](2026-10-26-acceptance/retirement.json).
+Affected guide links resolve to immutable Git objects. Historical audit scripts
+retain their original assumptions and are reproduction records for those revisions.

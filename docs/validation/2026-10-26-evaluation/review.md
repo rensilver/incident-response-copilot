@@ -11,7 +11,7 @@ or latency claims. Nothing was pushed or published to hosting.
 | Nine bounded live attempts | [Collection](README.md#task-2-fixed-live-series), fresh seed, per-attempt reports/tool events | `eac6959` |
 | Saved scores and latency statistics | [Results](results.md), exact denominators, offline reproduction and negative tamper check | `2168c10` |
 | Qualitative/identifier review | [Nine-report review](qualitative-review.md), citation/window facts and eight synthetic probes | `cfe730b` |
-| Focused reproduction environment | [Versions/locks](environment.md), no host-capacity samples | `705a2e8` |
+| Focused reproduction environment | [Versions/locks](environment.md), focused version inventory | `705a2e8` |
 | Real screenshots and recording | [Media](../../media/2026-10-26/README.md), three genuine browser reports and accessible video | `8f5b09e` |
 | Retire obsolete artifacts and repair links | [Current index](../README.md), [retirement scope](retirement.json), original history preserved | `11104b9` |
 | Reproduce scores and audit media/links | This review and [machine audit](review-audit.json) | This review commit |

@@ -1,0 +1,161 @@
+{
+  "archive_revision": "e7d204d8598c9c7d6eebf626ff9916334e933846",
+  "files": [
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task1-ui-mypy.json",
+      "sha256": "7cfec1d13670178b3f7b15826043045f467a82d6a1f363550c800311a1d6b7fe"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task1-ui-ruff.json",
+      "sha256": "c68711988c425c1afdfc040a4d73dadd698fe45b7fadffa8c73e4354a064793b"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task2-ui-mypy.json",
+      "sha256": "4dacf239a6f2e5c43e7256ba3ab94f4bc032ce19d5c85dac1165dcf042b9ad8a"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task2-ui-ruff.json",
+      "sha256": "41e1a382bb8d271b3fafc0723dc7cdaaf2fb9c037aec1e685864cf57c53a56bf"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task3-ui-mypy.json",
+      "sha256": "99d8f3a5874211ebb7334af4a5081948f3418f8f6574c681806628987444fe27"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task3-ui-ruff.json",
+      "sha256": "e368261a332f5176e5f40f028c6fbac2e6d9d330747c7618b3737c324c98c7a6"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task4-ui-mypy.json",
+      "sha256": "4834e02495d679ce606fb6a6e1b6d0f1bb0481d9777ad590517c4cfa41032ae6"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task4-ui-ruff.json",
+      "sha256": "f7f7593bc31bccc0759ada4b08756341543e8828b595293be6a1c1cd77a92f86"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task5-ui-mypy.json",
+      "sha256": "f42027ad20ec5e3af93b5515a26f50e21928a3bddc41ecaca266505d2f4642e3"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task5-ui-ruff.json",
+      "sha256": "e368261a332f5176e5f40f028c6fbac2e6d9d330747c7618b3737c324c98c7a6"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task6-ui-mypy.json",
+      "sha256": "1234ec031d1335abeea910e44986dd7ac28825a749f0bc30fd00744b557a4d38"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task6-ui-ruff.json",
+      "sha256": "e368261a332f5176e5f40f028c6fbac2e6d9d330747c7618b3737c324c98c7a6"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task7-ui-mypy.json",
+      "sha256": "221fa959812d043dc9c2b3b5dbc0059f8bf5d6e4be4c268b96735d1d66895b98"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task7-ui-ruff.json",
+      "sha256": "c68711988c425c1afdfc040a4d73dadd698fe45b7fadffa8c73e4354a064793b"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task8-ui-mypy.json",
+      "sha256": "c8a18857f7de75b2fbd75c8e52b6f8b9c685a0c5f02de845eb524aa05a8d972a"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task8-ui-ruff.json",
+      "sha256": "e368261a332f5176e5f40f028c6fbac2e6d9d330747c7618b3737c324c98c7a6"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task9-python-format.log",
+      "sha256": "dce96b5a2149b59cef92ad2e1290d9ca15c2ce63405d2a2736d79b603c5d7ea5"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task9-ui-mypy.json",
+      "sha256": "c9fd24c130aa890cc4c3de754f3fb33860751304aa209fddbc52707d0e3c6679"
+    },
+    {
+      "path": "docs/validation/2026-10-25-feature-interaction/task9-ui-ruff.json",
+      "sha256": "9536da1ab41590db773bf4b700d1b66b16c74f69f38a460022d0edb2edf56dd0"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/recovery-task1-format.log",
+      "sha256": "dce96b5a2149b59cef92ad2e1290d9ca15c2ce63405d2a2736d79b603c5d7ea5"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task1-format.log",
+      "sha256": "dce96b5a2149b59cef92ad2e1290d9ca15c2ce63405d2a2736d79b603c5d7ea5"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task1-tests-host-detail.log",
+      "sha256": "7a5545ea6b6c08b4d0f3d84612986d3172d6349d12cee25457698c8beb336319"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task4-make-dry-run.log",
+      "sha256": "8a4addb48151082968cad3d9acfb5fed90e49298dfda4030808b6e182e4bd243"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task4-static.log",
+      "sha256": "82672746a7aeeafbfc6d050dda9cf6458d76b092c9af0e9c5ac2d084921691b4"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task7-seed.log",
+      "sha256": "7c52da162c08b42969376407d69349a59ce39efd71c596fd5c00cbbab8ffcad8"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task7-startup-isolated.log",
+      "sha256": "b05966c2f8b849646ce2cea9a28b7c254843f3d4327e57f8972a160f948f5a6e"
+    },
+    {
+      "path": "docs/validation/2026-10-25-full-stack/task7-startup.log",
+      "sha256": "3986764cac1400dd0bc775afc557a944df458cb229e8a79b2106ceeedbbbd32c"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task2-seed.log",
+      "sha256": "f12e3e9d176b06c861bfb824f82e41c4b2de3aad7663aba8c745d050c46d5e7f"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task3-proxy-startup.log",
+      "sha256": "ea36ed64ffc39eb18eb6ec51495325ea47d16232b5b961bb205f02b922087d1d"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task3-restore.log",
+      "sha256": "08fbaf7f9503c91ff07376f37ff0759a339c81f4bac40b0a8cbf96030700e3fe"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task4-frontend-restored.log",
+      "sha256": "6546f6fd9f0f1cb75bcb397f87f744f14f9cc58e0da66d327c90ead265739eb8"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task4-openai-mocked-fixed.log",
+      "sha256": "9d87ad7eb0017674793af37767d7555f7c106b47d75640cddb9ba3b66db4e764"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task4-openai-mocked.log",
+      "sha256": "9cf8133e49f73665cf49a9dffad9dbc12704e9340081104c13f03bc8e34ad207"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task4-recheck-validator-host.log",
+      "sha256": "be439fee18cb6152362c70e3bdeb734ca86ca508a4e5b2d839a6fd62ca3e2520"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task4-validator-regression-green.log",
+      "sha256": "f7ec555f9bbb53264cc8f9f7f661c537b5619c22de25943307b579329d4a1cda"
+    },
+    {
+      "path": "docs/validation/2026-10-25-functional/task5-seed.log",
+      "sha256": "02fe962dfc6bf7f92c615b23a19b438a75cf92c6ad762bae8ad9e2480dc8c16f"
+    },
+    {
+      "path": "docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log",
+      "sha256": "adf0e063aaf44b071e74296fe9152b1eae854d0de30d071bcb4ce896b4f8cc5d"
+    },
+    {
+      "path": "docs/validation/2026-10-26-documentation/task8-provider-failures.log",
+      "sha256": "4ac011f670841670998bd760f52e7529d4a6376a479e71f1535517c0db5003c7"
+    },
+    {
+      "path": "docs/validation/2026-10-26-documentation/task8-seed.log",
+      "sha256": "ca1ac9bd4da615a7d1345d22f3f43550ea68a0e87b20ff0bf854e0d3902373b9"
+    }
+  ]
+}
