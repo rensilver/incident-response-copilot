@@ -68,3 +68,31 @@ assumptions about a configurable reasoning setting [failed](task2-check-draft.lo
 inspection confirmed effort is fixed in the adapter. The corrected privacy audit
 passes; runtime request assertions are checked separately in task 3. Local removal
 patterns and private inspection code remain outside tracked artifacts.
+
+## Task 3 — fresh dependencies and runtime selection
+
+Repeated the [locked Python 3.12.14 install](task3-install-current.log) and
+[npm clean install](task3-frontend-install-current.log). The earlier saved
+[backend](task3-backend-install.log) and [frontend](task3-frontend-install.log)
+attempts are preserved; their temporary Python environment was unavailable in
+the resumed session. No manifest or lock changed. Caches were reused.
+
+The [inventory](task3-dependencies.json), produced by
+[`dependencies.py`](dependencies.py), compares all **81 installed Python
+distributions** against the backend lock and **468 installed npm package paths**
+against the frontend lock. Lock totals include platform/optional packages that
+are not installed here. The private removal-list check finds no retired
+dependencies; [selection checks](task3-selection-audit.log) reject all three
+unsupported provider inputs and the test-only provider. Existing
+[157 offline contract cases](task3-provider-contracts.log) verify settings,
+outgoing model/effort, Responses/tool paths, client isolation and CLI boundaries.
+
+Compose config defines exactly app, frontend, Prometheus, Elasticsearch and
+Grafana. [Startup](task3-observability-start.log) brings up only the three
+observability services. The stopped legacy orphan is preserved and verified
+not running. Docker's restricted snap runtime failed before inspection; host
+execution succeeds. No reset, volume deletion, orphan removal or dotenv change
+ran. An initial evidence-script Ruff invocation omitted the backend config and
+misclassified the standard-library TOML import; the correctly configured Ruff
+and Black checks pass without an import change. npm retains its existing
+ESLint deprecation and install-script policy notices; installation exits zero.

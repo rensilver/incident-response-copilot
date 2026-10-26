@@ -1,0 +1,1 @@
+{"python_installed_count": 81, "python_lock_package_count": 82, "npm_installed_package_count": 468, "npm_lock_package_count": 551, "installed_versions_match_locks": true, "configured_services": ["prometheus", "elasticsearch", "app", "frontend", "grafana"], "running_services": ["elasticsearch", "grafana", "prometheus"]}
