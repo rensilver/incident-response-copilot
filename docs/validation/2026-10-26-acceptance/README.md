@@ -51,3 +51,20 @@ change is the documented four-to-one inventory-case replacement. The final
 [source/privacy scan](task1-source-audit.log) and [reference check](task1-links.log)
 pass. The evidence recorder and changed CLI also pass Ruff; `git diff --check`
 is clean. No runtime application code, dependency lock or original media changed.
+
+## Task 2 — private configuration and worktrees
+
+The [separate private audit](task2-private.json) confirms root `.env` and the local
+plan are ignored and untracked; active hidden project tool/config directories are
+empty. One registered worktree exists, with no stale metadata. The earlier ignored
+disposable checkout and retired-worktree archive remain historical scratch
+artifacts, excluded from active project configuration. Existing generated data,
+archives, unrelated private credential file and worktrees were preserved.
+
+Restricted root/archived-checkout dotenv and the unrelated private credential file
+to mode `0600` (the root dotenv had mode `0664`). No values were changed or printed.
+Provider/model configuration matches the required selection. Two draft audit
+assumptions about a configurable reasoning setting [failed](task2-check-draft.log);
+inspection confirmed effort is fixed in the adapter. The corrected privacy audit
+passes; runtime request assertions are checked separately in task 3. Local removal
+patterns and private inspection code remain outside tracked artifacts.
