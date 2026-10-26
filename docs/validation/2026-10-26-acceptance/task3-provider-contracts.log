@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: asyncio-1.4.0, anyio-4.14.2, langsmith-0.11.0, respx-0.23.1, mock-3.15.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 157 items
+
+backend/tests/unit/config/test_openai_settings.py ....................   [ 12%]
+backend/tests/unit/llm/test_factory.py .                                 [ 13%]
+backend/tests/unit/llm/test_openai_configuration.py ...                  [ 15%]
+backend/tests/unit/llm/test_openai_provider.py ......................... [ 31%]
+........................................................................ [ 77%]
+.............................                                            [ 95%]
+backend/tests/unit/llm/test_provider_imports.py .                        [ 96%]
+backend/tests/unit/test_provider_failure_validator.py ......             [100%]
+
+============================= 157 passed in 13.41s =============================

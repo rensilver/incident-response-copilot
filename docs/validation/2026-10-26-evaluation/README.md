@@ -84,7 +84,7 @@ These probes and manual judgments are separate from paid evaluation scores.
 ## Task 5: reproduction environment
 
 The [environment record](environment.md) retains runtime/library versions and
-lock comparisons, without host-capacity samples or local inference blockers.
+lock comparisons, without machine-capacity samples or local inference blockers.
 Historical environment artifacts are retired with task 7's obsolete evidence.
 
 ## Task 6: genuine screenshots and recording

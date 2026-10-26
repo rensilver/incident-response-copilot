@@ -93,7 +93,7 @@ scoring and scenario definitions are unchanged. No new paid call ran for this ta
 Removed configuration prose about retired selections/variables and condensed
 dotenv, provider failures, deadlines and tracing into current behavior. Added the
 total-investigation setting to the defaults table. README contains no migration
-chronology, future-action list, host-capacity narrative or assistant/plan file
+chronology, future-action list, machine-capacity narrative or assistant/plan file
 reference. Existing scope limits and synthetic-history descriptions are current
 product behavior, not a project change log.
 
@@ -140,13 +140,13 @@ is unchanged.
 | `timeout 360 make check` | [615 offline backend cases, 104 frontend cases, Ruff, strict mypy, Black, frontend lint/format/types, API drift and production build pass](task8-fresh-checks.log) |
 | Both production images | [Build succeeds from fresh source with cached layers](task8-image-build.log) |
 | Default `make docker-up` | [Fails](task8-default-startup.log); [container-state diagnostic](task8-port-conflict-fixed.log) confirms occupied port 8000 |
-| Override `make docker-up` | [Succeeds](task8-override-startup-fixed.log); [all five services healthy](task8-stack-running.json), backend host 18000/internal 8000 |
-| `timeout 180 make seed` with the same override | [Three scenarios, six metric blocks, 1,236 synthetic log documents; Prometheus restarted](task8-seed.log) |
+| Override `make docker-up` | [Succeeds](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-26-documentation/task8-override-startup-fixed.log); [all five services healthy](task8-stack-running.json), backend host 18000/internal 8000 |
+| `timeout 180 make seed` with the same override | [Three scenarios, six metric blocks, 1,236 synthetic log documents; Prometheus restarted](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-26-documentation/task8-seed.log) |
 | README health curl | [All three dependencies true](task8-health.json); [runtime fields](task8-runtime.log) confirm OpenAI/model/disabled tracing and budget |
 | README investigation curl, host port 18000 | [HTTP 200, 20.455 s](api-timing.json); [validated report](api-response.json), exact 180-minute window |
 | All three preset submissions | [Three HTTP 200 reports, exact UI/API windows, report focus and mobile fit](walkthrough.json); [progress](task8-walkthrough.log) |
 | Real seeded connector tests | [Six pass](task8-connectors.log), covering all three scenario patterns and keyword fields |
-| Offline provider-failure validator | [188 pass](task8-provider-failures.log); overlaps the offline suite, not an additive count |
+| Offline provider-failure validator | [188 pass](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-26-documentation/task8-provider-failures.log); overlaps the offline suite, not an additive count |
 | `timeout 240 make frontend-e2e` | [31 controlled Chromium cases pass, nine intentional project skips](task8-browser-fixtures.log) |
 | Host FastAPI/Next dev commands | [Backend](task8-host-backend.log) and [frontend](task8-host-frontend.log) serve; [proxied health](task8-host-health.json) is ok and [invalid POST status](task8-host-invalid-status.log) is 422, with [validation body](task8-host-invalid.json); no generation call |
 | Mermaid | [20 nodes/23 edges render](diagram-check.json); [diagram PNG](system-design.png), [SVG](system-design.svg), [final command log](task8-diagram-final.log) |

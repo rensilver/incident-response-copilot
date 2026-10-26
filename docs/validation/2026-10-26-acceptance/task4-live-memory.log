@@ -1,0 +1,19 @@
+2026-10-26 14:34:30 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-10-26 14:34:30 [debug    ] log_search_executed            hits=17 service=checkout-service
+2026-10-26 14:34:30 [debug    ] log_search_executed            hits=0 service=checkout-service
+Traceback (most recent call last):
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-26-acceptance/memory.py", line 57, in <module>
+    asyncio.run(main())
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rensilver/.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-26-acceptance/memory.py", line 44, in main
+    assert result.matched_count > 0
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

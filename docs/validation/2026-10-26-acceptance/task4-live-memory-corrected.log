@@ -1,0 +1,5 @@
+2026-10-26 14:35:03 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-10-26 14:35:03 [debug    ] log_search_executed            hits=17 service=checkout-service
+2026-10-26 14:35:03 [debug    ] log_search_executed            hits=5 service=checkout-service
+2026-10-26 14:35:04 [debug    ] log_search_executed            hits=1 service=checkout-service
+{"passed": true, "resets": 3, "log_event_kinds": 3}

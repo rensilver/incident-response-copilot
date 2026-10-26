@@ -1,0 +1,16 @@
+{
+  "root_env_ignored": true,
+  "root_env_untracked": true,
+  "root_env_mode": "0o600",
+  "local_plan_ignored": true,
+  "local_plan_untracked": true,
+  "provider_model_match": true,
+  "obsolete_environment_keys": 0,
+  "active_hidden_config_entries": 0,
+  "registered_worktrees": 1,
+  "stale_worktree_metadata": false,
+  "historical_ignored_checkout_preserved": true,
+  "historical_local_archive_preserved": true,
+  "generated_observability_data_preserved": true,
+  "private_values_printed": false
+}

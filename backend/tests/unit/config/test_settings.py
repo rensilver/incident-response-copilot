@@ -12,13 +12,13 @@ def test_defaults_select_openai(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.max_tool_rounds == 2
 
 
-@pytest.mark.parametrize("provider", ["groq", "ollama", "fallback", "invalid"])
-def test_retired_provider_cannot_be_selected_from_environment(
+@pytest.mark.parametrize("provider", ["unsupported", "remote", "fallback", "invalid"])
+def test_unsupported_provider_cannot_be_selected_from_environment(
     monkeypatch: pytest.MonkeyPatch, provider: str
 ) -> None:
     monkeypatch.setenv("LLM_PROVIDER", provider)
     # Valid synthetic credentials ensure rejection is for the selection itself.
-    monkeypatch.setenv("GROQ_API_KEY", "test-retired-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-provider-key")
     with pytest.raises(ValidationError, match="llm_provider"):
         Settings(_env_file=None)
 

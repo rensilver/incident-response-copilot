@@ -89,14 +89,14 @@ def test_validator_isolates_environment_and_propagates_case_failure(
     assert "inherited-tracing-canary" not in result.stdout + result.stderr
 
 
-@pytest.mark.parametrize("distribution", ["groq", "ollama", "langchain_groq", "langchain_ollama"])
-def test_validator_rejects_retired_installed_distribution(
-    validation_checkout: Path, tmp_path: Path, distribution: str
+def test_validator_does_not_inventory_unrelated_installed_packages(
+    validation_checkout: Path, tmp_path: Path
 ) -> None:
-    # Real distribution metadata simulates a contaminated installation.
-    metadata = tmp_path / f"{distribution}-0.0.0.dist-info"
+    # Package inventory belongs to the isolated release audit. Incomplete unrelated
+    # metadata must not prevent this CLI from exercising provider failures.
+    metadata = tmp_path / "unrelated_package-0.0.0.dist-info"
     metadata.mkdir()
-    (metadata / "METADATA").write_text(f"Name: {distribution}\nVersion: 0.0.0\n")
+    (metadata / "METADATA").write_text("Version: 0.0.0\n")
     result = subprocess.run(
         [
             sys.executable,
@@ -107,11 +107,10 @@ def test_validator_rejects_retired_installed_distribution(
         env={"PATH": os.defpath, "PYTHONPATH": str(tmp_path)},
         capture_output=True,
         text=True,
-        timeout=15,
+        timeout=30,
     )
-    assert result.returncode != 0
-    assert "Retired provider packages installed" in result.stdout + result.stderr
-    assert "passed" not in result.stdout
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "7 passed" in result.stdout
 
 
 def test_validator_bounds_stalled_cases(validation_checkout: Path) -> None:

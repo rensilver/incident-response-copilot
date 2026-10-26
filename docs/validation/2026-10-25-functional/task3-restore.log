@@ -1,7 +1,0 @@
-time="2026-10-25T21:01:29-03:00" level=warning msg="Found orphan containers (ic-validation-proxy, ic-ollama) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
- Container ic-app Recreate
- Container ic-app Recreated
- Container ic-app Starting
- Container ic-app Started
- Container ic-app Waiting
- Container ic-app Healthy

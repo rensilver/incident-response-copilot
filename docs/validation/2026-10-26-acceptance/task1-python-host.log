@@ -1,0 +1,158 @@
+.venv/bin/ruff check backend/src backend/tests
+All checks passed!
+.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src backend/tests/typing
+Success: no issues found in 60 source files
+.venv/bin/pytest backend/tests/unit
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: anyio-4.14.2, respx-0.23.1, asyncio-1.4.0, mock-3.15.1, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 612 items
+
+backend/tests/unit/agents/test_correlation_agent.py .....                [  0%]
+backend/tests/unit/agents/test_evidence_preservation.py ..........       [  2%]
+backend/tests/unit/agents/test_execution.py ......................       [  6%]
+backend/tests/unit/agents/test_graph.py ...................              [  9%]
+backend/tests/unit/agents/test_investigation_window.py ....              [  9%]
+backend/tests/unit/agents/test_prompts.py .........                      [ 11%]
+backend/tests/unit/agents/test_specialists.py ...                        [ 11%]
+backend/tests/unit/agents/test_state.py ....                             [ 12%]
+backend/tests/unit/agents/test_supervisor.py .......                     [ 13%]
+backend/tests/unit/agents/test_temporal_boundaries.py .................. [ 16%]
+                                                                         [ 16%]
+backend/tests/unit/agents/test_tool_loop.py .............                [ 18%]
+backend/tests/unit/analysis/test_summarise.py ....                       [ 19%]
+backend/tests/unit/analysis/test_thresholds.py .........                 [ 20%]
+backend/tests/unit/api/test_contract.py ............                     [ 22%]
+backend/tests/unit/api/test_disconnect.py ....                           [ 23%]
+backend/tests/unit/api/test_openapi_export.py ...                        [ 23%]
+backend/tests/unit/api/test_origin_contract.py ...                       [ 24%]
+backend/tests/unit/api/test_routes.py ..................                 [ 27%]
+backend/tests/unit/config/test_environment_loading.py .............      [ 29%]
+backend/tests/unit/config/test_openai_settings.py ....................   [ 32%]
+backend/tests/unit/config/test_settings.py ......                        [ 33%]
+backend/tests/unit/config/test_validation_environment.py .....           [ 34%]
+backend/tests/unit/connectors/test_elasticsearch.py ....                 [ 35%]
+backend/tests/unit/connectors/test_prometheus.py .....                   [ 35%]
+backend/tests/unit/connectors/test_promql.py .......                     [ 37%]
+backend/tests/unit/demo/test_curves.py ........                          [ 38%]
+backend/tests/unit/demo/test_es_index.py .....                           [ 39%]
+backend/tests/unit/demo/test_logs_render.py .......                      [ 40%]
+backend/tests/unit/demo/test_memory_evidence.py .....                    [ 41%]
+backend/tests/unit/demo/test_metrics_render.py ........                  [ 42%]
+backend/tests/unit/demo/test_scenarios.py ......                         [ 43%]
+backend/tests/unit/demo/test_seed_paths.py ......                        [ 44%]
+backend/tests/unit/evaluation/test_eval_runner.py ..........             [ 46%]
+backend/tests/unit/evaluation/test_scenarios.py ...                      [ 46%]
+backend/tests/unit/llm/test_factory.py .                                 [ 46%]
+backend/tests/unit/llm/test_fake_tool_calls.py .......                   [ 47%]
+backend/tests/unit/llm/test_openai_configuration.py ...                  [ 48%]
+backend/tests/unit/llm/test_openai_provider.py ......................... [ 52%]
+........................................................................ [ 64%]
+.............................                                            [ 68%]
+backend/tests/unit/llm/test_provider_contract.py ............            [ 70%]
+backend/tests/unit/llm/test_provider_health.py ......................... [ 75%]
+......                                                                   [ 75%]
+backend/tests/unit/llm/test_provider_imports.py F                        [ 76%]
+backend/tests/unit/llm/test_structured_repair.py .......                 [ 77%]
+backend/tests/unit/models/test_enums.py ..                               [ 77%]
+backend/tests/unit/models/test_findings.py .........                     [ 79%]
+backend/tests/unit/models/test_logs.py ...                               [ 79%]
+backend/tests/unit/models/test_metrics.py ....                           [ 80%]
+backend/tests/unit/models/test_report.py ......                          [ 81%]
+backend/tests/unit/services/test_deadline.py .........                   [ 82%]
+backend/tests/unit/services/test_incident_service.py ..........          [ 84%]
+backend/tests/unit/test_composition.py ..                                [ 84%]
+backend/tests/unit/test_main.py .......                                  [ 85%]
+backend/tests/unit/test_provider_failure_validator.py ......             [ 86%]
+backend/tests/unit/test_resource_lifecycle.py ......................     [ 90%]
+backend/tests/unit/test_script_paths.py ......................           [ 93%]
+backend/tests/unit/test_smoke.py .                                       [ 94%]
+backend/tests/unit/test_validation_metadata.py ........                  [ 95%]
+backend/tests/unit/tools/test_elasticsearch_tools.py ......              [ 96%]
+backend/tests/unit/tools/test_prometheus_tools.py ........               [ 97%]
+backend/tests/unit/utils/test_exceptions.py .....                        [ 98%]
+backend/tests/unit/utils/test_logging.py .                               [ 98%]
+backend/tests/unit/utils/test_tracing.py ........                        [100%]
+
+=================================== FAILURES ===================================
+_______ test_openai_import_is_isolated_from_other_adapters_and_profiling _______
+
+    def test_openai_import_is_isolated_from_other_adapters_and_profiling() -> None:
+        source = Path(__file__).resolve().parents[3] / "src"
+        # A fresh interpreter prevents imports during suite collection from masking coupling.
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                """
+    import socket
+    import sys
+    from importlib.abc import MetaPathFinder
+
+    allowed_integrations = {"langchain_core", "langchain_openai"}
+
+    def unrelated(name):
+        package = name.split(".")[0]
+        return package == "psutil" or (
+            package.startswith("langchain_") and package not in allowed_integrations
+        )
+
+    class RejectOtherAdapter(MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if unrelated(fullname):
+                raise ImportError(f"Unrelated adapter dependency: {fullname}")
+            return None
+
+    def deny_network(*args, **kwargs):
+        raise AssertionError("Provider imports must not access the network")
+
+    socket.socket.connect = deny_network
+    socket.socket.connect_ex = deny_network
+    socket.getaddrinfo = deny_network
+    sys.meta_path.insert(0, RejectOtherAdapter())
+    from incident_copilot.llm.openai_provider import OpenAIProvider
+
+    assert OpenAIProvider.__name__ == "OpenAIProvider"
+    assert not any(unrelated(name) for name in sys.modules)
+    """,
+            ],
+            env={
+                "PATH": os.defpath,
+                "PYTHONPATH": str(source),
+                "INCIDENT_COPILOT_ENV_FILE": "",
+            },
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 27, in <module>
+E             from incident_copilot.llm.openai_provider import OpenAIProvider
+E           File "/home/rensilver/workspaces/incident-response-copilot/backend/src/incident_copilot/llm/openai_provider.py", line 9, in <module>
+E             from langchain_core.language_models import BaseChatModel, LanguageModelInput
+E           File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/langchain_core/language_models/__init__.py", line 110, in __getattr__
+E             result = import_attr(attr_name, module_name, __spec__.parent)
+E           File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/langchain_core/_import_utils.py", line 36, in import_attr
+E             module = import_module(f".{module_name}", package=package)
+E           File "/home/rensilver/miniconda3/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/rensilver/workspaces/incident-response-copilot/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 16, in <module>
+E             from langchain_protocol.protocol import MessageFinishData
+E           File "<string>", line 17, in find_spec
+E             raise ImportError(f"Unrelated adapter dependency: {fullname}")
+E         ImportError: Unrelated adapter dependency: langchain_protocol
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/rensilver/workspaces/incident-response-copilot/.venv/bin/python', '-c', '\nimport socket...rtError(f"Unrelated adapter dependency: {fullname}")\nImportError: Unrelated adapter dependency: langchain_protocol\n').returncode
+
+backend/tests/unit/llm/test_provider_imports.py:58: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/unit/llm/test_provider_imports.py::test_openai_import_is_isolated_from_other_adapters_and_profiling
+======================== 1 failed, 611 passed in 36.89s ========================
+make: *** [Makefile:74: test] Error 1

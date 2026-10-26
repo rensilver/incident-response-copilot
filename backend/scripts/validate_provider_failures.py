@@ -10,15 +10,12 @@ tests. Requires no Docker, live credentials, seed data, or running services.
 
 import argparse
 import os
-import re
 import signal
 import subprocess
 import sys
-from importlib.metadata import distributions
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RETIRED_PACKAGES = {"groq", "ollama", "langchain-groq", "langchain-ollama"}
 CASES = (
     "backend/tests/unit/llm/test_openai_provider.py",
     "backend/tests/unit/llm/test_openai_configuration.py",
@@ -31,7 +28,7 @@ CASES = (
 
 
 def main() -> int:
-    """Reject retired packages and return the bounded offline matrix's exit code."""
+    """Return the bounded, isolated offline matrix's exit code."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--timeout",
@@ -42,12 +39,7 @@ def main() -> int:
         help="Total test deadline, 1–300 seconds (default: 90)",
     )
     args = parser.parse_args()
-    installed = {re.sub(r"[-_.]+", "-", item.metadata["Name"]).lower() for item in distributions()}
-    retired = RETIRED_PACKAGES & installed
-    if retired:
-        print(f"Retired provider packages installed: {', '.join(sorted(retired))}", flush=True)
-        return 1
-    print("Retired provider packages absent; running offline OpenAI validation.", flush=True)
+    print("Running offline OpenAI failure validation.", flush=True)
     # Do not inherit provider URLs, credentials, tracing, pytest options, or dotenv.
     environment = {
         "PATH": os.defpath,

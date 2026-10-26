@@ -1,0 +1,5 @@
+Attempt 1: local audit assertion for an assumed reasoning environment key failed.
+Attempt 2: assertion for an assumed settings reasoning attribute failed.
+Inspection: reasoning effort is fixed to none in the provider, with no settings
+field or environment key. Removed those invalid assumptions from this privacy
+check. No private values were printed and no application change was made.

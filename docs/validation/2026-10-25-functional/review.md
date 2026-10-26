@@ -33,7 +33,7 @@ OpenAI Responses `gpt-6-luna`, reasoning `none`, with no fallback provider.
 
 Offline results after the only validator fix are [615 cases on Python 3.12](task4-recheck-py312-host.log)
 and [615 on Python 3.13](task4-py313.log), plus Ruff, strict mypy and Black.
-The isolated [188-case provider matrix](task4-recheck-validator-host.log),
+The isolated [188-case provider matrix](https://github.com/rensilver/incident-response-copilot/blob/e7d204d8598c9c7d6eebf626ff9916334e933846/docs/validation/2026-10-25-functional/task4-recheck-validator-host.log),
 [61 API/deadline/graph cases](task4-api-failures.log), and
 [11 tracing cases](task5-offline-tracing.log) overlap the full suite and must not
 be added to it as unique tests. The unchanged frontend has [104 component/Node cases,

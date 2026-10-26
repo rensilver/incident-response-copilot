@@ -1,0 +1,13 @@
+{
+  "archive_revision": "5ac0a194401b387e23aabde29aa5d03e92124056",
+  "files": [
+    {
+      "path": "docs/validation/2026-10-26-acceptance/task3-observability-start.log",
+      "sha256": "7d4e1ae645cd313c67e555945759304b9fbfa8142d0be6477e55984e801a27f7"
+    },
+    {
+      "path": "docs/validation/2026-10-26-acceptance/task4-seed.log",
+      "sha256": "c1502a46e5261a35987d5f8427e77ddb5bd9705e1c7d00c2fdad358ab45ebf15"
+    }
+  ]
+}

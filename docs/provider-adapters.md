@@ -144,12 +144,12 @@ OpenAI is the only production selection. Retired selections fail settings
 validation; the factory rejects `fake` as test-only. Retired provider/fallback
 settings are no longer fields; stale dotenv/process variables are ignored and
 cannot enable fallback. The private dotenv and Compose provider cleanup are
-complete. `backend/scripts/validate_provider_failures.py` runs the offline OpenAI
-failure matrix and rejects installed retired SDKs/adapters before starting tests.
+complete. `backend/scripts/validate_provider_failures.py` runs the bounded offline
+OpenAI failure matrix in an isolated environment. Dependency inventory is verified
+separately in a fresh locked installation.
 The [validator evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-22-openai-only-failure-validator/README.md)
 records a fresh locked install and endpoint/fallback isolation. Evaluation and
-validation recorders retain runtime/library versions, reports, and timings without
-host-capacity sampling or a profiling dependency.
+validation recorders retain reports, timings and a focused runtime/library inventory.
 
 Settings reprs/JSON and normal validation exception text redact OpenAI credentials;
 `hide_input_in_errors` also prevents a model-level validation error from displaying

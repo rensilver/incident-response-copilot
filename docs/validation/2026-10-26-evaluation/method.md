@@ -51,5 +51,5 @@ window prose, confidence and identifier sensitivity alongside the score.
 Task 1 verification: inspect the scorer and all ten existing evaluation unit
 cases, run those cases offline, record source hashes, check this document's scope
 and diff, then commit this method before starting paid collection. Later tasks
-retain runtime/library versions without host capacity measurements. The final
+retain runtime/library versions with a focused runtime/library inventory. The final
 review will audit links/media and stop before Phase 8 README claims.

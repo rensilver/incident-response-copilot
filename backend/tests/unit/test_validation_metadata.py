@@ -37,8 +37,18 @@ def recorder(request: pytest.FixtureRequest) -> ModuleType:
 
 
 def current_package_version(name: str) -> str:
-    if name in {"groq", "ollama", "langchain-groq", "langchain-ollama"}:
-        raise AssertionError(f"Recorder requires a retired package: {name}")
+    if name not in {
+        "incident-response-copilot",
+        "langsmith",
+        "langgraph",
+        "langchain-core",
+        "langchain-openai",
+        "openai",
+        "pydantic",
+        "httpx",
+        "elasticsearch",
+    }:
+        raise AssertionError(f"Recorder requires an unexpected package: {name}")
     return version(name)
 
 
