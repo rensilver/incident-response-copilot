@@ -96,7 +96,7 @@ Unexpected health-handler bugs use the same sanitized 500 response above.
 The application follows FastAPI's
 [custom exception handler guidance](https://fastapi.tiangolo.com/tutorial/handling-errors/).
 Offline contract coverage and the deliberately failing pre-fix runs are retained
-under [API contract validation](validation/2026-10-23-api-contract/README.md).
+under [API contract validation](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-23-api-contract/README.md).
 The [same-origin proxy contract](proxy-contract.md) maps browser health requests
 explicitly to `/health`. The [frontend contract guide](frontend-api-contract.md)
 documents reproducible OpenAPI types, runtime parsing, and schema/type drift checks.

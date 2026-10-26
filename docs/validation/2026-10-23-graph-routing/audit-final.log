@@ -1,3 +1,0 @@
-PASS: four scoped source/test files and task evidence; 33 local references.
-PASS: both source executable ASTs unchanged; temporary mutations restored.
-PASS: final checks and retained mutation evidence; private-file ignores and secret scan.

@@ -1,2 +1,0 @@
-backend/tests/unit/llm/test_openai_provider.py:898: error: List item 0 has incompatible type "Callable[[Request], Response]"; expected "Response | Exception | type[Exception]"  [list-item]
-Found 1 error in 1 file (checked 4 source files)

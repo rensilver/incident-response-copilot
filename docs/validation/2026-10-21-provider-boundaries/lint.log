@@ -1,4 +1,0 @@
-.venv/bin/ruff check backend/src backend/tests
-All checks passed!
-.venv/bin/mypy --config-file backend/pyproject.toml --strict backend/src
-Success: no issues found in 59 source files

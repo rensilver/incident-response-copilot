@@ -1,8 +1,0 @@
-PASS: staged scope (18 files before this audit log); no unrelated changes
-PASS: private .env and local plan ignored and excluded
-PASS: staged whitespace check
-PASS: 27 local Markdown references resolve
-PASS: 12 unique recorded attempts; four retained failures/timeouts
-PASS: staged credential-pattern scan (not a guarantee against every secret format)
-Reviewed source/test/docs diff: one adapter policy change plus scoped coverage/guidance
-No settings, factory, graph, service, API, UI, dependency, or scenario changes

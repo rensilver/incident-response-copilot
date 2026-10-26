@@ -1,0 +1,9 @@
+{
+  "archive_commit": "5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e",
+  "retired_snapshot_cutoff_exclusive": "2026-10-25",
+  "retired_files": 1277,
+  "retired_bytes": 15190133,
+  "retired_snapshot_groups": 61,
+  "incoming_markdown_links_repaired": 35,
+  "policy": "Retire superseded transition/baseline snapshots intact; preserve current functional evidence and Git history; never rebrand old measurements"
+}

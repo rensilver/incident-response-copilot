@@ -1,9 +1,0 @@
-E501 Line too long (101 > 100)
-   --> docs/validation/2026-10-23-graph-routing/audit.py:100:101
-    |
- 98 |     print(f"PASS: four scoped source/test files and task evidence; {references} local references.")
- 99 |     print("PASS: both source executable ASTs unchanged; temporary mutations restored.")
-100 |     print("PASS: final checks and retained mutation evidence; private-file ignores and secret scan.")
-    |                                                                                                     ^
-
-Found 1 error.

@@ -8,7 +8,7 @@ local operation on port 3001 are established requirements.
 This guidance applies the frontend-design, Web Interface Guidelines, and Vercel
 React best-practices skills to the existing contracts. It prepares the design
 proposal and implementation; it does not select visual tokens or a component kit.
-The [review record](validation/2026-10-24-frontend-guidance/README.md) identifies
+The [review record](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-24-frontend-guidance/README.md) identifies
 sources, current findings, verification, and work that cannot yet be assessed.
 
 ## Design criteria
@@ -24,7 +24,7 @@ cart-service errors after deployment. Presets ask about symptoms; they must not
 present seeded ground truth as the investigation's answer. Preserve service and
 dependency names in observations. Source content is in the
 [scenario definitions](../backend/src/incident_copilot/demo/scenarios.py) and
-[existing preset inputs](../streamlit_app/app.py).
+[existing preset inputs](../frontend/src/features/investigations/investigation-session.tsx).
 
 Choose typography, color, spacing, and visual emphasis deliberately for reading
 technical evidence. Use structural devices to communicate relationships; a

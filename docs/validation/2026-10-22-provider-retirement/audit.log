@@ -1,6 +1,0 @@
-Lock: exactly four retired packages removed; all retained versions unchanged.
-Installed environment: retired distributions absent; sampling dependencies retained.
-Backend AST: no retired SDK or adapter imports.
-Scope: infrastructure, private-file ignores, scenarios, graph, and retained adapters intact.
-Current adapter guide and task record: local file links resolve.
-Changed/new artifacts: configured API-key values absent (values never printed).

@@ -12,16 +12,15 @@ event loop's monotonic clock; the requested telemetry interval is independent.
 |---|---|
 | Total graph execution | `INVESTIGATION_TIMEOUT_SECONDS`: default 240 s, finite, greater than zero and at most 240 s. Read through backend settings and injected into the service. |
 | Individual model operation | `LLM_OPERATION_TIMEOUT_SECONDS`: default 60 s, configurable up to 180 s. One operation budget includes structured-output repair attempts. The total graph budget can expire first. |
-| Current Streamlit HTTP client | 300 s network inactivity per operation; this is **not** a total wall-clock deadline. |
 | Next.js proxy configuration | Explicit upstream socket inactivity timeout: 270 s, allowing 30 s beyond the maximum graph budget for cancellation/response delivery. See the [proxy contract](proxy-contract.md). |
-| Browser transport | Total fetch/body budget: 300 s, allowing another 30 s beyond the proxy budget. Implemented in `frontend/src/lib/api/client.ts`; feature views are pending. |
-| Health caller | Streamlit uses 5 s network inactivity; the new browser transport uses 10 s total. `/health` probes concurrently; it does not run an investigation. |
+| Browser transport | Total fetch/body budget: 300 s, allowing another 30 s beyond the proxy budget. Implemented in `frontend/src/lib/api/client.ts`. |
+| Health caller | The browser transport uses 10 s total. `/health` probes concurrently; it does not run an investigation. |
 
 The 240/270/300 coordination is a default delivery budget, not a strict completion
-guarantee. Next.js and the browser transport are implemented; the static preview does not
-yet initiate investigations. A temporary socket harness verifies
-delivery of a real shortened backend deadline through Next.js; the deployed browser
-path must also be tested when introduced, allowing the 504 JSON response to arrive first.
+guarantee. Next.js and the browser transport initiate investigations through the
+FastAPI API, allowing the backend 504 JSON response to arrive before outer budgets
+expire. See [current functional evidence](validation/2026-10-25-functional/README.md)
+for deployed paths and controlled timeout verification.
 Do not rely on a framework's unspecified proxy default. If introducing different
 budgets, preserve the ordering: backend execution < proxy response < browser request.
 Shorter client timeouts can still be appropriate for connection establishment.
@@ -81,7 +80,7 @@ claimed by these tests.
 ## References and verification
 
 See [the API response contract](api-contract.md) and
-[deadline validation evidence](validation/2026-10-23-investigation-deadlines/README.md).
+[deadline validation evidence](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-23-investigation-deadlines/README.md).
 The implementation follows Python's
 [timeout and cancellation semantics](https://docs.python.org/3.12/library/asyncio-task.html#timeouts).
 HTTPX distinguishes [connect/read/write/pool timeouts](https://www.python-httpx.org/advanced/timeouts/),

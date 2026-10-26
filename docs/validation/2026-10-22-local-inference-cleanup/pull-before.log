@@ -1,1 +1,0 @@
-docker compose exec ollama ollama pull qwen3:4b

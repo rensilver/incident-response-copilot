@@ -1,3 +1,0 @@
-file 'memory_leak.webm'
-file 'slow_dependency.webm'
-file 'bad_deploy.webm'

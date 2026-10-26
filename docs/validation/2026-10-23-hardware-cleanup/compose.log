@@ -1,1 +1,0 @@
-internal error, please report: running "docker" failed: cannot create XDG_RUNTIME_DIR folder "/run/user/1000/snap.docker": mkdir /run/user/1000/snap.docker: read-only file system

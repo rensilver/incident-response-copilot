@@ -1,1 +1,0 @@
-PASS: Compose loads synthetic project-root dotenv from backend cwd; service environment overrides file; private dotenv excluded from image context. No services started.

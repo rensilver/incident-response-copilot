@@ -1,3 +1,0 @@
-/tmp/incident-copilot-fresh313/bin/black --config backend/pyproject.toml --check backend/src backend/tests streamlit_app
-All done! ✨ 🍰 ✨
-118 files would be left unchanged.

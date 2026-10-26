@@ -1,8 +1,0 @@
-docs/validation/2026-10-23-graph-routing/audit.py:54: error: Incompatible types in assignment (expression has type "Path", variable has type "str")  [assignment]
-docs/validation/2026-10-23-graph-routing/audit.py:55: error: "str" has no attribute "read_text"  [attr-defined]
-docs/validation/2026-10-23-graph-routing/audit.py:59: error: "str" has no attribute "parent"  [attr-defined]
-docs/validation/2026-10-23-graph-routing/audit.py:60: error: Item "str" of "Any | str" has no attribute "is_file"  [union-attr]
-docs/validation/2026-10-23-graph-routing/audit.py:62: error: Item "str" of "Any | str" has no attribute "read_text"  [union-attr]
-docs/validation/2026-10-23-graph-routing/audit.py:76: error: Incompatible types in assignment (expression has type "Path", variable has type "str")  [assignment]
-docs/validation/2026-10-23-graph-routing/audit.py:77: error: "str" has no attribute "read_text"  [attr-defined]
-Found 7 errors in 1 file (checked 2 source files)

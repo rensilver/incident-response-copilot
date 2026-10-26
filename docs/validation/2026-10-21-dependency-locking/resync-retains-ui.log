@@ -1,4 +1,0 @@
-UV_PROJECT_ENVIRONMENT="/tmp/incident-copilot-fresh312" uv sync --project backend \
-	--python 3.12.14 --locked --extra dev --inexact
-Resolved 103 packages in 8ms
-Checked 81 packages in 2ms

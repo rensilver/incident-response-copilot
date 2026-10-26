@@ -81,5 +81,5 @@ The generator follows the official
 Runtime validation follows Ajv's
 [JSON Schema dialect guidance](https://ajv.js.org/json-schema.html) and
 [TypeScript type guards](https://ajv.js.org/guide/typescript.html).
-The [validation record](validation/2026-10-23-frontend-contract/README.md)
+The [validation record](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-23-frontend-contract/README.md)
 retains pre-implementation failures, actual checks, and execution limitations.

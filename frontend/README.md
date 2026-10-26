@@ -73,7 +73,7 @@ for this check. Screenshots/traces go into ignored `test-results/`.
 These are controlled API fixtures, not live provider results. They do not certify
 screen-reader or cross-browser accessibility. The [feature review](../docs/validation/2026-10-25-feature-interaction/README.md)
 retains inspected captures, failures and scope. The earlier
-[foundation review](../docs/validation/2026-10-24-foundation-review/README.md)
+[foundation review](https://github.com/rensilver/incident-response-copilot/blob/5ecad6f9aaccc76d47a2c7d384b52abf310c1e5e/docs/validation/2026-10-24-foundation-review/README.md)
 remains historical evidence for the preview.
 
 Use `npm --prefix frontend run format` to format authored frontend files. ESLint

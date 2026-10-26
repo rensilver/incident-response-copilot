@@ -1,7 +1,0 @@
-PASS: review-only scope, unchanged application/configuration, whitespace, private-file ignores
-PASS: all 11 task commits and 227 retained evidence files unchanged
-PASS: smoke allowlists, exact request policy, four responses, continuation, usage, retained failures
-PASS: historical command/log agreement and all three bounded sandbox failures retained
-PASS: 276 local evidence/guide links (external URLs not fetched)
-PASS: configured-key and credential-pattern absence across 243 files; values not printed
-Unchanged backend source SHA-256 (sorted tracked path/NUL/content/NUL): 82c50eedffcf95e697ab22ad980b070c2479ba12453e14c5f6de9ea527efdf12

@@ -1,5 +1,0 @@
-All tracked files outside guidance/log rendering retain their starting bytes.
-Private dotenv and local plan remain ignored and untracked; values not read.
-All 24 changed-document local link targets exist.
-Task files contain no OpenAI key-shaped strings or private-key headers.
-Diff whitespace check passes; no later task or historical artifact changed.

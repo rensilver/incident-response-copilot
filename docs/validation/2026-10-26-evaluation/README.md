@@ -113,3 +113,28 @@ The full [frontend suite](task6-frontend-tests.log) passes 52 Node/contract case
 and 52 component cases. The media privacy/link/JSON audit passes across binary
 and text artifacts. Media files show only the application and synthetic service
 identifiers, without credentials, account interfaces or account-specific links.
+
+## Task 7: retire superseded evidence and repair references
+
+The [current evidence index](../README.md) replaces obsolete entry points.
+[Retirement scope](retirement.json): 1,277 files (15,190,133 bytes) across 61
+baseline/transition snapshot groups through October 24, plus the obsolete demo.
+The working tree no longer carries their obsolete provider/UI/capacity transcripts,
+reports, images or videos. Their original Git objects remain at published merge
+`5ecad6f` (`origin/main` contains it); no history was rewritten or measurements
+renamed/edited as new. Current October 25 functional/full-stack/interaction files
+are preserved byte for byte. Fresh action 7.2 attempts/media also remain intact.
+
+Incoming links in architecture/frontend guides now point to original archived
+Git objects; current README media/report links point to fresh artifacts. The old
+measured-results section was removed without publishing new score/latency claims
+in the README. Obsolete UI source links and timeout descriptions were repaired.
+The independent [asyncio diagnostic](../diagnostics.md) preserves an actionable
+troubleshooting path after retirement of the baseline.
+
+[Documentation link audit](task7-links.log) checks local files/headings and confirms
+archived destinations exist as Git objects. Remote HTTP availability is not tested;
+external links use the already-published revision, rather than new local commits.
+The audit, source/diff scope review and privacy scan pass. The initial staged media
+commit check from task 6 flagged a trailing blank line in the captured frontend
+log; only trailing whitespace was normalized before that commit.

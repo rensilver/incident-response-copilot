@@ -1,6 +1,0 @@
-PASS: 60 current README, AGENTS, and evidence local Markdown targets/anchors
-PASS: 34 unique bounded command records match retained logs; all required final checks passed
-PASS: 46 staged paths restricted to README correction and verification evidence; credential-pattern scan passed
-PASS: private dotenv and local plan remain ignored and excluded from staged content
-PASS: worktree and staged whitespace checks after zero-context review artifact regeneration
-PASS: staged README, evidence scripts, review documentation, command results, image record, and cumulative relocation patch inspected before commit

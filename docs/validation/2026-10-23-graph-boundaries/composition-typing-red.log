@@ -1,2 +1,0 @@
-backend/tests/typing/graph_contract.py:56: error: Expression is of type "CompiledStateGraph[Any, None, Any, Any]", not "CompiledStateGraph[InvestigationState, None, InvestigationState, InvestigationState]"  [assert-type]
-Found 1 error in 1 file (checked 1 source file)

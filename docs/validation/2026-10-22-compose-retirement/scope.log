@@ -1,4 +1,0 @@
-PASS: only the authorized Compose, Make, README and new evidence paths changed
-PASS: diff whitespace and private dotenv/local-plan ignores
-PASS: all 16 local evidence links and anchors resolve
-PASS: private credential values absent from the diff and evidence; values never printed

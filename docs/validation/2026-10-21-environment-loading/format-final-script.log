@@ -1,3 +1,0 @@
-.venv/bin/black --config backend/pyproject.toml --check backend/src backend/tests streamlit_app
-All done! ✨ 🍰 ✨
-116 files would be left unchanged.

@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/home/rensilver/workspaces/incident-response-copilot/docs/validation/2026-10-22-openai-failure-validation/audit.py", line 56, in <module>
-    assert not credential.search((root / name).read_text()), name
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError: docs/validation/2026-10-22-openai-failure-validation/audit.py
