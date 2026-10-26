@@ -1,22 +1,30 @@
 # Incident Response Copilot
 
-Current local Docker and host commands are documented in the
-[full-stack operation guide](docs/full-stack-operation.md).
+Turn a service symptom into an evidence-backed investigation brief. Built for
+on-call engineers reviewing application metrics and logs, Incident Response
+Copilot queries Prometheus and Elasticsearch, proposes ranked causes, and lists
+checks an engineer can use to test those hypotheses.
 
-An agentic AI system that helps engineers investigate production incidents faster. It turns a service symptom into a structured
-report using Prometheus metrics and Elasticsearch logs. A LangGraph supervisor
-routes work to metrics and logs specialists; a correlation agent proposes ranked
-causes, cites observations, and suggests follow-up checks. Engineers can investigate
-through a FastAPI endpoint or the Next.js investigation workspace.
-
-**OpenAI Responses with `gpt-6-luna` is the only production provider**, with reasoning
-effort `none` and no automatic fallback. Configuration, serialized requests, bounded
-health probing, and normalized failures have offline coverage. Current scope and
-reproduction records are indexed under [validation evidence](docs/validation/README.md).
-
-[Watch the real investigation demo with captions and transcript](docs/media/2026-10-26/demo.html)
+[Watch the 56-second demo](docs/media/2026-10-26/demo.html)
+with captions and a descriptive transcript. The recording shows real OpenAI
+investigations of synthetic incidents; waiting is shortened in the edit.
 
 ![Desktop checkout-service investigation showing its queried UTC window, heap-pressure hypothesis and observations](docs/media/2026-10-26/memory_leak-desktop.png)
+
+1. Describe the symptom, optionally select a service, and choose a time window;
+   three seeded examples provide a starting point.
+2. A LangGraph supervisor selects metrics and logs specialists, which collect
+   observations through validated tools within the same server-owned interval.
+3. Review the report's summary, ranked candidates, supporting observations and
+   next steps in the Next.js workspace or through the FastAPI API. Causes remain
+   hypotheses, and model confidence is uncalibrated.
+
+The engineering focus is explicit boundaries: deterministic metric calculations,
+bounded model/tool execution, typed reports and runtime browser validation.
+**OpenAI Responses with `gpt-6-luna`, reasoning effort `none`, is the sole
+production provider**, behind an extensible interface with no automatic fallback.
+The application is a local demonstration using synthetic telemetry; public
+hosting, authentication and persistent report history are outside its scope.
 
 ## Build and run
 
