@@ -1,0 +1,4 @@
+UV_PROJECT_ENVIRONMENT="/tmp/ic-phase7-py313" uv sync --project backend \
+    --python 3.13 --locked --extra dev --inexact
+Resolved 82 packages in 1ms
+Checked 81 packages in 6ms

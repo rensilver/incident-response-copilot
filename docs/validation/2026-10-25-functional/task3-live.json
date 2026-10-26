@@ -1,0 +1,184 @@
+{
+  "started_at": "2026-10-26T00:00:32.144Z",
+  "scope": "Concurrent real provider investigations through validation-only transparent local data proxies",
+  "planned": [
+    {
+      "service": "checkout-service",
+      "minutes": 17,
+      "channel": "browser"
+    },
+    {
+      "service": "payment-service",
+      "minutes": 43,
+      "channel": "browser"
+    },
+    {
+      "service": "cart-service",
+      "minutes": 91,
+      "channel": "api"
+    }
+  ],
+  "attempts": [
+    {
+      "preset": "Memory leak",
+      "channel": "browser",
+      "started_at": "2026-10-26T00:00:36.976Z",
+      "request": {
+        "query": "checkout-service: investigate metrics and logs",
+        "service": "checkout-service",
+        "minutes_back": 17
+      },
+      "status": "passed",
+      "sent_at": "2026-10-26T00:00:37.661Z",
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested 17-minute investigation window, checkout-service logs show Java heap exhaustion and high heap pressure in version v1.4.2. Threshold-validated aggregate p95 latency remained near 0.48s and the 5xx error rate near 0.20pp, with no detected anomalies. The log findings support heap pressure as a likely failure mechanism, but do not establish its underlying cause or the extent of user impact.",
+        "likely_causes": [
+          {
+            "title": "Java heap exhaustion or severe heap pressure in checkout-service",
+            "rationale": "The OutOfMemoryError samples directly indicate Java heap exhaustion, and the GC warnings reporting 92% heap usage support significant heap pressure. These observations support this failure mechanism but do not identify what caused the pressure or prove an aggregate latency or error-rate impact.",
+            "confidence": 0.9,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "Two ERROR samples for checkout-service version v1.4.2 report `java.lang.OutOfMemoryError: Java heap space`, with sampled timestamps from 2026-10-25T23:44:10+00:00 to 2026-10-25T23:51:10+00:00."
+              },
+              {
+                "source": "logs",
+                "detail": "Two WARN samples for checkout-service version v1.4.2 report `GC overhead limit approaching; heap usage 92%`, with sampled timestamps from 2026-10-25T23:46:10+00:00 to 2026-10-25T23:51:10+00:00."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Inspect JVM heap, allocation, garbage-collection, and heap-dump data around the reported errors to identify the source of heap pressure.",
+          "Check instance-level restarts, OOM events, and affected-request logs to assess scope and user impact; steady aggregate metrics do not rule out localized failures.",
+          "Review version v1.4.2 changes and runtime heap configuration, without assuming a deployment regression from the version label alone.",
+          "Verify log-query behavior and coverage: the targeted OutOfMemoryError query returned zero documents, while the broader ERROR query returned two samples containing that message.",
+          "Collect request-rate and resource measurements before attributing heap pressure to traffic or resource contention; no such findings were supplied."
+        ],
+        "confidence": 0.86,
+        "investigation_window": {
+          "start": "2026-10-25T23:43:37.779008Z",
+          "end": "2026-10-26T00:00:37.779008Z"
+        }
+      },
+      "body_at": "2026-10-26T00:01:03.240Z",
+      "displayed_times": [
+        {
+          "datetime": "2026-10-25T23:43:37.779008Z",
+          "text": "Oct 25, 2026, 23:43:37.779 UTC"
+        },
+        {
+          "datetime": "2026-10-26T00:00:37.779008Z",
+          "text": "Oct 26, 2026, 00:00:37.779 UTC"
+        }
+      ],
+      "finished_at": "2026-10-26T00:01:03.268Z"
+    },
+    {
+      "preset": "Slow dependency",
+      "channel": "browser",
+      "started_at": "2026-10-26T00:00:36.977Z",
+      "request": {
+        "query": "payment-service: investigate metrics and logs",
+        "service": "payment-service",
+        "minutes_back": 43
+      },
+      "status": "passed",
+      "sent_at": "2026-10-26T00:00:37.636Z",
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested 43-minute investigation window, payment-service p95 latency held steady near 0.91s and its 5xx error rate held steady near 1.72pp; neither threshold-validated metric was anomalous. Logs show repeated timeouts calling fraud-api and payment authorization errors reporting fraud checks unavailable. These logs support investigating the payment-service-to-fraud-api dependency path, but do not establish fraud-api's internal failure mechanism or prove a broader latency increase. Fraud-api log queries returned no documents, which is not evidence that the service was healthy.",
+        "likely_causes": [
+          {
+            "title": "Failure or slow responses in the payment-service-to-fraud-api dependency path",
+            "rationale": "Repeated upstream timeout warnings and fraud-check-unavailable authorization errors support this dependency path as a candidate cause. They do not prove the cause originated within fraud-api or establish temporal ordering.",
+            "confidence": 0.63,
+            "supporting_evidence": [
+              {
+                "source": "logs",
+                "detail": "19 payment-service WARN documents reported “upstream timeout calling fraud-api after 2000ms” (version v1.4.2; sampled occurrences from 2026-10-25T23:18:11+00:00 to 2026-10-25T23:54:11+00:00)."
+              },
+              {
+                "source": "logs",
+                "detail": "6 payment-service ERROR documents reported “PaymentAuthorizationException: fraud check unavailable” (version v1.4.2; sampled occurrences from 2026-10-25T23:20:11+00:00 to 2026-10-25T23:50:11+00:00)."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Inspect fraud-api metrics, traces, and dependency telemetry for the investigation window. The supplied fraud-api ERROR and timeout queries returned zero documents; this absence does not establish health.",
+          "Use distributed traces and payment-service request outcomes to determine whether the fraud-api timeouts account for the authorization errors and identify where the delay or failure occurs.",
+          "Check request-rate measurements if traffic changes are relevant; no request-rate evidence was supplied.",
+          "Continue monitoring payment-service latency and error metrics, which were steady and not anomalous in the supplied threshold-validated findings."
+        ],
+        "confidence": 0.63,
+        "investigation_window": {
+          "start": "2026-10-25T23:17:37.775587Z",
+          "end": "2026-10-26T00:00:37.775587Z"
+        }
+      },
+      "body_at": "2026-10-26T00:01:00.994Z",
+      "displayed_times": [
+        {
+          "datetime": "2026-10-25T23:17:37.775587Z",
+          "text": "Oct 25, 2026, 23:17:37.775 UTC"
+        },
+        {
+          "datetime": "2026-10-26T00:00:37.775587Z",
+          "text": "Oct 26, 2026, 00:00:37.775 UTC"
+        }
+      ],
+      "finished_at": "2026-10-26T00:01:01.054Z"
+    },
+    {
+      "preset": "Bad deploy",
+      "channel": "api",
+      "started_at": "2026-10-26T00:00:36.977Z",
+      "request": {
+        "query": "cart-service: investigate metrics and logs",
+        "service": "cart-service",
+        "minutes_back": 91
+      },
+      "status": "passed",
+      "sent_at": "2026-10-26T00:00:36.977Z",
+      "http_status": 200,
+      "report": {
+        "summary": "During the requested 91-minute query interval, cart-service had a threshold-validated 5xx error-rate increase from 3.71pp to 15.00pp (4.0x), while p95 latency remained steady near 0.23s. Retrieved ERROR logs repeatedly report a NullPointerException in PromotionEngine.applyDiscount at PromotionEngine.java:88 (version=v1.5.0). This exception is a supported candidate contributor to the elevated errors, but the findings do not directly link exceptions to failed requests or establish exact causal timing. No WARN documents or PromotionEngine-matching documents were returned; these empty query results do not establish service health.",
+        "likely_causes": [
+          {
+            "title": "NullPointerException in PromotionEngine.applyDiscount",
+            "rationale": "Repeated errors at the same application method support a null-handling defect as a likely contributor to the elevated 5xx rate. The evidence does not prove each exception produced a 5xx response or establish whether the errors began before the rate increase.",
+            "confidence": 0.78,
+            "supporting_evidence": [
+              {
+                "source": "metrics",
+                "detail": "Threshold-validated 5xx error rate rose 4.0x, from 3.71pp to 15.00pp; anomaly_detected=True."
+              },
+              {
+                "source": "logs",
+                "detail": "20 retrieved ERROR samples report NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88), version=v1.5.0; sample timestamps range from 2026-10-25T23:36:12+00:00 to 2026-10-25T23:55:12+00:00."
+              }
+            ]
+          }
+        ],
+        "next_steps": [
+          "Correlate traces or request-level logs for these exceptions with 5xx responses to quantify their contribution.",
+          "Inspect the inputs and null-handling logic at PromotionEngine.java:88, and compare v1.5.0 with the previous version and deployment history.",
+          "Review request-rate and error-count time series; the supplied findings do not establish whether request volume changed.",
+          "Treat the zero-result WARN and PromotionEngine queries as limited query results, not evidence that related events or service problems were absent."
+        ],
+        "confidence": 0.74,
+        "investigation_window": {
+          "start": "2026-10-25T22:29:37.074631Z",
+          "end": "2026-10-26T00:00:37.074631Z"
+        }
+      },
+      "body_at": "2026-10-26T00:01:00.883Z",
+      "finished_at": "2026-10-26T00:01:00.883Z"
+    }
+  ],
+  "concurrent_overlap_verified": true,
+  "finished_at": "2026-10-26T00:01:03.298Z"
+}

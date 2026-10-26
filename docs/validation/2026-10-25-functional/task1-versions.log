@@ -1,0 +1,28 @@
+{
+  "python": "3.12.14",
+  "packages": {
+    "fastapi": "0.141.1",
+    "langgraph": "1.2.11",
+    "langchain-core": "1.5.6",
+    "langchain-openai": "1.1.16",
+    "openai": "2.54.0",
+    "langsmith": "0.11.0",
+    "pydantic": "2.13.4",
+    "httpx": "0.28.1",
+    "elasticsearch": "8.19.3",
+    "ruff": "0.16.3",
+    "mypy": "2.3.1",
+    "black": "26.5.1",
+    "pytest": "9.1.1"
+  },
+  "lock_sha256": {
+    "backend/uv.lock": "bd86359608f95428e024a3d01d3edc9b6b49267be5d8f4787bc827e74b56e4b0",
+    "frontend/package-lock.json": "4fc0a8eed2641f030769a250e582a9a4eeead8e310d0eda8e596c87152fc1426"
+  },
+  "tools": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "uv": "uv 0.12.5 (x86_64-unknown-linux-gnu)",
+    "docker": "Docker version 29.8.0, build 88096ef"
+  }
+}

@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/ic-phase7-py312/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: asyncio-1.4.0, respx-0.23.1, mock-3.15.1, anyio-4.14.2, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 6 items
+
+backend/tests/integration/test_seeded_stack.py::test_seeded_services_are_discoverable PASSED [ 16%]
+backend/tests/integration/test_seeded_stack.py::test_bad_deploy_error_rate_is_detected_as_an_anomaly PASSED [ 33%]
+backend/tests/integration/test_seeded_stack.py::test_memory_leak_shows_growth_on_the_culprit_service PASSED [ 50%]
+backend/tests/integration/test_seeded_stack.py::test_slow_dependency_upstream_p95_exceeds_the_downstream PASSED [ 66%]
+backend/tests/integration/test_seeded_stack.py::test_term_filters_match_because_fields_are_keyword_typed PASSED [ 83%]
+backend/tests/integration/test_seeded_stack.py::test_bad_deploy_errors_are_tagged_with_the_new_version PASSED [100%]
+
+============================== 6 passed in 1.00s ===============================

@@ -1,0 +1,7 @@
+{"case": "empty question", "status": 422, "response": {"detail": [{"loc": ["body", "query"], "msg": "Invalid request value.", "type": "string_too_short"}]}}
+{"case": "wrong window type", "status": 422, "response": {"detail": [{"loc": ["body", "minutes_back"], "msg": "Invalid request value.", "type": "int_parsing"}]}}
+{"case": "zero window", "status": 422, "response": {"detail": [{"loc": ["body", "minutes_back"], "msg": "Invalid request value.", "type": "greater_than_equal"}]}}
+{"case": "excessive window", "status": 422, "response": {"detail": [{"loc": ["body", "minutes_back"], "msg": "Invalid request value.", "type": "less_than_equal"}]}}
+{"case": "malformed JSON", "status": 422, "response": {"detail": [{"loc": ["body", 10], "msg": "Invalid request value.", "type": "json_invalid"}]}}
+{"case": "HTML payload", "status": 422, "response": {"detail": [{"loc": ["body"], "msg": "Invalid request value.", "type": "model_attributes_type"}]}}
+PASS: six invalid deployed API requests rejected safely; no model inference requested

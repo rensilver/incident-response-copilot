@@ -1,0 +1,6 @@
+# Validation-only host mapping when another project owns port 8000.
+# Internal app:8000 routing and the production Compose defaults stay unchanged.
+services:
+  app:
+    ports: !override
+      - "18000:8000"

@@ -1,0 +1,6 @@
+{"channel":"api","preset":"Memory leak","status":"passed","seconds":20.990807099999998}
+{"channel":"api","preset":"Slow dependency","status":"passed","seconds":19.348503105999995}
+{"channel":"api","preset":"Bad deploy","status":"passed","seconds":19.859368539999995}
+{"channel":"browser","preset":"Memory leak","status":"passed","seconds":19.146992006}
+{"channel":"browser","preset":"Slow dependency","status":"passed","seconds":23.630071629}
+{"channel":"browser","preset":"Bad deploy","status":"passed","seconds":19.45210645800001}

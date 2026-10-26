@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/ic-phase7-py312/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: asyncio-1.4.0, respx-0.23.1, mock-3.15.1, anyio-4.14.2, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 134 items / 123 deselected / 11 selected
+
+backend/tests/unit/utils/test_tracing.py::test_disabled_tracing_disables_sdk PASSED [  9%]
+backend/tests/unit/utils/test_tracing.py::test_enabled_tracing_sets_langchain_env_vars PASSED [ 18%]
+backend/tests/unit/utils/test_tracing.py::test_disabled_tracing_overrides_inherited_flags[LANGSMITH_TRACING] PASSED [ 27%]
+backend/tests/unit/utils/test_tracing.py::test_disabled_tracing_overrides_inherited_flags[LANGSMITH_TRACING_V2] PASSED [ 36%]
+backend/tests/unit/utils/test_tracing.py::test_disabled_tracing_overrides_inherited_flags[LANGCHAIN_TRACING] PASSED [ 45%]
+backend/tests/unit/utils/test_tracing.py::test_disabled_tracing_overrides_inherited_flags[LANGCHAIN_TRACING_V2] PASSED [ 54%]
+backend/tests/unit/utils/test_tracing.py::test_disabling_after_enabled_build_stops_sdk_tracing PASSED [ 63%]
+backend/tests/unit/utils/test_tracing.py::test_enabled_tracing_overrides_inherited_disabled_flags PASSED [ 72%]
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[enabled] PASSED [ 81%]
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[disabled-inherited-enabled] PASSED [ 90%]
+backend/tests/unit/llm/test_openai_provider.py::test_automatic_graph_tracing_and_credential_free_disable[enabled-disabled-enabled] PASSED [100%]
+
+====================== 11 passed, 123 deselected in 2.30s ======================

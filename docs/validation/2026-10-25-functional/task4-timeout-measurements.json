@@ -1,0 +1,65 @@
+{
+  "backend deadline fixture": {
+    "mode": "backend deadline fixture",
+    "elapsedMs": 31790,
+    "checks": [
+      {
+        "mode": "browser deadline fixture",
+        "chunks": 3,
+        "closedAfterMs": null
+      },
+      {
+        "mode": "backend deadline fixture",
+        "chunks": 0,
+        "closedAfterMs": 31010
+      },
+      {
+        "mode": "proxy inactivity fixture",
+        "chunks": 0,
+        "closedAfterMs": null
+      }
+    ]
+  },
+  "proxy inactivity fixture": {
+    "mode": "proxy inactivity fixture",
+    "elapsedMs": 270584,
+    "checks": [
+      {
+        "mode": "browser deadline fixture",
+        "chunks": 27,
+        "closedAfterMs": null
+      },
+      {
+        "mode": "backend deadline fixture",
+        "chunks": 0,
+        "closedAfterMs": 31010
+      },
+      {
+        "mode": "proxy inactivity fixture",
+        "chunks": 0,
+        "closedAfterMs": 270009
+      }
+    ]
+  },
+  "browser deadline fixture": {
+    "mode": "browser deadline fixture",
+    "elapsedMs": 300412,
+    "checks": [
+      {
+        "mode": "browser deadline fixture",
+        "chunks": 29,
+        "closedAfterMs": 299977
+      },
+      {
+        "mode": "backend deadline fixture",
+        "chunks": 0,
+        "closedAfterMs": 31010
+      },
+      {
+        "mode": "proxy inactivity fixture",
+        "chunks": 0,
+        "closedAfterMs": 270009
+      }
+    ]
+  }
+}

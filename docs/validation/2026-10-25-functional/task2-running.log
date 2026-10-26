@@ -1,0 +1,5 @@
+ic-app running healthy
+ic-elasticsearch running healthy
+ic-frontend running healthy
+ic-grafana running healthy
+ic-prometheus running healthy

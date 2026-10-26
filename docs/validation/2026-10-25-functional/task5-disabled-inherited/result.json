@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-10-26T00:24:32.867365Z",
+  "source_commit": "c0a095e0e8badb2382b002e9bce55c42b669c3a8",
+  "mode": "disabled",
+  "provider": "openai",
+  "model": "gpt-6-luna",
+  "investigation_timeout_seconds": 240.0,
+  "project": "incident-copilot",
+  "langsmith_key_supplied_to_settings": false,
+  "python": "3.12.14",
+  "packages": {
+    "langsmith": "0.11.0",
+    "langchain-core": "1.5.6",
+    "langgraph": "1.2.11",
+    "langchain-openai": "1.1.16"
+  },
+  "execution": "host IncidentService with real OpenAI and Docker data services; no HTTP/UI",
+  "root_run_id": "8f976bf1-1a26-415e-af52-aaca5771cf78",
+  "sdk_tracing_enabled": false,
+  "request": {
+    "query": "checkout-service memory keeps climbing; investigate metrics and logs",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the requested 180-minute investigation window, checkout-service resident memory rose 1.4x and CPU usage rose 2.3x. Logs show heap usage at 92%, warnings that GC overhead was approaching its limit, and Java heap-space OutOfMemoryErrors. This supports heap pressure and exhaustion, but does not identify why heap usage grew.",
+    "likely_causes": [
+      {
+        "title": "Java heap exhaustion amid sustained high heap utilization and GC pressure",
+        "rationale": "The heap-utilization and GC warnings, together with Java heap-space OutOfMemoryErrors, support heap pressure culminating in exhaustion. These findings do not establish the underlying allocation or retention mechanism.",
+        "confidence": 0.91,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "17 WARN documents for checkout-service v1.4.2 reported `GC overhead limit approaching; heap usage 92%`; sampled timestamps span 2026-10-25T23:01:05+00:00 to 2026-10-26T00:17:05+00:00."
+          },
+          {
+            "source": "logs",
+            "detail": "Five ERROR documents for checkout-service v1.4.2 reported `java.lang.OutOfMemoryError: Java heap space`; sampled timestamps span 2026-10-25T23:55:05+00:00 to 2026-10-26T00:17:05+00:00."
+          },
+          {
+            "source": "metrics",
+            "detail": "Threshold-validated resident memory rose 1.4x, from 955.17 MiB to 1337.26 MiB; anomaly_detected=True."
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Inspect JVM heap-used and heap-committed metrics, GC frequency and pause time, allocation profiles, and heap dumps to identify the source of heap growth or retention.",
+      "Correlate heap and GC behavior with request rate and workload mix before assessing whether traffic contributed.",
+      "Compare version v1.4.2 with a prior healthy version; the provided evidence does not establish a deployment regression.",
+      "Resolve the inconsistency between the targeted OutOfMemoryError log query, which matched zero documents, and the broader ERROR query, which retrieved five matching messages. Do not treat the targeted query result as proof that no OOM errors occurred."
+    ],
+    "confidence": 0.91,
+    "investigation_window": {
+      "start": "2026-10-25T21:24:34.071266Z",
+      "end": "2026-10-26T00:24:34.071266Z"
+    }
+  },
+  "investigation_error": null,
+  "service_seconds": 17.40049650199944,
+  "requests_transport_calls": [],
+  "finished_at": "2026-10-26T00:24:53.482522Z",
+  "passed": true
+}

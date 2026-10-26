@@ -1,0 +1,52 @@
+{
+  "started_at": "2026-10-26T00:02:35.235Z",
+  "scope": "Real backend container outage and one real OpenAI recovery investigation; no interception",
+  "status": "passed",
+  "stages": [
+    "backend stopped",
+    "safe failure and retained form verified",
+    "backend healthy after restart",
+    "same-page deliberate retry rendered live report"
+  ],
+  "outage_http_status": 500,
+  "safe_error": "Investigation failedThe server could not complete the investigation. Check the backend before trying again.Review your inputs, then use Run investigation to retry. Requests are never retried automatically.",
+  "recovery_http_status": 200,
+  "request": {
+    "query": "cart-service error rate spiked after the last deploy",
+    "minutes_back": 180,
+    "service": "cart-service"
+  },
+  "report": {
+    "summary": "During the requested investigation window (2026-10-25T21:02:53.839028+00:00 to 2026-10-26T00:02:53.839028+00:00), cart-service's threshold-validated 5xx error-rate metric rose from a near-zero baseline to 15.00pp. Logs show repeated NullPointerException errors in PromotionEngine.applyDiscount at line 88, attributed to version v1.5.0. This is a plausible contributor, but the available evidence does not directly link those exceptions to the measured 5xx responses or establish that the last deploy introduced the issue. No collection errors were reported.",
+    "likely_causes": [
+      {
+        "title": "NullPointerException in PromotionEngine.applyDiscount",
+        "rationale": "Repeated exceptions in cart-service could contribute to the observed 5xx increase. However, the findings do not correlate these exceptions with failed HTTP requests or confirm that version v1.5.0 was the last deploy or introduced the defect.",
+        "confidence": 0.55,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "20 sampled cart-service ERROR occurrences report NullPointerException at com.shop.cart.PromotionEngine.applyDiscount(PromotionEngine.java:88), attributed to version v1.5.0; sample timestamps range from 2026-10-25T23:36:12+00:00 to 2026-10-25T23:55:12+00:00."
+          },
+          {
+            "source": "metrics",
+            "detail": "The threshold-validated cart-service 5xx error-rate metric emerged from a near-zero baseline and reached 15.00pp; no ratio is meaningful."
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Confirm the deploy time and version change, and compare the behavior of v1.5.0 with the previous version.",
+      "Inspect PromotionEngine.applyDiscount around line 88 and correlate exception traces with HTTP status codes, request IDs, and affected endpoints.",
+      "Check request-rate and endpoint-level metrics to assess request volume and whether failures are concentrated in promotion-related requests.",
+      "Verify metric coverage and underlying request counts across the investigation window."
+    ],
+    "confidence": 0.55,
+    "investigation_window": {
+      "start": "2026-10-25T21:02:53.839028Z",
+      "end": "2026-10-26T00:02:53.839028Z"
+    }
+  },
+  "recovery_click_to_body_seconds": 25.619195563,
+  "finished_at": "2026-10-26T00:03:19.488Z"
+}

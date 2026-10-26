@@ -1,0 +1,52 @@
+npm --prefix frontend run test:e2e
+
+> incident-copilot-frontend@0.1.0 test:e2e
+> playwright test
+
+[WebServer] ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+Running 40 tests using 1 worker
+
+  ✓   1 [desktop-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (918ms)
+  ✓   2 [desktop-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.4s)
+  ✓   3 [desktop-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (410ms)
+  ✓   4 [desktop-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (489ms)
+  ✓   5 [desktop-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (494ms)
+  ✓   6 [desktop-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (559ms)
+  ✓   7 [desktop-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (2.4s)
+  ✓   8 [desktop-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report (2.2s)
+  ✓   9 [mobile-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (974ms)
+  ✓  10 [mobile-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.6s)
+  ✓  11 [mobile-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (557ms)
+  ✓  12 [mobile-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (689ms)
+  ✓  13 [mobile-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (617ms)
+  ✓  14 [mobile-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (817ms)
+  ✓  15 [mobile-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (6.0s)
+  -  16 [mobile-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+  ✓  17 [tablet-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (967ms)
+  ✓  18 [tablet-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.4s)
+  ✓  19 [tablet-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (423ms)
+  ✓  20 [tablet-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (444ms)
+  ✓  21 [tablet-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (519ms)
+  ✓  22 [tablet-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (596ms)
+  ✓  23 [tablet-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.6s)
+  -  24 [tablet-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+  ✓  25 [narrow-chromium] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests (803ms)
+  ✓  26 [narrow-chromium] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry (1.3s)
+  ✓  27 [narrow-chromium] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (413ms)
+  ✓  28 [narrow-chromium] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (393ms)
+  ✓  29 [narrow-chromium] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus (468ms)
+  ✓  30 [narrow-chromium] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context (584ms)
+  ✓  31 [narrow-chromium] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes (1.0s)
+  -  32 [narrow-chromium] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+  -  33 [desktop-no-js] › tests/e2e/failure-recovery.spec.ts:11:1 › all presets remain editable and submit their actual values without automatic requests
+  -  34 [desktop-no-js] › tests/e2e/failure-recovery.spec.ts:74:1 › HTTP, quota, malformed and connection failures recover only on deliberate retry
+  ✓  35 [desktop-no-js] › tests/e2e/foundation.spec.ts:3:1 › the workspace loads with keyboard access and no automatic investigations (376ms)
+  ✓  36 [desktop-no-js] › tests/e2e/foundation.spec.ts:53:1 › the shell reflows with enlarged text and reduced motion (387ms)
+  -  37 [desktop-no-js] › tests/e2e/interaction.spec.ts:4:1 › keyboard submission, failure recovery, and result focus
+  -  38 [desktop-no-js] › tests/e2e/report-layout.spec.ts:51:1 › readable report, compact mobile composer and editable context
+  -  39 [desktop-no-js] › tests/e2e/report-layout.spec.ts:75:1 › long distinct evidence and empty fields reflow at enlarged text sizes
+  -  40 [desktop-no-js] › tests/e2e/zoom.spec.ts:21:1 › actual Chromium tab zoom at 200% and 400% reflows the report
+
+  9 skipped
+  31 passed (37.2s)

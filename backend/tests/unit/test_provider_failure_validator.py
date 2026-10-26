@@ -28,10 +28,12 @@ def validation_checkout(tmp_path: Path) -> Path:
     ):
         path = root / "backend/tests/unit" / relative
         path.parent.mkdir(parents=True, exist_ok=True)
+        # The real matrix now uses pytest-mock; the CLI must explicitly load it
+        # while keeping plugin autoload disabled and inherited settings isolated.
         path.write_text(
             "import os\n"
             "from pathlib import Path\n"
-            "def test_isolated_validation():\n"
+            "def test_isolated_validation(mocker):\n"
             "    assert os.environ['INCIDENT_COPILOT_ENV_FILE'] == ''\n"
             "    assert os.environ['OPENAI_API_KEY'] == 'offline-validation-key'\n"
             "    assert os.environ['LANGSMITH_TRACING'] == 'false'\n"

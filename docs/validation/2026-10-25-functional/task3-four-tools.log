@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /tmp/ic-phase7-py312/bin/python
+cachedir: .pytest_cache
+rootdir: /home/rensilver/workspaces/incident-response-copilot
+configfile: pytest.ini
+plugins: asyncio-1.4.0, respx-0.23.1, mock-3.15.1, anyio-4.14.2, langsmith-0.11.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+backend/tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[17] 2026-10-25 21:00:03 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent']
+2026-10-25 21:00:03 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=1
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=1 round=1
+2026-10-25 21:00:03 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=2 round=2
+2026-10-25 21:00:03 [info     ] metrics_agent_complete         errors=0 findings=2
+2026-10-25 21:00:03 [debug    ] log_search_executed            hits=20 service=cart-service
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=1 round=1
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=2 round=2
+2026-10-25 21:00:03 [info     ] logs_agent_complete            errors=0 findings=1
+2026-10-25 21:00:03 [info     ] correlation_complete           causes=0
+
+Live window: {"start":"2026-10-25T23:41:03.318625Z","end":"2026-10-25T23:58:03.318625Z"}; all four tools preserved it
+PASSED
+backend/tests/integration/test_investigation_window.py::test_fixed_window_reaches_live_backends[180] 2026-10-25 21:00:03 [info     ] supervisor_routed              agents=['metrics_agent', 'logs_agent']
+2026-10-25 21:00:03 [debug    ] promql_executed                query='sum(rate(http_requests_total{service="cart-service",status=~"5.."}[5m])) / sum(rate(http_requests_total{service="cart-service"}[5m]))' series_count=1
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=1 round=1
+2026-10-25 21:00:03 [debug    ] log_search_executed            hits=20 service=cart-service
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=1 round=1
+2026-10-25 21:00:03 [debug    ] promql_executed                query='process_resident_memory_bytes{service="checkout-service"}' series_count=1
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=2 round=2
+2026-10-25 21:00:03 [info     ] metrics_agent_complete         errors=0 findings=2
+2026-10-25 21:00:03 [debug    ] tool_round_complete            results=2 round=2
+2026-10-25 21:00:03 [info     ] logs_agent_complete            errors=0 findings=1
+2026-10-25 21:00:03 [info     ] correlation_complete           causes=0
+
+Live window: {"start":"2026-10-25T20:58:03.660111Z","end":"2026-10-25T23:58:03.660111Z"}; all four tools preserved it
+PASSED
+
+============================== 2 passed in 1.02s ===============================
