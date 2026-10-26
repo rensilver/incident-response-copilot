@@ -1,0 +1,4 @@
+{"channel": "browser", "minutes": 17, "wire_requests": {"prometheus": 2, "elasticsearch": 4}, "window": {"start": "2026-10-25T23:43:37.779008Z", "end": "2026-10-26T00:00:37.779008Z"}}
+{"channel": "browser", "minutes": 43, "wire_requests": {"prometheus": 2, "elasticsearch": 4}, "window": {"start": "2026-10-25T23:17:37.775587Z", "end": "2026-10-26T00:00:37.775587Z"}}
+{"channel": "api", "minutes": 91, "wire_requests": {"prometheus": 2, "elasticsearch": 3}, "window": {"start": "2026-10-25T22:29:37.074631Z", "end": "2026-10-26T00:00:37.074631Z"}}
+PASS: 17 outgoing temporal requests exactly match three independent concurrent report windows; no extra temporal requests

@@ -283,3 +283,12 @@ used Ruff's default 88-column limit and reported five long lines. The final chec
 uses the repository's explicit 100-column configuration and splits the remaining
 long string; [Ruff passes](task5-verifier-style-fixed.log), as do Black and the
 saved-data comparison. This affected only the evidence script.
+
+## Task 6 — final evidence review
+
+The [final review](review.md) accounts for all 12 planned real investigations,
+current check scope, versions/lock hashes, every retained failure, reproduction
+commands and limitations. The [machine audit](review-audit.json) verifies 37 prior
+artifacts byte for byte and restricts non-evidence changes to the task 4 validator
+fix/regression. Fresh saved window and tracing comparisons pass. Action 7.1 is
+complete at its review/commit boundary; action 7.2 and Phase 8 remain pending.
