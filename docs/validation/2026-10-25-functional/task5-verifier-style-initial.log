@@ -1,0 +1,55 @@
+E501 Line too long (89 > 88)
+  --> docs/validation/2026-10-25-functional/verify-traces.py:20:89
+   |
+18 | assert root["outputs"] == local["final"]
+19 | nodes = {span["name"]: span for span in spans if span["parent_run_id"] == root["id"]}
+20 | assert {"supervisor", "metrics_agent", "logs_agent", "correlation_agent"} <= nodes.keys()
+   |                                                                                         ^
+21 | window = local["initial"]["time_window"]
+22 | for node in nodes.values():
+   |
+
+E501 Line too long (89 > 88)
+  --> docs/validation/2026-10-25-functional/verify-traces.py:29:89
+   |
+27 | report = dict(local["final"]["report"], investigation_window=window)
+28 | assert result["report"] == report  # IncidentService owns report scope metadata.
+29 | for node, key in (("metrics_agent", "metrics_findings"), ("logs_agent", "log_findings")):
+   |                                                                                         ^
+30 |     assert nodes[node]["outputs"][key] == local["final"][key]
+   |
+
+E501 Line too long (97 > 88)
+  --> docs/validation/2026-10-25-functional/verify-traces.py:37:89
+   |
+35 |     assert span["trace_id"] == root["id"]
+36 |     assert span["error"] is None
+37 |     assert datetime.fromisoformat(span["start_time"]) <= datetime.fromisoformat(span["end_time"])
+   |                                                                                         ^^^^^^^^^
+38 |     ancestor = span
+39 |     visited = set()
+   |
+
+E501 Line too long (90 > 88)
+  --> docs/validation/2026-10-25-functional/verify-traces.py:47:89
+   |
+45 |     if span["run_type"] == "tool":
+46 |         findings = local["final"][
+47 |             "metrics_findings" if span["name"] == "get_service_metric" else "log_findings"
+   |                                                                                         ^^
+48 |         ]
+49 |         assert span["outputs"]["output"] in findings
+   |
+
+E501 Line too long (125 > 88)
+  --> docs/validation/2026-10-25-functional/verify-traces.py:65:89
+   |
+63 |             "remote_spans": len(spans),
+64 |             "types": dict(counts),
+65 |             "checks": "tree ancestry, node windows/correlation, tools/findings, report/service metadata, disabled transport",
+   |                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+66 |             "scope": "saved captures; no new provider or LangSmith requests",
+67 |         }
+   |
+
+Found 5 errors.

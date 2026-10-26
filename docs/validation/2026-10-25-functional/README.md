@@ -219,3 +219,67 @@ no graph change was made for this execution-environment limitation. The full
 [fresh host backend checks](task4-recheck-py312-host.log) verify the final diff.
 The existing failing-before/fixed-after regression artifacts were reviewed using
 the test-driven-development workflow; no additional behavior change was needed.
+
+## Task 5 — optional LangSmith delivery
+
+The unchanged [validator](../../../backend/scripts/validate_langsmith.py) ran exactly
+**two planned live investigations**, one enabled and one disabled, without retries.
+[Fresh seeding](task5-seed.log) generated nine metric blocks and 1,236 synthetic
+log documents; the inspected seeder recreates only the synthetic `app-logs` index.
+The execution path is host `IncidentService` → ordinary compiled graph → real
+OpenAI and local Docker data services. These are service timings, not HTTP or
+browser timings. The model is `gpt-6-luna`, reasoning `none`; tracing changes no
+provider policy. Runtime versions are retained in each result: Python 3.12.14,
+LangSmith 0.11.0, langchain-core 1.5.6, LangGraph 1.2.11, langchain-openai 1.1.16.
+
+The [enabled result](task5-enabled/result.json) passes in **21.650 seconds** of
+service time. After flushing, two bounded retrieval polls found **25 completed
+remote spans: 13 chain, seven model, five tool**, with zero span errors. Saved
+[remote spans](task5-enabled/remote-spans.json) and [local graph](task5-enabled/local-graph.json)
+retain actual inputs/outputs and trace IDs. The [independent saved comparison](verify-traces.py)
+[passes](task5-verify-spans.log): every span belongs to the root tree, all agent
+windows/correlation IDs agree, tool outputs match collected findings, and the
+correlation node's report equals the root report. Applying the server-owned window
+to that report exactly reproduces the returned service report. Report tracing is
+represented by the correlation node and graph output; there is no separate
+`IncidentService` or HTTP span. The tenant-specific UI URL was omitted from the
+saved result; the remote lookup ID is retained.
+
+The [disabled result](task5-disabled-inherited/result.json) passes in **17.400 seconds**
+of service time, with a real provider report and **zero observed SDK transport
+calls**. The recorder exported all four `LANGSMITH`/`LANGCHAIN` `TRACING`/`TRACING_V2`
+flags as `true`; application settings explicitly disabled tracing and supplied no
+LangSmith key. The recorder clears inherited credentials, and the validator
+explicitly overrides the dotenv tracing key with `None`. After graph construction,
+the SDK reports tracing disabled. The observer wraps `requests.Session.request`
+through investigation and a two-second background grace period; it is an SDK
+transport observation, not a packet capture or unlimited-time guarantee.
+[Eleven offline tracing cases](task5-offline-tracing.log) also pass, covering each
+inherited flag, automatic model/tool callbacks and enabled/disabled/enabled cache
+transitions on a shared graph. They use mocked model responses and a captured
+tracer sink, separately from the real delivery result.
+
+Reproduction from root after stack startup/seeding (two paid investigations):
+
+```bash
+ELASTICSEARCH_URL=http://127.0.0.1:9200 PROMETHEUS_URL=http://127.0.0.1:9090 /tmp/ic-phase7-py312/bin/python backend/scripts/validate_langsmith.py --mode enabled --output /tmp/new-enabled
+LANGSMITH_TRACING=true LANGSMITH_TRACING_V2=true LANGCHAIN_TRACING=true LANGCHAIN_TRACING_V2=true ELASTICSEARCH_URL=http://127.0.0.1:9200 PROMETHEUS_URL=http://127.0.0.1:9090 /tmp/ic-phase7-py312/bin/python backend/scripts/validate_langsmith.py --mode disabled --output /tmp/new-disabled
+/tmp/ic-phase7-py312/bin/python docs/validation/2026-10-25-functional/verify-traces.py
+```
+
+Use new output directories and a process without inherited tracing credentials;
+the ledger records the exact cleared-environment invocations. The final command
+only compares the committed captures and makes no external requests.
+
+Automatic approval review initially rejected the enabled command over possible
+sensitive-data transmission to LangSmith; no investigation ran in that attempt.
+Inspection confirmed an official HTTPS API destination, the fixed demo query,
+local generated telemetry, and no credentials in trace state. The repeated exact
+command was approved after supplying that evidence and the owner's explicit
+LangSmith-delivery task authorization. No application or tracing wiring changed.
+
+The comparison script's [initial style check](task5-verifier-style-initial.log)
+used Ruff's default 88-column limit and reported five long lines. The final check
+uses the repository's explicit 100-column configuration and splits the remaining
+long string; [Ruff passes](task5-verifier-style-fixed.log), as do Black and the
+saved-data comparison. This affected only the evidence script.

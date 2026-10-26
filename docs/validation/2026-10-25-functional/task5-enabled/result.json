@@ -1,0 +1,143 @@
+{
+  "started_at": "2026-10-26T00:23:58.737184Z",
+  "source_commit": "c0a095e0e8badb2382b002e9bce55c42b669c3a8",
+  "mode": "enabled",
+  "provider": "openai",
+  "model": "gpt-6-luna",
+  "investigation_timeout_seconds": 240.0,
+  "project": "incident-copilot",
+  "langsmith_key_supplied_to_settings": true,
+  "python": "3.12.14",
+  "packages": {
+    "langsmith": "0.11.0",
+    "langchain-core": "1.5.6",
+    "langgraph": "1.2.11",
+    "langchain-openai": "1.1.16"
+  },
+  "execution": "host IncidentService with real OpenAI and Docker data services; no HTTP/UI",
+  "root_run_id": "a53355ea-7de0-4a34-9db3-eeaacd5d05e3",
+  "sdk_tracing_enabled": true,
+  "request": {
+    "query": "checkout-service memory keeps climbing; investigate metrics and logs",
+    "service": "checkout-service",
+    "minutes_back": 180
+  },
+  "report": {
+    "summary": "During the requested 180-minute investigation window, checkout-service resident memory rose 1.2x, from 1257.56MiB to 1474.92MiB. Logs show heap usage at 92% with GC overhead warnings and five Java heap-space errors. These observations support heap exhaustion, but do not identify why heap utilization increased. A targeted OutOfMemoryError search returned zero matches, while the broader ERROR search returned five matching samples; the targeted result does not establish that such errors were absent.",
+    "likely_causes": [
+      {
+        "title": "Java heap exhaustion under high heap utilization",
+        "rationale": "The 92% heap usage and GC overhead warnings, together with Java heap-space errors, support heap exhaustion as the immediate failure mode. They do not establish the underlying driver, such as a leak, workload change, or configuration issue.",
+        "confidence": 0.88,
+        "supporting_evidence": [
+          {
+            "source": "logs",
+            "detail": "Seventeen WARN documents reported 'GC overhead limit approaching; heap usage 92%' (version=v1.4.2); sampled occurrences span 2026-10-25T23:01:05+00:00 to 2026-10-26T00:17:05+00:00."
+          },
+          {
+            "source": "logs",
+            "detail": "Five ERROR documents contained 'java.lang.OutOfMemoryError: Java heap space' (version=v1.4.2); sampled occurrences span 2026-10-25T23:55:05+00:00 to 2026-10-26T00:17:05+00:00."
+          }
+        ]
+      }
+    ],
+    "next_steps": [
+      "Collect a heap dump or allocation profile during high utilization to identify retained objects and allocation sources.",
+      "Review JVM heap configuration and GC telemetry, including allocation rates, post-GC heap levels, and pause behavior.",
+      "Check code, configuration, and deployment changes for checkout-service version v1.4.2.",
+      "Obtain workload and request-rate measurements before attributing the memory increase to traffic.",
+      "Correlate metric and log coverage to determine whether observations represent continuous behavior; the supplied samples do not prove continuous coverage or exact incident onset."
+    ],
+    "confidence": 0.82,
+    "investigation_window": {
+      "start": "2026-10-25T21:23:59.661081Z",
+      "end": "2026-10-26T00:23:59.661081Z"
+    }
+  },
+  "investigation_error": null,
+  "service_seconds": 21.650022244997672,
+  "delivery": {
+    "complete_tree_received": true,
+    "polls": 2,
+    "span_count": 25,
+    "span_types": {
+      "chain": 13,
+      "llm": 7,
+      "tool": 5
+    },
+    "errored_spans": 0,
+    "root_input_matches_local": true,
+    "root_report_matches_local": true,
+    "trace_url_omitted": "Tenant/project UI address omitted; trace identity retained."
+  },
+  "requests_transport_calls": [
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/info",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/multipart",
+      "status_code": 202
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/a53355ea-7de0-4a34-9db3-eeaacd5d05e3",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/query",
+      "status_code": 200
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/a53355ea-7de0-4a34-9db3-eeaacd5d05e3",
+      "status_code": 200
+    },
+    {
+      "method": "POST",
+      "host": "api.smith.langchain.com",
+      "path": "/runs/query",
+      "status_code": 200
+    },
+    {
+      "method": "GET",
+      "host": "api.smith.langchain.com",
+      "path": "/sessions",
+      "status_code": 200
+    }
+  ],
+  "finished_at": "2026-10-26T00:24:31.667318Z",
+  "passed": true
+}

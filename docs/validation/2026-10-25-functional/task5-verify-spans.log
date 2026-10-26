@@ -1,0 +1,1 @@
+{"status": "passed", "remote_spans": 25, "types": {"chain": 13, "llm": 7, "tool": 5}, "checks": "tree ancestry, node windows/correlation, tools/findings, report/service metadata, disabled transport", "scope": "saved captures; no new provider or LangSmith requests"}
