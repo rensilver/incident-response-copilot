@@ -121,32 +121,43 @@ seeded causal pattern does not establish that a generated report recovered it.
 
 ```mermaid
 flowchart TD
-    UI[Next.js same-origin HTTP client] --> API[FastAPI]
-    API --> Service[IncidentService: fixed window and correlation ID]
+    Browser[Engineer in browser] --> UI[Next.js workspace and same-origin proxy]
+    UI --> API[FastAPI: validated HTTP boundary]
+    API --> Service[IncidentService: UTC window and correlation ID]
     Eval[Evaluation harness] --> Service
     Service --> Supervisor[Supervisor]
-    Supervisor --> Metrics[Metrics specialist]
-    Supervisor --> Logs[Logs specialist]
-    Metrics --> MT[Validated metric tools and deterministic thresholds]
+    subgraph Graph[LangGraph investigation]
+        Supervisor --> Metrics[Selected metrics specialist]
+        Supervisor --> Logs[Selected logs specialist]
+        Metrics --> Correlation[Correlation agent]
+        Logs --> Correlation
+    end
+    Metrics --> MT[Validated tools and deterministic metric analysis]
     Logs --> LT[Validated log tools]
-    MT --> Prom[Prometheus]
-    LT --> ES[Elasticsearch]
-    Metrics --> Correlation[Correlation agent]
-    Logs --> Correlation
-    Correlation --> Report[Validated incident report]
-    Prom --> Grafana[Grafana dashboard]
+    MT --> MS[MetricsSource adapter]
+    LT --> LogSource[LogSource adapter]
+    MS --> Prom[Prometheus]
+    LogSource --> ES[Elasticsearch]
+    Correlation --> Report[Typed report returned through API to UI]
+    Grafana[Grafana human dashboard] --> Prom
     Service -. optional traces .-> LS[LangSmith]
-    Provider[Shared LLM provider] --> OpenAI[OpenAI Responses: gpt-6-luna]
+    Provider[LLMProvider interface] --> OpenAI[OpenAI Responses: gpt-6-luna]
     Supervisor -. model calls .-> Provider
     Metrics -. model calls .-> Provider
     Logs -. model calls .-> Provider
     Correlation -. model calls .-> Provider
 ```
 
-The graph is acyclic: supervisor → selected specialists → correlation. Specialists
-can run concurrently, and each has bounded tool rounds. Tools validate arguments
-and call connector interfaces; agents do not access raw data clients directly.
-The requested interval travels through runtime tool configuration, so a model's
+The browser talks only to FastAPI through Next.js same-origin rewrites. FastAPI
+and the evaluation harness share `composition.build_collaborators`: provider
+selection lives in `llm.factory`, while `IncidentService` orchestrates a compiled
+graph without constructing clients. FastAPI's lifespan owns serving resources
+and closes them at shutdown. Grafana queries Prometheus for human inspection.
+
+The graph is acyclic: supervisor → selected specialists → correlation. Selected
+specialists can run concurrently; typed state reducers merge their findings and
+errors. Tools validate arguments and call narrow connector interfaces. The
+requested interval travels through runtime tool configuration, so a model's
 chosen duration cannot override it.
 
 Curated metric analysis computes trends and thresholds deterministically before the
@@ -169,33 +180,47 @@ it does **not** verify that cited evidence proves a diagnosis.
 | Quality checks | pytest, Ruff, Black, strict mypy |
 | Deployment and demo capture | Docker Compose; Playwright and FFmpeg for validation/media |
 
-### Package structure
+### Repository structure
 
 ```text
-backend/src/incident_copilot/
-├── config/           # environment-driven settings
-├── models/           # reports, findings, metrics, logs, windows
-├── analysis/         # deterministic trends and evidence rendering
-├── connectors/       # Prometheus and Elasticsearch adapters
-├── tools/            # validated tools and fixed-window propagation
-├── llm/              # OpenAI adapter, test-only fake, JSON repair
-├── agents/           # supervisor, specialists, correlation, compiled graph
-├── services/         # investigation use case and authoritative metadata
-├── api/              # HTTP schemas, health and investigation routes
-├── demo/             # scenario curves and synthetic data rendering
-├── evaluation/       # scenario harness and service-mention scorer
-├── utils/            # tracing, logging, exceptions
-├── composition.py    # shared construction for API and evaluation
-└── main.py           # FastAPI entry point
-frontend/                  # Next.js workspace, validated API transport, browser checks
-backend/scripts/           # seeding and backend validation recorders
-backend/tests/unit/        # offline tests with fake/stub dependencies
-backend/tests/integration/ # live stack and deployed API checks
-backend/pyproject.toml     # Python package and static-tool configuration
-backend/Dockerfile         # built with the repository root as context
-pytest.ini                 # shared root/backend test collection configuration
-docker/                    # service configuration and Grafana provisioning
-docs/validation/           # reports, measurements, commands, screenshots
+backend/
+├── src/incident_copilot/
+│   ├── config/           # validated runtime settings
+│   ├── models/           # typed reports, findings and UTC windows
+│   ├── analysis/         # deterministic metric analysis and evidence rendering
+│   ├── connectors/       # MetricsSource/LogSource interfaces and adapters
+│   ├── tools/            # validated queries and fixed-window propagation
+│   ├── llm/              # provider interface, OpenAI adapter, test-only fake
+│   ├── agents/           # supervisor, specialists, correlation and tool loop
+│   ├── services/         # investigation orchestration and deadlines
+│   ├── api/              # HTTP schemas, health and investigation routes
+│   ├── demo/             # pure scenario definitions and data rendering
+│   ├── evaluation/       # scenario harness and service-mention scorer
+│   ├── utils/            # tracing, structured logging and domain errors
+│   ├── composition.py    # shared dependency construction
+│   └── main.py           # FastAPI application and resource lifecycle
+├── scripts/              # seeding, contract export and validation
+├── tests/                # offline unit, typing and live integration checks
+├── pyproject.toml        # Python package and static-tool configuration
+├── uv.lock               # locked backend/dev dependencies
+└── Dockerfile            # repository-root build context
+frontend/
+├── src/
+│   ├── app/              # server-rendered route, layout, fonts and styles
+│   ├── components/       # shared static shell
+│   ├── features/investigations/ # interactive health, form and report leaves
+│   └── lib/api/          # transport, runtime validation and generated contract
+├── tests/
+│   ├── components/       # React rendering and interaction checks
+│   ├── e2e/              # Chromium fixtures, responsive and timeout checks
+│   └── *.test.*          # Node contract, transport and configuration checks
+├── package-lock.json     # locked frontend dependencies
+└── Dockerfile            # standalone Next.js production image
+docker/                   # observability configuration and Grafana provisioning
+docs/                     # operation, contracts, validation and demo media
+Makefile                  # root install/run/check/seed commands
+docker-compose.yml        # five-service local application
+pytest.ini                # root/backend test discovery
 ```
 
 ## Configuration and failure behavior

@@ -24,3 +24,20 @@ before that log existed and reported its missing target; the recorded rerun
 checks the completed artifact set. The [audit](audit.py) checks JSON, changed-file
 scope and private values in memory without printing them. This is documentation scope;
 fresh installation, live walkthrough and playback are reserved for task 8.
+
+## Task 2: cohesive architecture and source map
+
+Updated the Mermaid graph to show the browser/proxy/API path, shared evaluation
+composition, selected graph branches, source interfaces, provider interface and
+human dashboard. The repository tree now describes both applications at their
+actual paths, including frontend server/client boundaries and generated types.
+
+Checked paths with `rg --files backend/src frontend/src frontend/tests`;
+reviewed `composition.py`, `main.py`, `agents/graph.py`, `connectors/base.py` and
+`frontend/next.config.mjs` against diagram arrows and lifecycle claims. The tree
+is selective rather than an exhaustive file inventory. [Checks](task2-checks.log)
+run the global local-link/Git-object audit, documentation privacy/scope audit and
+`git diff --check`. Diagram parsing/rendering remains part of task 8.
+The first inventory used `frontend/e2e`, which does not exist; the final tree
+correctly locates browser checks under `frontend/tests/e2e`.
+The first config read also used a `.ts` suffix; the actual config is `.mjs`.
