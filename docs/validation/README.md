@@ -2,6 +2,7 @@
 
 | Evidence | Scope |
 | --- | --- |
+| [Fresh README walkthrough](2026-10-26-documentation/README.md) | Current documentation, clean locked installs, literal demo/API checks, diagram/media and teardown evidence |
 | [Measured evaluation and review](2026-10-26-evaluation/README.md) | Frozen method, all nine OpenAI attempts, reproducible scores/latencies, qualitative review, versions, failures and final audit |
 | [Real browser media](../media/2026-10-26/README.md) | Desktop/mobile screenshots, original recordings, captioned video and descriptive transcript |
 | [Functional validation](2026-10-25-functional/review.md) | Deployed scenarios, exact concurrent windows, controlled failures, real outage/recovery and enabled/disabled tracing |

@@ -1,0 +1,32 @@
+[
+  {
+    "Service": "app",
+    "State": "running",
+    "Health": "healthy",
+    "Ports": "0.0.0.0:18000->8000/tcp, [::]:18000->8000/tcp"
+  },
+  {
+    "Service": "elasticsearch",
+    "State": "running",
+    "Health": "healthy",
+    "Ports": "0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp, 9300/tcp"
+  },
+  {
+    "Service": "frontend",
+    "State": "running",
+    "Health": "healthy",
+    "Ports": "0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp"
+  },
+  {
+    "Service": "grafana",
+    "State": "running",
+    "Health": "healthy",
+    "Ports": "0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp"
+  },
+  {
+    "Service": "prometheus",
+    "State": "running",
+    "Health": "healthy",
+    "Ports": "0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp"
+  }
+]

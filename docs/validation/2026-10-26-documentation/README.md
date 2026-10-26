@@ -116,3 +116,111 @@ root commands against Make targets, local documentation references, privacy,
 changed-file scope and whitespace. Checked that deterministic analysis, exact
 windows, optional tracing, source/client ownership and all three scenario
 invariants survive the guidance edit. No executable behavior changed.
+
+## Task 8: fresh setup and literal walkthrough
+
+The fresh source revision is `4c46949` (tasks 1–7). Runtime, lock and scorer hashes
+are in [runtime metadata](runtime.json). Final task-8 README edits clarify the
+direct MP4/player links, local playback, the host alternate-port command, and the
+walkthrough evidence link; executable application source and dependencies are
+unchanged.
+
+Two fresh local clones installed the locked dependencies: the first under `/tmp`
+([backend](task8-backend-install.log), [frontend](task8-frontend-install.log)),
+then an ignored `seed-readme-validation/` checkout under the workspace for snap
+Docker bind-mount visibility ([both installs](task8-snap-checkout-install.log)).
+The latter uses Python 3.12.14, uv 0.12.5, Node 24.19.0 and npm 11.17.0. Package
+and Docker layer caches were reused; this is not a cold-cache build claim.
+A new template-based, mode-0600 ignored dotenv contains only the existing OpenAI
+key and template defaults; no private values are printed. The primary dotenv
+is unchanged.
+
+| Check | Actual result and retained evidence |
+| --- | --- |
+| `timeout 360 make check` | [615 offline backend cases, 104 frontend cases, Ruff, strict mypy, Black, frontend lint/format/types, API drift and production build pass](task8-fresh-checks.log) |
+| Both production images | [Build succeeds from fresh source with cached layers](task8-image-build.log) |
+| Default `make docker-up` | [Fails](task8-default-startup.log); [container-state diagnostic](task8-port-conflict-fixed.log) confirms occupied port 8000 |
+| Override `make docker-up` | [Succeeds](task8-override-startup-fixed.log); [all five services healthy](task8-stack-running.json), backend host 18000/internal 8000 |
+| `timeout 180 make seed` with the same override | [Three scenarios, six metric blocks, 1,236 synthetic log documents; Prometheus restarted](task8-seed.log) |
+| README health curl | [All three dependencies true](task8-health.json); [runtime fields](task8-runtime.log) confirm OpenAI/model/disabled tracing and budget |
+| README investigation curl, host port 18000 | [HTTP 200, 20.455 s](api-timing.json); [validated report](api-response.json), exact 180-minute window |
+| All three preset submissions | [Three HTTP 200 reports, exact UI/API windows, report focus and mobile fit](walkthrough.json); [progress](task8-walkthrough.log) |
+| Real seeded connector tests | [Six pass](task8-connectors.log), covering all three scenario patterns and keyword fields |
+| Offline provider-failure validator | [188 pass](task8-provider-failures.log); overlaps the offline suite, not an additive count |
+| `timeout 240 make frontend-e2e` | [31 controlled Chromium cases pass, nine intentional project skips](task8-browser-fixtures.log) |
+| Host FastAPI/Next dev commands | [Backend](task8-host-backend.log) and [frontend](task8-host-frontend.log) serve; [proxied health](task8-host-health.json) is ok and [invalid POST status](task8-host-invalid-status.log) is 422, with [validation body](task8-host-invalid.json); no generation call |
+| Mermaid | [20 nodes/23 edges render](diagram-check.json); [diagram PNG](system-design.png), [SVG](system-design.svg), [final command log](task8-diagram-final.log) |
+| Media | [Playback, six caption cues, three precise scene seeks, controls/no autoplay and no mobile overflow](media-check.json); [log](task8-media.log) |
+| Saved evaluation | [Nine original scores/windows/frozen hashes reproduce](task8-rescore.log); no original result file changed |
+| Evidence-script style/types | [Ruff, Black, strict mypy and Prettier pass](task8-evidence-style.log) |
+| `make docker-down` | [Five containers and network removed without volume deletion](task8-teardown.log) |
+| Teardown verification | [All walkthrough ports released, unrelated API unchanged, generated data retained](task8-teardown-audit.log) |
+
+Commands run from the fresh checkout except evidence tooling. Docker operation
+uses `COMPOSE_FILE=docker-compose.yml:docs/validation/2026-10-25-functional/ports.override.yml`.
+Host development uses the README's explicit port-18000 uvicorn command and
+`INCIDENT_COPILOT_BACKEND_ORIGIN=http://127.0.0.1:18000 make frontend-dev`.
+Build and type generation were sequential. Browser fixtures ran after the
+containerized frontend stopped, before host Next dev started.
+
+The [walkthrough driver](walkthrough.mjs) makes exactly three paid requests,
+requires `--live`, refuses an existing output JSON, and waits 65 seconds before
+the first request and between attempts. It saves every outcome without retries
+or substitutions. [Memory](memory_leak-walkthrough.png),
+[dependency](slow_dependency-walkthrough.png) and [deploy](bad_deploy-walkthrough.png)
+screenshots show the new smoke reports. These plus the curl example are four
+additional investigations, excluded from all published nine-run scores and
+latencies. Screenshot/report validation establishes delivery and rendering,
+not causal accuracy. No evaluation, scenario, prompt or scoring changes ran.
+
+The [diagram driver](check-diagram.mjs) uses separately installed
+`mermaid@11.12.0` from `/tmp/ic-readme-diagram`, with the locked Playwright.
+Reproduce with `node docs/validation/2026-10-26-documentation/check-diagram.mjs
+/tmp/ic-readme-diagram/node_modules/mermaid/dist/mermaid.min.js`. Media checking
+ran the existing `check-media.mjs` in the fresh clone so its generated JSON
+did not overwrite the original evidence. The hero screenshot and rendered
+diagram were visually inspected. The uv documentation link was opened
+successfully; local files/headings and archived Git destinations use the
+repository-wide offline link checker. No public hosting was published.
+
+### Failures, corrections and limits
+
+- Default backend host port 8000 is occupied by an unrelated application. Default
+  binding is blocked; verified deployment/host development use 18000, as documented.
+  Diagnostic startup commands included an overlapping terminal capture; their
+  output is diagnostic only. The successful evidence is the separately completed
+  override startup and healthy-service snapshot.
+- Snap Docker cannot see an override in the host `/tmp` namespace: the
+  [initial override command](task8-override-startup.log) fails before building.
+  The existing repository-local override succeeds. It also rejects a regular-file
+  stdout descriptor: [initial diagnostic log](task8-port-conflict.log) is empty,
+  while its stderr reported `write /dev/stdout: bad file descriptor`. Piped
+  `tee` capture preserves subsequent image/start/seed/stop/teardown output. Initial
+  redirected make logs are retained even where Docker diagnostics were absent.
+- The installed ESLint release emits its existing deprecation warning and npm
+  emits its existing install-script policy warning; locked installation succeeds.
+  Three metadata subprocess stream-fd warnings occurred in the sandbox while
+  valid version JSON was produced. No dependency versions were changed.
+- The host frontend log redacts the LAN interface address; local loopback ports
+  and public provider URLs remain. Only the log text is sanitized.
+- The initial staged whitespace check flagged Docker/socket-log trailing spaces
+  ([diagnostic](task8-staged-whitespace-initial.log)). Task-8 log trailing
+  whitespace was normalized; command text, statuses, measurements and failures
+  were preserved.
+- The first evidence-script lint found one long assertion line
+  ([initial output](task8-evidence-style-initial.log)); Black formatted it and the
+  final style/type check passes. The two new JavaScript drivers were formatted
+  before their final checks; the initial diagram-driver Prettier check warned.
+- Host Next dev generates an untracked `frontend/AGENTS.md` in the disposable
+  clone. It was not copied into the primary checkout or committed. No new
+  assistant tooling convention was added. Terminal Ctrl+C did not reach child
+  timeout process groups, so those two verified groups received SIGINT directly
+  to stop them; the teardown audit confirms their ports are released.
+- Reset was inspected via `make -n demo-reset` and source, not executed. No volume,
+  original Prometheus data, unrelated listener or worktree was deleted. Temporary
+  clones and their ignored generated data remain for review. This validation
+  stops the project's stack; it does not leave demo containers running.
+- Only fresh Python 3.12 and Chromium were rerun. Enabled LangSmith delivery,
+  real elapsed-time timeout tests, other browsers and screen readers were not
+  repeated; their older evidence is explicitly scoped in the current index.
+  All new investigations use disabled tracing.

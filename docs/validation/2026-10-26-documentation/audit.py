@@ -29,5 +29,7 @@ changes = subprocess.check_output(
     ["git", "diff", "--name-only", "b88a6c1"], cwd=ROOT, text=True
 ).splitlines()
 allowed = ("README.md", "AGENTS.md", "docs/validation/README.md")
-assert all(name in allowed or name.startswith(str(EVIDENCE.relative_to(ROOT)) + "/") for name in changes)
+assert all(
+    name in allowed or name.startswith(str(EVIDENCE.relative_to(ROOT)) + "/") for name in changes
+)
 print(f"PASS: {len(files)} documentation/evidence files; JSON, private-value and scope checks")

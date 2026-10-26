@@ -1,0 +1,7 @@
+make build
+make[1]: Entering directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+COMPOSE_PARALLEL_LIMIT=1 docker compose build app
+compose file "/tmp/ic-readme-ports.override.yml" set by COMPOSE_FILE environment variable is invalid: stat /tmp/ic-readme-ports.override.yml: no such file or directory
+make[1]: *** [Makefile:90: build] Error 1
+make[1]: Leaving directory '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation'
+make: *** [Makefile:83: docker-up] Error 2

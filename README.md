@@ -5,9 +5,11 @@ on-call engineers reviewing application metrics and logs, Incident Response
 Copilot queries Prometheus and Elasticsearch, proposes ranked causes, and lists
 checks an engineer can use to test those hypotheses.
 
-[Watch the 56-second demo](docs/media/2026-10-26/demo.html)
-with captions and a descriptive transcript. The recording shows real OpenAI
-investigations of synthetic incidents; waiting is shortened in the edit.
+[Watch the 56-second demo](docs/media/2026-10-26/investigations.mp4) ·
+[Captioned player and descriptive transcript](docs/media/2026-10-26/demo.html).
+The recording shows real OpenAI investigations of synthetic incidents; waiting
+is shortened in the edit. For captioned playback, serve the player over HTTP
+using the [media guide](docs/media/2026-10-26/README.md#provenance-and-reproduction).
 
 ![Desktop checkout-service investigation showing its queried UTC window, heap-pressure hypothesis and observations](docs/media/2026-10-26/memory_leak-desktop.png)
 
@@ -120,6 +122,15 @@ The sole frontend setting is server-only `INCIDENT_COPILOT_BACKEND_ORIGIN`
 (default `http://127.0.0.1:8000`); production rewrites require a rebuild when it
 changes. Never put model/tracing credentials in frontend configuration. See the
 [frontend guide](frontend/README.md) for production previews and browser checks.
+
+If host port 8000 is occupied, use an available port for both host processes:
+
+```bash
+# Terminal 1, after stopping the containerized backend/frontend:
+.venv/bin/uvicorn incident_copilot.main:app --app-dir backend/src --reload --port 18000
+# Terminal 2:
+INCIDENT_COPILOT_BACKEND_ORIGIN=http://127.0.0.1:18000 make frontend-dev
+```
 
 ## Seeded scenarios
 
@@ -372,6 +383,9 @@ validation, request states, safe failures and accessible form/report interaction
 Chromium checks use controlled API fixtures for keyboard, responsive and zoom
 behavior; live connector/provider checks are explicit integration commands.
 Fixture success is distinct from a real model investigation.
+
+The [fresh README walkthrough](docs/validation/2026-10-26-documentation/README.md)
+records setup, commands, rendered diagram/media checks and environment limits.
 
 ## Development checks
 

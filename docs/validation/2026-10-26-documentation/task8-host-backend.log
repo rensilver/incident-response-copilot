@@ -1,0 +1,12 @@
+INFO:     Will watch for changes in these directories: ['/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation']
+INFO:     Uvicorn running on http://127.0.0.1:18000 (Press CTRL+C to quit)
+INFO:     Started reloader process [202400] using WatchFiles
+INFO:     Started server process [202408]
+INFO:     Waiting for application startup.
+{"provider": "openai", "event": "app_started", "level": "info", "timestamp": "2026-10-26T15:51:23.378856Z"}
+INFO:     Application startup complete.
+HTTP Request: GET http://localhost:9090/-/ready "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:9200/_cluster/health "HTTP/1.1 200 OK"
+HTTP Request: GET https://api.openai.com/v1/models/gpt-6-luna "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:40358 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40358 - "POST /api/v1/investigations HTTP/1.1" 422 Unprocessable Entity

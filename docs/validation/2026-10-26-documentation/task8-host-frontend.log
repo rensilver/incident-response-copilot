@@ -1,0 +1,19 @@
+npm --prefix frontend run dev
+
+> incident-copilot-frontend@0.1.0 dev
+> next dev --port 3001
+
+▲ Next.js 16.4.3 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       [local interface redacted]
+✓ Ready in 398ms
+✓ Running next.config.mjs took 31ms
+Creating turbopack project {
+  dir: '/home/rensilver/workspaces/incident-response-copilot/seed-readme-validation/frontend',
+  testMode: true
+}
+- Experiments (use with caution):
+  · proxyTimeout: 270000
+
+✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+ GET / 200 in 437ms (next.js: 188ms, application-code: 250ms)

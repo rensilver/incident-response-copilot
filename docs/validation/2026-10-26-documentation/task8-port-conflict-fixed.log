@@ -1,0 +1,1 @@
+failed to set up container networking: driver failed programming external connectivity on endpoint ic-app (1e5d4a924226ed13dbf07c9acd92448fcdd6cca9c2ccf68af06c5852861725f9): Bind for 127.0.0.1:8000 failed: port is already allocated

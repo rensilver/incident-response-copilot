@@ -1,0 +1,12 @@
+{
+  "local_links": 342,
+  "archived_git_objects": 19,
+  "failures": []
+}
+PASS: 63 documentation/evidence files; JSON, private-value and scope checks
+PASS: nine saved scores, exact windows, frozen hashes and latency summaries reproduced
+PASS: README result table equals saved aggregates; four delivered smoke reports/windows validated
+PASS: current-project editorial scan; runtime/locks/scoring/original media unchanged; private paths ignored
+All checks passed!
+All done! ✨ 🍰 ✨
+1 file would be left unchanged.

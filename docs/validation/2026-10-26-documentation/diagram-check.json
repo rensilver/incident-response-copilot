@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "renderer": "mermaid 11.12.0",
+  "chromium": "156.0.8078.4",
+  "nodes": [
+    "Engineer in browser",
+    "Next.js workspace and same-origin proxy",
+    "FastAPI: validated HTTP boundary",
+    "IncidentService: UTC window and correlation ID",
+    "Evaluation harness",
+    "Supervisor",
+    "Selected metrics specialist",
+    "Selected logs specialist",
+    "Correlation agent",
+    "Validated tools and deterministic metric analysis",
+    "Validated log tools",
+    "MetricsSource adapter",
+    "LogSource adapter",
+    "Prometheus",
+    "Elasticsearch",
+    "Typed report returned through API to UI",
+    "Grafana human dashboard",
+    "LangSmith",
+    "LLMProvider interface",
+    "OpenAI Responses: gpt-6-luna"
+  ],
+  "edges": 23
+}
