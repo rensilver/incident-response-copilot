@@ -101,3 +101,18 @@ product behavior, not a project change log.
 README, inspect its headings and local destinations, validate references and
 check scope/privacy/whitespace. No old evidence, media or measurement is copied
 into current results, and no runtime files change.
+
+## Task 7: concise Codex project guidance
+
+Updated `AGENTS.md` to describe the current application rather than a planned
+migration, consolidated authorization/commit boundaries, and kept root commands,
+dependency/contract rules, secret handling, evidence invariants and environment
+diagnostics. Added explicit, scoped skill usage for backend/graph/frontend,
+regressions, debugging and verification. Codex remains the sole assistant tooling
+convention. No chronological review log or new assistant config is introduced.
+
+[Checks](task7-checks.log) validate skill paths/names against the installed catalog,
+root commands against Make targets, local documentation references, privacy,
+changed-file scope and whitespace. Checked that deterministic analysis, exact
+windows, optional tracing, source/client ownership and all three scenario
+invariants survive the guidance edit. No executable behavior changed.

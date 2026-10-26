@@ -1,17 +1,17 @@
 # Incident Response Copilot
 
-## Target architecture
+## Application and scope
 
-The planned application has a FastAPI/LangGraph backend in `backend/` and a
+The application has a FastAPI/LangGraph backend in `backend/` and a
 React/Next.js frontend in `frontend/`. Preserve the extensible `LLMProvider`
 abstraction; use OpenAI Responses with `gpt-6-luna` and
 `reasoning={"effort": "none"}` as the sole production provider, without automatic
 fallback. Keep the fake provider test-only. Retain Prometheus, Elasticsearch,
 Grafana, the three seeded scenarios, and optional LangSmith tracing.
 
-The target replaces previous providers, host-capacity requirements, and tooling
-specific to other coding assistants. Public hosting, authentication, persistent
-report history, and additional production providers are outside the current scope.
+Public hosting, authentication, persistent report history, and additional
+production providers are outside the current scope. Codex is the project's
+assistant tooling convention.
 
 ## Current layout and execution scope
 
@@ -20,7 +20,7 @@ The Python project lives in `backend/`, including `src/incident_copilot/`,
 use the root `.venv/`; root `pytest.ini` configures collection from both root and
 `backend/`. The Next.js application, browser checks and production image live in
 `frontend/`. Root commands and local stack operation are documented in
-`docs/full-stack-operation.md`. Further migration tasks remain in the local plan.
+the [operation guide](docs/full-stack-operation.md).
 
 Checkout/editable settings load the root `.env` independently of the working
 directory; process variables override file values. Installed wheels use process
@@ -32,10 +32,11 @@ Checkout backend scripts import `backend/src/` directly. Evaluation/validation
 recorders resolve relative output paths from the repository root and preserve
 absolute paths; Playwright browser artifacts stay in `frontend/test-results/`.
 
-The local, gitignored `REFACTORING_PLAN.md` defines the phases. Implementation
-requires explicit owner authorization for each task. Complete the authorized
-scope, verify it, and stop at its owner review/commit boundary before starting
-the next task. A request to commit includes authorization for that task's commit.
+The local, gitignored `REFACTORING_PLAN.md` defines the phases. Work only on
+owner-authorized tasks, preserve unrelated edits, verify each task, and stop at
+the authorized review/commit boundary. A commit request authorizes that task's
+commit, not pushing, later tasks, or deleting worktrees/volumes. Keep the plan
+local; put enduring guidance here and evidence under `docs/validation/`.
 
 ## Codex development conventions
 
@@ -89,18 +90,14 @@ the next task. A request to commit includes authorization for that task's commit
 
 ### Checks and workflow
 
-- Work only on the explicitly authorized task, preserve unrelated edits, and stop
-  at its review/commit boundary. A request to commit authorizes that task's commit;
-  it does not authorize subsequent tasks, pushing, or deleting worktrees/volumes.
-  Keep `REFACTORING_PLAN.md` local and ignored; track enduring guidance here and
-  verification evidence under `docs/validation/`.
 - For behavior changes, add meaningful failing regression coverage before the fix.
   Unit tests use fake providers, mocked transports/connectors, and isolated settings;
   they must run without Docker, network access, live credentials, or the owner's `.env`.
   Put live dependency checks in `backend/tests/integration` with the integration marker.
-- From the current repository root, run `make lint`, `make test`, and
-  `make format-check` for relevant Python changes.
-  Packaging uses uv 0.12.5 and `backend/uv.lock` with Python 3.12/3.13 (default
+- Run commands from the repository root. For Python changes, run `make lint`,
+  `make test`, and `make format-check`. Documentation-only changes require diff,
+  reference and scope checks. Packaging uses uv 0.12.5 and `backend/uv.lock`
+  with Python 3.12/3.13 (default
   3.12.14 in `backend/.python-version`). `make install` installs locked backend/dev
   dependencies; `make install-frontend` uses the frontend npm lock, and
   `make install-all` runs both sequentially. Backend installation retains unrelated
@@ -109,9 +106,8 @@ the next task. A request to commit includes authorization for that task's commit
   From `backend/`, set `UV_PROJECT_ENVIRONMENT` to the absolute root `.venv/` path
   when syncing. Regenerate with `uv lock --project backend` only for intentional
   dependency changes and commit the lock with the manifest.
-  Documentation-only changes require diff, reference, and scope checks.
-- Frontend checks run from root with `npm --prefix frontend`: `test`,
-  `run lint`, `run format:check`, `run typecheck`, `run build`, then `run test:e2e`.
+- Frontend checks use `npm --prefix frontend`: `test`, `run lint`,
+  `run format:check`, `run typecheck`, `run build`, then `run test:e2e`.
   Run build and type generation sequentially because both write `.next/`.
   Playwright owns port 3001 and needs its matching Chromium installed. Keep static
   route/shared framing server-rendered and put interactive state in feature leaves.
@@ -136,3 +132,16 @@ the next task. A request to commit includes authorization for that task's commit
   Validate optional tracing both enabled and disabled when changing its wiring.
 - Verify before claiming completion. Record actual commands, outcomes, limitations,
   and blocked checks; inspect the staged diff and exclude secrets before committing.
+
+### Skill usage
+
+- Read applicable installed `SKILL.md` instructions before using a skill and name
+  it in the progress update. Repository and owner instructions take precedence.
+- Use `ecosystem-primer` first for LangChain/LangGraph work, then applicable
+  fundamentals, persistence or human-in-the-loop skills. Use `fastapi` and
+  `python-clean-architecture` for relevant backend work.
+- Use `frontend-design` for UI design, `vercel-react-best-practices` for React/
+  Next.js changes, and `web-design-guidelines` for requested interface reviews.
+- Use test-driven development for behavior changes, systematic debugging for
+  unexpected failures, and verification-before-completion before success claims
+  or commits. Apply skills within the authorized task rather than expanding scope.
